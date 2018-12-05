@@ -27,8 +27,13 @@ ifeq ($(uname_S), Darwin)
 	CXX=clang++
 	CPPFLAGS=-pthread -std=c++11 -Wall -Wno-deprecated-register
 		
-	PYTHON_INC=-I/usr/include/python$(PYTHON_VERSION)
-	PYTHON_LINK=-L/usr/lib/python$(PYTHON_VERSION)/config -lpython$(PYTHON_VERSION)
+	# PYTHON_INC=-I/usr/include/python$(PYTHON_VERSION)
+	# PYTHON_LINK=-L/usr/lib/python$(PYTHON_VERSION)/config -lpython$(PYTHON_VERSION)
+
+	PYTHON_INC=-I/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7/
+	PYTHON_LINK=-L/Library/Frameworks/Python.framework/Versions/2.7/lib/ -lpython2.7
+	# PYTHON_INC=-I/System/Library/Frameworks/Python.framework/Versions/$(PYTHON_VERSION)/include/python$(PYTHON_VERSION)
+	# PYTHON_LINK=-L/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python$(PYTHON_VERSION)/config -lpython$(PYTHON_VERSION)
 
 	JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home/include/
 	JAVA_INC=-I$(JAVA_HOME) -I$(JAVA_HOME)darwin/
@@ -53,11 +58,9 @@ BOOST_LIBS=dependencies/boost_1_68_0/stage/lib/libboost_filesystem.a \
 		   dependencies/boost_1_68_0/stage/lib/libboost_system.a
 
 
-
 all: binary_testing library binary python java
 
 libraries: library python java
-
 
 binary_testing: $(SRCS) src/main.cc
 	$(CXX) $(CPPFLAGS) $(INC) -Ofast $(BOOST_LIBS) -o bin/errorx_testing $(SRCS) src/testing.cc
