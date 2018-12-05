@@ -26,7 +26,7 @@ namespace errorx {
 SequenceRecords* get_corrected_records( py::list & sequence_list, 
 					 py::list & germline_sequence_list,
 					 py::list & phred_score_list,
-					 py::str & errorx_base ) {
+					 ErrorXOptions & options ) {
 
 	if ( py::len(sequence_list) != py::len(germline_sequence_list) or 
 		 py::len(sequence_list) != py::len(phred_score_list)) {
@@ -45,12 +45,6 @@ SequenceRecords* get_corrected_records( py::list & sequence_list,
 		queries.push_back( query );
 	}
 
-	string base = py::extract<string>( errorx_base );
-
-	ErrorXOptions options( "temp", "tsv" ); // doesn't matter what file type we input here
-	options.errorx_base( base );
-	options.nthreads( 1 ); // due to GIL in Python, the extra threads won't help us
-
 	DataScaler scaler;
 	ErrorPredictor predictor( options.verbose() );
 
@@ -61,12 +55,13 @@ SequenceRecords* get_corrected_records( py::list & sequence_list,
 py::list correct_sequences( py::list & sequence_list, 
 					 py::list & germline_sequence_list,
 					 py::list & phred_score_list,
-					 py::str & errorx_base ) 
+					 py::object const & options ) 
 {
+	ErrorXOptions options_cpp = options_from_pyoptions( options );
+
 	SequenceRecords* records = get_corrected_records( sequence_list, 
-									 germline_sequence_list, 
-									 phred_score_list,
-									 errorx_base );
+		germline_sequence_list, phred_score_list, options_cpp );
+
 	py::list corrected_sequences;
 	for ( int ii = 0; ii < records->size(); ++ii ) {
 		corrected_sequences.append( records->get(ii)->full_nt_sequence_corrected() );
@@ -78,7 +73,7 @@ py::list correct_sequences( py::list & sequence_list,
 py::list get_predicted_errors( py::str & sequence, 
 					 py::str & germline_sequence,
 					 py::str & phred_score,
-					 py::str & errorx_base ) 
+					 py::object const & options ) 
 {
 
 	py::list sequence_list;
@@ -89,8 +84,10 @@ py::list get_predicted_errors( py::str & sequence,
 	germline_sequence_list.append( germline_sequence );
 	phred_score_list.append( phred_score );
 
+	ErrorXOptions options_cpp = options_from_pyoptions( options );
+
 	SequenceRecords* records = get_corrected_records( sequence_list,
-		germline_sequence_list, phred_score_list, errorx_base );
+		germline_sequence_list, phred_score_list, options_cpp );
 
 	py::list predicted_errors;
 
@@ -106,6 +103,12 @@ py::list get_predicted_errors( py::str & sequence,
 }
 
 void run_py_protocol( py::object const & options ) {
+	ErrorXOptions options_cpp = options_from_pyoptions( options );
+
+	run_protocol_write( options_cpp );
+}
+
+ErrorXOptions options_from_pyoptions( py::object const & options ) {
 	string infile = py::extract<string>( options.attr( "infile_" )); 
 	string format = py::extract<string>( options.attr( "format_" )); 
 	string outfile = py::extract<string>( options.attr( "outfile_" )); 
@@ -115,6 +118,7 @@ void run_py_protocol( py::object const & options ) {
 	bool allow_nonproductive = py::extract<bool>( options.attr( "allow_nonproductive_" )); 
 	char correction = py::extract<char>( options.attr( "correction_" )); 
 	string base_path = py::extract<string>( options.attr( "base_path_" )); 
+	int nthreads = py::extract<int>( options.attr("nthreads_"));
 
 	ErrorXOptions options_cpp( infile, format );
 	options_cpp.outfile( outfile );
@@ -124,9 +128,9 @@ void run_py_protocol( py::object const & options ) {
 	options_cpp.allow_nonproductive( allow_nonproductive );
 	options_cpp.correction( correction );
 	options_cpp.errorx_base( base_path );
-	options_cpp.nthreads( 1 );
+	options_cpp.nthreads( nthreads );
 
-	run_protocol_write( options_cpp );
+	return options_cpp;
 }
 
 BOOST_PYTHON_MODULE(errorx_lib)

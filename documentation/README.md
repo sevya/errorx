@@ -160,7 +160,7 @@ ErrorX takes in as parameters three String arrays: an array of nucleotide sequen
 	
 In addition, you can run the ErrorX protocol using input from a file and outputting the results to a file, in the same way you would use the application. To do this you only need to create an ErrorXOptions object that contains all of the options around data processing. You can input files either in FASTQ or TSV format. TSV files should have four columns: the sequence ID or name, the nucleotide sequence itself, the inferred germline sequence, and the PHRED score from the sequencer. An example is shown below:
 
-	include errorx.ErrorXOptions;
+	import errorx.ErrorXOptions;
 	
 	ErrorXOptions options = new ErrorXOptions( "test.tsv", "tsv" );
 	options.outfile( "out.tsv" );

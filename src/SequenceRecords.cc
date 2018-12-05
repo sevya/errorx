@@ -206,6 +206,7 @@ vector<string> SequenceRecords::get_summary_labels() const {
 			"CDR3_AA_sequence",
 			"Full_NT_sequence",
 			"Full_GL_NT_sequence",
+			"PHRED_scores",
 			"Full_AA_sequence",
 			"Full_NT_sequence_corrected",
 			"Full_AA_sequence_corrected",

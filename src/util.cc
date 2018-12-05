@@ -106,6 +106,17 @@ string exec(const char* cmd) {
 	return result;
 }
 
+boost::filesystem::path get_home() {
+	namespace fs = boost::filesystem;
+	if ( get_os() == "win32" or get_os() == "win64") {
+		string drive = getenv("HOMEDRIVE");
+		string path = getenv("HOMEPATH");
+		return fs::path( drive ) / fs::path( path );
+	} else {
+		string home = getenv("HOME");
+		return fs::path( home );
+	}
+}
 
 boost::filesystem::path get_root_path( bool from_gui ) {
 

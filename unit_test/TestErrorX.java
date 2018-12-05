@@ -14,7 +14,7 @@ import java.io.IOException;
 
 public class TestErrorX {
 
-	@Test
+	// @Test
 	public void testRunProtocol() throws IOException {
 		ErrorXOptions options = new ErrorXOptions( "testing/test.tsv", "tsv" );
 		options.outfile( "testing/out.tsv" );
@@ -40,7 +40,7 @@ public class TestErrorX {
 
 	}
 
-	@Test
+	// @Test
 	public void testNumbers() {
 
 		int n = 502;
@@ -85,7 +85,7 @@ public class TestErrorX {
 	}
 
 
-	@Test
+	// @Test
 	public void testPredictedError() {
 		String sequence = "AGGGGCCACAGTCAAGTTGTCCTGCACAGCTTCTGGCCTCAACATTAAAGACACCTATATGCACTGGCTGAAGCAGTGGCCTGAACAGGGCCTGGAGTGGATTGGAAGGATTGATCCTCCGAATGGTAATACTAAATATGACCCGAAGTTCCAGGGCAAGGCCACTATAACAGCAGACACATCCTCCAACCCAGCCTACCTGCAGCTCAGCCGCCTGACATCTGAGGACACTGCCGTCTCTTACTGTGCTAGAATGGCCNNCTGAAAAAACAAAACAACAACTTCATT";
 

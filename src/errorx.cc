@@ -40,7 +40,9 @@ SequenceRecords* run_protocol( ErrorXOptions & options ) {
 		}
 
 		// Convert FASTQ to FASTA
-		cout << "Converting fastq to fasta..." << endl;
+		if ( options.verbose() > 0 ) {
+			cout << "Converting fastq to fasta..." << endl;
+		}
 		options.fastq_to_fasta();
 
 		// Run IGBlast query on FASTA file
@@ -126,7 +128,9 @@ void run_protocol_write_features( ErrorXOptions & options ) {
 		}
 
 		// Convert FASTQ to FASTA
-		cout << "Converting fastq to fasta..." << endl;
+		if ( options.verbose() > 0 ) {
+			cout << "Converting fastq to fasta..." << endl;
+		}
 		options.fastq_to_fasta();
 
 		// Run IGBlast query on FASTA file

@@ -27,22 +27,37 @@ def _get_base():
 	corresponding to the entries in `sequences`
 	@param phred_scores List of PHRED quality scores straight
 	from the sequencer, corresponding to the entries in `sequences`
+	@param options ErrorXOptions object to control options. If 
+	None, will set up default values internally
 
 	@return List of corrected NT sequences corresponding
 	to the input param `sequences`
 '''
 def correct_sequences(sequences, 
 			   germline_sequences,
-			   phred_scores ):
+			   phred_scores,
+			   options=None ):
 
-	if not isinstance(sequences, list):
+	## if input is a string, wrap into a list
+	if isinstance( sequences, str ):
 		sequences = [sequences]
-	if not isinstance(germline_sequences, list):
+	if isinstance( germline_sequences, str ):
 		germline_sequences = [germline_sequences]
-	if not isinstance(phred_scores, list):
+	if isinstance( phred_scores, str ):
 		phred_scores = [phred_scores]
 
-	return errorx_lib.correct_sequences( sequences,germline_sequences,phred_scores, _get_base() )
+	if not options:
+		options = ErrorXOptions( "tmp", "tsv" )
+
+	options.base_path( _get_base() )
+
+	## the C++ code is expecting a Python list - wrapping
+	## the args in list() allows it to accept numpy arrays,
+	## Pandas series, etc.
+	return errorx_lib.correct_sequences( 
+		list(sequences),
+		list(germline_sequences),
+		list(phred_scores), options )
 
 '''
 	Get the predicted likelihood that each base along a NT sequence
@@ -51,15 +66,23 @@ def correct_sequences(sequences,
 	@param sequence A single NT sequence to correct
 	@param germline_sequences Inferred germline sequence
 	@param phred_scores PHRED quality scores
+	@param options ErrorXOptions object to control options. If 
+	None, will set up default values internally
 
 	@return Python list of tuples showing the probability of error for each base, 
 	each tuple representing (position, probability)
 '''
 def get_predicted_errors(sequence, 
 			   germline_sequence,
-			   phred_score ):
+			   phred_score,
+			   options=None ):
+	
+	if not options:
+		options = ErrorXOptions( "tmp", "tsv" )
 
-	return errorx_lib.get_predicted_errors( sequence,germline_sequence,phred_score, _get_base() )
+	options.base_path( _get_base() )
+	return errorx_lib.get_predicted_errors( 
+		str(sequence), str(germline_sequence), str(phred_score), options )
 
 '''
 	Run the ErrorX protocol and write the results to a file
@@ -67,6 +90,12 @@ def get_predicted_errors(sequence,
 	@param options ErrorXOptions object with the processing details
 '''
 def run_protocol( options ):
+	## When the user doesn't set infile it defaults to 'tmp'
+	## if they're reading from a file this is not good
+	if options.infile == 'tmp':
+		print 'Error: infile was not set'
+		return
+
 	options.base_path( _get_base() )
 	return errorx_lib.run_protocol( options )
 

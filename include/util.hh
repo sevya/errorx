@@ -48,21 +48,30 @@ vector<T> tokenize_string( string str, string delim="\t " ) {
 }
 
 /**
+	Get name of OS 
+
+	@return OS as a string, either windows, mac, or linux
+*/	
+inline string get_os() {
+	#ifdef _WIN32
+		return "win32";
+	#elif _WIN64
+		return "win64";
+	#elif __APPLE__ || __MACH__
+		return "mac";
+	#elif __linux__
+		return "linux";
+	#endif
+
+	throw invalid_argument("Error: OS type not recognized");
+}
+
+/**
 	Get home directory based on the OS 
 
 	@return path of the home directory
 */	
-inline boost::filesystem::path get_home() {
-	namespace fs = boost::filesystem;
-	#ifdef _WIN32
-		string drive = getenv("HOMEDRIVE");
-		string path = getenv("HOMEPATH")
-		return fs::path( drive ) / fs::path( path );
-	#else
-		string home = getenv("HOME");
-		return fs::path( home );
-	#endif
-}
+boost::filesystem::path get_home();
 
 /**
 	Split a vector into N equally divided chunks 

@@ -37,7 +37,7 @@ int main( int argc, char* argv[] ) {
 		("out,o", program_options::value<string>()->default_value("out.tsv"), "output file (Default=out.tsv)")
 		("species,s", program_options::value<string>()->default_value("human"), "Species for IGBLAST search. Valid entries are human or mouse. (Default=human)")
 		("nthreads,n", program_options::value<int>()->default_value(-1), "Number of threads to use during execution. Enter -1 to use all available (Default=-1)")
-		("error-threshold,e", program_options::value<double>()->default_value(0.8,"0.8"), "Probability cutoff for a base to be considered an error."
+		("error-threshold,e", program_options::value<double>()->default_value(0.8,"0.8"), "Probability cutoff for a base to be considered an error. "
 				"Higher=more stringent in calling errors. Don't change this value unless you know what you are doing. (Default=0.8)")
 		("infile", program_options::value<vector<string>>(), "input file")
 		("version", "Print ErrorX version information and exit")

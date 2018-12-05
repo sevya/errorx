@@ -534,6 +534,7 @@ vector<string> SequenceRecord::get_summary() const {
 			(cdr3_aa_sequence_=="") ? "N/A": cdr3_aa_sequence_,
 			(full_nt_sequence_=="") ? "N/A": full_nt_sequence_,
 			(full_gl_nt_sequence_=="") ? "N/A": full_gl_nt_sequence_,
+			(quality_string_=="") ? "N/A": quality_string_,
 			(full_aa_sequence_=="") ? "N/A": full_aa_sequence_,
 			(full_nt_sequence_corrected_=="") ? "N/A": full_nt_sequence_corrected_,
 			(full_aa_sequence_corrected_=="") ? "N/A": full_aa_sequence_corrected_,

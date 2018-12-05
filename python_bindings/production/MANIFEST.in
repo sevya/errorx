@@ -1,7 +1,0 @@
-include errorx_lib.so
-include bin/igblastn
-include database/human/*
-include database/mouse/*
-include internal_data/human/*
-include internal_data/mouse/*
-include optional_file/*
