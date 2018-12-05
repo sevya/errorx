@@ -33,7 +33,8 @@ void IGBlastParser::blast( ErrorXOptions & options ) {
 	namespace fs = boost::filesystem;
 
 	fs::path root = options.errorx_base();
-	fs::path executable = root / "bin" / "igblastn";
+	string exename = "igblastn_"+util::get_os();
+	fs::path executable = root / "bin" / exename;
 
 	string species = options.species();
 

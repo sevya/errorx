@@ -21,41 +21,6 @@ using namespace std;
 
 namespace errorx {
 
-// SequenceFeatures::SequenceFeatures() {}
-
-// SequenceFeatures::SequenceFeatures( string sequence_window,
-// 		string gl_sequence_window,
-// 		vector<int> quality_window,
-// 		int abs_position,
-// 		double rel_position,
-// 		int global_GC_count,
-// 		double global_GC_pct,
-// 		int local_GC_count,
-// 		double local_GC_pct,
-// 		double global_SHM,
-// 		double local_SHM,
-// 		double global_quality_avg,
-// 		double local_quality_avg,
-// 		bool is_germline ) :
-
-// 		sequence_window_(sequence_window),
-// 		gl_sequence_window_(gl_sequence_window),
-// 		quality_window_(quality_window),
-// 		abs_position_(abs_position),
-// 		rel_position_(rel_position),
-// 		global_GC_count_(global_GC_count),
-// 		global_GC_pct_(global_GC_pct),
-// 		local_GC_count_(local_GC_count),
-// 		local_GC_pct_(local_GC_pct),
-// 		global_SHM_(global_SHM),
-// 		local_SHM_(local_SHM),
-// 		global_quality_avg_(global_quality_avg),
-// 		local_quality_avg_(local_quality_avg),
-// 		is_germline_( is_germline )
-// {
-// 	initialize();
-// }
-
 SequenceFeatures::SequenceFeatures( SequenceRecord* const record, int position ) {
 
 	int window = 8;
@@ -243,7 +208,8 @@ vector<double> SequenceFeatures::get_feature_vector() const {
 			rel_position_,
 			global_GC_pct_,
 			local_GC_pct_,
-			global_quality_avg_, local_quality_avg_};
+			global_quality_avg_, 
+			local_quality_avg_};
 
 	feature_vector.insert( feature_vector.end(),
 			sequence_window_binary_.begin(),

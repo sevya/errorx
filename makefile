@@ -19,7 +19,8 @@ ifeq ($(uname_S), Linux)
 	PYTHON_INC=-I/usr/include/python$(PYTHON_VERSION)
 	PYTHON_LINK=-L/usr/lib/python$(PYTHON_VERSION)/config -lpython$(PYTHON_VERSION)
 
-	JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home/include/
+#	JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home/include/
+	JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home/include/
 	JAVA_INC=-I$(JAVA_HOME) -I$(JAVA_HOME)darwin/
 endif
 ifeq ($(uname_S), Darwin)
@@ -30,7 +31,8 @@ ifeq ($(uname_S), Darwin)
 	PYTHON_INC=-I/usr/include/python$(PYTHON_VERSION)
 	PYTHON_LINK=-L/usr/lib/python$(PYTHON_VERSION)/config -lpython$(PYTHON_VERSION)
 
-	JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home/include/
+#	JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home/include/
+	JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home/include/
 	JAVA_INC=-I$(JAVA_HOME) -I$(JAVA_HOME)darwin/
 endif
 
