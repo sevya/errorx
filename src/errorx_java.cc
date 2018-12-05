@@ -23,13 +23,16 @@ using namespace std;
 JNIEXPORT jobject JNICALL Java_errorx_ErrorX_correctSequences( JNIEnv *env, jobject thisObj,
 					 jobjectArray sequence_list, // String[] 
 					 jobjectArray germline_sequence_list, // String[]
-					 jobjectArray phred_score_list // String[]
+					 jobjectArray phred_score_list, // String[]
+					 jobject options
 					 )
 {
 	errorx::SequenceRecords* records = get_corrected_records( env, 
 									 sequence_list, 
 									 germline_sequence_list, 
-									 phred_score_list );
+									 phred_score_list,
+									 options );
+
 	vector<string> corrected_sequences;
 
 	for ( int ii = 0; ii < records->size(); ++ii ) {
@@ -44,7 +47,8 @@ JNIEXPORT jobject JNICALL Java_errorx_ErrorX_correctSequences( JNIEnv *env, jobj
 JNIEXPORT jdoubleArray JNICALL Java_errorx_ErrorX_getPredictedErrors( JNIEnv* env, jobject thisObj,
 					 jstring sequence, // String
 					 jstring germline_sequence, // String
-					 jstring phred_score // String
+					 jstring phred_score, // String
+					 jobject options
 					 )
 {
 	// get_corrected_records needs a vector<string>, not a single string
@@ -53,10 +57,12 @@ JNIEXPORT jdoubleArray JNICALL Java_errorx_ErrorX_getPredictedErrors( JNIEnv* en
 	vector<string> germline_sequence_list = { jstring_to_string( env, germline_sequence ) };
 	vector<string> phred_score_list = { jstring_to_string( env, phred_score ) };
 
+	errorx::ErrorXOptions options_cpp = joptions_to_options( env, options );
 	errorx::SequenceRecords* records = get_corrected_records( env,
 									 sequence_list, 
 									 germline_sequence_list, 
-									 phred_score_list
+									 phred_score_list,
+									 options_cpp
 									 );
 
 
@@ -75,52 +81,7 @@ JNIEXPORT jdoubleArray JNICALL Java_errorx_ErrorX_getPredictedErrors( JNIEnv* en
 JNIEXPORT void JNICALL Java_errorx_ErrorX_runProtocol( JNIEnv *env, jobject thisObj,
 					 jobject options ) // ErrorXOptions
 {
-	jclass cls = env->GetObjectClass( options );
-	jfieldID fid = env->GetFieldID( cls, "infile_", "Ljava/lang/String;" );
-	jstring infile = (jstring)env->GetObjectField( options, fid );
-
-	fid = env->GetFieldID( cls, "format_", "Ljava/lang/String;" );
-	jstring format = (jstring)env->GetObjectField( options, fid );
-
-	fid = env->GetFieldID( cls, "outfile_", "Ljava/lang/String;" );
-	jstring outfile = (jstring)env->GetObjectField( options, fid );
-
-	fid = env->GetFieldID( cls, "species_", "Ljava/lang/String;" );
-	jstring species = (jstring)env->GetObjectField( options, fid );
-
-	fid = env->GetFieldID( cls, "base_path_", "Ljava/lang/String;" );
-	jstring base_path = (jstring)env->GetObjectField( options, fid );
-
-	fid = env->GetFieldID( cls, "verbose_", "I" ); // int type
-	jint verbose = env->GetIntField( options, fid );
-
-	fid = env->GetFieldID( cls, "allow_nonproductive_", "Z" ); // boolean type
-	jboolean allow_nonproductive = env->GetBooleanField( options, fid );
-
-	fid = env->GetFieldID( cls, "error_threshold_", "D" ); // double type
-	jdouble error_threshold = env->GetDoubleField( options, fid );
-
-	fid = env->GetFieldID( cls, "nthreads_", "I" ); // int type
-	jint nthreads = env->GetIntField( options, fid );
-
-	fid = env->GetFieldID( cls, "correction_", "C" ); // int type
-	jchar correction = env->GetCharField( options, fid );
-
-	errorx::ErrorXOptions options_cpp( 
-				jstring_to_string( env, infile ), 
-				jstring_to_string( env, format )
-				);
-	options_cpp.outfile( jstring_to_string( env, outfile ));
-	options_cpp.species( jstring_to_string( env, species ));
-	options_cpp.errorx_base( jstring_to_string( env, base_path ));
-	
-	options_cpp.verbose( (int)verbose );
-	options_cpp.allow_nonproductive( (bool)allow_nonproductive );
-	
-	options_cpp.error_threshold( (double)error_threshold );
-	options_cpp.nthreads( (int)nthreads );
-	options_cpp.correction( (char)correction );
-
+	errorx::ErrorXOptions options_cpp = joptions_to_options( env, options );
 	errorx::run_protocol_write( options_cpp );
 }	
 
@@ -128,7 +89,8 @@ JNIEXPORT void JNICALL Java_errorx_ErrorX_runProtocol( JNIEnv *env, jobject this
 errorx::SequenceRecords* get_corrected_records( JNIEnv* env,
 					 jobjectArray & sequence_list, // String[] 
 					 jobjectArray & germline_sequence_list, // String[]
-					 jobjectArray & phred_score_list // String[]
+					 jobjectArray & phred_score_list, // String[]
+					 jobject & options
 					 ) 
 {
 	jsize sequence_len = env->GetArrayLength( sequence_list );
@@ -144,14 +106,16 @@ errorx::SequenceRecords* get_corrected_records( JNIEnv* env,
 	vector<string> germline_sequences = array_to_vector( env, germline_sequence_list );
 	vector<string> phred_scores = array_to_vector( env, phred_score_list );
 
-	return get_corrected_records( env, sequences, germline_sequences, phred_scores );
+	errorx::ErrorXOptions options_cpp = joptions_to_options( env, options );
+	return get_corrected_records( env, sequences, germline_sequences, phred_scores, options_cpp );
 }
 
 
 errorx::SequenceRecords* get_corrected_records( JNIEnv* env,
 					 vector<string> & sequence_list, // ArrayList 
 					 vector<string> & germline_sequence_list, // ArrayList
-					 vector<string> & phred_score_list // ArrayList
+					 vector<string> & phred_score_list, // ArrayList
+					 errorx::ErrorXOptions & options
 					 ) 
 {
 
@@ -171,8 +135,6 @@ errorx::SequenceRecords* get_corrected_records( JNIEnv* env,
 							);
 		queries.push_back( query );
 	}
-
-	errorx::ErrorXOptions options( "temp", "tsv" ); // doesn't matter what file type we input here
 
 	errorx::DataScaler scaler;
 	errorx::ErrorPredictor predictor( options.verbose() );
@@ -249,11 +211,54 @@ string jstring_to_string( JNIEnv* env, jstring & jstr ) {
 	return sequence;
 }
 
-// string jobj_to_string( JNIEnv* env, jobject & jstr ) {
-// 	const char* cstr = env->GetStringUTFChars( jstr, nullptr );
-// 	string sequence( cstr );
-// 	env->ReleaseStringUTFChars( jstr, cstr );
-// 	return sequence;
-// }
+errorx::ErrorXOptions joptions_to_options( JNIEnv* env, jobject & options ) {
+	jclass cls = env->GetObjectClass( options );
+	jfieldID fid = env->GetFieldID( cls, "infile_", "Ljava/lang/String;" );
+	jstring infile = (jstring)env->GetObjectField( options, fid );
+
+	fid = env->GetFieldID( cls, "format_", "Ljava/lang/String;" );
+	jstring format = (jstring)env->GetObjectField( options, fid );
+
+	fid = env->GetFieldID( cls, "outfile_", "Ljava/lang/String;" );
+	jstring outfile = (jstring)env->GetObjectField( options, fid );
+
+	fid = env->GetFieldID( cls, "species_", "Ljava/lang/String;" );
+	jstring species = (jstring)env->GetObjectField( options, fid );
+
+	fid = env->GetFieldID( cls, "base_path_", "Ljava/lang/String;" );
+	jstring base_path = (jstring)env->GetObjectField( options, fid );
+
+	fid = env->GetFieldID( cls, "verbose_", "I" ); // int type
+	jint verbose = env->GetIntField( options, fid );
+
+	fid = env->GetFieldID( cls, "allow_nonproductive_", "Z" ); // boolean type
+	jboolean allow_nonproductive = env->GetBooleanField( options, fid );
+
+	fid = env->GetFieldID( cls, "error_threshold_", "D" ); // double type
+	jdouble error_threshold = env->GetDoubleField( options, fid );
+
+	fid = env->GetFieldID( cls, "nthreads_", "I" ); // int type
+	jint nthreads = env->GetIntField( options, fid );
+
+	fid = env->GetFieldID( cls, "correction_", "C" ); // int type
+	jchar correction = env->GetCharField( options, fid );
+
+	errorx::ErrorXOptions options_cpp( 
+				jstring_to_string( env, infile ), 
+				jstring_to_string( env, format )
+				);
+	options_cpp.outfile( jstring_to_string( env, outfile ));
+	options_cpp.species( jstring_to_string( env, species ));
+	options_cpp.errorx_base( jstring_to_string( env, base_path ));
+	
+	options_cpp.verbose( (int)verbose );
+	options_cpp.allow_nonproductive( (bool)allow_nonproductive );
+	
+	options_cpp.error_threshold( (double)error_threshold );
+	options_cpp.nthreads( (int)nthreads );
+	options_cpp.correction( (char)correction );
+
+	return options_cpp;
+}
 
 

@@ -21,6 +21,21 @@ public class ErrorXOptions {
 		nthreads_ = -1;
 	}
 
+	public ErrorXOptions() {
+		infile_ = "tmp";
+		format_ = "tsv";
+
+		outfile_ = "out.tsv";
+		species_ = "human";
+		base_path_ = get_base();
+
+		verbose_ = 1;
+		allow_nonproductive_ = false;
+		error_threshold_ = 0.8;
+		correction_ = 'N';
+		nthreads_ = -1;
+	}
+
 	private String get_base() {
 		try { 
 			// return URLDecoder.decode(ClassLoader.getSystemClassLoader().getResource(".").getPath(), "UTF-8");

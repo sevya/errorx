@@ -46,8 +46,7 @@ py::list vector_to_python_list( vector<T> const & input ) {
 	@param germline_sequence_list List of germline sequences corresponding 
 	to each sequence to be corrected
 	@param phred_score_list List of PHRED scores as strings to be corrected
-	@param errorx_base The root directory where the errorx code is located.
-	This is set automatically by the Python code
+	@param options ErrorXOptions python object, to be convert to C++ object
 
 	@throws invalid_argument if lists are not the same length
 	
@@ -57,7 +56,7 @@ py::list vector_to_python_list( vector<T> const & input ) {
 py::list correct_sequences( py::list & sequence_list, 
 					 py::list & germline_sequence_list,
 					 py::list & phred_score_list,
-					 py::str & errorx_base );
+					 py::object const & options );
 
 /**
 	Runs the ErrorX prediction method on a single sequence
@@ -70,8 +69,7 @@ py::list correct_sequences( py::list & sequence_list,
 	@param sequence Nucleotide sequence to be corrected
 	@param germline_sequence Germline sequence corresponding to sequence to be corrected
 	@param phred_score PHRED score as string to be corrected
-	@param errorx_base The root directory where the errorx code is located.
-	This is set automatically by the Python code
+	@param options ErrorXOptions python object, to be convert to C++ object
 
 	@throws invalid_argument if lists are not the same length
 
@@ -81,7 +79,7 @@ py::list correct_sequences( py::list & sequence_list,
 py::list get_predicted_errors( py::str & sequence, 
 					 py::str & germline_sequence,
 					 py::str & phred_score,
-					 py::str & errorx_base );
+					 py::object const & options );
 
 /**
 	Runs the ErrorX prediction method on a set of sequences. Both 
@@ -92,8 +90,7 @@ py::list get_predicted_errors( py::str & sequence,
 	@param germline_sequence_list List of germline sequences corresponding 
 	to each sequence to be corrected
 	@param phred_score_list List of PHRED scores as strings to be corrected
-	@param errorx_base The root directory where the errorx code is located.
-	This is set automatically by the Python code
+	@param options Options to control ErrorX processing
 
 	@throws invalid_argument if lists are not the same length
 	
@@ -103,7 +100,7 @@ py::list get_predicted_errors( py::str & sequence,
 SequenceRecords* get_corrected_records( py::list & sequence_list, 
 					 py::list & germline_sequence_list,
 					 py::list & phred_score_list,
-					 py::str & errorx_base );
+					 ErrorXOptions & options );
 
 
 /**
@@ -115,6 +112,15 @@ SequenceRecords* get_corrected_records( py::list & sequence_list,
 */
 void run_py_protocol( py::object const & options );
 
+/**
+	Converts a Python ErrorXOptions object to a C++ object. Transfers
+	over all the user-defined settings
+
+	@param options Python ErrorXOptions
+
+	@return C++ ErrorXOptions
+*/
+ErrorXOptions options_from_pyoptions( py::object const & options );
 
 } // namespace errorx
 
