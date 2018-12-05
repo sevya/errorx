@@ -1,0 +1,72 @@
+{
+	"build_systems":
+	[
+		{
+			"name": "make binary",
+			"shell_cmd": "make binary",
+			"working_dir": "${project_path:${folder:${file_path}}}"
+		},
+		{
+			"name": "make debug",
+			"shell_cmd": "make debug",
+			"working_dir": "${project_path:${folder:${file_path}}}"
+		},
+		{
+			"name": "make library",
+			"shell_cmd": "make library",
+			"working_dir": "${project_path:${folder:${file_path}}}"
+		},
+		{
+			"name": "make all",
+			"shell_cmd": "make all",
+			"working_dir": "${project_path:${folder:${file_path}}}"
+		}
+	],
+	"folders":
+	[
+		{
+			"path": ".",
+			"folder_include_patterns":
+			[
+				"src",
+				"include",
+				"python_bindings",
+				"java_bindings",
+				"production",
+				"ErrorX"
+			],
+			"file_include_patterns":
+			[
+				"makefile",
+				"*.py",
+				"*.java",
+				"*.cc",
+				"*.hh"
+			]
+		},
+		{
+			"path": "unit_test",
+
+			"file_include_patterns":
+			[
+				"makefile",
+				"*.py",
+				"*.java",
+				// "*.cc",
+				"*.hh"
+			],
+			"folder_include_patterns":
+			[
+				"blank"
+			],
+		}
+	],
+	"settings":
+	{
+		"font_size": 16,
+		"open_files_in_new_window": false,
+		"tab_size": 4,
+		"translate_tabs_to_spaces": false,
+		"word_wrap": 1
+	}
+}
