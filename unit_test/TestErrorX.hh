@@ -1,0 +1,218 @@
+/*
+ * TestErrorX.hh
+ *
+ *  Created on: Nov 13, 2018
+ *      Author: alexsevy
+ */
+
+#ifndef TESTERRORX_HH_
+#define TESTERRORX_HH_
+
+#include <cxxtest/TestSuite.h>
+
+#include "errorx.hh"
+#include "ErrorXOptions.hh"
+#include "SequenceQuery.hh"
+
+using namespace std;
+using namespace errorx;
+
+class TestErrorX : public CxxTest::TestSuite
+{
+
+public:
+	void testFromOptions(void) {
+		options_.infile( "testing/test.fastq" );
+
+		options_.format( "fastq" );
+		options_.outfile( "testing/test_out.tsv");
+
+		options_.species( "human" );
+		options_.verbose( 1 );
+		options_.nthreads( 1 );
+		string base = "../";
+		options_.errorx_base( base );
+
+		SequenceRecords* records = run_protocol( options_ );
+
+		TS_ASSERT_EQUALS(
+			records->get(0)->quality_string(),
+			"###################################?)A?=?::>3@>47@69*1*F@@=*=*@>9*97*>0)9:/*73GC<>/1*9*9"
+			"**DCCCD<5C@A4+FCCE:@C79GFGGE5:*;=*GGGFEB>C86D8>7CE@GGGGGGGFAF@CCFFFD@:C>@+EDFGGFGGGGECFE"
+			"9FE,CF8GGEGFGGGGGF99FGGFFFEGFF,B5,FF9FCGFGF<C,FF,FF9GGC@GGFEC,GGGFFC<C8DFF<7GFCD@6,<8AAGF"
+			);
+
+		TS_ASSERT_EQUALS(
+			records->get(0)->full_nt_sequence(),
+			"TGGACAGGGGTCCGGCAGACCGCGGGGAAGCCACTGCAGTGGATTGGCCGAATCTATGTTACTGGAAGCATCGACTACAACCCCTCCC"
+			"TCAACGGTCGAGTCACCATGTCTATAGACTCGTCGAAGAACCTCTTCTCCCTGAAGATGCACTCAGTGACTGCCGCGGACACGGCCGT"
+			"CTATTACTGTGCGAGAGGCCTGAAATATGATGCCAGTACTTATTCCCTTGACAACTGGGGCCAGGGAATCCTGGTCACCGTCTCCTCAG"
+			);
+
+		TS_ASSERT_EQUALS(
+			records->get(0)->full_gl_nt_sequence(),
+			"TGGAGCTGGATCCGGCAGCCCGCCGGGAAGGGACTGGAGTGGATTGGGCGTATCTATACCAGTGGGAGCACCAACTACAACCCCTCCC"
+			"TCAAGAGTCGAGTCACCATGTCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCCGT"
+			"GTATTACTGTGCGAGAG------------------------------TTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG"
+			);
+
+		TS_ASSERT_EQUALS(
+			records->get(0)->full_aa_sequence(),
+			"WTGVRQTAGKPLQWIGRIYVTGSIDYNPSLNGRVTMSIDSSKNLFSLKMHSVTAADTAVY"
+			"YCARGLKYDASTYSLDNWGQGILVTVSS"
+			);
+
+		TS_ASSERT_EQUALS(
+			records->get(0)->cdr3_aa_sequence(),
+			"ARGLKYDASTYSLDN"
+			);
+
+
+		// TODO add prediction data
+	}
+
+
+	void testFromOptionsTSV(void) {
+		options_.infile( "testing/test.tsv" );
+		options_.format( "tsv" );
+		options_.outfile( "testing/test_out.tsv");
+		options_.species( "human" );
+		options_.nthreads( 1 );
+		string base = "../";
+		options_.errorx_base( base );
+
+		SequenceRecords* records = run_protocol( options_ );
+
+		TS_ASSERT_EQUALS(
+			records->get(0)->quality_string(),
+			"###################################?)A?=?::>3@>47@69*1*F@@=*=*@>9*97*>0)9:/*73GC<>/1*9*9"
+			"**DCCCD<5C@A4+FCCE:@C79GFGGE5:*;=*GGGFEB>C86D8>7CE@GGGGGGGFAF@CCFFFD@:C>@+EDFGGFGGGGECFE"
+			"9FE,CF8GGEGFGGGGGF99FGGFFFEGFF,B5,FF9FCGFGF<C,FF,FF9GGC@GGFEC,GGGFFC<C8DFF<7GFCD@6,<8AAGF"
+			);
+
+		TS_ASSERT_EQUALS(
+			records->get(0)->full_nt_sequence(),
+			"TGGACAGGGGTCCGGCAGACCGCGGGGAAGCCACTGCAGTGGATTGGCCGAATCTATGTTACTGGAAGCATCGACTACAACCCCTCCC"
+			"TCAACGGTCGAGTCACCATGTCTATAGACTCGTCGAAGAACCTCTTCTCCCTGAAGATGCACTCAGTGACTGCCGCGGACACGGCCGT"
+			"CTATTACTGTGCGAGAGGCCTGAAATATGATGCCAGTACTTATTCCCTTGACAACTGGGGCCAGGGAATCCTGGTCACCGTCTCCTCAG"
+			);
+
+		TS_ASSERT_EQUALS(
+			records->get(0)->full_gl_nt_sequence(),
+			"TGGAGCTGGATCCGGCAGCCCGCCGGGAAGGGACTGGAGTGGATTGGGCGTATCTATACCAGTGGGAGCACCAACTACAACCCCTCCC"
+			"TCAAGAGTCGAGTCACCATGTCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCCGT"
+			"GTATTACTGTGCGAGAG------------------------------TTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG"
+			);
+
+		// TODO add prediction data
+	}
+	
+	void testFromVectors(void) {
+		
+		vector<string> sequenceIDs = { "test" };
+		vector<string> sequences = { 
+			"AGGGGCCACAGTCAAGTTGTCCTGCACAGCTTCTGGCCTCAACATTAAAGACACCTATATGCACTGGCTGAAGCAGTGGCCTGAACAGGGCCTGGAGTGGATTGGAAGGATTGATCCTCCGAATGGTAATACTAAATATGACCCGAAGTTCCAGGGCAAGGCCACTATAACAGCAGACACATCCTCCAACCCAGCCTACCTGCAGCTCAGCCGCCTGACATCTGAGGACACTGCCGTCTCTTACTGTGCTAGAATGGCCNNCTGAAAAAACAAAACAACAACTTCATT" };
+		vector<string> germline_sequences = { 
+			"AGGGGCCTCAGTCAAGTTGTCCTGCACAGCTTCTGGCTTCAACATTAAAGACACCTATATGCACTGGGTGAAGCAGAGGCCTGAACAGGGCCTGGAGTGGATTGGAAGGATTGATCCTGCGAATGGTAATACTAAATATGACCCGAAGTTCCAGGGCAAGGCCACTATAACAGCAGACACATCCTCCAACACAGCCTACCTGCAGCTCAGCAGCCTGACATCTGAGGACACTGCCGTCTATTACTGTGCTAGA-----------------------------------"
+			};
+		vector<string> phred_scores = { 
+			"GGFGGG:CFGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGDGGGGGFGGEFB@FFGGGGFGGGCFGFGGGGGGGGGGGGGGGGB?=FFFGGGGGGFFGGDFFGGGGGGGGGGGGGGGGGGGGGGGGGGDFGGGDEFGGGG7:EFGFFGGGGGGGFFFGGF@CFGGGGGGGGGGFGFGG7DFGGGGGGGFGFDDFGGFF6EFFFDFF>7CFFFC8F<=6A<F6>>F55<2:4*20:C44F276>:?##CCCCCGGAFGGFFFFGFGGGGGFGGGG"
+			 	};
+
+		vector<SequenceQuery> queries;
+		SequenceQuery query( sequenceIDs[0], sequences[0], germline_sequences[0], phred_scores[0] );
+		queries.push_back( query );
+
+		ErrorXOptions options( "tmp", "tsv" );
+		SequenceRecords* records = run_protocol( queries, options );
+
+		SequenceRecord* record = records->get(0);
+		TS_ASSERT_EQUALS(
+			record->quality_string(),
+			phred_scores[0]
+			);
+
+		TS_ASSERT_EQUALS(
+			record->full_nt_sequence(),
+			sequences[0]
+			);
+
+		TS_ASSERT_EQUALS(
+			record->full_gl_nt_sequence(),
+			germline_sequences[0]
+			);
+
+		TS_ASSERT_EQUALS(
+			record->full_nt_sequence_corrected(),
+			"AGGGGCCACAGTCAAGTTGTCCTGCACAGCTTCTGGCCTCAACATTAAAGACACCTATATGCACTGGCTGAAGCAGTGGCCTGAACAGGGCCTGGAGTGGATTGGAAGGATTGATCCTCCGAATGGTAATACTAAATATGACCCGAAGTTCCAGGGCAAGGCCACTATAACAGCAGACACATCCTCCAACNCAGCCTACCTGCAGCTCAGCNGCCTGACATCTGAGGACACTGCCGTCTNTTACTGTGCTAGAATGGCCNNCTGAAAAAACAAAACAACAACTTCATT"
+			);
+
+		vector<pair<int,double>> predicted_errors = record->get_predicted_errors();
+
+		double delta = 0.0000001;
+		TS_ASSERT_DELTA(predicted_errors[190].second, 0.998169799964, delta);
+		TS_ASSERT_DELTA(predicted_errors[211].second, 0.96960021145, delta);
+		TS_ASSERT_DELTA(predicted_errors[239].second, 0.965957486636, delta);
+	}
+
+	void testFromVectorsOptions(void) {
+		
+		options_.infile( "tmp" );
+		options_.format( "tsv" );
+		options_.outfile( "");
+		options_.species( "human" );
+		options_.nthreads( 1 );
+		string base = "../";
+		options_.errorx_base( base );
+
+		vector<string> sequenceIDs = { "test" };
+		vector<string> sequences = { 
+			"AGGGGCCACAGTCAAGTTGTCCTGCACAGCTTCTGGCCTCAACATTAAAGACACCTATATGCACTGGCTGAAGCAGTGGCCTGAACAGGGCCTGGAGTGGATTGGAAGGATTGATCCTCCGAATGGTAATACTAAATATGACCCGAAGTTCCAGGGCAAGGCCACTATAACAGCAGACACATCCTCCAACCCAGCCTACCTGCAGCTCAGCCGCCTGACATCTGAGGACACTGCCGTCTCTTACTGTGCTAGAATGGCCNNCTGAAAAAACAAAACAACAACTTCATT" };
+		vector<string> germline_sequences = { 
+			"AGGGGCCTCAGTCAAGTTGTCCTGCACAGCTTCTGGCTTCAACATTAAAGACACCTATATGCACTGGGTGAAGCAGAGGCCTGAACAGGGCCTGGAGTGGATTGGAAGGATTGATCCTGCGAATGGTAATACTAAATATGACCCGAAGTTCCAGGGCAAGGCCACTATAACAGCAGACACATCCTCCAACACAGCCTACCTGCAGCTCAGCAGCCTGACATCTGAGGACACTGCCGTCTATTACTGTGCTAGA-----------------------------------"
+			};
+		vector<string> phred_scores = { 
+			"GGFGGG:CFGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGDGGGGGFGGEFB@FFGGGGFGGGCFGFGGGGGGGGGGGGGGGGB?=FFFGGGGGGFFGGDFFGGGGGGGGGGGGGGGGGGGGGGGGGGDFGGGDEFGGGG7:EFGFFGGGGGGGFFFGGF@CFGGGGGGGGGGFGFGG7DFGGGGGGGFGFDDFGGFF6EFFFDFF>7CFFFC8F<=6A<F6>>F55<2:4*20:C44F276>:?##CCCCCGGAFGGFFFFGFGGGGGFGGGG"
+			 	};
+
+		vector<SequenceQuery> queries;
+		SequenceQuery query( sequenceIDs[0], sequences[0], germline_sequences[0], phred_scores[0] );
+		queries.push_back( query );
+		SequenceRecords* records = run_protocol( queries, options_ );
+
+		SequenceRecord* record = records->get(0);
+		TS_ASSERT_EQUALS(
+			record->quality_string(),
+			phred_scores[0]
+			);
+
+		TS_ASSERT_EQUALS(
+			record->full_nt_sequence(),
+			sequences[0]
+			);
+
+		TS_ASSERT_EQUALS(
+			record->full_gl_nt_sequence(),
+			germline_sequences[0]
+			);
+
+		TS_ASSERT_EQUALS(
+			record->full_nt_sequence_corrected(),
+			"AGGGGCCACAGTCAAGTTGTCCTGCACAGCTTCTGGCCTCAACATTAAAGACACCTATATGCACTGGCTGAAGCAGTGGCCTGAACAGGGCCTGGAGTGGATTGGAAGGATTGATCCTCCGAATGGTAATACTAAATATGACCCGAAGTTCCAGGGCAAGGCCACTATAACAGCAGACACATCCTCCAACNCAGCCTACCTGCAGCTCAGCNGCCTGACATCTGAGGACACTGCCGTCTNTTACTGTGCTAGAATGGCCNNCTGAAAAAACAAAACAACAACTTCATT"
+			);
+
+		vector<pair<int,double>> predicted_errors = record->get_predicted_errors();
+
+		double delta = 0.0000001;
+		TS_ASSERT_DELTA(predicted_errors[190].second, 0.998169799964, delta);
+		TS_ASSERT_DELTA(predicted_errors[211].second, 0.96960021145, delta);
+		TS_ASSERT_DELTA(predicted_errors[239].second, 0.965957486636, delta);
+	}
+
+private:
+	ErrorXOptions options_;
+
+};
+
+#endif /* UNITTESTS_HH_ */
+

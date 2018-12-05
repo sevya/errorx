@@ -1,0 +1,109 @@
+\hypertarget{classerrorx_1_1_sequence_features}{}\section{errorx\+:\+:Sequence\+Features Class Reference}
+\label{classerrorx_1_1_sequence_features}\index{errorx\+::\+Sequence\+Features@{errorx\+::\+Sequence\+Features}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classerrorx_1_1_sequence_features_a5bb9d0bcb3bd6c7877a9902806adc999}{Sequence\+Features}} (\mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} $\ast$const record, int position)
+\item 
+\mbox{\hyperlink{classerrorx_1_1_sequence_features_a56d12eebfb084dc6cb0ce45faf3148ef}{Sequence\+Features}} (\mbox{\hyperlink{classerrorx_1_1_sequence_features}{Sequence\+Features}} const \&other)
+\item 
+vector$<$ double $>$ \mbox{\hyperlink{classerrorx_1_1_sequence_features_acef9190004088f796ed80cfd32528c47}{get\+\_\+feature\+\_\+vector}} () const
+\item 
+vector$<$ int $>$ \mbox{\hyperlink{classerrorx_1_1_sequence_features_a3af95ae62f69328d2fec423328130709}{nt\+\_\+to\+\_\+binary}} (char nt) const
+\item 
+string \mbox{\hyperlink{classerrorx_1_1_sequence_features_a1745dab8123b3da0a8412540ece75b0e}{get\+\_\+window}} (string sequence, int start, int end) const
+\item 
+\mbox{\Hypertarget{classerrorx_1_1_sequence_features_aef8b453429cc7a18ae9006db84a94d07}\label{classerrorx_1_1_sequence_features_aef8b453429cc7a18ae9006db84a94d07}} 
+vector$<$ int $>$ {\bfseries get\+\_\+window} (vector$<$ int $>$ const \&array, int start, int end) const
+\item 
+vector$<$ int $>$ \mbox{\hyperlink{classerrorx_1_1_sequence_features_aecea6d891f4f91631b8d696882d0af7a}{encode\+\_\+sequence}} (string const \&sequence) const
+\item 
+bool \mbox{\hyperlink{classerrorx_1_1_sequence_features_a154c6386de18b0200446e4f2e6935296}{is\+\_\+germline}} () const
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classerrorx_1_1_sequence_features_a5bb9d0bcb3bd6c7877a9902806adc999}\label{classerrorx_1_1_sequence_features_a5bb9d0bcb3bd6c7877a9902806adc999}} 
+\index{errorx\+::\+Sequence\+Features@{errorx\+::\+Sequence\+Features}!Sequence\+Features@{Sequence\+Features}}
+\index{Sequence\+Features@{Sequence\+Features}!errorx\+::\+Sequence\+Features@{errorx\+::\+Sequence\+Features}}
+\subsubsection{\texorpdfstring{Sequence\+Features()}{SequenceFeatures()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily errorx\+::\+Sequence\+Features\+::\+Sequence\+Features (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} $\ast$const}]{record,  }\item[{int}]{position }\end{DoxyParamCaption})}
+
+Constructor that uses a \mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} object, as well as which position should be predicted as an error.
+
+
+\begin{DoxyParams}{Parameters}
+{\em record} & \mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} that contains sequence to be corrected \\
+\hline
+{\em position} & which position along sequence should be predicted? 0-\/indexed. Should be $<$ record.\+full\+\_\+nt\+\_\+sequence()\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em invalid\+\_\+argument} & if position is out of bounds \\
+\hline
+\end{DoxyExceptions}
+\mbox{\Hypertarget{classerrorx_1_1_sequence_features_a56d12eebfb084dc6cb0ce45faf3148ef}\label{classerrorx_1_1_sequence_features_a56d12eebfb084dc6cb0ce45faf3148ef}} 
+\index{errorx\+::\+Sequence\+Features@{errorx\+::\+Sequence\+Features}!Sequence\+Features@{Sequence\+Features}}
+\index{Sequence\+Features@{Sequence\+Features}!errorx\+::\+Sequence\+Features@{errorx\+::\+Sequence\+Features}}
+\subsubsection{\texorpdfstring{Sequence\+Features()}{SequenceFeatures()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily errorx\+::\+Sequence\+Features\+::\+Sequence\+Features (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classerrorx_1_1_sequence_features}{Sequence\+Features}} const \&}]{other }\end{DoxyParamCaption})}
+
+Copy constructor 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classerrorx_1_1_sequence_features_aecea6d891f4f91631b8d696882d0af7a}\label{classerrorx_1_1_sequence_features_aecea6d891f4f91631b8d696882d0af7a}} 
+\index{errorx\+::\+Sequence\+Features@{errorx\+::\+Sequence\+Features}!encode\+\_\+sequence@{encode\+\_\+sequence}}
+\index{encode\+\_\+sequence@{encode\+\_\+sequence}!errorx\+::\+Sequence\+Features@{errorx\+::\+Sequence\+Features}}
+\subsubsection{\texorpdfstring{encode\+\_\+sequence()}{encode\_sequence()}}
+{\footnotesize\ttfamily vector$<$int$>$ errorx\+::\+Sequence\+Features\+::encode\+\_\+sequence (\begin{DoxyParamCaption}\item[{string const \&}]{sequence }\end{DoxyParamCaption}) const}
+
+Encode a full NT sequence as a binary vector
+
+\begin{DoxyReturn}{Returns}
+sparse binary vector of length 6$\ast$sequence.size() 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classerrorx_1_1_sequence_features_acef9190004088f796ed80cfd32528c47}\label{classerrorx_1_1_sequence_features_acef9190004088f796ed80cfd32528c47}} 
+\index{errorx\+::\+Sequence\+Features@{errorx\+::\+Sequence\+Features}!get\+\_\+feature\+\_\+vector@{get\+\_\+feature\+\_\+vector}}
+\index{get\+\_\+feature\+\_\+vector@{get\+\_\+feature\+\_\+vector}!errorx\+::\+Sequence\+Features@{errorx\+::\+Sequence\+Features}}
+\subsubsection{\texorpdfstring{get\+\_\+feature\+\_\+vector()}{get\_feature\_vector()}}
+{\footnotesize\ttfamily vector$<$double$>$ errorx\+::\+Sequence\+Features\+::get\+\_\+feature\+\_\+vector (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Get the features from this sequence as a vector of length 229
+
+\begin{DoxyReturn}{Returns}
+vector of features for NN processing as doubles 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classerrorx_1_1_sequence_features_a1745dab8123b3da0a8412540ece75b0e}\label{classerrorx_1_1_sequence_features_a1745dab8123b3da0a8412540ece75b0e}} 
+\index{errorx\+::\+Sequence\+Features@{errorx\+::\+Sequence\+Features}!get\+\_\+window@{get\+\_\+window}}
+\index{get\+\_\+window@{get\+\_\+window}!errorx\+::\+Sequence\+Features@{errorx\+::\+Sequence\+Features}}
+\subsubsection{\texorpdfstring{get\+\_\+window()}{get\_window()}}
+{\footnotesize\ttfamily string errorx\+::\+Sequence\+Features\+::get\+\_\+window (\begin{DoxyParamCaption}\item[{string}]{sequence,  }\item[{int}]{start,  }\item[{int}]{end }\end{DoxyParamCaption}) const}
+
+Get window surrounding the position of interest. Two functions, either for a string or a vector of ints
+
+\begin{DoxyReturn}{Returns}
+string of vector of ints with the surrounding window 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classerrorx_1_1_sequence_features_a154c6386de18b0200446e4f2e6935296}\label{classerrorx_1_1_sequence_features_a154c6386de18b0200446e4f2e6935296}} 
+\index{errorx\+::\+Sequence\+Features@{errorx\+::\+Sequence\+Features}!is\+\_\+germline@{is\+\_\+germline}}
+\index{is\+\_\+germline@{is\+\_\+germline}!errorx\+::\+Sequence\+Features@{errorx\+::\+Sequence\+Features}}
+\subsubsection{\texorpdfstring{is\+\_\+germline()}{is\_germline()}}
+{\footnotesize\ttfamily bool errorx\+::\+Sequence\+Features\+::is\+\_\+germline (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Getter \mbox{\Hypertarget{classerrorx_1_1_sequence_features_a3af95ae62f69328d2fec423328130709}\label{classerrorx_1_1_sequence_features_a3af95ae62f69328d2fec423328130709}} 
+\index{errorx\+::\+Sequence\+Features@{errorx\+::\+Sequence\+Features}!nt\+\_\+to\+\_\+binary@{nt\+\_\+to\+\_\+binary}}
+\index{nt\+\_\+to\+\_\+binary@{nt\+\_\+to\+\_\+binary}!errorx\+::\+Sequence\+Features@{errorx\+::\+Sequence\+Features}}
+\subsubsection{\texorpdfstring{nt\+\_\+to\+\_\+binary()}{nt\_to\_binary()}}
+{\footnotesize\ttfamily vector$<$int$>$ errorx\+::\+Sequence\+Features\+::nt\+\_\+to\+\_\+binary (\begin{DoxyParamCaption}\item[{char}]{nt }\end{DoxyParamCaption}) const}
+
+Encode a single NT as a binary vector
+
+\begin{DoxyReturn}{Returns}
+sparse binary vector of length 6 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{_sequence_features_8hh}{Sequence\+Features.\+hh}}\end{DoxyCompactItemize}

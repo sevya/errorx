@@ -1,0 +1,44 @@
+\hypertarget{errorx__python_8cc}{}\section{src/errorx\+\_\+python.cc File Reference}
+\label{errorx__python_8cc}\index{src/errorx\+\_\+python.\+cc@{src/errorx\+\_\+python.\+cc}}
+
+
+Python bindings to expose ErrorX interface.  
+
+
+{\ttfamily \#include \char`\"{}errorx\+\_\+python.\+hh\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Sequence\+Query.\+hh\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Sequence\+Records.\+hh\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Sequence\+Record.\+hh\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Error\+X\+Options.\+hh\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Error\+Predictor.\+hh\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Data\+Scaler.\+hh\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}util.\+hh\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}errorx.\+hh\char`\"{}}\newline
+{\ttfamily \#include $<$boost/python.\+hpp$>$}\newline
+{\ttfamily \#include $<$boost/filesystem.\+hpp$>$}\newline
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{errorx__python_8cc_a29ed43601a05bb43dc7ad64849db054c}\label{errorx__python_8cc_a29ed43601a05bb43dc7ad64849db054c}} 
+Sequence\+Records $\ast$ {\bfseries errorx\+::get\+\_\+corrected\+\_\+records} (py\+::list \&sequence\+\_\+list, py\+::list \&germline\+\_\+sequence\+\_\+list, py\+::list \&phred\+\_\+score\+\_\+list, py\+::str \&errorx\+\_\+base)
+\item 
+\mbox{\Hypertarget{errorx__python_8cc_a050d2340bb4af56f471eb0a04ebe88d1}\label{errorx__python_8cc_a050d2340bb4af56f471eb0a04ebe88d1}} 
+py\+::list {\bfseries errorx\+::correct\+\_\+sequences} (py\+::list \&sequence\+\_\+list, py\+::list \&germline\+\_\+sequence\+\_\+list, py\+::list \&phred\+\_\+score\+\_\+list, py\+::str \&errorx\+\_\+base)
+\item 
+\mbox{\Hypertarget{errorx__python_8cc_a1a4401d55871f8aca812f65abcff46b3}\label{errorx__python_8cc_a1a4401d55871f8aca812f65abcff46b3}} 
+py\+::list {\bfseries errorx\+::get\+\_\+predicted\+\_\+errors} (py\+::str \&sequence, py\+::str \&germline\+\_\+sequence, py\+::str \&phred\+\_\+score, py\+::str \&errorx\+\_\+base)
+\item 
+\mbox{\Hypertarget{errorx__python_8cc_ac6fa2bc931a560730bd2983e34e0de43}\label{errorx__python_8cc_ac6fa2bc931a560730bd2983e34e0de43}} 
+void {\bfseries errorx\+::run\+\_\+py\+\_\+protocol} (py\+::object const \&options)
+\item 
+\mbox{\Hypertarget{errorx__python_8cc_a7170980bedba3e70594ae2b40988e47b}\label{errorx__python_8cc_a7170980bedba3e70594ae2b40988e47b}} 
+{\bfseries errorx\+::\+B\+O\+O\+S\+T\+\_\+\+P\+Y\+T\+H\+O\+N\+\_\+\+M\+O\+D\+U\+LE} (errorx\+\_\+lib)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Python bindings to expose ErrorX interface. 
+
+\begin{DoxyAuthor}{Author}
+Alex Sevy (\href{mailto:alex.sevy@gmail.com}{\tt alex.\+sevy@gmail.\+com}) 
+\end{DoxyAuthor}

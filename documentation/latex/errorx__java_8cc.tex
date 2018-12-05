@@ -1,0 +1,56 @@
+\hypertarget{errorx__java_8cc}{}\section{src/errorx\+\_\+java.cc File Reference}
+\label{errorx__java_8cc}\index{src/errorx\+\_\+java.\+cc@{src/errorx\+\_\+java.\+cc}}
+
+
+Java bindings to expose ErrorX interface.  
+
+
+{\ttfamily \#include $<$jni.\+h$>$}\newline
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}errorx\+\_\+java.\+hh\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Sequence\+Records.\+hh\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Error\+X\+Options.\+hh\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Error\+Predictor.\+hh\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}errorx.\+hh\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Sequence\+Query.\+hh\char`\"{}}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$iostream$>$}\newline
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{errorx__java_8cc_ae41c0553425022325f0e98875533627f}\label{errorx__java_8cc_ae41c0553425022325f0e98875533627f}} 
+J\+N\+I\+E\+X\+P\+O\+RT jobject J\+N\+I\+C\+A\+LL {\bfseries Java\+\_\+errorx\+\_\+\+Error\+X\+\_\+correct\+Sequences} (J\+N\+I\+Env $\ast$env, jobject this\+Obj, jobject\+Array sequence\+\_\+list, jobject\+Array germline\+\_\+sequence\+\_\+list, jobject\+Array phred\+\_\+score\+\_\+list)
+\item 
+\mbox{\Hypertarget{errorx__java_8cc_ae953003f87d6b8a9cee08468cfea2947}\label{errorx__java_8cc_ae953003f87d6b8a9cee08468cfea2947}} 
+J\+N\+I\+E\+X\+P\+O\+RT jdouble\+Array J\+N\+I\+C\+A\+LL {\bfseries Java\+\_\+errorx\+\_\+\+Error\+X\+\_\+get\+Predicted\+Errors} (J\+N\+I\+Env $\ast$env, jobject this\+Obj, jstring sequence, jstring germline\+\_\+sequence, jstring phred\+\_\+score)
+\item 
+\mbox{\Hypertarget{errorx__java_8cc_a81324030f63574c572bea57ad469f75a}\label{errorx__java_8cc_a81324030f63574c572bea57ad469f75a}} 
+J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL {\bfseries Java\+\_\+errorx\+\_\+\+Error\+X\+\_\+run\+Protocol} (J\+N\+I\+Env $\ast$env, jobject this\+Obj, jobject options)
+\item 
+\mbox{\Hypertarget{errorx__java_8cc_aa232f2c97fc89342d1b4acb85bd9dea6}\label{errorx__java_8cc_aa232f2c97fc89342d1b4acb85bd9dea6}} 
+errorx\+::\+Sequence\+Records $\ast$ {\bfseries get\+\_\+corrected\+\_\+records} (J\+N\+I\+Env $\ast$env, jobject\+Array \&sequence\+\_\+list, jobject\+Array \&germline\+\_\+sequence\+\_\+list, jobject\+Array \&phred\+\_\+score\+\_\+list)
+\item 
+\mbox{\Hypertarget{errorx__java_8cc_afd25f2b6e940440d71445ba4c8d615fe}\label{errorx__java_8cc_afd25f2b6e940440d71445ba4c8d615fe}} 
+errorx\+::\+Sequence\+Records $\ast$ {\bfseries get\+\_\+corrected\+\_\+records} (J\+N\+I\+Env $\ast$env, vector$<$ string $>$ \&sequence\+\_\+list, vector$<$ string $>$ \&germline\+\_\+sequence\+\_\+list, vector$<$ string $>$ \&phred\+\_\+score\+\_\+list)
+\item 
+\mbox{\Hypertarget{errorx__java_8cc_a05c660d3173084b6f73283153152eaee}\label{errorx__java_8cc_a05c660d3173084b6f73283153152eaee}} 
+jdouble\+Array {\bfseries vector\+\_\+to\+\_\+array} (J\+N\+I\+Env $\ast$env, vector$<$ double $>$ \&in\+\_\+vector)
+\item 
+\mbox{\Hypertarget{errorx__java_8cc_addada0dc2b78ce61b105d57906e6edff}\label{errorx__java_8cc_addada0dc2b78ce61b105d57906e6edff}} 
+jobject\+Array {\bfseries vector\+\_\+to\+\_\+array} (J\+N\+I\+Env $\ast$env, vector$<$ string $>$ \&in\+\_\+vector)
+\item 
+\mbox{\Hypertarget{errorx__java_8cc_a509efcd183eec4cf5a69bc72637d0503}\label{errorx__java_8cc_a509efcd183eec4cf5a69bc72637d0503}} 
+vector$<$ string $>$ {\bfseries array\+\_\+to\+\_\+vector} (J\+N\+I\+Env $\ast$env, jobject\+Array \&array)
+\item 
+\mbox{\Hypertarget{errorx__java_8cc_ae5c1b27627f7be05bfcf81c1c84a24a8}\label{errorx__java_8cc_ae5c1b27627f7be05bfcf81c1c84a24a8}} 
+string {\bfseries jstring\+\_\+to\+\_\+string} (J\+N\+I\+Env $\ast$env, jstring \&jstr)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Java bindings to expose ErrorX interface. 
+
+\begin{DoxyAuthor}{Author}
+Alex Sevy (\href{mailto:alex.sevy@gmail.com}{\tt alex.\+sevy@gmail.\+com}) 
+\end{DoxyAuthor}

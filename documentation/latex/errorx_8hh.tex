@@ -1,0 +1,110 @@
+\hypertarget{errorx_8hh}{}\section{include/errorx.hh File Reference}
+\label{errorx_8hh}\index{include/errorx.\+hh@{include/errorx.\+hh}}
+
+
+Interface to ErrorX error correction.  
+
+
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include \char`\"{}Sequence\+Query.\+hh\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Error\+X\+Options.\+hh\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Sequence\+Records.\+hh\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}util.\+hh\char`\"{}}\newline
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+Sequence\+Records $\ast$ \mbox{\hyperlink{errorx_8hh_a33182a2b9ee89b4426ae558a5360bca5}{errorx\+::run\+\_\+protocol}} (Error\+X\+Options \&options)
+\item 
+Sequence\+Records $\ast$ \mbox{\hyperlink{errorx_8hh_a817846fe4bf6dc67945d9183acab0d0a}{errorx\+::run\+\_\+protocol}} (vector$<$ Sequence\+Query $>$ \&queries, Error\+X\+Options \&options)
+\item 
+void \mbox{\hyperlink{errorx_8hh_aae98824f02324bd868af3e80d593f45b}{errorx\+::run\+\_\+protocol\+\_\+write}} (Error\+X\+Options \&options)
+\item 
+void \mbox{\hyperlink{errorx_8hh_ac68a688383075e5f98f2cbdcc580bbb4}{errorx\+::run\+\_\+protocol\+\_\+write\+\_\+features}} (Error\+X\+Options \&options)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Interface to ErrorX error correction. 
+
+Public interface to ErrorX processing. Input sequences can be given as a F\+A\+S\+TQ file, a T\+SV file, or a std\+::vector of Sequence\+Query objects \begin{DoxyAuthor}{Author}
+Alex Sevy (\href{mailto:alex.sevy@gmail.com}{\tt alex.\+sevy@gmail.\+com}) 
+\end{DoxyAuthor}
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{errorx_8hh_file_a33182a2b9ee89b4426ae558a5360bca5}\label{errorx_8hh_file_a33182a2b9ee89b4426ae558a5360bca5}} 
+\index{errorx.\+hh@{errorx.\+hh}!run\+\_\+protocol@{run\+\_\+protocol}}
+\index{run\+\_\+protocol@{run\+\_\+protocol}!errorx.\+hh@{errorx.\+hh}}
+\subsubsection{\texorpdfstring{run\+\_\+protocol()}{run\_protocol()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily Sequence\+Records$\ast$ errorx\+::run\+\_\+protocol (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classerrorx_1_1_error_x_options}{Error\+X\+Options}} \&}]{options }\end{DoxyParamCaption})}
+
+Runs the ErrorX prediction method on sequences from a file. Error\+X\+Options contains all necessary options to run the protocol, including the input file name, input file format, species, error threshold, etc.
+
+
+\begin{DoxyParams}{Parameters}
+{\em options} & Error\+X\+Options object with all necessary options for running the ErrorX protocol\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em invalid\+\_\+argument} & if either infile or format are not provided in options ~\newline
+ \\
+\hline
+\end{DoxyExceptions}
+\begin{DoxyReturn}{Returns}
+Sequence\+Records$\ast$ containing query sequences and their corrected versions 
+\end{DoxyReturn}
+\mbox{\Hypertarget{errorx_8hh_file_a817846fe4bf6dc67945d9183acab0d0a}\label{errorx_8hh_file_a817846fe4bf6dc67945d9183acab0d0a}} 
+\index{errorx.\+hh@{errorx.\+hh}!run\+\_\+protocol@{run\+\_\+protocol}}
+\index{run\+\_\+protocol@{run\+\_\+protocol}!errorx.\+hh@{errorx.\+hh}}
+\subsubsection{\texorpdfstring{run\+\_\+protocol()}{run\_protocol()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily Sequence\+Records$\ast$ errorx\+::run\+\_\+protocol (\begin{DoxyParamCaption}\item[{vector$<$ \mbox{\hyperlink{classerrorx_1_1_sequence_query}{Sequence\+Query}} $>$ \&}]{queries,  }\item[{\mbox{\hyperlink{classerrorx_1_1_error_x_options}{Error\+X\+Options}} \&}]{options }\end{DoxyParamCaption})}
+
+Runs the ErrorX prediction method on a std\+::vector of Sequence\+Query objects. Uses the processing options specified by the options argument.
+
+
+\begin{DoxyParams}{Parameters}
+{\em queries} & Vector of Sequence\+Queries to be processed \\
+\hline
+{\em options} & Options to use in processing\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Sequence\+Records$\ast$ containing query sequences and their corrected versions 
+\end{DoxyReturn}
+\mbox{\Hypertarget{errorx_8hh_file_aae98824f02324bd868af3e80d593f45b}\label{errorx_8hh_file_aae98824f02324bd868af3e80d593f45b}} 
+\index{errorx.\+hh@{errorx.\+hh}!run\+\_\+protocol\+\_\+write@{run\+\_\+protocol\+\_\+write}}
+\index{run\+\_\+protocol\+\_\+write@{run\+\_\+protocol\+\_\+write}!errorx.\+hh@{errorx.\+hh}}
+\subsubsection{\texorpdfstring{run\+\_\+protocol\+\_\+write()}{run\_protocol\_write()}}
+{\footnotesize\ttfamily void errorx\+::run\+\_\+protocol\+\_\+write (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classerrorx_1_1_error_x_options}{Error\+X\+Options}} \&}]{options }\end{DoxyParamCaption})}
+
+Wrapper for the run\+\_\+protocol( Error\+X\+Options \& options ) function. This function takes the Sequence\+Records output by that function and writes them to the file specified by the outfile member of Error\+X\+Options
+
+
+\begin{DoxyParams}{Parameters}
+{\em options} & Error\+X\+Options object with all necessary options for running the ErrorX protocol\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em invalid\+\_\+argument} & if either infile or format are not provided in options \\
+\hline
+\end{DoxyExceptions}
+\mbox{\Hypertarget{errorx_8hh_file_ac68a688383075e5f98f2cbdcc580bbb4}\label{errorx_8hh_file_ac68a688383075e5f98f2cbdcc580bbb4}} 
+\index{errorx.\+hh@{errorx.\+hh}!run\+\_\+protocol\+\_\+write\+\_\+features@{run\+\_\+protocol\+\_\+write\+\_\+features}}
+\index{run\+\_\+protocol\+\_\+write\+\_\+features@{run\+\_\+protocol\+\_\+write\+\_\+features}!errorx.\+hh@{errorx.\+hh}}
+\subsubsection{\texorpdfstring{run\+\_\+protocol\+\_\+write\+\_\+features()}{run\_protocol\_write\_features()}}
+{\footnotesize\ttfamily void errorx\+::run\+\_\+protocol\+\_\+write\+\_\+features (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classerrorx_1_1_error_x_options}{Error\+X\+Options}} \&}]{options }\end{DoxyParamCaption})}
+
+Debugging function to output features of input sequences as well as the corrected sequences.
+
+
+\begin{DoxyParams}{Parameters}
+{\em options} & Error\+X\+Options object with all necessary options for running the ErrorX protocol\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em invalid\+\_\+argument} & if either infile or format are not provided in options \\
+\hline
+\end{DoxyExceptions}

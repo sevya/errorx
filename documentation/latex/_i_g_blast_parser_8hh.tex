@@ -1,0 +1,24 @@
+\hypertarget{_i_g_blast_parser_8hh}{}\section{include/\+I\+G\+Blast\+Parser.hh File Reference}
+\label{_i_g_blast_parser_8hh}\index{include/\+I\+G\+Blast\+Parser.\+hh@{include/\+I\+G\+Blast\+Parser.\+hh}}
+
+
+Class to run I\+G\+Blast on a set of query sequences and parse the output.  
+
+
+{\ttfamily \#include $<$iostream$>$}\newline
+{\ttfamily \#include \char`\"{}Error\+X\+Options.\+hh\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Sequence\+Records.\+hh\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}util.\+hh\char`\"{}}\newline
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classerrorx_1_1_i_g_blast_parser}{errorx\+::\+I\+G\+Blast\+Parser}}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Class to run I\+G\+Blast on a set of query sequences and parse the output. 
+
+I\+G\+Blast\+Parser runs the executable, then breaks the output file into chunks where each chunk is a single query. Sequence\+Record does the heavy lifting in terms of turning that output into a Sequence\+Record object \begin{DoxyAuthor}{Author}
+Alex Sevy (\href{mailto:alex.sevy@gmail.com}{\tt alex.\+sevy@gmail.\+com}) 
+\end{DoxyAuthor}

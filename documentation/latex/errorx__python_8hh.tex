@@ -1,0 +1,148 @@
+\hypertarget{errorx__python_8hh}{}\section{include/errorx\+\_\+python.hh File Reference}
+\label{errorx__python_8hh}\index{include/errorx\+\_\+python.\+hh@{include/errorx\+\_\+python.\+hh}}
+
+
+Python bindings to expose ErrorX interface.  
+
+
+{\ttfamily \#include \char`\"{}Sequence\+Records.\+hh\char`\"{}}\newline
+{\ttfamily \#include $<$boost/python.\+hpp$>$}\newline
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename T $>$ }\\py\+::list \mbox{\hyperlink{errorx__python_8hh_a78a6da555a72f6000521dc688b9b96fd}{errorx\+::vector\+\_\+to\+\_\+python\+\_\+list}} (vector$<$ T $>$ const \&input)
+\item 
+py\+::list \mbox{\hyperlink{errorx__python_8hh_a050d2340bb4af56f471eb0a04ebe88d1}{errorx\+::correct\+\_\+sequences}} (py\+::list \&sequence\+\_\+list, py\+::list \&germline\+\_\+sequence\+\_\+list, py\+::list \&phred\+\_\+score\+\_\+list, py\+::str \&errorx\+\_\+base)
+\item 
+py\+::list \mbox{\hyperlink{errorx__python_8hh_a1a4401d55871f8aca812f65abcff46b3}{errorx\+::get\+\_\+predicted\+\_\+errors}} (py\+::str \&sequence, py\+::str \&germline\+\_\+sequence, py\+::str \&phred\+\_\+score, py\+::str \&errorx\+\_\+base)
+\item 
+Sequence\+Records $\ast$ \mbox{\hyperlink{errorx__python_8hh_a29ed43601a05bb43dc7ad64849db054c}{errorx\+::get\+\_\+corrected\+\_\+records}} (py\+::list \&sequence\+\_\+list, py\+::list \&germline\+\_\+sequence\+\_\+list, py\+::list \&phred\+\_\+score\+\_\+list, py\+::str \&errorx\+\_\+base)
+\item 
+void \mbox{\hyperlink{errorx__python_8hh_ac6fa2bc931a560730bd2983e34e0de43}{errorx\+::run\+\_\+py\+\_\+protocol}} (py\+::object const \&options)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Python bindings to expose ErrorX interface. 
+
+\begin{DoxyAuthor}{Author}
+Alex Sevy (\href{mailto:alex.sevy@gmail.com}{\tt alex.\+sevy@gmail.\+com}) 
+\end{DoxyAuthor}
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{errorx__python_8hh_file_a050d2340bb4af56f471eb0a04ebe88d1}\label{errorx__python_8hh_file_a050d2340bb4af56f471eb0a04ebe88d1}} 
+\index{errorx\+\_\+python.\+hh@{errorx\+\_\+python.\+hh}!correct\+\_\+sequences@{correct\+\_\+sequences}}
+\index{correct\+\_\+sequences@{correct\+\_\+sequences}!errorx\+\_\+python.\+hh@{errorx\+\_\+python.\+hh}}
+\subsubsection{\texorpdfstring{correct\+\_\+sequences()}{correct\_sequences()}}
+{\footnotesize\ttfamily py\+::list errorx\+::correct\+\_\+sequences (\begin{DoxyParamCaption}\item[{py\+::list \&}]{sequence\+\_\+list,  }\item[{py\+::list \&}]{germline\+\_\+sequence\+\_\+list,  }\item[{py\+::list \&}]{phred\+\_\+score\+\_\+list,  }\item[{py\+::str \&}]{errorx\+\_\+base }\end{DoxyParamCaption})}
+
+Runs the ErrorX prediction method on a set of sequences and returns the corrected sequences in a Python list. Note\+: the sequences in sequence\+\_\+list, germline\+\_\+sequence\+\_\+list, and phred\+\_\+score\+\_\+list are matched up element-\/wise, and must be the same length
+
+Ex\+: sequence\+\_\+list = \mbox{[}\textquotesingle{}A\+C\+TG\textquotesingle{},\textquotesingle{}G\+T\+CA\textquotesingle{}\mbox{]} germline\+\_\+sequence\+\_\+list = \mbox{[}\textquotesingle{}A\+T\+TG\textquotesingle{},\textquotesingle{}C\+T\+CA\textquotesingle{}\mbox{]} phred\+\_\+score\+\_\+list = \mbox{[}\textquotesingle{}G\+G\+FF\textquotesingle{},\textquotesingle{}F\+F\+FG\textquotesingle{}\mbox{]}
+
+
+\begin{DoxyParams}{Parameters}
+{\em sequence\+\_\+list} & List of nucleotide sequences to be corrected \\
+\hline
+{\em germline\+\_\+sequence\+\_\+list} & List of germline sequences corresponding to each sequence to be corrected \\
+\hline
+{\em phred\+\_\+score\+\_\+list} & List of P\+H\+R\+ED scores as strings to be corrected \\
+\hline
+{\em errorx\+\_\+base} & The root directory where the errorx code is located. This is set automatically by the Python code\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em invalid\+\_\+argument} & if lists are not the same length\\
+\hline
+\end{DoxyExceptions}
+\begin{DoxyReturn}{Returns}
+Python list of corrected nucleotide sequences, corresponding element-\/wise to the input sequence list 
+\end{DoxyReturn}
+\mbox{\Hypertarget{errorx__python_8hh_file_a29ed43601a05bb43dc7ad64849db054c}\label{errorx__python_8hh_file_a29ed43601a05bb43dc7ad64849db054c}} 
+\index{errorx\+\_\+python.\+hh@{errorx\+\_\+python.\+hh}!get\+\_\+corrected\+\_\+records@{get\+\_\+corrected\+\_\+records}}
+\index{get\+\_\+corrected\+\_\+records@{get\+\_\+corrected\+\_\+records}!errorx\+\_\+python.\+hh@{errorx\+\_\+python.\+hh}}
+\subsubsection{\texorpdfstring{get\+\_\+corrected\+\_\+records()}{get\_corrected\_records()}}
+{\footnotesize\ttfamily Sequence\+Records$\ast$ errorx\+::get\+\_\+corrected\+\_\+records (\begin{DoxyParamCaption}\item[{py\+::list \&}]{sequence\+\_\+list,  }\item[{py\+::list \&}]{germline\+\_\+sequence\+\_\+list,  }\item[{py\+::list \&}]{phred\+\_\+score\+\_\+list,  }\item[{py\+::str \&}]{errorx\+\_\+base }\end{DoxyParamCaption})}
+
+Runs the ErrorX prediction method on a set of sequences. Both correct\+\_\+sequences and get\+\_\+predicted\+\_\+errors are wrappers for this subroutine.
+
+
+\begin{DoxyParams}{Parameters}
+{\em sequence\+\_\+list} & List of nucleotide sequences to be corrected \\
+\hline
+{\em germline\+\_\+sequence\+\_\+list} & List of germline sequences corresponding to each sequence to be corrected \\
+\hline
+{\em phred\+\_\+score\+\_\+list} & List of P\+H\+R\+ED scores as strings to be corrected \\
+\hline
+{\em errorx\+\_\+base} & The root directory where the errorx code is located. This is set automatically by the Python code\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em invalid\+\_\+argument} & if lists are not the same length\\
+\hline
+\end{DoxyExceptions}
+\begin{DoxyReturn}{Returns}
+Sequence\+Records$\ast$ with error correction consisting of all input sequences 
+\end{DoxyReturn}
+\mbox{\Hypertarget{errorx__python_8hh_file_a1a4401d55871f8aca812f65abcff46b3}\label{errorx__python_8hh_file_a1a4401d55871f8aca812f65abcff46b3}} 
+\index{errorx\+\_\+python.\+hh@{errorx\+\_\+python.\+hh}!get\+\_\+predicted\+\_\+errors@{get\+\_\+predicted\+\_\+errors}}
+\index{get\+\_\+predicted\+\_\+errors@{get\+\_\+predicted\+\_\+errors}!errorx\+\_\+python.\+hh@{errorx\+\_\+python.\+hh}}
+\subsubsection{\texorpdfstring{get\+\_\+predicted\+\_\+errors()}{get\_predicted\_errors()}}
+{\footnotesize\ttfamily py\+::list errorx\+::get\+\_\+predicted\+\_\+errors (\begin{DoxyParamCaption}\item[{py\+::str \&}]{sequence,  }\item[{py\+::str \&}]{germline\+\_\+sequence,  }\item[{py\+::str \&}]{phred\+\_\+score,  }\item[{py\+::str \&}]{errorx\+\_\+base }\end{DoxyParamCaption})}
+
+Runs the ErrorX prediction method on a single sequence and returns the probability that each base is an error.
+
+Ex\+: sequence = \textquotesingle{}A\+C\+TG\textquotesingle{} germline\+\_\+sequence = \textquotesingle{}A\+T\+TG\textquotesingle{} phred\+\_\+score = \textquotesingle{}G\+G\+FF\textquotesingle{}
+
+
+\begin{DoxyParams}{Parameters}
+{\em sequence} & Nucleotide sequence to be corrected \\
+\hline
+{\em germline\+\_\+sequence} & Germline sequence corresponding to sequence to be corrected \\
+\hline
+{\em phred\+\_\+score} & P\+H\+R\+ED score as string to be corrected \\
+\hline
+{\em errorx\+\_\+base} & The root directory where the errorx code is located. This is set automatically by the Python code\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em invalid\+\_\+argument} & if lists are not the same length\\
+\hline
+\end{DoxyExceptions}
+\begin{DoxyReturn}{Returns}
+Python list of tuples showing the probability of error for each base, each tuple representing (position, probability) 
+\end{DoxyReturn}
+\mbox{\Hypertarget{errorx__python_8hh_file_ac6fa2bc931a560730bd2983e34e0de43}\label{errorx__python_8hh_file_ac6fa2bc931a560730bd2983e34e0de43}} 
+\index{errorx\+\_\+python.\+hh@{errorx\+\_\+python.\+hh}!run\+\_\+py\+\_\+protocol@{run\+\_\+py\+\_\+protocol}}
+\index{run\+\_\+py\+\_\+protocol@{run\+\_\+py\+\_\+protocol}!errorx\+\_\+python.\+hh@{errorx\+\_\+python.\+hh}}
+\subsubsection{\texorpdfstring{run\+\_\+py\+\_\+protocol()}{run\_py\_protocol()}}
+{\footnotesize\ttfamily void errorx\+::run\+\_\+py\+\_\+protocol (\begin{DoxyParamCaption}\item[{py\+::object const \&}]{options }\end{DoxyParamCaption})}
+
+Runs the ErrorX prediction method on a set of sequences and outputs to a file. Wrapper for the run\+\_\+protocol\+\_\+write method in \mbox{\hyperlink{errorx_8hh}{errorx.\+hh}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em options} & Error\+X\+Options Python object to control parameters of ErrorX. Will be converted internally to Error\+X\+Options C++ object \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{errorx__python_8hh_file_a78a6da555a72f6000521dc688b9b96fd}\label{errorx__python_8hh_file_a78a6da555a72f6000521dc688b9b96fd}} 
+\index{errorx\+\_\+python.\+hh@{errorx\+\_\+python.\+hh}!vector\+\_\+to\+\_\+python\+\_\+list@{vector\+\_\+to\+\_\+python\+\_\+list}}
+\index{vector\+\_\+to\+\_\+python\+\_\+list@{vector\+\_\+to\+\_\+python\+\_\+list}!errorx\+\_\+python.\+hh@{errorx\+\_\+python.\+hh}}
+\subsubsection{\texorpdfstring{vector\+\_\+to\+\_\+python\+\_\+list()}{vector\_to\_python\_list()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+py\+::list errorx\+::vector\+\_\+to\+\_\+python\+\_\+list (\begin{DoxyParamCaption}\item[{vector$<$ T $>$ const \&}]{input }\end{DoxyParamCaption})}
+
+Converts a std\+::vector to Python list
+
+
+\begin{DoxyParams}{Parameters}
+{\em input} & Templated std\+::vector \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Python list consisted of same elements 
+\end{DoxyReturn}

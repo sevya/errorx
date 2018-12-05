@@ -1,0 +1,232 @@
+\hypertarget{classerrorx_1_1_sequence_records}{}\section{errorx\+:\+:Sequence\+Records Class Reference}
+\label{classerrorx_1_1_sequence_records}\index{errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classerrorx_1_1_sequence_records_a0fac9e704c40af45faef33a51b1e160d}{$\sim$\+Sequence\+Records}} ()
+\item 
+\mbox{\hyperlink{classerrorx_1_1_sequence_records_af45d18ad4ff7f3348289f640e3d6ebca}{Sequence\+Records}} (\mbox{\hyperlink{classerrorx_1_1_error_x_options}{Error\+X\+Options}} const \&options)
+\item 
+\mbox{\hyperlink{classerrorx_1_1_sequence_records_ae5f0b141e16902f008d5dc65cef492ef}{Sequence\+Records}} (\mbox{\hyperlink{classerrorx_1_1_sequence_records}{Sequence\+Records}} const \&other)
+\item 
+\mbox{\hyperlink{classerrorx_1_1_sequence_records_a0c868ff30175b97b01beb6239d432603}{Sequence\+Records}} (vector$<$ \mbox{\hyperlink{classerrorx_1_1_sequence_records}{Sequence\+Records}} $\ast$$>$ const \&others)
+\item 
+\mbox{\hyperlink{classerrorx_1_1_sequence_records_aa5056e29e388a8cc013d304448029a82}{Sequence\+Records}} (vector$<$ \mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} $\ast$$>$ const \&record\+\_\+vector, \mbox{\hyperlink{classerrorx_1_1_error_x_options}{Error\+X\+Options}} const \&options)
+\item 
+void \mbox{\hyperlink{classerrorx_1_1_sequence_records_acc6c04160f2584ae83ed7636104aadaf}{import\+\_\+from\+\_\+tsv}} ()
+\item 
+void \mbox{\hyperlink{classerrorx_1_1_sequence_records_a3fd1286256f256644c06413bb705df88}{import\+\_\+from\+\_\+list}} (vector$<$ \mbox{\hyperlink{classerrorx_1_1_sequence_query}{Sequence\+Query}} $>$ \&queries)
+\item 
+float \mbox{\hyperlink{classerrorx_1_1_sequence_records_a84905f56b5cebe34c7300be425964a5b}{estimate\+\_\+error\+\_\+rate}} () const
+\item 
+void \mbox{\hyperlink{classerrorx_1_1_sequence_records_aae76e748971bbf783b3463be77aa1a3f}{add\+\_\+record}} (\mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} $\ast$record)
+\item 
+int \mbox{\hyperlink{classerrorx_1_1_sequence_records_a3b041b598ce45a217ea229cc5632cc8d}{size}} () const
+\item 
+vector$<$ \mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} $\ast$ $>$ \mbox{\hyperlink{classerrorx_1_1_sequence_records_a9242317332845a8795864556c72ff1e3}{get\+\_\+records}} () const
+\item 
+\mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} $\ast$ \mbox{\hyperlink{classerrorx_1_1_sequence_records_a368bff7f01e34b2d6eedd14c8995d9be}{get}} (int i) const
+\item 
+int \mbox{\hyperlink{classerrorx_1_1_sequence_records_aa857b90f35804c6f6e179c18033ad838}{good\+\_\+records}} () const
+\item 
+vector$<$ vector$<$ string $>$ $>$ \mbox{\hyperlink{classerrorx_1_1_sequence_records_a426a62dad84bd4fe3a94a955c7b92330}{get\+\_\+summary}} () const
+\item 
+vector$<$ string $>$ \mbox{\hyperlink{classerrorx_1_1_sequence_records_a9b65dacacd35715b0ee039843d7d40d0}{get\+\_\+summary\+\_\+labels}} () const
+\item 
+void \mbox{\hyperlink{classerrorx_1_1_sequence_records_a9bfd2cd859cbdedec5b77c90fd4cbd36}{print\+\_\+summary}} () const
+\item 
+void \mbox{\hyperlink{classerrorx_1_1_sequence_records_a452c742e8e8b5d2439f2a4de906bd5b7}{write\+\_\+summary}} () const
+\item 
+void \mbox{\hyperlink{classerrorx_1_1_sequence_records_a7424dd4c03a2f1f4c05307dcd5e5e347}{write\+\_\+features}} ()
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \mbox{\hyperlink{classerrorx_1_1_sequence_records_a6df0d323bdcb6f6f570e28fbdf2b6b34}{correct\+\_\+sequences}} (\mbox{\hyperlink{classerrorx_1_1_sequence_records}{Sequence\+Records}} $\ast$\&records)
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classerrorx_1_1_sequence_records_a0fac9e704c40af45faef33a51b1e160d}\label{classerrorx_1_1_sequence_records_a0fac9e704c40af45faef33a51b1e160d}} 
+\index{errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}!````~Sequence\+Records@{$\sim$\+Sequence\+Records}}
+\index{````~Sequence\+Records@{$\sim$\+Sequence\+Records}!errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}}
+\subsubsection{\texorpdfstring{$\sim$\+Sequence\+Records()}{~SequenceRecords()}}
+{\footnotesize\ttfamily errorx\+::\+Sequence\+Records\+::$\sim$\+Sequence\+Records (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Destructor. Deletes references to member variables options\+\_\+ and predictor\+\_\+. Also deletes references to every \mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} contained in records\+\_\+. Every time a \mbox{\hyperlink{classerrorx_1_1_sequence_records}{Sequence\+Records}} object is copied a deep copy is made, so none of these pointers are shared. \mbox{\Hypertarget{classerrorx_1_1_sequence_records_af45d18ad4ff7f3348289f640e3d6ebca}\label{classerrorx_1_1_sequence_records_af45d18ad4ff7f3348289f640e3d6ebca}} 
+\index{errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}!Sequence\+Records@{Sequence\+Records}}
+\index{Sequence\+Records@{Sequence\+Records}!errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}}
+\subsubsection{\texorpdfstring{Sequence\+Records()}{SequenceRecords()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily errorx\+::\+Sequence\+Records\+::\+Sequence\+Records (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classerrorx_1_1_error_x_options}{Error\+X\+Options}} const \&}]{options }\end{DoxyParamCaption})}
+
+Constructor using \mbox{\hyperlink{classerrorx_1_1_error_x_options}{Error\+X\+Options}} as argument. \mbox{\Hypertarget{classerrorx_1_1_sequence_records_ae5f0b141e16902f008d5dc65cef492ef}\label{classerrorx_1_1_sequence_records_ae5f0b141e16902f008d5dc65cef492ef}} 
+\index{errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}!Sequence\+Records@{Sequence\+Records}}
+\index{Sequence\+Records@{Sequence\+Records}!errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}}
+\subsubsection{\texorpdfstring{Sequence\+Records()}{SequenceRecords()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily errorx\+::\+Sequence\+Records\+::\+Sequence\+Records (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classerrorx_1_1_sequence_records}{Sequence\+Records}} const \&}]{other }\end{DoxyParamCaption})}
+
+Copy constructor. Deep copy of all member variables. \mbox{\Hypertarget{classerrorx_1_1_sequence_records_a0c868ff30175b97b01beb6239d432603}\label{classerrorx_1_1_sequence_records_a0c868ff30175b97b01beb6239d432603}} 
+\index{errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}!Sequence\+Records@{Sequence\+Records}}
+\index{Sequence\+Records@{Sequence\+Records}!errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}}
+\subsubsection{\texorpdfstring{Sequence\+Records()}{SequenceRecords()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily errorx\+::\+Sequence\+Records\+::\+Sequence\+Records (\begin{DoxyParamCaption}\item[{vector$<$ \mbox{\hyperlink{classerrorx_1_1_sequence_records}{Sequence\+Records}} $\ast$$>$ const \&}]{others }\end{DoxyParamCaption})}
+
+Constructor from vector of \mbox{\hyperlink{classerrorx_1_1_sequence_records}{Sequence\+Records}}. Useful for concatenating all of these \mbox{\hyperlink{classerrorx_1_1_sequence_records}{Sequence\+Records}} into a single object. Deep copy of all member variables so they can be safely deleted after. Uses the \mbox{\hyperlink{classerrorx_1_1_error_x_options}{Error\+X\+Options}} member variable from the first item in the vector to get its options. \mbox{\Hypertarget{classerrorx_1_1_sequence_records_aa5056e29e388a8cc013d304448029a82}\label{classerrorx_1_1_sequence_records_aa5056e29e388a8cc013d304448029a82}} 
+\index{errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}!Sequence\+Records@{Sequence\+Records}}
+\index{Sequence\+Records@{Sequence\+Records}!errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}}
+\subsubsection{\texorpdfstring{Sequence\+Records()}{SequenceRecords()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily errorx\+::\+Sequence\+Records\+::\+Sequence\+Records (\begin{DoxyParamCaption}\item[{vector$<$ \mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} $\ast$$>$ const \&}]{record\+\_\+vector,  }\item[{\mbox{\hyperlink{classerrorx_1_1_error_x_options}{Error\+X\+Options}} const \&}]{options }\end{DoxyParamCaption})}
+
+Constructor from \mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} vector. Useful for concatenating many individual \mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} objects into a single object. Deep copy of all member variables so they can be safely deleted after. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classerrorx_1_1_sequence_records_aae76e748971bbf783b3463be77aa1a3f}\label{classerrorx_1_1_sequence_records_aae76e748971bbf783b3463be77aa1a3f}} 
+\index{errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}!add\+\_\+record@{add\+\_\+record}}
+\index{add\+\_\+record@{add\+\_\+record}!errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}}
+\subsubsection{\texorpdfstring{add\+\_\+record()}{add\_record()}}
+{\footnotesize\ttfamily void errorx\+::\+Sequence\+Records\+::add\+\_\+record (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} $\ast$}]{record }\end{DoxyParamCaption})}
+
+Adds a \mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} to the records\+\_\+ member variable. Does not copy the record, just assigns it
+
+
+\begin{DoxyParams}{Parameters}
+{\em record} & \mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} to add to records\+\_\+ \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classerrorx_1_1_sequence_records_a6df0d323bdcb6f6f570e28fbdf2b6b34}\label{classerrorx_1_1_sequence_records_a6df0d323bdcb6f6f570e28fbdf2b6b34}} 
+\index{errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}!correct\+\_\+sequences@{correct\+\_\+sequences}}
+\index{correct\+\_\+sequences@{correct\+\_\+sequences}!errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}}
+\subsubsection{\texorpdfstring{correct\+\_\+sequences()}{correct\_sequences()}}
+{\footnotesize\ttfamily static void errorx\+::\+Sequence\+Records\+::correct\+\_\+sequences (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classerrorx_1_1_sequence_records}{Sequence\+Records}} $\ast$\&}]{records }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Runs error correction protocol on each \mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} object. Modifies \char`\"{}records\char`\"{} in-\/place. Static qualifier allows it to be used easily in multi-\/threading.
+
+
+\begin{DoxyParams}{Parameters}
+{\em records} & Collection of \mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} objects to be error corrected \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classerrorx_1_1_sequence_records_a84905f56b5cebe34c7300be425964a5b}\label{classerrorx_1_1_sequence_records_a84905f56b5cebe34c7300be425964a5b}} 
+\index{errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}!estimate\+\_\+error\+\_\+rate@{estimate\+\_\+error\+\_\+rate}}
+\index{estimate\+\_\+error\+\_\+rate@{estimate\+\_\+error\+\_\+rate}!errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}}
+\subsubsection{\texorpdfstring{estimate\+\_\+error\+\_\+rate()}{estimate\_error\_rate()}}
+{\footnotesize\ttfamily float errorx\+::\+Sequence\+Records\+::estimate\+\_\+error\+\_\+rate (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+After correcting the member \mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} objects, calculates the error rate over the whole set
+
+\begin{DoxyReturn}{Returns}
+float value of estimated error rate 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classerrorx_1_1_sequence_records_a368bff7f01e34b2d6eedd14c8995d9be}\label{classerrorx_1_1_sequence_records_a368bff7f01e34b2d6eedd14c8995d9be}} 
+\index{errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}!get@{get}}
+\index{get@{get}!errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}}
+\subsubsection{\texorpdfstring{get()}{get()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}}$\ast$ errorx\+::\+Sequence\+Records\+::get (\begin{DoxyParamCaption}\item[{int}]{i }\end{DoxyParamCaption}) const}
+
+Get a specific \mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & index of desired \mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}}\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} at index i 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classerrorx_1_1_sequence_records_a9242317332845a8795864556c72ff1e3}\label{classerrorx_1_1_sequence_records_a9242317332845a8795864556c72ff1e3}} 
+\index{errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}!get\+\_\+records@{get\+\_\+records}}
+\index{get\+\_\+records@{get\+\_\+records}!errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}}
+\subsubsection{\texorpdfstring{get\+\_\+records()}{get\_records()}}
+{\footnotesize\ttfamily vector$<$\mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}}$\ast$$>$ errorx\+::\+Sequence\+Records\+::get\+\_\+records (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Get the \mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} objects held internally
+
+\begin{DoxyReturn}{Returns}
+records\+\_\+ member variable 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classerrorx_1_1_sequence_records_a426a62dad84bd4fe3a94a955c7b92330}\label{classerrorx_1_1_sequence_records_a426a62dad84bd4fe3a94a955c7b92330}} 
+\index{errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}!get\+\_\+summary@{get\+\_\+summary}}
+\index{get\+\_\+summary@{get\+\_\+summary}!errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}}
+\subsubsection{\texorpdfstring{get\+\_\+summary()}{get\_summary()}}
+{\footnotesize\ttfamily vector$<$vector$<$string$>$ $>$ errorx\+::\+Sequence\+Records\+::get\+\_\+summary (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Returns a vector of string vectors, where each string vector is a summary of a \mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}}
+
+\begin{DoxyReturn}{Returns}
+vector of summaries of each \mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classerrorx_1_1_sequence_records_a9b65dacacd35715b0ee039843d7d40d0}\label{classerrorx_1_1_sequence_records_a9b65dacacd35715b0ee039843d7d40d0}} 
+\index{errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}!get\+\_\+summary\+\_\+labels@{get\+\_\+summary\+\_\+labels}}
+\index{get\+\_\+summary\+\_\+labels@{get\+\_\+summary\+\_\+labels}!errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}}
+\subsubsection{\texorpdfstring{get\+\_\+summary\+\_\+labels()}{get\_summary\_labels()}}
+{\footnotesize\ttfamily vector$<$string$>$ errorx\+::\+Sequence\+Records\+::get\+\_\+summary\+\_\+labels (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Returns a vector of labels, where the labels describe the entries from \mbox{\hyperlink{classerrorx_1_1_sequence_records_a426a62dad84bd4fe3a94a955c7b92330}{get\+\_\+summary()}}
+
+\begin{DoxyReturn}{Returns}
+vector of labels 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classerrorx_1_1_sequence_records_aa857b90f35804c6f6e179c18033ad838}\label{classerrorx_1_1_sequence_records_aa857b90f35804c6f6e179c18033ad838}} 
+\index{errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}!good\+\_\+records@{good\+\_\+records}}
+\index{good\+\_\+records@{good\+\_\+records}!errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}}
+\subsubsection{\texorpdfstring{good\+\_\+records()}{good\_records()}}
+{\footnotesize\ttfamily int errorx\+::\+Sequence\+Records\+::good\+\_\+records (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Get number of \char`\"{}good\char`\"{} \mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} objects \mbox{\hyperlink{classerrorx_1_1_sequence_records}{Sequence\+Records}} are defined as \char`\"{}good\char`\"{} by the \mbox{\hyperlink{classerrorx_1_1_i_g_blast_parser}{I\+G\+Blast\+Parser}} if they fit certain criteria, such as confident V assignment, productive, etc.
+
+\begin{DoxyReturn}{Returns}
+number of \char`\"{}good\char`\"{} records 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classerrorx_1_1_sequence_records_a3fd1286256f256644c06413bb705df88}\label{classerrorx_1_1_sequence_records_a3fd1286256f256644c06413bb705df88}} 
+\index{errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}!import\+\_\+from\+\_\+list@{import\+\_\+from\+\_\+list}}
+\index{import\+\_\+from\+\_\+list@{import\+\_\+from\+\_\+list}!errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}}
+\subsubsection{\texorpdfstring{import\+\_\+from\+\_\+list()}{import\_from\_list()}}
+{\footnotesize\ttfamily void errorx\+::\+Sequence\+Records\+::import\+\_\+from\+\_\+list (\begin{DoxyParamCaption}\item[{vector$<$ \mbox{\hyperlink{classerrorx_1_1_sequence_query}{Sequence\+Query}} $>$ \&}]{queries }\end{DoxyParamCaption})}
+
+Populates \mbox{\hyperlink{classerrorx_1_1_sequence_records}{Sequence\+Records}} object with elements from a vector of \mbox{\hyperlink{classerrorx_1_1_sequence_query}{Sequence\+Query}} objects
+
+
+\begin{DoxyParams}{Parameters}
+{\em queries} & Vector of \mbox{\hyperlink{classerrorx_1_1_sequence_query}{Sequence\+Query}} objects to use to fill \mbox{\hyperlink{classerrorx_1_1_sequence_records}{Sequence\+Records}} \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classerrorx_1_1_sequence_records_acc6c04160f2584ae83ed7636104aadaf}\label{classerrorx_1_1_sequence_records_acc6c04160f2584ae83ed7636104aadaf}} 
+\index{errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}!import\+\_\+from\+\_\+tsv@{import\+\_\+from\+\_\+tsv}}
+\index{import\+\_\+from\+\_\+tsv@{import\+\_\+from\+\_\+tsv}!errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}}
+\subsubsection{\texorpdfstring{import\+\_\+from\+\_\+tsv()}{import\_from\_tsv()}}
+{\footnotesize\ttfamily void errorx\+::\+Sequence\+Records\+::import\+\_\+from\+\_\+tsv (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Populates \mbox{\hyperlink{classerrorx_1_1_sequence_records}{Sequence\+Records}} object with elements from a T\+SV file. T\+SV file should contain the following columns, in order\+: Sequence\+ID, N\+T\+Sequence, Germline\+Sequence, Phred\+Score \mbox{\Hypertarget{classerrorx_1_1_sequence_records_a9bfd2cd859cbdedec5b77c90fd4cbd36}\label{classerrorx_1_1_sequence_records_a9bfd2cd859cbdedec5b77c90fd4cbd36}} 
+\index{errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}!print\+\_\+summary@{print\+\_\+summary}}
+\index{print\+\_\+summary@{print\+\_\+summary}!errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}}
+\subsubsection{\texorpdfstring{print\+\_\+summary()}{print\_summary()}}
+{\footnotesize\ttfamily void errorx\+::\+Sequence\+Records\+::print\+\_\+summary (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Wraps the \mbox{\hyperlink{classerrorx_1_1_sequence_records_a426a62dad84bd4fe3a94a955c7b92330}{get\+\_\+summary()}} function and writes to std out. \mbox{\Hypertarget{classerrorx_1_1_sequence_records_a3b041b598ce45a217ea229cc5632cc8d}\label{classerrorx_1_1_sequence_records_a3b041b598ce45a217ea229cc5632cc8d}} 
+\index{errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}!size@{size}}
+\index{size@{size}!errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}}
+\subsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily int errorx\+::\+Sequence\+Records\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Get the number of \mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} objects held internally
+
+\begin{DoxyReturn}{Returns}
+size of records\+\_\+ variable 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classerrorx_1_1_sequence_records_a7424dd4c03a2f1f4c05307dcd5e5e347}\label{classerrorx_1_1_sequence_records_a7424dd4c03a2f1f4c05307dcd5e5e347}} 
+\index{errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}!write\+\_\+features@{write\+\_\+features}}
+\index{write\+\_\+features@{write\+\_\+features}!errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}}
+\subsubsection{\texorpdfstring{write\+\_\+features()}{write\_features()}}
+{\footnotesize\ttfamily void errorx\+::\+Sequence\+Records\+::write\+\_\+features (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+For debugging purposes. Gets features from each \mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} object and writes to a file. \mbox{\Hypertarget{classerrorx_1_1_sequence_records_a452c742e8e8b5d2439f2a4de906bd5b7}\label{classerrorx_1_1_sequence_records_a452c742e8e8b5d2439f2a4de906bd5b7}} 
+\index{errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}!write\+\_\+summary@{write\+\_\+summary}}
+\index{write\+\_\+summary@{write\+\_\+summary}!errorx\+::\+Sequence\+Records@{errorx\+::\+Sequence\+Records}}
+\subsubsection{\texorpdfstring{write\+\_\+summary()}{write\_summary()}}
+{\footnotesize\ttfamily void errorx\+::\+Sequence\+Records\+::write\+\_\+summary (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Wraps the \mbox{\hyperlink{classerrorx_1_1_sequence_records_a426a62dad84bd4fe3a94a955c7b92330}{get\+\_\+summary()}} function and writes to the outfile\+\_\+ variable of \mbox{\hyperlink{classerrorx_1_1_error_x_options}{Error\+X\+Options}}. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{_sequence_records_8hh}{Sequence\+Records.\+hh}}\end{DoxyCompactItemize}

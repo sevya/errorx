@@ -1,0 +1,43 @@
+\hypertarget{_sequence_record_8hh}{}\section{include/\+Sequence\+Record.hh File Reference}
+\label{_sequence_record_8hh}\index{include/\+Sequence\+Record.\+hh@{include/\+Sequence\+Record.\+hh}}
+
+
+A record of one sequence to be error corrected.  
+
+
+{\ttfamily \#include $<$iostream$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include \char`\"{}Sequence\+Query.\+hh\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Error\+X\+Options.\+hh\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Error\+Predictor.\+hh\char`\"{}}\newline
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classerrorx_1_1_sequence_record}{errorx\+::\+Sequence\+Record}}
+\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{_sequence_record_8hh_a7ec194f8987fd5aa3d34fb5921bff837}{errorx\+::chain\+\_\+type}} \{ {\bfseries VH}, 
+{\bfseries VL}
+ \}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A record of one sequence to be error corrected. 
+
+Single nucleotide sequence to be fed to error correction. Can be initialized from a F\+A\+S\+TQ file, T\+SV file, or directly from a Sequence\+Query. \begin{DoxyAuthor}{Author}
+Alex Sevy (\href{mailto:alex.sevy@gmail.com}{\tt alex.\+sevy@gmail.\+com}) 
+\end{DoxyAuthor}
+
+
+\subsection{Enumeration Type Documentation}
+\mbox{\Hypertarget{_sequence_record_8hh_file_a7ec194f8987fd5aa3d34fb5921bff837}\label{_sequence_record_8hh_file_a7ec194f8987fd5aa3d34fb5921bff837}} 
+\index{Sequence\+Record.\+hh@{Sequence\+Record.\+hh}!chain\+\_\+type@{chain\+\_\+type}}
+\index{chain\+\_\+type@{chain\+\_\+type}!Sequence\+Record.\+hh@{Sequence\+Record.\+hh}}
+\subsubsection{\texorpdfstring{chain\+\_\+type}{chain\_type}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{_sequence_record_8hh_a7ec194f8987fd5aa3d34fb5921bff837}{errorx\+::chain\+\_\+type}}}
+
+Enum representing whether a Sequence\+Record is an antibody heavy or light chain 

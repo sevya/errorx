@@ -1,0 +1,219 @@
+\hypertarget{classerrorx_1_1_sequence_record}{}\section{errorx\+:\+:Sequence\+Record Class Reference}
+\label{classerrorx_1_1_sequence_record}\index{errorx\+::\+Sequence\+Record@{errorx\+::\+Sequence\+Record}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classerrorx_1_1_sequence_record_aa0c7da905f4a027969273d7bfe9c2db8}{Sequence\+Record}} ()
+\item 
+\mbox{\hyperlink{classerrorx_1_1_sequence_record_a659615c7179fdaaaed5196cc37f93623}{Sequence\+Record}} (\mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} const \&copy)
+\item 
+\mbox{\hyperlink{classerrorx_1_1_sequence_record_ac20b7a31e542e34795be7a0450e6d103}{Sequence\+Record}} (vector$<$ string $>$ const \&lines, int verbose=1, bool allow\+\_\+nonproductive=0)
+\item 
+\mbox{\hyperlink{classerrorx_1_1_sequence_record_a88499ee66ab4eac51eaf51c7c8c8fd2d}{Sequence\+Record}} (\mbox{\hyperlink{classerrorx_1_1_sequence_query}{Sequence\+Query}} \&query, int verbose=1)
+\item 
+vector$<$ string $>$ \mbox{\hyperlink{classerrorx_1_1_sequence_record_ada8bdfb462b2ba29808b258f4380dbf0}{get\+\_\+summary}} () const
+\item 
+void \mbox{\hyperlink{classerrorx_1_1_sequence_record_ab6ef0d5067f8c28aee8fb826b7a5922e}{print}} () const
+\item 
+void \mbox{\hyperlink{classerrorx_1_1_sequence_record_af399cf58824831f8e12247a64108a925}{correct\+\_\+sequence}} (\mbox{\hyperlink{classerrorx_1_1_error_predictor}{Error\+Predictor}} const \&predictor, \mbox{\hyperlink{classerrorx_1_1_error_x_options}{Error\+X\+Options}} const \&options)
+\item 
+vector$<$ pair$<$ int, double $>$ $>$ \mbox{\hyperlink{classerrorx_1_1_sequence_record_a40aba7774369da0c35b82c14413143a4}{get\+\_\+predicted\+\_\+errors}} ()
+\item 
+bool \mbox{\hyperlink{classerrorx_1_1_sequence_record_adcc3a75cb5d42ffef94c1c9552fb7c9e}{is\+Good}} ()
+\item 
+vector$<$ vector$<$ double $>$ $>$ \mbox{\hyperlink{classerrorx_1_1_sequence_record_ac2e7ec6eff313310ba457d9e374b3c88}{get\+\_\+features}} (\mbox{\hyperlink{classerrorx_1_1_error_predictor}{Error\+Predictor}} const \&predictor, \mbox{\hyperlink{classerrorx_1_1_error_x_options}{Error\+X\+Options}} const \&options)
+\item 
+string \mbox{\hyperlink{classerrorx_1_1_sequence_record_a904548a440ad3da0f4386f55ec7b6eac}{full\+\_\+nt\+\_\+sequence}} () const
+\item 
+\mbox{\Hypertarget{classerrorx_1_1_sequence_record_a7529518b8da78b2a289a9002bbc3c949}\label{classerrorx_1_1_sequence_record_a7529518b8da78b2a289a9002bbc3c949}} 
+string {\bfseries full\+\_\+gl\+\_\+nt\+\_\+sequence} () const
+\item 
+\mbox{\Hypertarget{classerrorx_1_1_sequence_record_a8cf766707bddbf4b37d09a882aa98574}\label{classerrorx_1_1_sequence_record_a8cf766707bddbf4b37d09a882aa98574}} 
+string {\bfseries full\+\_\+nt\+\_\+sequence\+\_\+corrected} () const
+\item 
+\mbox{\Hypertarget{classerrorx_1_1_sequence_record_a9832ba42ddbad41b3fc5c26f19b84972}\label{classerrorx_1_1_sequence_record_a9832ba42ddbad41b3fc5c26f19b84972}} 
+string {\bfseries cdr3\+\_\+aa\+\_\+sequence} () const
+\item 
+\mbox{\Hypertarget{classerrorx_1_1_sequence_record_a9ea82606e64c7546ae0d18dd78e63d43}\label{classerrorx_1_1_sequence_record_a9ea82606e64c7546ae0d18dd78e63d43}} 
+string {\bfseries full\+\_\+aa\+\_\+sequence} () const
+\item 
+\mbox{\Hypertarget{classerrorx_1_1_sequence_record_aede72d8b08f871d03f75804cdee3065b}\label{classerrorx_1_1_sequence_record_aede72d8b08f871d03f75804cdee3065b}} 
+string {\bfseries v\+\_\+gene} () const
+\item 
+\mbox{\Hypertarget{classerrorx_1_1_sequence_record_a51615c2c2d6612161656eb2f846834eb}\label{classerrorx_1_1_sequence_record_a51615c2c2d6612161656eb2f846834eb}} 
+string {\bfseries d\+\_\+gene} () const
+\item 
+\mbox{\Hypertarget{classerrorx_1_1_sequence_record_a5ffa948395bac606f56c34ec2d8b173b}\label{classerrorx_1_1_sequence_record_a5ffa948395bac606f56c34ec2d8b173b}} 
+string {\bfseries j\+\_\+gene} () const
+\item 
+\mbox{\Hypertarget{classerrorx_1_1_sequence_record_a0ba432d01595ff3ea3faf801b2b8a33f}\label{classerrorx_1_1_sequence_record_a0ba432d01595ff3ea3faf801b2b8a33f}} 
+double {\bfseries v\+\_\+identity} () const
+\item 
+\mbox{\Hypertarget{classerrorx_1_1_sequence_record_a63e683854ad0f25e03f7d024666b1b53}\label{classerrorx_1_1_sequence_record_a63e683854ad0f25e03f7d024666b1b53}} 
+double {\bfseries d\+\_\+identity} () const
+\item 
+\mbox{\Hypertarget{classerrorx_1_1_sequence_record_a64f4d90f07ee89093ce3ad4ce705fa73}\label{classerrorx_1_1_sequence_record_a64f4d90f07ee89093ce3ad4ce705fa73}} 
+double {\bfseries j\+\_\+identity} () const
+\item 
+\mbox{\Hypertarget{classerrorx_1_1_sequence_record_a72c6274059e100c9ea8d94403f9b9992}\label{classerrorx_1_1_sequence_record_a72c6274059e100c9ea8d94403f9b9992}} 
+int {\bfseries n\+\_\+errors} () const
+\item 
+\mbox{\Hypertarget{classerrorx_1_1_sequence_record_ac403cb71ac04931a64738c6c4d7b7f4b}\label{classerrorx_1_1_sequence_record_ac403cb71ac04931a64738c6c4d7b7f4b}} 
+string {\bfseries sequence\+ID} () const
+\item 
+\mbox{\Hypertarget{classerrorx_1_1_sequence_record_ad1544a455cbd242a1f8788cb490c78f3}\label{classerrorx_1_1_sequence_record_ad1544a455cbd242a1f8788cb490c78f3}} 
+vector$<$ int $>$ {\bfseries quality\+\_\+array} () const
+\item 
+\mbox{\Hypertarget{classerrorx_1_1_sequence_record_aaf8830cb13c66a1fb9992596705c0b7e}\label{classerrorx_1_1_sequence_record_aaf8830cb13c66a1fb9992596705c0b7e}} 
+int {\bfseries gc\+\_\+count} () const
+\item 
+\mbox{\Hypertarget{classerrorx_1_1_sequence_record_aec3b2875e607654477e06cdad18d8b92}\label{classerrorx_1_1_sequence_record_aec3b2875e607654477e06cdad18d8b92}} 
+double {\bfseries gc\+\_\+pct} () const
+\item 
+\mbox{\Hypertarget{classerrorx_1_1_sequence_record_aaa4eca015eb95ffbdabeb64b6c7f1a3e}\label{classerrorx_1_1_sequence_record_aaa4eca015eb95ffbdabeb64b6c7f1a3e}} 
+double {\bfseries shm} () const
+\item 
+\mbox{\Hypertarget{classerrorx_1_1_sequence_record_a2ec6f84ad28e2cbbd1d8fbef555c0eef}\label{classerrorx_1_1_sequence_record_a2ec6f84ad28e2cbbd1d8fbef555c0eef}} 
+\mbox{\hyperlink{_sequence_record_8hh_a7ec194f8987fd5aa3d34fb5921bff837}{chain\+\_\+type}} {\bfseries chain} () const
+\item 
+\mbox{\Hypertarget{classerrorx_1_1_sequence_record_a2ce8d5a84e3f305fb3bd8d5bf078b450}\label{classerrorx_1_1_sequence_record_a2ce8d5a84e3f305fb3bd8d5bf078b450}} 
+string {\bfseries quality\+\_\+string} () const
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classerrorx_1_1_sequence_record_aa0c7da905f4a027969273d7bfe9c2db8}\label{classerrorx_1_1_sequence_record_aa0c7da905f4a027969273d7bfe9c2db8}} 
+\index{errorx\+::\+Sequence\+Record@{errorx\+::\+Sequence\+Record}!Sequence\+Record@{Sequence\+Record}}
+\index{Sequence\+Record@{Sequence\+Record}!errorx\+::\+Sequence\+Record@{errorx\+::\+Sequence\+Record}}
+\subsubsection{\texorpdfstring{Sequence\+Record()}{SequenceRecord()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily errorx\+::\+Sequence\+Record\+::\+Sequence\+Record (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Empty constructor. Initializes all variables to empty string or 0. \mbox{\Hypertarget{classerrorx_1_1_sequence_record_a659615c7179fdaaaed5196cc37f93623}\label{classerrorx_1_1_sequence_record_a659615c7179fdaaaed5196cc37f93623}} 
+\index{errorx\+::\+Sequence\+Record@{errorx\+::\+Sequence\+Record}!Sequence\+Record@{Sequence\+Record}}
+\index{Sequence\+Record@{Sequence\+Record}!errorx\+::\+Sequence\+Record@{errorx\+::\+Sequence\+Record}}
+\subsubsection{\texorpdfstring{Sequence\+Record()}{SequenceRecord()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily errorx\+::\+Sequence\+Record\+::\+Sequence\+Record (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} const \&}]{copy }\end{DoxyParamCaption})}
+
+Copy constructor. Copies all member variables \mbox{\Hypertarget{classerrorx_1_1_sequence_record_ac20b7a31e542e34795be7a0450e6d103}\label{classerrorx_1_1_sequence_record_ac20b7a31e542e34795be7a0450e6d103}} 
+\index{errorx\+::\+Sequence\+Record@{errorx\+::\+Sequence\+Record}!Sequence\+Record@{Sequence\+Record}}
+\index{Sequence\+Record@{Sequence\+Record}!errorx\+::\+Sequence\+Record@{errorx\+::\+Sequence\+Record}}
+\subsubsection{\texorpdfstring{Sequence\+Record()}{SequenceRecord()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily errorx\+::\+Sequence\+Record\+::\+Sequence\+Record (\begin{DoxyParamCaption}\item[{vector$<$ string $>$ const \&}]{lines,  }\item[{int}]{verbose = {\ttfamily 1},  }\item[{bool}]{allow\+\_\+nonproductive = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+Constructs a \mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} from a vector of string, representing the lines of an I\+G\+Blast query. Goes through and extracts all information about the sequence by parsing the I\+G\+Blast output.
+
+
+\begin{DoxyParams}{Parameters}
+{\em lines} & vector of string representing lines of I\+G\+Blast query \\
+\hline
+{\em verbose} & verbosity level to write error messages to the screen? \\
+\hline
+{\em allow\+\_\+nonproductive} & if a NT sequence is non-\/ productive, still allow it for error correction \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classerrorx_1_1_sequence_record_a88499ee66ab4eac51eaf51c7c8c8fd2d}\label{classerrorx_1_1_sequence_record_a88499ee66ab4eac51eaf51c7c8c8fd2d}} 
+\index{errorx\+::\+Sequence\+Record@{errorx\+::\+Sequence\+Record}!Sequence\+Record@{Sequence\+Record}}
+\index{Sequence\+Record@{Sequence\+Record}!errorx\+::\+Sequence\+Record@{errorx\+::\+Sequence\+Record}}
+\subsubsection{\texorpdfstring{Sequence\+Record()}{SequenceRecord()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily errorx\+::\+Sequence\+Record\+::\+Sequence\+Record (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classerrorx_1_1_sequence_query}{Sequence\+Query}} \&}]{query,  }\item[{int}]{verbose = {\ttfamily 1} }\end{DoxyParamCaption})}
+
+Constructs a \mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} from a \mbox{\hyperlink{classerrorx_1_1_sequence_query}{Sequence\+Query}}. The \mbox{\hyperlink{classerrorx_1_1_sequence_query}{Sequence\+Query}} contains only the minimal info needed for error correction, which is sequence ID, NT sequence, germline sequence, and phred score.
+
+
+\begin{DoxyParams}{Parameters}
+{\em query} & \mbox{\hyperlink{classerrorx_1_1_sequence_query}{Sequence\+Query}} object to correct \\
+\hline
+{\em verbose} & verbosity level to write error messages to the screen? \\
+\hline
+{\em allow\+\_\+nonproductive} & if a NT sequence is non-\/ productive, still allow it for error correction \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classerrorx_1_1_sequence_record_af399cf58824831f8e12247a64108a925}\label{classerrorx_1_1_sequence_record_af399cf58824831f8e12247a64108a925}} 
+\index{errorx\+::\+Sequence\+Record@{errorx\+::\+Sequence\+Record}!correct\+\_\+sequence@{correct\+\_\+sequence}}
+\index{correct\+\_\+sequence@{correct\+\_\+sequence}!errorx\+::\+Sequence\+Record@{errorx\+::\+Sequence\+Record}}
+\subsubsection{\texorpdfstring{correct\+\_\+sequence()}{correct\_sequence()}}
+{\footnotesize\ttfamily void errorx\+::\+Sequence\+Record\+::correct\+\_\+sequence (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classerrorx_1_1_error_predictor}{Error\+Predictor}} const \&}]{predictor,  }\item[{\mbox{\hyperlink{classerrorx_1_1_error_x_options}{Error\+X\+Options}} const \&}]{options }\end{DoxyParamCaption})}
+
+Correct this \mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}} and modify in place with the corrected sequence. Params are generally passed by a parent \mbox{\hyperlink{classerrorx_1_1_sequence_records}{Sequence\+Records}} object.
+
+
+\begin{DoxyParams}{Parameters}
+{\em predictor} & \mbox{\hyperlink{classerrorx_1_1_error_predictor}{Error\+Predictor}} for prediction \\
+\hline
+{\em options} & Options for processing \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classerrorx_1_1_sequence_record_a904548a440ad3da0f4386f55ec7b6eac}\label{classerrorx_1_1_sequence_record_a904548a440ad3da0f4386f55ec7b6eac}} 
+\index{errorx\+::\+Sequence\+Record@{errorx\+::\+Sequence\+Record}!full\+\_\+nt\+\_\+sequence@{full\+\_\+nt\+\_\+sequence}}
+\index{full\+\_\+nt\+\_\+sequence@{full\+\_\+nt\+\_\+sequence}!errorx\+::\+Sequence\+Record@{errorx\+::\+Sequence\+Record}}
+\subsubsection{\texorpdfstring{full\+\_\+nt\+\_\+sequence()}{full\_nt\_sequence()}}
+{\footnotesize\ttfamily string errorx\+::\+Sequence\+Record\+::full\+\_\+nt\+\_\+sequence (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Getters and setters \mbox{\Hypertarget{classerrorx_1_1_sequence_record_ac2e7ec6eff313310ba457d9e374b3c88}\label{classerrorx_1_1_sequence_record_ac2e7ec6eff313310ba457d9e374b3c88}} 
+\index{errorx\+::\+Sequence\+Record@{errorx\+::\+Sequence\+Record}!get\+\_\+features@{get\+\_\+features}}
+\index{get\+\_\+features@{get\+\_\+features}!errorx\+::\+Sequence\+Record@{errorx\+::\+Sequence\+Record}}
+\subsubsection{\texorpdfstring{get\+\_\+features()}{get\_features()}}
+{\footnotesize\ttfamily vector$<$vector$<$double$>$ $>$ errorx\+::\+Sequence\+Record\+::get\+\_\+features (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classerrorx_1_1_error_predictor}{Error\+Predictor}} const \&}]{predictor,  }\item[{\mbox{\hyperlink{classerrorx_1_1_error_x_options}{Error\+X\+Options}} const \&}]{options }\end{DoxyParamCaption})}
+
+Get the numeric features associated with this record. Params are generally passed by a parent \mbox{\hyperlink{classerrorx_1_1_sequence_records}{Sequence\+Records}} object.
+
+
+\begin{DoxyParams}{Parameters}
+{\em predictor} & \mbox{\hyperlink{classerrorx_1_1_error_predictor}{Error\+Predictor}} for prediction \\
+\hline
+{\em options} & Options for processing \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classerrorx_1_1_sequence_record_a40aba7774369da0c35b82c14413143a4}\label{classerrorx_1_1_sequence_record_a40aba7774369da0c35b82c14413143a4}} 
+\index{errorx\+::\+Sequence\+Record@{errorx\+::\+Sequence\+Record}!get\+\_\+predicted\+\_\+errors@{get\+\_\+predicted\+\_\+errors}}
+\index{get\+\_\+predicted\+\_\+errors@{get\+\_\+predicted\+\_\+errors}!errorx\+::\+Sequence\+Record@{errorx\+::\+Sequence\+Record}}
+\subsubsection{\texorpdfstring{get\+\_\+predicted\+\_\+errors()}{get\_predicted\_errors()}}
+{\footnotesize\ttfamily vector$<$pair$<$int,double$>$ $>$ errorx\+::\+Sequence\+Record\+::get\+\_\+predicted\+\_\+errors (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Get the predicted probability of error for each base.
+
+\begin{DoxyReturn}{Returns}
+vector std\+::pair, where first is the position and second is the probability of error 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classerrorx_1_1_sequence_record_ada8bdfb462b2ba29808b258f4380dbf0}\label{classerrorx_1_1_sequence_record_ada8bdfb462b2ba29808b258f4380dbf0}} 
+\index{errorx\+::\+Sequence\+Record@{errorx\+::\+Sequence\+Record}!get\+\_\+summary@{get\+\_\+summary}}
+\index{get\+\_\+summary@{get\+\_\+summary}!errorx\+::\+Sequence\+Record@{errorx\+::\+Sequence\+Record}}
+\subsubsection{\texorpdfstring{get\+\_\+summary()}{get\_summary()}}
+{\footnotesize\ttfamily vector$<$string$>$ errorx\+::\+Sequence\+Record\+::get\+\_\+summary (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Get all the information summarizing a \mbox{\hyperlink{classerrorx_1_1_sequence_record}{Sequence\+Record}}
+
+\begin{DoxyReturn}{Returns}
+vector of strings summarizing the record 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classerrorx_1_1_sequence_record_adcc3a75cb5d42ffef94c1c9552fb7c9e}\label{classerrorx_1_1_sequence_record_adcc3a75cb5d42ffef94c1c9552fb7c9e}} 
+\index{errorx\+::\+Sequence\+Record@{errorx\+::\+Sequence\+Record}!is\+Good@{is\+Good}}
+\index{is\+Good@{is\+Good}!errorx\+::\+Sequence\+Record@{errorx\+::\+Sequence\+Record}}
+\subsubsection{\texorpdfstring{is\+Good()}{isGood()}}
+{\footnotesize\ttfamily bool errorx\+::\+Sequence\+Record\+::is\+Good (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Return whether this record is \char`\"{}good\char`\"{}. Records can be called \char`\"{}bad\char`\"{} for the following reasons\+:
+\begin{DoxyEnumerate}
+\item I\+G\+Blast query does not fit the correct format and couldn\textquotesingle{}t be parsed
+\item V gene Evalue $>$ 1e-\/3
+\item Sequence is not productive (unless allow\+\_\+nonproductive\+\_\+ is True)
+\item P\+H\+R\+ED score is not same length as sequence
+\end{DoxyEnumerate}
+
+\begin{DoxyReturn}{Returns}
+whether sequence is considered good 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classerrorx_1_1_sequence_record_ab6ef0d5067f8c28aee8fb826b7a5922e}\label{classerrorx_1_1_sequence_record_ab6ef0d5067f8c28aee8fb826b7a5922e}} 
+\index{errorx\+::\+Sequence\+Record@{errorx\+::\+Sequence\+Record}!print@{print}}
+\index{print@{print}!errorx\+::\+Sequence\+Record@{errorx\+::\+Sequence\+Record}}
+\subsubsection{\texorpdfstring{print()}{print()}}
+{\footnotesize\ttfamily void errorx\+::\+Sequence\+Record\+::print (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Print key information related to this record 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{_sequence_record_8hh}{Sequence\+Record.\+hh}}\end{DoxyCompactItemize}

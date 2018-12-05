@@ -1,0 +1,92 @@
+\hypertarget{errorx__java_8hh}{}\section{include/errorx\+\_\+java.hh File Reference}
+\label{errorx__java_8hh}\index{include/errorx\+\_\+java.\+hh@{include/errorx\+\_\+java.\+hh}}
+
+
+Java bindings to expose ErrorX interface.  
+
+
+{\ttfamily \#include $<$jni.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}Sequence\+Records.\+hh\char`\"{}}\newline
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT jobject J\+N\+I\+C\+A\+LL \mbox{\hyperlink{errorx__java_8hh_ae41c0553425022325f0e98875533627f}{Java\+\_\+errorx\+\_\+\+Error\+X\+\_\+correct\+Sequences}} (J\+N\+I\+Env $\ast$env, jobject this\+Obj, jobject\+Array sequence\+\_\+list, jobject\+Array germline\+\_\+sequence\+\_\+list, jobject\+Array phred\+\_\+score\+\_\+list)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT jdouble\+Array J\+N\+I\+C\+A\+LL \mbox{\hyperlink{errorx__java_8hh_a9d9ca626bacf9b40bb6ffa89552bdd9f}{Java\+\_\+errorx\+\_\+\+Error\+X\+\_\+get\+Predicted\+Errors}} (J\+N\+I\+Env $\ast$env, jobject this\+Obj, jstring sequence, jstring germline, jstring phred\+\_\+score)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL \mbox{\hyperlink{errorx__java_8hh_a81324030f63574c572bea57ad469f75a}{Java\+\_\+errorx\+\_\+\+Error\+X\+\_\+run\+Protocol}} (J\+N\+I\+Env $\ast$env, jobject this\+Obj, jobject options)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Java bindings to expose ErrorX interface. 
+
+\begin{DoxyAuthor}{Author}
+Alex Sevy (\href{mailto:alex.sevy@gmail.com}{\tt alex.\+sevy@gmail.\+com}) 
+\end{DoxyAuthor}
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{errorx__java_8hh_ae41c0553425022325f0e98875533627f}\label{errorx__java_8hh_ae41c0553425022325f0e98875533627f}} 
+\index{errorx\+\_\+java.\+hh@{errorx\+\_\+java.\+hh}!Java\+\_\+errorx\+\_\+\+Error\+X\+\_\+correct\+Sequences@{Java\+\_\+errorx\+\_\+\+Error\+X\+\_\+correct\+Sequences}}
+\index{Java\+\_\+errorx\+\_\+\+Error\+X\+\_\+correct\+Sequences@{Java\+\_\+errorx\+\_\+\+Error\+X\+\_\+correct\+Sequences}!errorx\+\_\+java.\+hh@{errorx\+\_\+java.\+hh}}
+\subsubsection{\texorpdfstring{Java\+\_\+errorx\+\_\+\+Error\+X\+\_\+correct\+Sequences()}{Java\_errorx\_ErrorX\_correctSequences()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT jobject J\+N\+I\+C\+A\+LL Java\+\_\+errorx\+\_\+\+Error\+X\+\_\+correct\+Sequences (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jobject}]{this\+Obj,  }\item[{jobject\+Array}]{sequence\+\_\+list,  }\item[{jobject\+Array}]{germline\+\_\+sequence\+\_\+list,  }\item[{jobject\+Array}]{phred\+\_\+score\+\_\+list }\end{DoxyParamCaption})}
+
+J\+NI interface to get corrected nucleotide sequences using the ErrorX interface
+
+
+\begin{DoxyParams}{Parameters}
+{\em sequence\+\_\+list} & String\mbox{[}\mbox{]} of nucleotide sequences to be corrected \\
+\hline
+{\em germline\+\_\+sequence\+\_\+list} & String\mbox{[}\mbox{]} of germline sequences corresponding to each sequence to be corrected \\
+\hline
+{\em phred\+\_\+score\+\_\+list} & String\mbox{[}\mbox{]} of P\+H\+R\+ED scores as strings to be corrected This is set automatically by the Java code\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em invalid\+\_\+argument} & if lists are not the same length\\
+\hline
+\end{DoxyExceptions}
+\begin{DoxyReturn}{Returns}
+String\mbox{[}\mbox{]} of corrected nucleotide sequences, corresponding element-\/wise to the input sequence list 
+\end{DoxyReturn}
+\mbox{\Hypertarget{errorx__java_8hh_a9d9ca626bacf9b40bb6ffa89552bdd9f}\label{errorx__java_8hh_a9d9ca626bacf9b40bb6ffa89552bdd9f}} 
+\index{errorx\+\_\+java.\+hh@{errorx\+\_\+java.\+hh}!Java\+\_\+errorx\+\_\+\+Error\+X\+\_\+get\+Predicted\+Errors@{Java\+\_\+errorx\+\_\+\+Error\+X\+\_\+get\+Predicted\+Errors}}
+\index{Java\+\_\+errorx\+\_\+\+Error\+X\+\_\+get\+Predicted\+Errors@{Java\+\_\+errorx\+\_\+\+Error\+X\+\_\+get\+Predicted\+Errors}!errorx\+\_\+java.\+hh@{errorx\+\_\+java.\+hh}}
+\subsubsection{\texorpdfstring{Java\+\_\+errorx\+\_\+\+Error\+X\+\_\+get\+Predicted\+Errors()}{Java\_errorx\_ErrorX\_getPredictedErrors()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT jdouble\+Array J\+N\+I\+C\+A\+LL Java\+\_\+errorx\+\_\+\+Error\+X\+\_\+get\+Predicted\+Errors (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jobject}]{this\+Obj,  }\item[{jstring}]{sequence,  }\item[{jstring}]{germline,  }\item[{jstring}]{phred\+\_\+score }\end{DoxyParamCaption})}
+
+Runs the ErrorX prediction method on a single sequence and returns the probability that each base is an error.
+
+
+\begin{DoxyParams}{Parameters}
+{\em sequence\+\_\+list} & String of nucleotide sequence to be corrected \\
+\hline
+{\em germline\+\_\+sequence\+\_\+list} & String of germline sequence corresponding to sequence to be corrected \\
+\hline
+{\em phred\+\_\+score\+\_\+list} & String of P\+H\+R\+ED score to be corrected This is set automatically by the Java code\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em invalid\+\_\+argument} & if lists are not the same length\\
+\hline
+\end{DoxyExceptions}
+\begin{DoxyReturn}{Returns}
+double\mbox{[}\mbox{]} consisting of the error probabilities for each base along the input sequence 
+\end{DoxyReturn}
+\mbox{\Hypertarget{errorx__java_8hh_a81324030f63574c572bea57ad469f75a}\label{errorx__java_8hh_a81324030f63574c572bea57ad469f75a}} 
+\index{errorx\+\_\+java.\+hh@{errorx\+\_\+java.\+hh}!Java\+\_\+errorx\+\_\+\+Error\+X\+\_\+run\+Protocol@{Java\+\_\+errorx\+\_\+\+Error\+X\+\_\+run\+Protocol}}
+\index{Java\+\_\+errorx\+\_\+\+Error\+X\+\_\+run\+Protocol@{Java\+\_\+errorx\+\_\+\+Error\+X\+\_\+run\+Protocol}!errorx\+\_\+java.\+hh@{errorx\+\_\+java.\+hh}}
+\subsubsection{\texorpdfstring{Java\+\_\+errorx\+\_\+\+Error\+X\+\_\+run\+Protocol()}{Java\_errorx\_ErrorX\_runProtocol()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL Java\+\_\+errorx\+\_\+\+Error\+X\+\_\+run\+Protocol (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jobject}]{this\+Obj,  }\item[{jobject}]{options }\end{DoxyParamCaption})}
+
+Runs the ErrorX prediction method on sequences from a file and writes the output to a file
+
+
+\begin{DoxyParams}{Parameters}
+{\em options} & Error\+X\+Options object with running parameters \\
+\hline
+\end{DoxyParams}
