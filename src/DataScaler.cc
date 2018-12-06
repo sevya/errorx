@@ -32,7 +32,7 @@ const vector<double> DataScaler::scale_data( vector<double> const & feature_vect
 
 	for ( int ii = 0; ii < indices_to_scale.size(); ++ii ) {
 		// maximum phred score is 40 - this way we normalize between 0-1
-		scaled_vector[ ii ] /= 40.0;
+		scaled_vector[ indices_to_scale[ii] ] /= 40.0;
 	}
 
 	return scaled_vector;

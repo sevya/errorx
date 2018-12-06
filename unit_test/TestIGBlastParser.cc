@@ -20,7 +20,7 @@ int main( int argc, char *argv[] ) {
     return status;
 }
 bool suite_TestIGBlastParser_init = false;
-#include "/Volumes/MyPassport/ErrorX/unit_test/TestIGBlastParser.hh"
+#include "/Volumes/MyPassport/ErrorX/errorx/unit_test/TestIGBlastParser.hh"
 
 static TestIGBlastParser suite_TestIGBlastParser;
 
@@ -47,31 +47,31 @@ public:
 
 static class TestDescription_suite_TestIGBlastParser_testRecordsNoD : public CxxTest::RealTestDescription {
 public:
- TestDescription_suite_TestIGBlastParser_testRecordsNoD() : CxxTest::RealTestDescription( Tests_TestIGBlastParser, suiteDescription_TestIGBlastParser, 189, "testRecordsNoD" ) {}
+ TestDescription_suite_TestIGBlastParser_testRecordsNoD() : CxxTest::RealTestDescription( Tests_TestIGBlastParser, suiteDescription_TestIGBlastParser, 190, "testRecordsNoD" ) {}
  void runTest() { suite_TestIGBlastParser.testRecordsNoD(); }
 } testDescription_suite_TestIGBlastParser_testRecordsNoD;
 
 static class TestDescription_suite_TestIGBlastParser_testRecordsNoJ : public CxxTest::RealTestDescription {
 public:
- TestDescription_suite_TestIGBlastParser_testRecordsNoJ() : CxxTest::RealTestDescription( Tests_TestIGBlastParser, suiteDescription_TestIGBlastParser, 243, "testRecordsNoJ" ) {}
+ TestDescription_suite_TestIGBlastParser_testRecordsNoJ() : CxxTest::RealTestDescription( Tests_TestIGBlastParser, suiteDescription_TestIGBlastParser, 244, "testRecordsNoJ" ) {}
  void runTest() { suite_TestIGBlastParser.testRecordsNoJ(); }
 } testDescription_suite_TestIGBlastParser_testRecordsNoJ;
 
 static class TestDescription_suite_TestIGBlastParser_testRecordsNoDNoJ : public CxxTest::RealTestDescription {
 public:
- TestDescription_suite_TestIGBlastParser_testRecordsNoDNoJ() : CxxTest::RealTestDescription( Tests_TestIGBlastParser, suiteDescription_TestIGBlastParser, 298, "testRecordsNoDNoJ" ) {}
+ TestDescription_suite_TestIGBlastParser_testRecordsNoDNoJ() : CxxTest::RealTestDescription( Tests_TestIGBlastParser, suiteDescription_TestIGBlastParser, 299, "testRecordsNoDNoJ" ) {}
  void runTest() { suite_TestIGBlastParser.testRecordsNoDNoJ(); }
 } testDescription_suite_TestIGBlastParser_testRecordsNoDNoJ;
 
 static class TestDescription_suite_TestIGBlastParser_testLC : public CxxTest::RealTestDescription {
 public:
- TestDescription_suite_TestIGBlastParser_testLC() : CxxTest::RealTestDescription( Tests_TestIGBlastParser, suiteDescription_TestIGBlastParser, 352, "testLC" ) {}
+ TestDescription_suite_TestIGBlastParser_testLC() : CxxTest::RealTestDescription( Tests_TestIGBlastParser, suiteDescription_TestIGBlastParser, 353, "testLC" ) {}
  void runTest() { suite_TestIGBlastParser.testLC(); }
 } testDescription_suite_TestIGBlastParser_testLC;
 
 static class TestDescription_suite_TestIGBlastParser_testMouse : public CxxTest::RealTestDescription {
 public:
- TestDescription_suite_TestIGBlastParser_testMouse() : CxxTest::RealTestDescription( Tests_TestIGBlastParser, suiteDescription_TestIGBlastParser, 402, "testMouse" ) {}
+ TestDescription_suite_TestIGBlastParser_testMouse() : CxxTest::RealTestDescription( Tests_TestIGBlastParser, suiteDescription_TestIGBlastParser, 403, "testMouse" ) {}
  void runTest() { suite_TestIGBlastParser.testMouse(); }
 } testDescription_suite_TestIGBlastParser_testMouse;
 
