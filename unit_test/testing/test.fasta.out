@@ -1,32 +1,30 @@
 # IGBLASTN
-# Query: SRR4431788.10|8<CC9FGFEFDGFDGFF9,C@CD7FFFGGFF,9ECFF:CFGFDEE7BFFGAA8<,6@DCFG7<FFD8C<CFFGGG,CEFGG@CGG9FF,FF,C<FGFGCF9FF,5B,FFGEFFFGGF99FGGGGGFGEGG8FC,EF9EFCEGGGGFGGFDE+@>C:@DFFFCC@FAFGGGGGGG@EC7>8D68C>BEFGGG*=;*:5EGGFG97C@:ECCF+4A@C5<DCCCD**9*9*1/><CG37*/:9)0>*79*9>@*=*=@@F*1*96@74>@3>::?=?A)?###############################################AAA@@DFGGFGFFGGGGGGGGG9F<;@@7FFGGGGGGFCAFFGGGGA9DFGGGGGFFGGGGECDFFGGFFFFGGGG8FBFEFGGGGGFGGG8EGGCF8,E<=C=FGGGFFEE8DBFGGCFGEG9,?F,C,9CB,?4+@+@CF7:=CEEG,@FFFF83,,>,DFEGGFB68CF6>FCFF8FFF,@DF6D8CE*=:=CF,,2,,;=<9,>B,+=:)?)88AFFF+11B6C########################################################################
-# Database: /Library/Python/2.7/site-packages/errorx/database/human/human_gl_V /Library/Python/2.7/site-packages/errorx/database/human/human_gl_D /Library/Python/2.7/site-packages/errorx/database/human/human_gl_J
+# Query: SRR3175015.933|C<B@CGG9EFGG9F,,00=,;=,,=,;C,CF,CC,C6,,;,-6C,B,66CF##########################################################################################################################################################################################################################################################8A--,=,<CEFGC-,BFGEGF+C6FFGGGGGF,;;EF,,9B,,;,CFF>F8D@CD<FA,A,,;,,<6C6+,+,6,,?,@:E<F@@+4=F,B=A,:<?<,49,CE,,:@++,8+8+@FF,4@,@88>8+46@C++,8>B7,@>8,7>E,8++6C+7@9=:C#############################################################################################################################################
+# Database: /Volumes/MyPassport/ErrorX/errorx/java_bindings/database/mouse/mouse_gl_V /Volumes/MyPassport/ErrorX/errorx/java_bindings/database/mouse/mouse_gl_D /Volumes/MyPassport/ErrorX/errorx/java_bindings/database/mouse/mouse_gl_J
 # Domain classification requested: imgt
 
 # Note that your query represents the minus strand of a V gene and has been converted to the plus strand. The sequence positions refer to the converted sequence. 
 
 # V-(D)-J rearrangement summary for query sequence (Top V gene match, Top D gene match, Top J gene match, Chain type, stop codon, V-J frame, Productive, Strand).  Multiple equivalent top matches, if present, are separated by a comma.
-IGHV4-4*07	IGHD2-21*01	IGHJ4*02	VH	No	In-frame	Yes	-
+IGHV1-76*01	IGHD3-2*02	IGHJ2*01	VH	No	In-frame	Yes	-
 
 # V-(D)-J junction details based on top germline gene matches (V end, V-D junction, D region, D-J junction, J start).  Note that possible overlapping nucleotides at VDJ junction (i.e, nucleotides that could be assigned to either rearranging gene) are indicated in parentheses (i.e., (TACT)) but are not included under the V, D, or J gene itself
-GAGAG	GCCTGAAATATGATGCCAGTACT	TATTCC	C	TTGAC	
+GGTGC	GGGAGAGG	AGGCT	TTGTCCTTCGTTT	ACTAC	
 
 # Sub-region sequence details (nucleotide sequence, translation, start, end)
-CDR3	GCGAGAGGCCTGAAATATGATGCCAGTACTTATTCCCTTGACAAC	ARGLKYDASTYSLDN	499	543	
+CDR3	GCGGGAGAGGAGGCTTTGTCCTTCGTTTACTAC	AGEEALSFVYY	117	149	
 
 # Alignment summary between query and top germline V gene hit (from, to, length, matches, mismatches, gaps, percent identity)
-FR2-IMGT	313	363	51	40	11	0	78.4
-CDR2-IMGT	364	384	21	15	6	0	71.4
-FR3-IMGT	385	498	114	99	15	0	86.8
-CDR3-IMGT (germline)	499	505	7	7	0	0	100
-Total	N/A	N/A	193	161	32	0	83.4
+FR3-IMGT	3	116	114	83	31	0	72.8
+CDR3-IMGT (germline)	117	118	2	2	0	0	100
+Total	N/A	N/A	116	85	31	0	73.3
 
 # Hit table (the first field indicates the chain type of the hit)
 # Fields: query id, subject id, % identity, alignment length, mismatches, gap opens, gaps, q. start, q. end, s. start, s. end, evalue, bit score, query frame, sbjct frame, query seq, subject seq
 # 3 hits found
-V	reversed|SRR4431788.10|8<CC9FGFEFDGFDGFF9,C@CD7FFFGGFF,9ECFF:CFGFDEE7BFFGAA8<,6@DCFG7<FFD8C<CFFGGG,CEFGG@CGG9FF,FF,C<FGFGCF9FF,5B,FFGEFFFGGF99FGGGGGFGEGG8FC,EF9EFCEGGGGFGGFDE+@>C:@DFFFCC@FAFGGGGGGG@EC7>8D68C>BEFGGG*=;*:5EGGFG97C@:ECCF+4A@C5<DCCCD**9*9*1/><CG37*/:9)0>*79*9>@*=*=@@F*1*96@74>@3>::?=?A)?###############################################AAA@@DFGGFGFFGGGGGGGGG9F<;@@7FFGGGGGGFCAFFGGGGA9DFGGGGGFFGGGGECDFFGGFFFFGGGG8FBFEFGGGGGFGGG8EGGCF8,E<=C=FGGGFFEE8DBFGGCFGEG9,?F,C,9CB,?4+@+@CF7:=CEEG,@FFFF83,	IGHV4-4*07	83.420	193	32	0	0	313	505	100	292	7.68e-54	202	1	1	TGGACAGGGGTCCGGCAGACCGCGGGGAAGCCACTGCAGTGGATTGGCCGAATCTATGTTACTGGAAGCATCGACTACAACCCCTCCCTCAACGGTCGAGTCACCATGTCTATAGACTCGTCGAAGAACCTCTTCTCCCTGAAGATGCACTCAGTGACTGCCGCGGACACGGCCGTCTATTACTGTGCGAGAG	TGGAGCTGGATCCGGCAGCCCGCCGGGAAGGGACTGGAGTGGATTGGGCGTATCTATACCAGTGGGAGCACCAACTACAACCCCTCCCTCAAGAGTCGAGTCACCATGTCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCCGTGTATTACTGTGCGAGAG
-D	reversed|SRR4431788.10|8<CC9FGFEFDGFDGFF9,C@CD7FFFGGFF,9ECFF:CFGFDEE7BFFGAA8<,6@DCFG7<FFD8C<CFFGGG,CEFGG@CGG9FF,FF,C<FGFGCF9FF,5B,FFGEFFFGGF99FGGGGGFGEGG8FC,EF9EFCEGGGGFGGFDE+@>C:@DFFFCC@FAFGGGGGGG@EC7>8D68C>BEFGGG*=;*:5EGGFG97C@:ECCF+4A@C5<DCCCD**9*9*1/><CG37*/:9)0>*79*9>@*=*=@@F*1*96@74>@3>::?=?A)?###############################################AAA@@DFGGFGFFGGGGGGGGG9F<;@@7FFGGGGGGFCAFFGGGGA9DFGGGGGFFGGGGECDFFGGFFFFGGGG8FBFEFGGGGGFGGG8EGGCF8,E<=C=FGGGFFEE8DBFGGCFGEG9,?F,C,9CB,?4+@+@CF7:=CEEG,@FFFF83,	IGHD2-21*01	100.000	6	0	0	0	529	534	23	28	81	12.2	1	1	TATTCC	TATTCC
-J	reversed|SRR4431788.10|8<CC9FGFEFDGFDGFF9,C@CD7FFFGGFF,9ECFF:CFGFDEE7BFFGAA8<,6@DCFG7<FFD8C<CFFGGG,CEFGG@CGG9FF,FF,C<FGFGCF9FF,5B,FFGEFFFGGF99FGGGGGFGEGG8FC,EF9EFCEGGGGFGGFDE+@>C:@DFFFCC@FAFGGGGGGG@EC7>8D68C>BEFGGG*=;*:5EGGFG97C@:ECCF+4A@C5<DCCCD**9*9*1/><CG37*/:9)0>*79*9>@*=*=@@F*1*96@74>@3>::?=?A)?###############################################AAA@@DFGGFGFFGGGGGGGGG9F<;@@7FFGGGGGGFCAFFGGGGA9DFGGGGGFFGGGGECDFFGGFFFFGGGG8FBFEFGGGGGFGGG8EGGCF8,E<=C=FGGGFFEE8DBFGGCFGEG9,?F,C,9CB,?4+@+@CF7:=CEEG,@FFFF83,	IGHJ4*02	95.238	42	2	0	0	536	577	7	48	5.97e-16	69.9	1	1	TTGACAACTGGGGCCAGGGAATCCTGGTCACCGTCTCCTCAG	TTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG
+V	reversed|SRR3175015.933|C<B@CGG9EFGG9F,	IGHV1-76*01	73.276	116	31	0	0	3	118	175	290	1.12e-18	86.0	1	1	TACTCCCGTGGTACGCCCAAGGACGGAGGCACACGGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGCGCGCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCGGTGC	TACTACAATGAGAAGTTCAAGGGCAAGGCCACACTGACTGCAGAAAAATCCTCCAGCACTGCCTACATGCAGCTCAGCAGCCTGACATCTGAGGACTCTGCTGTCTATTTCTGTGC
+D	reversed|SRR3175015.933|C<B@CGG9EFGG9F,	IGHD3-2*02	100.000	5	0	0	0	127	131	10	14	147	10.3	1	1	AGGCT	AGGCT
+J	reversed|SRR3175015.933|C<B@CGG9EFGG9F,	IGHJ2*01	94.872	39	2	0	0	145	183	10	48	2.38e-14	64.1	1	1	ACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG	ACTACTGGGGCCAAGGCACCACTCTCACAGTCTCCTCAG
 
 Total queries = 1
 Total identifiable CDR3 = 1

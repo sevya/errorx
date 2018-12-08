@@ -268,7 +268,9 @@ private:
 	string full_gl_junction_;
 
 	int query_start_;
-
+public:
+	int gl_start_;
+private:
 	string quality_string_full_;
 
 	bool good_sequence_;
@@ -281,8 +283,10 @@ private:
 	int gc_count_;
 	double gc_pct_;
 	double shm_;
-
+public:
 	int translation_frame_;
+private:
+	
 
 	int verbose_;
 	bool allow_nonproductive_;

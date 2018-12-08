@@ -20,7 +20,7 @@ int main( int argc, char *argv[] ) {
     return status;
 }
 bool suite_TestUtil_init = false;
-#include "/Volumes/MyPassport/ErrorX/unit_test/TestUtil.hh"
+#include "/Volumes/MyPassport/ErrorX/errorx/unit_test/TestUtil.hh"
 
 static TestUtil suite_TestUtil;
 
@@ -33,45 +33,51 @@ public:
  void runTest() { suite_TestUtil.testTranslation(); }
 } testDescription_suite_TestUtil_testTranslation;
 
+static class TestDescription_suite_TestUtil_testFrameInference : public CxxTest::RealTestDescription {
+public:
+ TestDescription_suite_TestUtil_testFrameInference() : CxxTest::RealTestDescription( Tests_TestUtil, suiteDescription_TestUtil, 58, "testFrameInference" ) {}
+ void runTest() { suite_TestUtil.testFrameInference(); }
+} testDescription_suite_TestUtil_testFrameInference;
+
 static class TestDescription_suite_TestUtil_testEncrypt : public CxxTest::RealTestDescription {
 public:
- TestDescription_suite_TestUtil_testEncrypt() : CxxTest::RealTestDescription( Tests_TestUtil, suiteDescription_TestUtil, 43, "testEncrypt" ) {}
+ TestDescription_suite_TestUtil_testEncrypt() : CxxTest::RealTestDescription( Tests_TestUtil, suiteDescription_TestUtil, 94, "testEncrypt" ) {}
  void runTest() { suite_TestUtil.testEncrypt(); }
 } testDescription_suite_TestUtil_testEncrypt;
 
 static class TestDescription_suite_TestUtil_testTokenize : public CxxTest::RealTestDescription {
 public:
- TestDescription_suite_TestUtil_testTokenize() : CxxTest::RealTestDescription( Tests_TestUtil, suiteDescription_TestUtil, 64, "testTokenize" ) {}
+ TestDescription_suite_TestUtil_testTokenize() : CxxTest::RealTestDescription( Tests_TestUtil, suiteDescription_TestUtil, 115, "testTokenize" ) {}
  void runTest() { suite_TestUtil.testTokenize(); }
 } testDescription_suite_TestUtil_testTokenize;
 
 static class TestDescription_suite_TestUtil_testReverse : public CxxTest::RealTestDescription {
 public:
- TestDescription_suite_TestUtil_testReverse() : CxxTest::RealTestDescription( Tests_TestUtil, suiteDescription_TestUtil, 81, "testReverse" ) {}
+ TestDescription_suite_TestUtil_testReverse() : CxxTest::RealTestDescription( Tests_TestUtil, suiteDescription_TestUtil, 132, "testReverse" ) {}
  void runTest() { suite_TestUtil.testReverse(); }
 } testDescription_suite_TestUtil_testReverse;
 
 static class TestDescription_suite_TestUtil_testCalculateMetrics : public CxxTest::RealTestDescription {
 public:
- TestDescription_suite_TestUtil_testCalculateMetrics() : CxxTest::RealTestDescription( Tests_TestUtil, suiteDescription_TestUtil, 86, "testCalculateMetrics" ) {}
+ TestDescription_suite_TestUtil_testCalculateMetrics() : CxxTest::RealTestDescription( Tests_TestUtil, suiteDescription_TestUtil, 137, "testCalculateMetrics" ) {}
  void runTest() { suite_TestUtil.testCalculateMetrics(); }
 } testDescription_suite_TestUtil_testCalculateMetrics;
 
 static class TestDescription_suite_TestUtil_testAvg : public CxxTest::RealTestDescription {
 public:
- TestDescription_suite_TestUtil_testAvg() : CxxTest::RealTestDescription( Tests_TestUtil, suiteDescription_TestUtil, 97, "testAvg" ) {}
+ TestDescription_suite_TestUtil_testAvg() : CxxTest::RealTestDescription( Tests_TestUtil, suiteDescription_TestUtil, 148, "testAvg" ) {}
  void runTest() { suite_TestUtil.testAvg(); }
 } testDescription_suite_TestUtil_testAvg;
 
 static class TestDescription_suite_TestUtil_testSplitVector : public CxxTest::RealTestDescription {
 public:
- TestDescription_suite_TestUtil_testSplitVector() : CxxTest::RealTestDescription( Tests_TestUtil, suiteDescription_TestUtil, 105, "testSplitVector" ) {}
+ TestDescription_suite_TestUtil_testSplitVector() : CxxTest::RealTestDescription( Tests_TestUtil, suiteDescription_TestUtil, 156, "testSplitVector" ) {}
  void runTest() { suite_TestUtil.testSplitVector(); }
 } testDescription_suite_TestUtil_testSplitVector;
 
 static class TestDescription_suite_TestUtil_testCountLines : public CxxTest::RealTestDescription {
 public:
- TestDescription_suite_TestUtil_testCountLines() : CxxTest::RealTestDescription( Tests_TestUtil, suiteDescription_TestUtil, 122, "testCountLines" ) {}
+ TestDescription_suite_TestUtil_testCountLines() : CxxTest::RealTestDescription( Tests_TestUtil, suiteDescription_TestUtil, 173, "testCountLines" ) {}
  void runTest() { suite_TestUtil.testCountLines(); }
 } testDescription_suite_TestUtil_testCountLines;
 

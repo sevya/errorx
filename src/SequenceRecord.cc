@@ -191,6 +191,7 @@ void SequenceRecord::initialize_variables() {
 	full_gl_nt_sequence_ = "";
 	full_aa_sequence_ = "";
 	query_start_ = -1;
+	gl_start_ = -1;
 	quality_string_full_ = "";
 	quality_string_ = "";
 	good_sequence_ = 1;
@@ -300,8 +301,7 @@ void SequenceRecord::parse_vregion_string( vector<string> const & data ) {
 		v_nts_ = data[16];
 		v_gl_nts_ = data[17];
 		query_start_ = boost::lexical_cast<int>( data[8] );
-		int translation_frame = boost::lexical_cast<int>( data[14] );
-		translation_frame_ = (strand_ == "-") ? 4-translation_frame : translation_frame;
+		gl_start_ = boost::lexical_cast<int>( data[10] );
 
 		if ( v_evalue_ > 1e-3 ) {
 			if ( verbose_ > 1 ) {
@@ -447,36 +447,18 @@ void SequenceRecord::assemble_full_sequence() {
 		return;
 	}
 
-	// hacky way to test frame
-	// TODO deal with edge case where CDRH3 is not included in translation
-	translation_frame_ = -1;
-	string assembled_aa_sequence;
+	// base translation frame off of the match position of the germline
+	// assume that all IMGT germlines start in the same frame
 
-	// if the CDR3 couldn't be identified by IGBlast, just assume frame is 1
-	// this is a major assumption and probably wrong 
-	// TODO I am leaving out amino acid level stuff for now. It's just too hard
-	// to figure out the translation frame. Come back to it later.
-	if ( cdr3_aa_sequence_ != "" ) {
-		for ( int frame = 1; frame <=3; ++frame ) {
-			assembled_aa_sequence = util::translate( full_nt_sequence_, frame );
-			if ( assembled_aa_sequence.find(cdr3_aa_sequence_) != string::npos) {
-				// if the cdr3 is found in the translated aa, accept
-				translation_frame_ = frame;
-				full_aa_sequence_ = assembled_aa_sequence;
-				break;
-			}
-		}
-	} else {
-		translation_frame_ = 1;
-	}
+	// start % 3 == 1 -> already in correct frame
+	if ( gl_start_ % 3 == 1 ) translation_frame_ = 1;
+	else if ( gl_start_ % 3 == 2 ) translation_frame_ = 3;
+	else if ( gl_start_ % 3 == 0 ) translation_frame_ = 2;
 
-	// if ( translation_frame_ == -1 ) {
-	// 	if ( verbose_ ) {
-	// 		cout << "Frame is off : " << sequenceID_ << endl;
-	// 	}
-	// 	good_sequence_ = 0;
-	// 	return;
-	// }
+	full_aa_sequence_ = util::translate( full_nt_sequence_, translation_frame_ );
+
+	// TODO I never double-check if it's productive at this point - 
+	// should be inferred from IGBlast output. Should I check again?
 }
 
 void SequenceRecord::calculate_metrics() {

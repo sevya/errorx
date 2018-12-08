@@ -25,10 +25,36 @@ using namespace errorx;
 class TestSequenceFeatures : public CxxTest::TestSuite
 {
 public:
+
+	void setUp() {
+		sequenceID_ = "SRR3175015.933";
+		sequence_ =
+			"TACTCCCGTGGTACGCCCAAGGACGGAGGCACACGGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGCGCGCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCGGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG";
+
+		gl_sequence_ =
+			"TACTACAATGAGAAGTTCAAGGGCAAGGCCACACTGACTGCAGAAAAATCCTCCAGCACTGCCTACATGCAGCTCAGCAGCCTGACATCTGAGGACTCTGCTGTCTATTTCTGTGC--------------------------ACTACTGGGGCCAAGGCACCACTCTCACAGTCTCCTCAG";
+
+		quality_string_ =
+			"###########################################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4,";
+
+		query_ = new SequenceQuery( sequenceID_, sequence_, gl_sequence_, quality_string_ );
+		record_ = new SequenceRecord( *query_ );
+
+		raw_vector_ = { 0.75138121546961323, 0.63535911602209949, 0.35294117647058826, 3.0882855190822389, 3.8804184154334607, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 2.0000, 2.0000, 2.0000, 2.0000, 2.0000, 2.0000, 2.0000, 2.0000, 2.0000, 2.0000, 2.0000, 34.0000, 25.0000, 28.0000, 24.0000, 31.0000, 22.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.18232044198895028 };
+
+		scaled_vector_ = { 0.75138121546961323, 0.63535911602209949, 0.35294117647058826, 3.0882855190822389 / 40, 3.8804184154334607 / 40, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 2.0000/ 40, 2.0000/ 40, 2.0000/ 40, 2.0000/ 40, 2.0000/ 40, 2.0000/ 40, 2.0000/ 40, 2.0000/ 40, 2.0000/ 40, 2.0000/ 40, 2.0000/ 40, 34.0000/ 40, 25.0000/ 40, 28.0000/ 40, 24.0000/ 40, 31.0000/ 40, 22.0000/ 40, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.18232044198895028 };
+
+		predicted_value_ = 0.30681691739419625;
+		predicted_error_rate_ = 0.079558007419109344;
+	}
+
+	void tearDown() {
+		delete query_;
+		delete record_;
+	}
+
 	void testCharEncoding(void) {
-		SequenceQuery query ("test", "ACGTGACGTGACGTGACGTG", "ACGTGACGTGACGTGACGTG", "FFFFFFFFFFFFFFFFFFFF");
-		SequenceRecord* record = new SequenceRecord( query );
-		SequenceFeatures sf = SequenceFeatures( record, 2 );
+		SequenceFeatures sf = SequenceFeatures( record_, 2 );
 
 		vector<int> test_vector;
 
@@ -58,9 +84,7 @@ public:
 	}
 
 	void testSequenceEncoding(void) {
-		SequenceQuery query ("test", "ACGTGACGTGACGTGACGTG", "ACGTGACGTGACGTGACGTG", "FFFFFFFFFFFFFFFFFFFF");
-		SequenceRecord* record = new SequenceRecord( query );
-		SequenceFeatures sf = SequenceFeatures( record, 2 );
+		SequenceFeatures sf = SequenceFeatures( record_, 2 );
 
 		vector<int> test_vector = {
 				1,0,0,0,0,0, //A
@@ -81,9 +105,7 @@ public:
 	}
 
 	void testSequenceWindow(void) {
-		SequenceQuery query ("test", "ACGTGACGTGACGTGACGTG", "ACGTGACGTGACGTGACGTG", "FFFFFFFFFFFFFFFFFFFF");
-		SequenceRecord* record = new SequenceRecord( query );
-		SequenceFeatures sf = SequenceFeatures( record, 2 );
+		SequenceFeatures sf = SequenceFeatures( record_, 2 );
 
 		string sequence = "ATCGCAGTCCTA";
 
@@ -128,9 +150,7 @@ public:
 	}
 
 	void testIntWindow(void) {
-		SequenceQuery query ("test", "ACGTGACGTGACGTGACGTG", "ACGTGACGTGACGTGACGTG", "FFFFFFFFFFFFFFFFFFFF");
-		SequenceRecord* record = new SequenceRecord( query );
-		SequenceFeatures sf = SequenceFeatures( record, 2 );
+		SequenceFeatures sf = SequenceFeatures( record_, 2 );
 		vector<int> sequence = {	
 				39,37,40,40,32,35,36,31,30,29,25,34
 		};
@@ -176,14 +196,8 @@ public:
 
 	}
 
-	void testFeatureVector(void) {
-		SequenceQuery query ("test",
-			  "ATCGCAGTCCTAATCGCAGTCCTA",
-			  "ATAGCTGCCCTATTAGCTGCCCTA",
-			  "IIJIJIDIIIJIIIJIJIDIIIJI");
-		SequenceRecord* record  = new SequenceRecord( query );
-
-		SequenceFeatures sf ( record, 12 );
+	void testFeatureVectorSize(void) {
+		SequenceFeatures sf ( record_, 12 );
 		vector<double> features = sf.get_feature_vector();
 		TS_ASSERT_EQUALS( features.size(), 229 );
 
@@ -191,97 +205,40 @@ public:
 
 	void testFull(void) {
 
-		string sequence =
-			"TCCTGTGCAGCCTCTGGATTCACCTTCAGTAGCTATAGAA"
-			"TGAACTGGGTCCGCCAGGCTCCAGGGAAGGGGCTGGAGTG"
-			"GGTCTCATCCATTAGTAGTAGTAGTAGTTACATATACTAC"
-			"GCAGACTCAGTGAAGGGCCGATTCACCATCTCCAGAGACA"
-			"ACGCCAAGAACTCACTGTATCTGCAAATGAACAGCCTGAG"
-			"AGCCGAGGACACGGCTGTGTATTACTGTGCGAGAGATCGA"
-			"GTTGGCTACGGTGACTACGGGTGGGGCCAGGGAACCCTGG"
-			"TCACCGTCTCCTCAGGTAAGTTTGTTGTTTGTATGTTTGT"
-			"TCAG";
-
-		string nt_sequence =
-			"TCCTGTGCAGCCTCTGGATTCACCTTCAGTAGCTATAGCA"
-			"TGAACTGGGTCCGCCAGGCTCCAGGGAAGGGGCTGGAGTG"
-			"GGTCTCATCCATTAGTAGTAGTAGTAGTTACATATACTAC"
-			"GCAGACTCAGTGAAGGGCCGATTCACCATCTCCAGAGACA"
-			"ACGCCAAGAACTCACTGTATCTGCAAATGAACAGCCTGAG"
-			"AGCCGAGGACACGGCTGTGTATTACTGTGCGAGAGA----"
-			"-----CTACGGTGACTAC---TGGGGCCAGGGAACCCTGG"
-			"TCACCGTCTCCTCAG-------------------------"
-			"----";
-
-		string quality_string =
-			"IIIHIIIIIIIIIIIIIGIIIIIIIIIIIIIIIIIIIIII"
-			"IIIIIIIIIIIIHIIIGHIIIIIIIIIIIIIIIIJJ=JJJ"
-			"JJJ=J=JJJ==JJJJJJJJJJJJJJJJJJJJJJJJJJJJJ"
-			"JJ?JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ"
-			"J;JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ"
-			"JJJJJJJJJJHHIIIIIIIIHHFIIIIIIHIIIHIIIIII"
-			"IIIIIIHIIIIIIIIHIIHIIIIIIIIIIIIHHIIIIIII"
-			"IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIID"
-			"DDDD";
-
-		SequenceQuery query("test", sequence, nt_sequence, quality_string );
-		SequenceRecord* record = new SequenceRecord( query );
-
-		SequenceFeatures features ( record, 38 );
-
-		vector<double> results_vector = {
-			0.11728395061728394, 0.5185185185185185,0.35294117647058826, 38.858161711630082, 39.999999793721194, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0.058823529411764705, 0.0030864197530864196
-		};
-
-		double sum1 = 0;
-		double sum2 = 0;
+		SequenceFeatures features ( record_, 136 );
 
 		vector<double> results_vector_test = features.get_feature_vector();
 		cout.precision(17);
-		for ( int ii = 0; ii < results_vector.size(); ++ii ) {
-			if ( results_vector[ii]!=results_vector_test[ii] ) {
-				cout << ii << " : " << results_vector[ii] << " vs " << results_vector_test[ii] << endl;
+		for ( int ii = 0; ii < raw_vector_.size(); ++ii ) {
+			if ( raw_vector_[ii]!=results_vector_test[ii] ) {
+				cout << ii << " : " << raw_vector_[ii] << " vs " << results_vector_test[ii] << endl;
 			}
 		}
-		TS_ASSERT_EQUALS( results_vector_test, results_vector );
-
-
-		vector<double> scaled_vector = {
-			0.11728395061728394, 0.5185185185185185,0.35294117647058826, 38.858161711630082/40.0, 39.999999793721194/40.0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0.058823529411764705, 0.0030864197530864196
-		};
+		TS_ASSERT_EQUALS( results_vector_test, raw_vector_ );
 
 		DataScaler scaler;
 
-		vector<double> scaled_vector_test = scaler.scale_data( features.get_feature_vector());
-
-		sum1 = 0;
-		sum2 = 0;
-
-		for ( int ii = 0; ii < scaled_vector_test.size(); ++ii ) sum1 += scaled_vector_test[ii];
-		for ( int ii = 0; ii < scaled_vector.size(); ++ii ) sum2 += scaled_vector[ii];
-
-		TS_ASSERT_DELTA( sum1, sum2, 0.0001 );
-		// TODO: fix this as soon as I have scaled variables nailed down
+		vector<double> scaled_vector_test = scaler.scale_data( results_vector_test );
+		TS_ASSERT_EQUALS( scaled_vector_test, scaled_vector_ );
 	
 		ErrorPredictor predictor (0);
+		// cout << "predicted activitiy: " << predictor.apply_model( features ) << endl; // TODO remove
 
-		TS_ASSERT_EQUALS( 0.39750912984814457, predictor.apply_model( features ));
+		TS_ASSERT_EQUALS( predicted_value_, predictor.apply_model( features ));
 	}
 
+	// These methods cause it to crash/hold - figure it out
 	void testErrorRate_singlethread() {
-		vector<double> scaled_vector = {
-			0.11728395061728394, 0.5185185185185185,0.35294117647058826, 38.858161711630082/40.0, 39.999999793721194/40.0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0.058823529411764705, 0.0030864197530864196
-		};
 
 		ErrorPredictor predictor (0);
 
 		DataScaler scaler;
 
-		vector<double> pred1 = predictor.apply_model( vector<vector<double>> {scaled_vector} );
+		vector<double> pred1 = predictor.apply_model( vector<vector<double>> {scaled_vector_} );
 
 
 		for ( int ii = 0; ii < 1000; ++ii ) {
-			vector<double> pred2 = predictor.apply_model( vector<vector<double>> {scaled_vector} );
+			vector<double> pred2 = predictor.apply_model( vector<vector<double>> {scaled_vector_} );
 			TS_ASSERT_EQUALS( pred1[0], pred2[0] );
 		}
 
@@ -292,36 +249,27 @@ public:
 
 		SequenceRecords* records = new SequenceRecords( options );
 
-		SequenceQuery query( "test",
-			  "AGGTGCACTTAGTGCAGTCTGGGGCTGAGGTTAGGAAGCCTGGGGCCTCAGTGAAAATCTCCTGCAAGGCTTATGGATACACCTTCAACGACTACCATATACACTGGGTTCGGCAGGCCCCTGGACAAGGACTTGAGTGGATGGAGTTTGTAG",
-			  "AGGTGCAGCTGGTGCAGTCTGGGGCTGAGGTGAAGAAGCCTGGGGCCTCAGTGAAGGTCTCCTGCAAGGCTTCTGGATACACCTTCACCGGCTACTATATGCACTGGGTGCGACAGGCCCCTGGACAAGGGCTTGAGTGGATGG---TTGTAG",
-			  "4>FFGFC=,,3EGGGGGGGGGGGGGGEGGGG,@,@FGFEGFFGFEGE*@CFGGGG,,=CFGGGEF6<947*?*8AFFF6?BFFAA)?++2.=A96)/+;AFGGFFG4;F))))25<>BFEFFF3>57<C*73:4*9:76)9CFG#########" );
-		SequenceRecord* template_record = new SequenceRecord( query );
-		records->add_record( template_record );
-
-		// for ( int ii = 0; ii < 20; ++ii ) {
-		// 	records->add_record( new SequenceRecord( *template_record ));
-		// }
-
+		records->add_record( new SequenceRecord( *record_ ));
 
 		SequenceRecords::correct_sequences( records );
 
-		TS_ASSERT_EQUALS( 0.18823529779911041, records->estimate_error_rate() );
+		// cout << "estimated er: " << records->estimate_error_rate() << endl; // TODO remove
+		TS_ASSERT_EQUALS( predicted_error_rate_, records->estimate_error_rate() );
+
+		delete records;
 	}
 
+	// These methods cause it to crash/hold - figure it out
 	void testErrorRate_multithread() {
-		vector<double> scaled_vector = {
-			0.100000,0.126469,0.538462,0.710012,0.375000,0.375000,0.959755,0.961883,1.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.975610,0.975610,0.975610,0.975610,0.975610,0.975610,0.975610,0.975610,0.973684,0.974359,0.974359,0.974359,0.974359,0.974359,0.974359,0.974359,0.974359,1.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.058824,0.069973
-		};
 
 		ErrorPredictor predictor (0);
 
 		DataScaler scaler;
 
-		vector<double> pred1 = predictor.apply_model( vector<vector<double>> {scaled_vector} );
+		vector<double> pred1 = predictor.apply_model( vector<vector<double>> {scaled_vector_} );
 
 		for ( int ii = 0; ii < 1000; ++ii ) {
-			vector<double> pred2 = predictor.apply_model( vector<vector<double>> {scaled_vector} );
+			vector<double> pred2 = predictor.apply_model( vector<vector<double>> {scaled_vector_} );
 			TS_ASSERT_EQUALS( pred1[0], pred2[0] );
 		}
 
@@ -331,28 +279,19 @@ public:
 
 		SequenceRecords* records = new SequenceRecords( options );
 
-		SequenceQuery query( "test",
-			  "AGGTGCACTTAGTGCAGTCTGGGGCTGAGGTTAGGAAGCCTGGGGCCTCAGTGAAAATCTCCTGCAAGGCTTATGGATACACCTTCAACGACTACCATATACACTGGGTTCGGCAGGCCCCTGGACAAGGACTTGAGTGGATGGAGTTTGTAG",
-			  "AGGTGCAGCTGGTGCAGTCTGGGGCTGAGGTGAAGAAGCCTGGGGCCTCAGTGAAGGTCTCCTGCAAGGCTTCTGGATACACCTTCACCGGCTACTATATGCACTGGGTGCGACAGGCCCCTGGACAAGGGCTTGAGTGGATGG---TTGTAG",
-			  "4>FFGFC=,,3EGGGGGGGGGGGGGGEGGGG,@,@FGFEGFFGFEGE*@CFGGGG,,=CFGGGEF6<947*?*8AFFF6?BFFAA)?++2.=A96)/+;AFGGFFG4;F))))25<>BFEFFF3>57<C*73:4*9:76)9CFG#########" );
-		SequenceRecord* template_record = new SequenceRecord( query );
-		records->add_record( template_record );
-
-		// for ( int ii = 0; ii < 20; ++ii ) {
-		// 	records->add_record( new SequenceRecord( *template_record ));
-		// }
+		records->add_record( new SequenceRecord( *record_ ));
 
 		SequenceRecords::correct_sequences( records );
 
-		cout << "error rate: " << records->estimate_error_rate() << endl;
+		TS_ASSERT_EQUALS( predicted_error_rate_, records->estimate_error_rate() );
 
-		TS_ASSERT_EQUALS( 0.18823529779911041, records->estimate_error_rate() );
+		delete records;
 	}
 
 
 	void testTSVInput_singlethread() {
 		// sequenceID,nt_sequence,gl_sequence,quality_string
-		ErrorXOptions options( util::get_root_path(0).string()+"/testing/test_input.tsv", "tsv" );
+		ErrorXOptions options( util::get_root_path(0).string()+"/testing/test.tsv", "tsv" );
 		options.nthreads( 1 );
 
 		SequenceRecords* records = new SequenceRecords( options );
@@ -360,13 +299,15 @@ public:
 	
 		SequenceRecords::correct_sequences( records );
 
-		TS_ASSERT_EQUALS( 0.18823529779911041, records->estimate_error_rate() );
+		TS_ASSERT_EQUALS( predicted_error_rate_, records->estimate_error_rate() );
+		delete records;
+
 	}
 
 
 	void testTSVInput_multithread() {
 		// sequenceID,nt_sequence,gl_sequence,quality_string
-		ErrorXOptions options( util::get_root_path(0).string()+"/testing/test_input.tsv", "tsv" );
+		ErrorXOptions options( util::get_root_path(0).string()+"/testing/test.tsv", "tsv" );
 		options.nthreads( -1 );
 
 		SequenceRecords* records = new SequenceRecords( options );
@@ -374,8 +315,23 @@ public:
 	
 		SequenceRecords::correct_sequences( records );
 
-		TS_ASSERT_EQUALS( 0.18823529779911041, records->estimate_error_rate() );
+		TS_ASSERT_EQUALS( predicted_error_rate_, records->estimate_error_rate() );
+		delete records;
+
 	}
+
+	string sequenceID_;
+	string sequence_;
+	string gl_sequence_;
+	string quality_string_;
+	SequenceQuery* query_;
+	SequenceRecord* record_;
+
+	vector<double> raw_vector_;
+	vector<double> scaled_vector_;
+
+	double predicted_value_;
+	double predicted_error_rate_;
 
 };
 
