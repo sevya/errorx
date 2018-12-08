@@ -5,3 +5,4 @@ sublime.sublime-workspace
 .cproject
 .project
 .settings/
+unit_test/hs_err*.log

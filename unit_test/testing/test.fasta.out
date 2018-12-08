@@ -1,6 +1,6 @@
 # IGBLASTN
 # Query: SRR3175015.933|C<B@CGG9EFGG9F,,00=,;=,,=,;C,CF,CC,C6,,;,-6C,B,66CF##########################################################################################################################################################################################################################################################8A--,=,<CEFGC-,BFGEGF+C6FFGGGGGF,;;EF,,9B,,;,CFF>F8D@CD<FA,A,,;,,<6C6+,+,6,,?,@:E<F@@+4=F,B=A,:<?<,49,CE,,:@++,8+8+@FF,4@,@88>8+46@C++,8>B7,@>8,7>E,8++6C+7@9=:C#############################################################################################################################################
-# Database: /Volumes/MyPassport/ErrorX/errorx/java_bindings/database/mouse/mouse_gl_V /Volumes/MyPassport/ErrorX/errorx/java_bindings/database/mouse/mouse_gl_D /Volumes/MyPassport/ErrorX/errorx/java_bindings/database/mouse/mouse_gl_J
+# Database: /Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/errorx/database/mouse/mouse_gl_V /Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/errorx/database/mouse/mouse_gl_D /Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/errorx/database/mouse/mouse_gl_J
 # Domain classification requested: imgt
 
 # Note that your query represents the minus strand of a V gene and has been converted to the plus strand. The sequence positions refer to the converted sequence. 

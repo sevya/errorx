@@ -93,7 +93,7 @@ def run_protocol( options ):
 	## When the user doesn't set infile it defaults to 'tmp'
 	## if they're reading from a file this is not good
 	if options.infile == 'tmp':
-		print 'Error: infile was not set'
+		print('Error: infile was not set')
 		return
 
 	options.base_path( _get_base() )

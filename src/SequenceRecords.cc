@@ -150,11 +150,10 @@ float SequenceRecords::estimate_error_rate() const {
  	int total_bases = 0;
 
  	// TODO fix these hardcoded values
- 	double recall = 1.0/3;
- 	double precision = 0.8;
+ 	double recall = util::OPTIMIZED_RECALL;
+ 	double precision = util::OPTIMIZED_PRECISION;
 
 	for ( int ii = 0; ii < records_.size(); ++ii ) {
-		cout << "workin on record " << ii << endl; // TODO remove
  		if ( records_[ ii ]->isGood() ) {
 			total_bases += records_[ ii ]->full_nt_sequence().size();
  			total_errors += records_[ ii ]->n_errors();
