@@ -20,7 +20,7 @@ int main( int argc, char *argv[] ) {
     return status;
 }
 bool suite_TestErrorX_init = false;
-#include "/Volumes/MyPassport/ErrorX/unit_test/TestErrorX.hh"
+#include "/Users/alexsevy/ErrorX/unit_test/TestErrorX.hh"
 
 static TestErrorX suite_TestErrorX;
 

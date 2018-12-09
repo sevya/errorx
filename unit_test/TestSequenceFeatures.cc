@@ -20,7 +20,7 @@ int main( int argc, char *argv[] ) {
     return status;
 }
 bool suite_TestSequenceFeatures_init = false;
-#include "/Volumes/MyPassport/ErrorX/errorx/unit_test/TestSequenceFeatures.hh"
+#include "/Users/alexsevy/ErrorX/unit_test/TestSequenceFeatures.hh"
 
 static TestSequenceFeatures suite_TestSequenceFeatures;
 

@@ -20,7 +20,7 @@ int main( int argc, char *argv[] ) {
     return status;
 }
 bool suite_TestIGBlastParser_init = false;
-#include "/Volumes/MyPassport/ErrorX/errorx/unit_test/TestIGBlastParser.hh"
+#include "/Users/alexsevy/ErrorX/unit_test/TestIGBlastParser.hh"
 
 static TestIGBlastParser suite_TestIGBlastParser;
 

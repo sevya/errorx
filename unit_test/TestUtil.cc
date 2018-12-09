@@ -20,7 +20,7 @@ int main( int argc, char *argv[] ) {
     return status;
 }
 bool suite_TestUtil_init = false;
-#include "/Volumes/MyPassport/ErrorX/errorx/unit_test/TestUtil.hh"
+#include "/Users/alexsevy/ErrorX/unit_test/TestUtil.hh"
 
 static TestUtil suite_TestUtil;
 
