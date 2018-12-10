@@ -22,3 +22,7 @@ unit_test/testing/out.tsv
 java_bindings/errorx/*.class
 java_bindings/ErrorX.jar
 java_bindings/errorx/liberrorx_java.dylib
+
+build_test/new/*
+build_test/TestErrorX.class
+build_test/input_files/test.fasta*
