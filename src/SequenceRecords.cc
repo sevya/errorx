@@ -12,6 +12,7 @@ data, and ErrorPredictor that does the error correction itself.
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <chrono>
 #include <thread>
 
 #include "SequenceRecords.hh"
@@ -149,7 +150,6 @@ float SequenceRecords::estimate_error_rate() const {
  	int total_errors = 0;
  	int total_bases = 0;
 
- 	// TODO fix these hardcoded values
  	double recall = util::OPTIMIZED_RECALL;
  	double precision = util::OPTIMIZED_PRECISION;
 
@@ -255,12 +255,14 @@ void SequenceRecords::write_summary() const {
 void SequenceRecords::correct_sequences_threaded( SequenceRecords* & records, 
 												  atomic<int>* & correction_progress ) 
 {
+	// int N_increments = 100;
 	for ( int ii = 0; ii < records->size(); ++ii ) {
 		try {
 			SequenceRecord* current_record = records->get( ii );
 			current_record->correct_sequence( 
 				*(records->predictor_), 
 				*(records->options_) );
+
 			(*correction_progress)++;
 
 		} catch ( exception & e ) {
@@ -305,7 +307,7 @@ void SequenceRecords::correct_sequences( SequenceRecords* & records ) {
 	atomic<int> correction_progress(0);
 	atomic<int>* correction_progress_ptr = &correction_progress;
 
-	int nthreads = records->options_->nthreads() ;
+	int nthreads = records->options_->nthreads();
 	int total_records = records->size();
 	int verbose = records->options_->verbose();
 
@@ -408,7 +410,9 @@ void SequenceRecords::track_progress( int & total_records, atomic<int>* & correc
 		}
 		last_progress = progress;
 
-		if (progress==1.0) break;
+		if ( progress==1.0 ) break;
+
+		std::this_thread::sleep_for( std::chrono::milliseconds(2000) );
 	}
 	cout << endl;
 }
