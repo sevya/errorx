@@ -12,11 +12,15 @@ bin/errorx
 bin/errorx_testing
 bin/errorx_testing.mac
 bin/errorx_testing.linux
+
 lib/*
+
 unit_test/cxxtest/**
 unit_test/testing/test.fasta.out
 unit_test/bin/*
 unit_test/*.cc
 unit_test/testing/out.tsv
+
 java_bindings/errorx/*.class
 java_bindings/ErrorX.jar
+java_bindings/errorx/liberrorx_java.dylib
