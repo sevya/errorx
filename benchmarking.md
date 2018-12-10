@@ -1,3 +1,4 @@
+## Precision/recall thresholds
 | Precision Cutoff | Recall in SRR024 | Precision in All | Recall in All | Numeric threshold  |
 |:-----------------|:-----------------|:-----------------|:---------------|:-------------------|
 | 0.90 | 0.388 | 0.761 | 0.280 | 0.971274 | 
@@ -6,4 +7,16 @@
 | 0.75 | 0.614 | 0.628 | 0.478 | 0.839779 | 
 | 0.70 | 0.668 | 0.584 | 0.521 | 0.753237 | 
 | 0.65 | 0.692 | 0.554 | 0.540 | 0.693183 | 
-| 0.60 | 0.720 | 0.511 | 0.564 | 0.624195 | 
+| 0.60 | 0.720 | 0.511 | 0.564 | 0.624195 |
+
+
+## Runtime calculation
+
+Runtime per 1K sequences in seconds
+
+|        | IGBlast+ErrorX |          | ErrorX alone  |          |
+| ------ | -------------- | -------- | ------------- | -------- |
+|        | Single thread  | 4 thread | Single thread | 4 thread |
+| Binary | X              | X        | 9.46          | 6.5      |
+| Python | X              | X        | X             | X        |
+| Java   | X              | X        | X             | X        |

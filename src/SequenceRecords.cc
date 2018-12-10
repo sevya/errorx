@@ -253,7 +253,7 @@ void SequenceRecords::write_summary() const {
 }
 
 void SequenceRecords::correct_sequences_threaded( SequenceRecords* & records, 
-												  atomic<int>* & correction_progress ) 
+												  int* & correction_progress ) 
 {
 	for ( int ii = 0; ii < records->size(); ++ii ) {
 		try {
@@ -302,12 +302,18 @@ vector<SequenceRecords*> SequenceRecords::chunk_records() {
 
 void SequenceRecords::correct_sequences( SequenceRecords* & records ) {
 
-	atomic<int> correction_progress(0);
-	atomic<int>* correction_progress_ptr = &correction_progress;
-
 	int nthreads = records->options_->nthreads() ;
 	int total_records = records->size();
 	int verbose = records->options_->verbose();
+
+	// make vector of correction progress atomic ints -
+	// these are used to calculate progress across
+	// threads without sharing data and slowing it down
+	vector<int*> progress_vector( nthreads );
+	for ( int ii = 0; ii < nthreads; ++ii ) {
+		progress_vector[ ii ] = new int(0);
+		// cout << "assigning value at address " << progress_vector[ii] << " : " << *(progress_vector[ii]); // TODO remove
+	} 
 
 	// get chunked SequenceRecords
 	// this will deep copy the original pointers in records_
@@ -322,13 +328,13 @@ void SequenceRecords::correct_sequences( SequenceRecords* & records ) {
 		threads[ii] = new std::thread(
 				&SequenceRecords::correct_sequences_threaded,
 				ref(chunked_records[ii]),
-				ref(correction_progress_ptr)
+				ref(progress_vector[ii])
 				);
 	}
 
 	if ( verbose > 0 ) {
 		cout << "Correcting sequences..." << endl;
-		track_progress( total_records, correction_progress_ptr );
+		track_progress( total_records, progress_vector );
 	}
 
 	// Wait for all threads to finish
@@ -344,6 +350,7 @@ void SequenceRecords::correct_sequences( SequenceRecords* & records ) {
 	for ( int ii = 0; ii < nthreads; ++ii ) {
 		delete threads[ii];
 		delete chunked_records[ii]; 
+		delete progress_vector[ii];
 	} 
 }
 
@@ -396,19 +403,26 @@ void SequenceRecords::write_features() {
 	file.close();
 }
 
-void SequenceRecords::track_progress( int & total_records, atomic<int>* & correction_progress ) {
+void SequenceRecords::track_progress( int & total_records, vector<int*> & progress_vector ) {
 	float progress = 0.0;
 	float last_progress = -1;
 
 	while ( true ) {
-		progress = (float)(*correction_progress)/(float)total_records;
+		int progress_sum = 0;
+		// add up progress over all threads
+		for ( int ii = 0; ii < progress_vector.size(); ++ii ) {
+			// cout << "checking value at address " << progress_vector[ii] << " : " << *(progress_vector[ii]) << endl; // TODO remove
+
+			progress_sum += (*progress_vector[ii]);
+		}
+		progress = (float)progress_sum/(float)total_records;
 
 		if ( progress != last_progress ) { // only write to screen if the value has changed
-			util::write_progress_bar( progress, *correction_progress, total_records );
+			util::write_progress_bar( progress, progress_sum, total_records );
 		}
 		last_progress = progress;
 
-		if (progress==1.0) break;
+		if ( progress >= 1.0 ) break;
 	}
 	cout << endl;
 }
