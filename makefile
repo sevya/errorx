@@ -19,8 +19,8 @@ ifeq ($(uname_S), Linux)
 	PYTHON_INC=-I/usr/include/python$(PYTHON_VERSION)
 	PYTHON_LINK=-L/usr/lib/python$(PYTHON_VERSION)/config -lpython$(PYTHON_VERSION)
 
-#	JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home/include/
-	JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home/include/
+	JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home/include/
+	# JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home/include/
 	JAVA_INC=-I$(JAVA_HOME) -I$(JAVA_HOME)darwin/
 endif
 ifeq ($(uname_S), Darwin)
@@ -28,16 +28,14 @@ ifeq ($(uname_S), Darwin)
 	CXX=clang++
 	CPPFLAGS=-pthread -std=c++11 -Wall -Wno-deprecated-register
 		
-	# PYTHON_INC=-I/usr/include/python$(PYTHON_VERSION)
-	# PYTHON_LINK=-L/usr/lib/python$(PYTHON_VERSION)/config -lpython$(PYTHON_VERSION)
+	PYTHON_INC=-I/usr/include/python$(PYTHON_VERSION)
+	PYTHON_LINK=-L/usr/lib/python$(PYTHON_VERSION)/config -lpython$(PYTHON_VERSION)
 
-	PYTHON_INC=-I/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7/
-	PYTHON_LINK=-L/Library/Frameworks/Python.framework/Versions/2.7/lib/ -lpython2.7
-	# PYTHON_INC=-I/System/Library/Frameworks/Python.framework/Versions/$(PYTHON_VERSION)/include/python$(PYTHON_VERSION)
-	# PYTHON_LINK=-L/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python$(PYTHON_VERSION)/config -lpython$(PYTHON_VERSION)
+	# PYTHON_INC=-I/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7/
+	# PYTHON_LINK=-L/Library/Frameworks/Python.framework/Versions/2.7/lib/ -lpython2.7
 
-#	JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home/include/
-	JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home/include/
+	JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home/include/
+	# JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home/include/
 	JAVA_INC=-I$(JAVA_HOME) -I$(JAVA_HOME)darwin/
 endif
 

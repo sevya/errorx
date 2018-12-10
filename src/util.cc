@@ -74,7 +74,14 @@ string translate( string & nt_sequence, int frame ) {
 	string aa_seq = "";
 
 	for( int ii = 0; ii < inframe_seq.length(); ii+=3 ) {
-		aa_seq += codon_table[ inframe_seq.substr(ii,3) ];
+		// if codon is not present in table (i.e. has N nucleotides),
+		// replace with X
+		if ( codon_table.find(inframe_seq.substr(ii,3)) 
+			 == codon_table.end() ) {
+			aa_seq += "X";
+		} else {
+			aa_seq += codon_table[ inframe_seq.substr(ii,3) ];
+		}
 	}
 	return aa_seq;
 }
