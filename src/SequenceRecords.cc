@@ -255,7 +255,6 @@ void SequenceRecords::write_summary() const {
 void SequenceRecords::correct_sequences_threaded( SequenceRecords* & records, 
 												  int* & correction_progress ) 
 {
-	// int N_increments = 100;
 	for ( int ii = 0; ii < records->size(); ++ii ) {
 		try {
 			SequenceRecord* current_record = records->get( ii );
@@ -304,9 +303,6 @@ vector<SequenceRecords*> SequenceRecords::chunk_records() {
 
 void SequenceRecords::correct_sequences( SequenceRecords* & records ) {
 
-<<<<<<< HEAD
-	atomic<int> correction_progress(0);
-	atomic<int>* correction_progress_ptr = &correction_progress;
 
 	int nthreads = records->options_->nthreads();
 	int total_records = records->size();

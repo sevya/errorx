@@ -14,9 +14,8 @@
 
 Runtime per 1K sequences in seconds
 
-|        | IGBlast+ErrorX |          | ErrorX alone  |          |
-| ------ | -------------- | -------- | ------------- | -------- |
-|        | Single thread  | 4 thread | Single thread | 4 thread |
-| Binary | X              | X        | 9.46          | 6.5      |
-| Python | X              | X        | X             | X        |
-| Java   | X              | X        | X             | X        |
+| IGBlast+ErrorX |          | ErrorX alone  |          |
+| -------------- | -------- | ------------- | -------- |
+| Single thread  | 4 thread | Single thread | 4 thread |
+| 90.1           | 47.2     | 9.5           | 6.5      |
+_________________________________________________________________
