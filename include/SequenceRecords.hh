@@ -191,15 +191,16 @@ private:
 		@param records SequenceRecords object to be corrected
 		@param correction_progress atomic int to track progress
 	*/
-	static void correct_sequences_threaded( SequenceRecords* & records, atomic<int>* & correction_progress );
+	static void correct_sequences_threaded( SequenceRecords* & records, int* & correction_progress );
 
 	/**
 		Tracks progress of error correction in multiple threads 
 
 		@param total_records Total num. of records to be corrected
-		@param correction_progress atomic int to track progress
+		@param progress vector of atomic ints to track progress, each one 
+		corresponding to a separate thread
 	*/
-	static void track_progress( int & total_records, atomic<int>* & correction_progress );
+	static void track_progress( int & total_records, vector<int*> & progress_vector );
 
 	vector<SequenceRecord*> records_;
 

@@ -12,11 +12,11 @@
 
 ## Runtime calculation
 
-Runtime per 600 sequences in seconds
+Runtime per 1K sequences in seconds
 
 |        | IGBlast+ErrorX |          | ErrorX alone  |          |
 | ------ | -------------- | -------- | ------------- | -------- |
 |        | Single thread  | 4 thread | Single thread | 4 thread |
-| Binary | X              | X        | X             | 2.9      |
+| Binary | X              | X        | 9.46          | 6.5      |
 | Python | X              | X        | X             | X        |
 | Java   | X              | X        | X             | X        |
