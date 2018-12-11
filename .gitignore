@@ -31,3 +31,4 @@ python_bindings/production/errorx/errorx_lib.so
 build_test/new/*
 build_test/TestErrorX.class
 build_test/input_files/test.fasta*
+build_test/a.out

@@ -12,10 +12,11 @@ First, we need to include the relevant ErrorX headers:
 	#include "SequenceRecords.hh"
 	#include "ErrorXOptions.hh"
 
-Next, we will create an ErrorXOptions object that contains all the options related to your processing. We will set the input filename to test.tsv, and the file type to TSV. ErrorX currently accepts files in FASTQ or TSV format. We will also set the species as human - ErrorX currently supports human and mouse.
+Next, we will create an ErrorXOptions object that contains all the options related to your processing. We will set the input filename to test.tsv, and the file type to TSV. ErrorX currently accepts files in FASTQ or TSV format. We will also set the species as human - ErrorX currently supports human and mouse. Lastly, we need to set the path to the ErrorX folder. This will be used to locate different libraries needed for execution.
 
 	errorx::ErrorXOptions options( "test.tsv", "tsv" );
 	options.outfile( "test_out.tsv" );
+	options.errorx_base( "/path/to/ErrorX/" );
 	options.species( "human" );
 
 Now, we're ready to run the protocol. If we have provided a FASTQ file, ErrorX will go through germline assignment and then error correction. If we use a TSV file with the germline sequence already specified, then it will only do error correction:
@@ -29,6 +30,7 @@ You can also run a query using a FASTQ file, and ErrorX will do the germline ass
 	errorx::ErrorXOptions options( "test.fastq", "fastq" );
 	options.outfile( "test_out.tsv" );
 	options.species( "human" );
+	options.errorx_base( "/path/to/ErrorX/" );
 	errorx::run_protocol_write( options );
 	
 ## Viewing and Analyzing SequenceRecords

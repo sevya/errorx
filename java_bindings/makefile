@@ -2,7 +2,7 @@
 
 SRCS=errorx/NativeUtils.java errorx/ErrorX.java errorx/ErrorXOptions.java
 CLASS=errorx/NativeUtils.class errorx/ErrorX.class errorx/ErrorXOptions.class
-LIB=errorx/liberrorx_java.dylib
+LIB=errorx/liberrorx.dylib
 
 all: class jar
 

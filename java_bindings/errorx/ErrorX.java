@@ -12,10 +12,10 @@ public class ErrorX {
 
 	static {
 		try {
-			System.loadLibrary("errorx_java"); // used for tests. This library in classpath only
+			System.loadLibrary("errorx"); // used for tests. This library in classpath only
 		} catch (UnsatisfiedLinkError e) {
 			try {
-				NativeUtils.loadLibraryFromJar("/errorx/liberrorx_java.dylib"); // during runtime. .DLL within .JAR
+				NativeUtils.loadLibraryFromJar("/errorx/liberrorx.dylib"); // during runtime. .DLL within .JAR
 			} catch (IOException e1) {
 				throw new RuntimeException(e1);
 			}

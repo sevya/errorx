@@ -22,6 +22,7 @@ namespace py = boost::python;
 using namespace std;
 
 namespace errorx {
+namespace python {
 
 SequenceRecords* get_corrected_records( py::list & sequence_list, 
 					 py::list & germline_sequence_list,
@@ -102,7 +103,7 @@ py::list get_predicted_errors( py::str & sequence,
 	return predicted_errors;
 }
 
-void run_py_protocol( py::object const & options ) {
+void run_protocol( py::object const & options ) {
 	ErrorXOptions options_cpp = options_from_pyoptions( options );
 
 	run_protocol_write( options_cpp );
@@ -135,9 +136,10 @@ ErrorXOptions options_from_pyoptions( py::object const & options ) {
 
 BOOST_PYTHON_MODULE(errorx_lib)
 {
-	py::def("correct_sequences", &errorx::correct_sequences );
-	py::def("get_predicted_errors", &errorx::get_predicted_errors );
-	py::def("run_protocol", &errorx::run_py_protocol );
+	py::def("correct_sequences", &errorx::python::correct_sequences );
+	py::def("get_predicted_errors", &errorx::python::get_predicted_errors );
+	py::def("run_protocol", &errorx::python::run_protocol );
 }
 
+} // namespace python
 } // namespace errorx
