@@ -1,14 +1,22 @@
 import errorx as ex
+from errorx import ErrorXOptions
 
-def test_run_protocol():
-	options = ex.ErrorXOptions('input_files/test.tsv','tsv')
-	options.outfile( 'new/python_test_tsv.tsv' )
-	ex.run_protocol( options )
-
+def run_FASTQ_protocol():
 	options = ex.ErrorXOptions('input_files/test.fastq','fastq')
-	options.outfile( 'new/python_test_fastq.tsv' )
+	options.outfile( 'new/python_fastq_out.tsv' )
+	options.species( 'mouse' )
+	options.verbose(0)
+	ex.run_protocol( options )
+		
+def run_TSV_protocol():
+	options = ex.ErrorXOptions('input_files/test.tsv','tsv')
+	options.outfile( 'new/python_tsv_out.tsv' )
+	options.species( 'mouse' )
+	options.verbose(0)
+	
 	ex.run_protocol( options )
 
 
 if __name__ == '__main__':
-	test_run_protocol()
+	run_FASTQ_protocol()
+	run_TSV_protocol()

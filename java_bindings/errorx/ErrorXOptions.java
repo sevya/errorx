@@ -16,7 +16,7 @@ public class ErrorXOptions {
 
 		verbose_ = 1;
 		allow_nonproductive_ = false;
-		error_threshold_ = 0.8;
+		error_threshold_ = 0.884311;
 		correction_ = 'N';
 		nthreads_ = -1;
 	}
@@ -31,7 +31,7 @@ public class ErrorXOptions {
 
 		verbose_ = 1;
 		allow_nonproductive_ = false;
-		error_threshold_ = 0.8;
+		error_threshold_ = 0.884311;
 		correction_ = 'N';
 		nthreads_ = -1;
 	}

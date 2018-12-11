@@ -57,23 +57,23 @@ int main( int argc, char* argv[] ) {
 
 	program_options::variables_map vm;
 	try {
-	program_options::store(program_options::command_line_parser(argc, argv).
-	          options(desc).positional(positional).run(), vm);
-	program_options::notify(vm);
+		program_options::store(program_options::command_line_parser(argc, argv).
+				options(desc).positional(positional).run(), vm);
+		program_options::notify(vm);
 
-	if ( vm.count("help") or argc == 1 ) {
-		cout << desc << "\n";
-		return 0;
-	}
+		if ( vm.count("help") or argc == 1 ) {
+			cout << desc << "\n";
+			return 1;
+		}
 
-	if ( vm.count("version")) {
-		cout << "ErrorX v1.0 by EndeavorBio. Creator: Alex Sevy, alex.sevy@gmail.com" << "\n";
-		return 0;
-	}
+		if ( vm.count("version")) {
+			cout << "ErrorX v1.0 by EndeavorBio. Creator: Alex Sevy, alex.sevy@gmail.com" << "\n";
+			return 1;
+		}
 
-	if ( vm.count("license")) {
-		util::write_license( vm["license"].as<string>() );
-	}
+		if ( vm.count("license")) {
+			util::write_license( vm["license"].as<string>() );
+		}
 
 	// try {
 		ErrorXOptions options;
@@ -86,14 +86,14 @@ int main( int argc, char* argv[] ) {
 			options.infile( infiles[0] );
 		} else {
 			cout << "Error - please enter an input file to analyze." << endl;
-			return 0;
+			return 1;
 		}
 
 		if ( vm.count("format") ) {
 			options.format( vm["format"].as<string>());
 		} else {
 			cout << "Error - you must enter the input file format." << endl;
-			return 0;
+			return 1;
 		}
 
 		options.outfile( vm["out"].as<string>());
@@ -110,17 +110,17 @@ int main( int argc, char* argv[] ) {
 
 		run_protocol_write( options );
 
-		return 1;
+		return 0;
 	} catch ( program_options::unknown_option & exc) {
 		cout << "Error: "<< exc.what() << endl;
-		return 0;
+		return 1;
 	} catch ( InvalidLicenseException & exc ) {
 		cout << exc.what() << endl;
-		return 0;
+		return 1;
 	} catch ( std::exception & e ) {
 		// cout << "Exception encountered..." << endl;
 		cout << e.what() << endl;
-		return 0;
+		return 1;
 	}
 }
 

@@ -1,7 +1,9 @@
-/// @file keras_model.hh
-/// @brief
-/// @details
-/// @author Alex Sevy (alex.sevy@gmail.com)
+/**
+@file keras_model.hh
+@brief Runs data through a Keras neural network trained in Python
+@author Alex Sevy (alex.sevy@gmail.com)
+*/
+
 
 #ifndef KERAS_MODEL__H
 #define KERAS_MODEL__H
@@ -11,12 +13,15 @@
 #include <fstream>
 #include <iostream>
 
-namespace keras
-{
-	std::vector<double> read_1d_array(std::ifstream &fin, int cols);
-	void missing_activation_impl(const std::string &act);
-	std::vector< std::vector<double> > conv_single_depth_valid(std::vector< std::vector<double> > const & im, std::vector< std::vector<double> > const & k);
-	std::vector< std::vector<double> > conv_single_depth_same(std::vector< std::vector<double> > const & im, std::vector< std::vector<double> > const & k);
+using namespace std;
+
+namespace keras {
+	vector<double> read_1d_array( ifstream &fin, int cols );
+
+	void missing_activation_impl( const string &act );
+
+	vector<vector<double>> conv_single_depth_valid( vector<vector<double>> const & im, vector< vector<double>> const & k );
+	vector<vector<double>> conv_single_depth_same( vector<vector<double>> const & im, vector< vector<double>> const & k );
 
 	class DataChunk;
 	class DataChunk2D;
@@ -30,203 +35,200 @@ namespace keras
 	class LayerDense;
 
 	class KerasModel;
-}
 
-class keras::DataChunk {
+class DataChunk {
 public:
-  virtual ~DataChunk() {}
-  virtual size_t get_data_dim(void) const { return 0; }
-  virtual std::vector<double> const & get_1d() const { throw "not implemented"; };
-  virtual std::vector<std::vector<std::vector<double> > > const & get_3d() const { throw "not implemented"; };
-  virtual void set_data(std::vector<std::vector<std::vector<double> > > const &) {};
-  virtual void set_data(std::vector<double> const &) {};
-  //virtual unsigned int get_count();
-  virtual void read_from_file(const std::string &fname) {};
-  virtual void show_name() = 0;
-  virtual void show_values() = 0;
+	virtual ~DataChunk() {}
+	virtual int get_data_dim(void) const { return 0; }
+	virtual vector<double> const & get_1d() const { throw "not implemented"; };
+	virtual vector<vector<vector<double> > > const & get_3d() const { throw "not implemented"; };
+	virtual void set_data(vector<vector<vector<double> > > const &) {};
+	virtual void set_data(vector<double> const &) {};
+	virtual void read_from_file(const string &fname) {};
+	virtual void show_name() = 0;
+	virtual void show_values() = 0;
 };
 
-class keras::DataChunk2D : public keras::DataChunk {
+class DataChunk2D : public DataChunk {
 public:
-  std::vector< std::vector< std::vector<double> > > const & get_3d() const { return data; };
-  virtual void set_data(std::vector<std::vector<std::vector<double> > > const & d) { data = d; };
-  size_t get_data_dim(void) const { return 3; }
+	vector< vector< vector<double> > > const & get_3d() const { return data; };
+	virtual void set_data(vector<vector<vector<double> > > const & d) { data = d; };
+	int get_data_dim(void) const { return 3; }
 
-  void show_name() {
-    std::cout << "DataChunk2D " << data.size() << "x" << data[0].size() << "x" << data[0][0].size() << std::endl;
-  }
+	void show_name() {
+		cout << "DataChunk2D " << data.size() << "x" << data[0].size() << "x" << data[0][0].size() << endl;
+	}
 
-  void show_values() {
-    std::cout << "DataChunk2D values:" << std::endl;
-    for(size_t i = 0; i < data.size(); ++i) {
-      std::cout << "Kernel " << i << std::endl;
-      for(size_t j = 0; j < data[0].size(); ++j) {
-        for(size_t k = 0; k < data[0][0].size(); ++k) {
-          std::cout << data[i][j][k] << " ";
-        }
-        std::cout << std::endl;
-      }
-    }
-  }
-  //unsigned int get_count() {
-  //  return data.size()*data[0].size()*data[0][0].size();
-  //}
+	void show_values() {
+		cout << "DataChunk2D values:" << endl;
+    	for ( int i = 0; i < data.size(); ++i ) {
+			cout << "Kernel " << i << endl;
+			for ( int j = 0; j < data[0].size(); ++j ) {
+				for ( int k = 0; k < data[0][0].size(); ++k ) {
+					cout << data[i][j][k] << " ";
+				}
+        		cout << endl;
+			}
+		}
+	}
 
-  void read_from_file(const std::string &fname);
-  std::vector<std::vector<std::vector<double> > > data; // depth, rows, cols
+	void read_from_file(const string &fname);
+	vector<vector<vector<double> > > data; // depth, rows, cols
 
-  int m_depth;
-  int m_rows;
-  int m_cols;
+	int m_depth;
+	int m_rows;
+	int m_cols;
 };
 
-class keras::DataChunkFlat : public keras::DataChunk {
+class DataChunkFlat : public DataChunk {
+
 public:
-  DataChunkFlat(size_t size) : f(size) { }
-  DataChunkFlat(size_t size, double init) : f(size, init) { }
-  DataChunkFlat(void) { }
+	DataChunkFlat(int size) : f(size) { }
+	DataChunkFlat(int size, double init) : f(size, init) { }
+	DataChunkFlat(void) { }
 
-  std::vector<double> f;
-  std::vector<double> & get_1d_rw() { return f; }
-  std::vector<double> const & get_1d() const { return f; }
-  void set_data(std::vector<double> const & d) { f = d; };
-  size_t get_data_dim(void) const { return 1; }
+	vector<double> f;
+	vector<double> & get_1d_rw() { return f; }
+	vector<double> const & get_1d() const { return f; }
+	void set_data(vector<double> const & d) { f = d; };
+	int get_data_dim(void) const { return 1; }
 
-  void show_name() {
-    std::cout << "DataChunkFlat " << f.size() << std::endl;
-  }
-  void show_values() {
-    std::cout << "DataChunkFlat values:" << std::endl;
-    for(size_t i = 0; i < f.size(); ++i) std::cout << f[i] << " ";
-    std::cout << std::endl;
-  }
-  void read_from_file(const std::string &fname) {};
-  //unsigned int get_count() { return f.size(); }
+	void show_name() {
+		cout << "DataChunkFlat " << f.size() << endl;
+	}
+  
+	void show_values() {
+		cout << "DataChunkFlat values:" << endl;
+		for ( int i = 0; i < f.size(); ++i ) cout << f[i] << " ";
+		cout << endl;
+	}
+	void read_from_file(const string &fname) {};
 };
 
-class keras::Layer {
+class Layer {
 public:
-  virtual void load_weights(std::ifstream &fin) = 0;
-  virtual void load_weights(std::istringstream &fin) = 0;
-  virtual keras::DataChunk* compute_output(keras::DataChunk*) = 0;
+	virtual void load_weights( ifstream &fin ) = 0;
+	virtual void load_weights( istringstream &fin ) = 0;
+	virtual keras::DataChunk* compute_output( DataChunk* ) = 0;
 
-  Layer(std::string name) : m_name(name) {}
-  virtual ~Layer() {}
+	Layer(string name) : m_name(name) {}
+	virtual ~Layer() {}
 
-  virtual unsigned int get_input_rows() const = 0;
-  virtual unsigned int get_input_cols() const = 0;
-  virtual unsigned int get_output_units() const = 0;
+	virtual unsigned int get_input_rows() const = 0;
+	virtual unsigned int get_input_cols() const = 0;
+	virtual unsigned int get_output_units() const = 0;
 
-  std::string get_name() { return m_name; }
-  std::string m_name;
+	string get_name() { return m_name; }
+	string m_name;
 };
 
 
-class keras::LayerFlatten : public Layer {
+class LayerFlatten : public Layer {
 public:
-  LayerFlatten() : Layer("Flatten") {}
-  void load_weights(std::ifstream &fin) {};
-  void load_weights(std::istringstream &fin) {};
-  keras::DataChunk* compute_output(keras::DataChunk*);
+	LayerFlatten() : Layer("Flatten") {}
+	void load_weights( ifstream &fin ) {};
+	void load_weights( istringstream &fin ) {};
+	keras::DataChunk* compute_output( DataChunk* );
 
-  virtual unsigned int get_input_rows() const { return 0; } // look for the value in the preceding layer
-  virtual unsigned int get_input_cols() const { return 0; } // same as for rows
-  virtual unsigned int get_output_units() const { return 0; }
+	virtual unsigned int get_input_rows() const { return 0; } // look for the value in the preceding layer
+	virtual unsigned int get_input_cols() const { return 0; } // same as for rows
+	virtual unsigned int get_output_units() const { return 0; }
 };
 
 
-class keras::LayerMaxPooling : public Layer {
+class LayerMaxPooling : public Layer {
 public:
-  LayerMaxPooling() : Layer("MaxPooling2D") {};
+	LayerMaxPooling() : Layer("MaxPooling2D") {};
 
-  void load_weights(std::ifstream &fin);
-  void load_weights(std::istringstream &fin);
-  keras::DataChunk* compute_output(keras::DataChunk*);
+	void load_weights( ifstream &fin );
+	void load_weights( istringstream &fin );
+	DataChunk* compute_output( DataChunk* );
 
-  virtual unsigned int get_input_rows() const { return 0; } // look for the value in the preceding layer
-  virtual unsigned int get_input_cols() const { return 0; } // same as for rows
-  virtual unsigned int get_output_units() const { return 0; }
+	virtual unsigned int get_input_rows() const { return 0; } // look for the value in the preceding layer
+	virtual unsigned int get_input_cols() const { return 0; } // same as for rows
+	virtual unsigned int get_output_units() const { return 0; }
 
-  int m_pool_x;
-  int m_pool_y;
+	int m_pool_x;
+	int m_pool_y;
 
 };
 
-class keras::LayerActivation : public Layer {
+class LayerActivation : public Layer {
 public:
-  LayerActivation() : Layer("Activation") {}
-  void load_weights(std::ifstream &fin);
-  void load_weights(std::istringstream &fin);
-  keras::DataChunk* compute_output(keras::DataChunk*);
+	LayerActivation() : Layer("Activation") {}
+	void load_weights( ifstream &fin );
+	void load_weights( istringstream &fin );
+	DataChunk* compute_output( DataChunk* );
 
-  virtual unsigned int get_input_rows() const { return 0; } // look for the value in the preceding layer
-  virtual unsigned int get_input_cols() const { return 0; } // same as for rows
-  virtual unsigned int get_output_units() const { return 0; }
+	virtual unsigned int get_input_rows() const { return 0; } // look for the value in the preceding layer
+	virtual unsigned int get_input_cols() const { return 0; } // same as for rows
+	virtual unsigned int get_output_units() const { return 0; }
 
-  std::string m_activation_type;
+	string m_activation_type;
 };
 
-class keras::LayerConv2D : public Layer {
+class LayerConv2D : public Layer {
 public:
-  LayerConv2D() : Layer("Conv2D") {}
+	LayerConv2D() : Layer("Conv2D") {}
 
-  void load_weights(std::ifstream &fin);
-  void load_weights(std::istringstream &fin);
-  keras::DataChunk* compute_output(keras::DataChunk*);
-  std::vector<std::vector<std::vector<std::vector<double> > > > m_kernels; // kernel, depth, rows, cols
-  std::vector<double> m_bias; // kernel
+	void load_weights( ifstream &fin );
+	void load_weights( istringstream &fin );
+	DataChunk* compute_output( DataChunk* );
+	vector<vector<vector<vector<double>>>> m_kernels; // kernel, depth, rows, cols
+	vector<double> m_bias; // kernel
 
-  virtual unsigned int get_input_rows() const { return m_rows; }
-  virtual unsigned int get_input_cols() const { return m_cols; }
-  virtual unsigned int get_output_units() const { return m_kernels_cnt; }
+	virtual unsigned int get_input_rows() const { return m_rows; }
+	virtual unsigned int get_input_cols() const { return m_cols; }
+	virtual unsigned int get_output_units() const { return m_kernels_cnt; }
 
-  std::string m_border_mode;
-  int m_kernels_cnt;
-  int m_depth;
-  int m_rows;
-  int m_cols;
+	string m_border_mode;
+	int m_kernels_cnt;
+	int m_depth;
+	int m_rows;
+	int m_cols;
 };
 
-class keras::LayerDense : public Layer {
+class LayerDense : public Layer {
 public:
-  LayerDense() : Layer("Dense") {}
+	LayerDense() : Layer("Dense") {}
 
-  void load_weights(std::ifstream &fin);
-  void load_weights(std::istringstream &fin);
-  keras::DataChunk* compute_output(keras::DataChunk*);
-  std::vector<std::vector<double> > m_weights; //input, neuron
-  std::vector<double> m_bias; // neuron
+	void load_weights( ifstream &fin );
+	void load_weights( istringstream &fin );
+	DataChunk* compute_output( DataChunk* );
+	vector<vector<double>> m_weights; //input, neuron
+	vector<double> m_bias; // neuron
 
-  virtual unsigned int get_input_rows() const { return 1; } // flat, just one row
-  virtual unsigned int get_input_cols() const { return m_input_cnt; }
-  virtual unsigned int get_output_units() const { return m_neurons; }
+	virtual unsigned int get_input_rows() const { return 1; } // flat, just one row
+	virtual unsigned int get_input_cols() const { return m_input_cnt; }
+	virtual unsigned int get_output_units() const { return m_neurons; }
 
-  void print_weights();
+	void print_weights();
 
-  int m_input_cnt;
-  int m_neurons;
+	int m_input_cnt;
+	int m_neurons;
 };
 
-class keras::KerasModel {
+class KerasModel {
 public:
-  KerasModel(const std::string &input_fname, int verbose);
-  KerasModel( const std::string &input_fname, bool from_string, int verbose);
+	KerasModel( const string &input_fname, int verbose );
+	KerasModel( const string &input_fname, bool from_string, int verbose);
 
-  ~KerasModel();
-  std::vector<double> compute_output(keras::DataChunk *dc) const;
+	~KerasModel();
+	vector<double> compute_output( DataChunk *dc ) const;
 
-  unsigned int get_input_rows() const { return m_layers.front()->get_input_rows(); }
-  unsigned int get_input_cols() const { return m_layers.front()->get_input_cols(); }
-  int get_output_length() const;
+	unsigned int get_input_rows() const { return m_layers.front()->get_input_rows(); }
+	unsigned int get_input_cols() const { return m_layers.front()->get_input_cols(); }
+	int get_output_length() const;
 
 private:
-  void load_weights(const std::string &input_fname);
-  void load_weights_from_string(const std::string &input_fname);
+  void load_weights(const string &input_fname);
+  void load_weights_from_string(const string &input_fname);
 
   int m_layers_cnt; // number of layers
-  std::vector<Layer *> m_layers; // container with layers
+  vector<Layer *> m_layers; // container with layers
   int m_verbose;
 
 };
 
+} // namespace keras
 #endif
