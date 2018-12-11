@@ -58,6 +58,7 @@ A full working example is shown below:
 		errorx::ErrorXOptions options( "test.tsv", "tsv" );
 		options.outfile( "test_out.tsv" );
 		options.species( "human" );
+		options.errorx_base( "/path/to/ErrorX/" );
 		errorx::run_protocol_write( options );
 		errorx::SequenceRecords* records = errorx::run_protocol( options );
 		std::cout << "Original NT sequence: " << records->get( 0 )->full_nt_sequence() << std::endl;
@@ -71,7 +72,7 @@ To use the ErrorX library in a C++ application, you only need to include two ext
 
 	clang++ -std=c++11 -I/Path/to/ErrorX/include/ -L/Path/to/ErrorX/lib/ -lerrorx ExampleApp.cc
 
-The -I flag will include all of the ErrorX headers during compilation, and the -L and -l flags will makes sure the correct library is linked. Note: make sure to replace /Path/to/ErrorX to the location of ErrorX on your computer.
+The `-I` flag will include all of the ErrorX headers during compilation, and the `-L` and `-l` flags will makes sure the correct library is linked. Note: make sure to replace /Path/to/ErrorX to the location of ErrorX on your computer.
 
 **Note**: when you run the application linking to ErrorX, the ErrorX library **must** be in the path where your OS is going to look for dynamically linked libraries. In Linux this path is set by an environmental variable called LD\_LIBRARY\_PATH, or DYLD\_LIBRARY\_PATH on Mac. Make sure to run the following command to set the path correctly (or, even better, add this line to your ~/.bashrc and never worry about it again!):
 	
@@ -174,7 +175,7 @@ In addition, you can run the ErrorX protocol using input from a file and outputt
 This will process the sequences in `example.fastq`, and output the results to `out.tsv`.
 
 ## Compilation
-The ErrorX library is distributed as a JAR archive, that can be linked to your existing Java code. In addition, the JAR file comes in a folder containing other dependencies, which will be properly read if the JAR is left in its original location. To link the JAR library while compiling your own Java code, add the following commands:
+The ErrorX library is distributed as a JAR archive, that can be linked to your existing Java code. **Note:** the JAR file comes in a folder containing other dependencies, which will be properly read if the JAR is left in its original location. To link the JAR library while compiling your own Java code, add the following commands:
 
 	javac -cp '.:/Path/to/ErrorX/java_bindings/ErrorX.jar' ExampleApp.java
 	java -cp '.:/Path/to/ErrorX/java_bindings/ErrorX.jar' ExampleApp

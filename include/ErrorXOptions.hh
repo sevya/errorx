@@ -10,7 +10,6 @@
 #define INCLUDE_ERRORXOPTIONS_HH_
 
 #include <string>
-// #include <boost/filesystem.hpp>
 
 using namespace std;
 

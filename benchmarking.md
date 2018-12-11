@@ -18,4 +18,6 @@ Runtime per 1K sequences in seconds
 | -------------- | -------- | ------------- | -------- |
 | Single thread  | 4 thread | Single thread | 4 thread |
 | 90.1           | 47.2     | 9.5           | 6.5      |
-_________________________________________________________________
+
+## Error rate estimation
+In sample SRR3620122 from Ellebedy 2016 dataset, the error rate as predicted by ErrorX is 5.6 bases per kb

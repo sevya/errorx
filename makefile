@@ -46,23 +46,23 @@ SRCS=src/SequenceRecords.cc src/SequenceRecord.cc src/IGBlastParser.cc \
 	 src/ErrorPredictor.cc src/SequenceFeatures.cc src/DataScaler.cc \
 	 src/ErrorXOptions.cc src/keras_model.cc  \
 	 src/util.cc src/model.cc src/SequenceQuery.cc \
-	 src/errorx.cc src/errorx_python.cc src/errorx_java.cc
+	 src/errorx.cc
 
 BOOST_LIBS=dependencies/boost/mac/libboost_filesystem.a \
 		   dependencies/boost/mac/libboost_program_options.a \
-		   dependencies/boost/mac/libboost_system.a \
-		   dependencies/boost/mac/libboost_python27.a
+		   dependencies/boost/mac/libboost_system.a
+		   
 
 
 all: binary_testing library binary python java
 
 libraries: library python java
 
-binary_testing: $(SRCS) src/main.cc
+binary_testing: $(SRCS) src/testing.cc
 	$(CXX) $(CPPFLAGS) $(INC) -Ofast $(BOOST_LIBS) -o bin/errorx_testing $(SRCS) src/testing.cc
 
 library: $(SRCS)
-	$(CXX) $(CPPFLAGS) $(INC) -Ofast $(BOOST_LIBS) $(PYTHON_INC) $(JAVA_INC) $(PYTHON_LINK) -shared -undefined dynamic_lookup -o lib/liberrorx.dylib $(SRCS) 
+	$(CXX) $(CPPFLAGS) $(INC) -Ofast $(BOOST_LIBS) dependencies/boost/mac/libboost_python27.a $(PYTHON_INC) $(JAVA_INC) $(PYTHON_LINK) -shared -undefined dynamic_lookup -o lib/liberrorx.dylib $(SRCS) src/errorx_java.cc src/errorx_python.cc
 
 binary: $(SRCS) src/main.cc
 	$(CXX) $(CPPFLAGS) $(INC) -Ofast $(BOOST_LIBS) -o bin/errorx $(SRCS) src/main.cc

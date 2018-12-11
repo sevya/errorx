@@ -2,6 +2,9 @@
 # ErrorX User Guide
 The following is a guide to how to run the ErrorX command line application. ErrorX supports error correction for B-cell receptor sequences from human or mouse samples. 
 
+### Overview
+
+ErrorX is an error correction software for sequences coming from antibody repertoire sequencing. It uses a deep neural network to predict positions where an error was likely introduced, either by PCR or by the sequencer itself. It does not require any sort of label or barcode to be incorporated during preparation of the sequencing library - it can be applied out of the box to any data gathered on an Illumina HiSeq or MiSeq instrument. The only input information needed is the nucleotide sequence and the PHRED quality scores from the sequencer, both of which are provided in a FASTQ format file. When provided with a FASTQ file, ErrorX will do the germline assignment, as the germline sequence is also needed for error correction. However, if you have already done germline assignment with another software, then you can input that information into a TSV file, and ErrorX will only do the error correction portion.
 
 ### Input format
 ErrorX accepts two file formats: FASTQ files, where ErrorX will do the germline assignment and error correction, or TSV files, where the germline sequence is already specified and ErrorX only does the error correction portion. TSV files should have four columns: 1. Sequence ID, 2. Nucleotide sequence, 3. Inferred germline sequence, and 4. PHRED score
