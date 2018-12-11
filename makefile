@@ -71,13 +71,13 @@ all: binary_testing library binary python java
 libraries: library python java
 
 binary_testing: $(SRCS) src/main.cc
-	$(CXX) $(CPPFLAGS) $(INC) -Ofast -o bin/errorx_testing.$(OS) $(SRCS) src/testing.cc $(BOOST_LIBS) $(FINAL)
+	$(CXX) $(CPPFLAGS) $(INC) -Ofast -o bin/errorx_testing $(SRCS) src/testing.cc $(BOOST_LIBS) $(FINAL)
 
 library: $(SRCS)
 	$(CXX) $(CPPFLAGS) $(INC) -Ofast $(LIBFLAGS) -o lib/liberrorx.$(DLLEXT) $(SRCS) $(BOOST_LIBS) $(FINAL)
 
 binary: $(SRCS) src/main.cc
-	$(CXX) $(CPPFLAGS) $(INC) -Ofast $(BOOST_LIBS) -o bin/errorx.$(OS) $(SRCS) src/main.cc $(BOOST_LIBS) $(FINAL)
+	$(CXX) $(CPPFLAGS) $(INC) -Ofast $(BOOST_LIBS) -o bin/errorx $(SRCS) src/main.cc $(BOOST_LIBS) $(FINAL)
 
 
 python: $(SRCS) src/errorx_python.cc

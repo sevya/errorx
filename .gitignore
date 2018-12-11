@@ -13,6 +13,7 @@ bin/errorx_testing
 lib/*
 
 unit_test/cxxtest/**
+!unit_test/cxxtest/bin/
 unit_test/testing/test.fasta.out
 unit_test/bin/*
 unit_test/*.cc
