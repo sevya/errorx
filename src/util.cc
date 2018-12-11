@@ -261,7 +261,7 @@ bool valid_license() {
 	string key;
 	try {
 		key = decrypt_from_file( config.string() );
-	} catch ( invalid_argument ) {
+	} catch ( invalid_argument & exc ) {
 		// license file does not exist - run in trial version
 		return 0;
 	}

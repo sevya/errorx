@@ -10,6 +10,8 @@ a string of characters
 
 #include "SequenceQuery.hh"
 
+#include <stdexcept>
+
 using namespace std;
 
 namespace errorx {
