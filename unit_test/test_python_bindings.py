@@ -60,13 +60,13 @@ SRR3175015.933		N/A	N/A		N/A	N/A		N/A	N/A		VH	False	N/A	N/A	TACTCCCGTGGTACGCCCAA
 			   self.germline_sequence,
 			   self.phred_score )
 
-		self.assertAlmostEqual(result[132][1], 0.486122388, 9)
-		self.assertAlmostEqual(result[133][1], 0.348359625, 9)
-		self.assertAlmostEqual(result[134][1], 0.143818731, 9)
-		self.assertAlmostEqual(result[135][1], 0.458915133, 9)
-		self.assertAlmostEqual(result[136][1], 0.306816917, 9)
-		self.assertAlmostEqual(result[137][1], 0.022584986, 9)
-		self.assertAlmostEqual(result[138][1], 0.513773250, 9)
+		self.assertAlmostEqual(result[132], 0.486122388, 9)
+		self.assertAlmostEqual(result[133], 0.348359625, 9)
+		self.assertAlmostEqual(result[134], 0.143818731, 9)
+		self.assertAlmostEqual(result[135], 0.458915133, 9)
+		self.assertAlmostEqual(result[136], 0.306816917, 9)
+		self.assertAlmostEqual(result[137], 0.022584986, 9)
+		self.assertAlmostEqual(result[138], 0.513773250, 9)
 
 
 if __name__ == '__main__':

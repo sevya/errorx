@@ -62,7 +62,7 @@ binary_testing: $(SRCS) src/testing.cc
 	$(CXX) $(CPPFLAGS) $(INC) -Ofast $(BOOST_LIBS) -o bin/errorx_testing $(SRCS) src/testing.cc
 
 library: $(SRCS)
-	$(CXX) $(CPPFLAGS) $(INC) -Ofast $(BOOST_LIBS) dependencies/boost/mac/libboost_python27.a $(PYTHON_INC) $(JAVA_INC) $(PYTHON_LINK) -shared -undefined dynamic_lookup -o lib/liberrorx.dylib $(SRCS) src/errorx_java.cc src/errorx_python.cc
+	$(CXX) $(CPPFLAGS) $(INC) -Ofast $(BOOST_LIBS) $(PYTHON_INC) $(JAVA_INC) $(PYTHON_LINK) -shared -undefined dynamic_lookup -o lib/liberrorx.dylib $(SRCS) src/errorx_java.cc src/errorx_python.cc
 
 binary: $(SRCS) src/main.cc
 	$(CXX) $(CPPFLAGS) $(INC) -Ofast $(BOOST_LIBS) -o bin/errorx $(SRCS) src/main.cc

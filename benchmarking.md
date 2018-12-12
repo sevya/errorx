@@ -20,4 +20,4 @@ Runtime per 1K sequences in seconds
 | 90.1           | 47.2     | 9.5           | 6.5      |
 
 ## Error rate estimation
-In sample SRR3620122 from Ellebedy 2016 dataset, the error rate as predicted by ErrorX is 5.6 bases per kb
+In sample SRR3620122 from Ellebedy 2016 dataset, the error rate as predicted by ErrorX is 5.6 errors per kb. The error rate implied by the sequencing quality is 8.7 errors per kb.

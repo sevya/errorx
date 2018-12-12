@@ -5,6 +5,7 @@ sublime.sublime-workspace
 .cproject
 .project
 .settings/
+.DS_Store
 unit_test/hs_err*.log
 
 bin/errorx
@@ -26,7 +27,7 @@ java_bindings/errorx/*.class
 java_bindings/ErrorX.jar
 java_bindings/errorx/liberrorx_java.dylib
 
-python_bindings/production/errorx/errorx_lib.so
+python_bindings/mac/errorx/errorx_lib.so
 
 build_test/new/*
 build_test/TestErrorX.class
