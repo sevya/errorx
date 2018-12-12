@@ -41,6 +41,7 @@ JNIEXPORT jobject JNICALL Java_errorx_ErrorX_correctSequences( JNIEnv *env, jobj
 			);
 	}
 
+	delete records;
 	return vector_to_array( env, corrected_sequences );
 }
 
@@ -74,6 +75,8 @@ JNIEXPORT jdoubleArray JNICALL Java_errorx_ErrorX_getPredictedErrors( JNIEnv* en
 		predicted_errors.push_back( probability );
 	}
 
+	delete records;
+	
 	return vector_to_array( env, predicted_errors );
 
 }

@@ -114,6 +114,8 @@ static PyObject* correct_sequences( PyObject* self, PyObject* args, PyObject* kw
 		PyList_SetItem( output, ii, PyString_FromString( correctedSeq.c_str() ));
 	}
 
+	delete records;
+
 	// return list of corrected sequences
 	return output;
 }
@@ -187,7 +189,7 @@ static PyObject* get_predicted_errors( PyObject* self, PyObject* args, PyObject*
 	vector<string> sequences = { PyString_AsString( sequenceArg ) };
 	vector<string> gl_sequences = { PyString_AsString( glArg ) };
 	vector<string> phred_scores = { PyString_AsString( phredArg ) };
-		
+
 	// now I'm ready to run a query - use the function submit_query to 
 	// run error correction and get the resulting SequenceRecords
 	SequenceRecords* records = submit_query( 
@@ -202,6 +204,8 @@ static PyObject* get_predicted_errors( PyObject* self, PyObject* args, PyObject*
 		double probability = predictions[ ii ].second;
 		PyList_SetItem( output, ii, PyFloat_FromDouble( probability ));
 	}
+
+	delete records;
 
 	// return list of corrected sequences
 	return output;
