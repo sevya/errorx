@@ -14,6 +14,7 @@ namespace py = boost::python;
 using namespace std;
 
 namespace errorx {
+namespace python {
 
 /**
 	Converts a std::vector to Python list
@@ -110,7 +111,7 @@ SequenceRecords* get_corrected_records( py::list & sequence_list,
 	@param options ErrorXOptions Python object to control parameters of
 	ErrorX. Will be converted internally to ErrorXOptions C++ object
 */
-void run_py_protocol( py::object const & options );
+void run_protocol( py::object const & options );
 
 /**
 	Converts a Python ErrorXOptions object to a C++ object. Transfers
@@ -122,6 +123,7 @@ void run_py_protocol( py::object const & options );
 */
 ErrorXOptions options_from_pyoptions( py::object const & options );
 
+} // namespace python
 } // namespace errorx
 
 #endif /* INCLUDE_ERRORX_PYTHON_HH_ */

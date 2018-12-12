@@ -77,6 +77,10 @@ TestUtil: ../src/util.cc
 	$(CXXGEN) --error-printer -o TestUtil.cc TestUtil.hh
 	$(CXX) $(CPPFLAGS) $(INC) -o bin/TestUtil ../src/util.cc TestUtil.cc $(BOOST_LIBS) $(FINAL)
 
+TestLinking: 
+	$(CXXGEN) --error-printer -o TestLinking.cc TestLinking.hh
+	$(CXX) -std=c++11 $(INC) -L../lib/ -lerrorx -o bin/TestLinking TestLinking.cc
+
 TestJava: TestErrorX.java 
 	javac -cp '.:../java_bindings/ErrorX.jar:hamcrest-core-1.3.jar:junit-4.12.jar' TestErrorX.java
 	java -cp .:../java_bindings/ErrorX.jar:junit-4.12.jar:hamcrest-core-1.3.jar org.junit.runner.JUnitCore TestErrorX

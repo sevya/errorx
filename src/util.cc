@@ -160,6 +160,7 @@ int count_queries( string & file ) {
 	int ii = 0;
 	while( getline(in,line) ) {
 		vector<string> tokens = util::tokenize_string<string>(line);
+		if ( tokens.size() < 2 ) continue;
 		if ( tokens[1] == "Query:" ) ++ii;
 	}
 	return ii;
