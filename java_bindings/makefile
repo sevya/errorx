@@ -8,17 +8,17 @@ else
 endif
 
 ifeq ($(uname_S), Windows)
-	LIB=win64/errorx/liberrorx.dll
+	LIB=errorx/liberrorx.dll
 endif
 ifeq ($(uname_S), Linux)
-	LIB=linux/errorx/liberrorx.so
+	LIB=errorx/liberrorx.so
 endif
 ifeq ($(uname_S), Darwin)
-	LIB=mac/errorx/liberrorx.dylib
+	LIB=errorx/liberrorx.dylib
 endif
 
 
-SRCS=mac/errorx/NativeUtils.java mac/errorx/ErrorX.java mac/errorx/ErrorXOptions.java
+SRCS=errorx/NativeUtils.java errorx/ErrorX.java errorx/ErrorXOptions.java
 CLASS=errorx/NativeUtils.class errorx/ErrorX.class errorx/ErrorXOptions.class
 
 
@@ -28,7 +28,7 @@ class: $(SRCS)
 	javac $(SRCS)
 
 jar: 
-	cd mac/; jar cf ../ErrorX.jar $(CLASS) errorx/liberrorx.dylib
+	jar cf ErrorX.jar $(CLASS) errorx/liberrorx.dylib
 
 
 clean: 

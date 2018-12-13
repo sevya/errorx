@@ -68,11 +68,12 @@ binary: $(SRCS) src/main.cc
 	$(CXX) $(CPPFLAGS) $(INC) -Ofast $(BOOST_LIBS) -o bin/errorx $(SRCS) src/main.cc
 
 python: library
-	cp lib/liberrorx.dylib python_bindings/mac/errorx/errorx_lib.so
+	cp lib/liberrorx.dylib python_bindings/errorx/errorx_lib.so
 	/usr/bin/python2.7 -m pip install python_bindings/mac/
 
 java: library
-	cp lib/liberrorx.dylib java_bindings/mac/errorx/
+	cp lib/liberrorx.dylib java_bindings/errorx/
+	cd java_bindings; make all
 
 debug: $(SRCS) src/main.cc
 	$(CXX) $(CPPFLAGS) $(INC) -g $(BOOST_LIBS) -o bin/errorx_debug $(SRCS) src/main.cc

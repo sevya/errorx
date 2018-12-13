@@ -10,14 +10,29 @@ import java.io.*;
 */
 public class ErrorX {
 
+	private static String getOS() {
+		String OS = System.getProperty("os.name").toLowerCase();
+		if ( OS.indexOf("mac") >= 0 ) return "mac";
+		if ( OS.indexOf("win") >= 0 ) return "win";
+		if ( OS.indexOf("linux") >= 0 ) return "linux";
+		else return "unknown OS type";
+	}
+
 	static {
 		try {
 			System.loadLibrary("errorx"); // used for tests. This library in classpath only
-		} catch (UnsatisfiedLinkError e) {
+		} catch ( UnsatisfiedLinkError e ) {
 			try {
-				NativeUtils.loadLibraryFromJar("/errorx/liberrorx.dylib"); // during runtime. .DLL within .JAR
-			} catch (IOException e1) {
-				throw new RuntimeException(e1);
+				String OS = getOS();
+				String extension = "";
+				if ( OS=="mac" ) extension = "dylib";
+				else if ( OS=="win" ) extension = "dll";
+				else if ( OS=="linux" ) extension = "so";
+
+				NativeUtils.loadLibraryFromJar("/errorx/liberrorx."+extension); 
+				// during runtime. .DLL within .JAR
+			} catch ( IOException exc ) {
+				throw new RuntimeException( exc );
 			}
 		}
 	}	
