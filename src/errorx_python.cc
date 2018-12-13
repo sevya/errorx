@@ -14,7 +14,7 @@ hopefully they can be more portable
 #include "ErrorXOptions.hh"
 #include "SequenceRecords.hh"
 #include "SequenceQuery.hh"
-
+#include "exceptions.hh"
 #include "errorx.hh"
 
 using namespace std;
@@ -241,7 +241,12 @@ static PyObject* run_protocol( PyObject* self, PyObject* args, PyObject* kwargs 
 		return NULL;
 	}
 	
-	run_protocol_write( options_cpp );
+	try {
+		run_protocol_write( options_cpp );
+	} catch ( InvalidLicenseException & exc ) {
+		cout << exc.what() << endl;
+		exit(1);
+	}
 
 	// return an empty string - will be interpreted as NULL
 	return Py_BuildValue( "s", NULL );
@@ -265,8 +270,14 @@ SequenceRecords* submit_query( vector<string> & sequences,
 	DataScaler scaler;
 	ErrorPredictor predictor( options.verbose() );
 
-	SequenceRecords* records = run_protocol( queries, options );
-	return records;
+	try {
+		SequenceRecords* records = run_protocol( queries, options );
+		return records;
+	} catch ( InvalidLicenseException & exc ) {
+		cout << exc.what() << endl;
+		exit(1);
+	}
+	
 }
 
 errorx::ErrorXOptions options_from_pyoptions( PyObject* const options ) {
