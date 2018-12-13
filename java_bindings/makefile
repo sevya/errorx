@@ -28,7 +28,7 @@ class: $(SRCS)
 	javac $(SRCS)
 
 jar: 
-	jar cf ErrorX.jar $(CLASS) errorx/liberrorx.dylib
+	jar cf ErrorX.jar $(CLASS) $(LIB)
 
 
 clean: 
