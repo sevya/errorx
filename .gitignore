@@ -12,11 +12,8 @@ bin/errorx
 bin/errorx_testing
 
 lib/*
+!lib/.gitkeep
 
-unit_test/cxxtest/*
-!unit_test/cxxtest/bin/
-unit_test/cxxtest/bin/*
-!unit_test/cxxtest/bin/cxxtestgen
 unit_test/testing/test.fasta.out
 unit_test/bin/*
 unit_test/*.cc
@@ -30,6 +27,7 @@ java_bindings/errorx/liberrorx_java.dylib
 python_bindings/mac/errorx/errorx_lib.so
 
 build_test/new/*
+!build_test/new/.gitkeep
 build_test/TestErrorX.class
 build_test/input_files/test.fasta*
 build_test/a.out

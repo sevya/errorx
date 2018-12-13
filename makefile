@@ -69,7 +69,7 @@ binary: $(SRCS) src/main.cc
 
 python: library
 	cp lib/liberrorx.dylib python_bindings/mac/errorx/errorx_lib.so
-	pip install python_bindings/mac
+	/usr/bin/python2.7 -m pip install python_bindings/mac/
 
 java: library
 	cp lib/liberrorx.dylib java_bindings/mac/errorx/
