@@ -16,6 +16,7 @@ lib/*
 
 unit_test/testing/test.fasta.out
 unit_test/bin/*
+!unit_test/bin/.gitkeep
 unit_test/*.cc
 unit_test/*.class
 unit_test/testing/out.tsv
