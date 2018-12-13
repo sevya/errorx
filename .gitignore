@@ -23,7 +23,7 @@ unit_test/testing/out.tsv
 
 java_bindings/errorx/*.class
 java_bindings/ErrorX.jar
-java_bindings/errorx/liberrorx_java.dylib
+java_bindings/errorx/liberrorx*
 
 python_bindings/mac/errorx/errorx_lib.so
 
