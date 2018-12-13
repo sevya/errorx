@@ -45,7 +45,7 @@ def correct_sequences(sequences,
 		germline_sequences = [germline_sequences]
 	if isinstance( phred_scores, str ):
 		phred_scores = [phred_scores]
-
+	
 	if not options:
 		options = ErrorXOptions( "tmp", "tsv" )
 

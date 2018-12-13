@@ -54,6 +54,29 @@ SRR3175015.933		N/A	N/A		N/A	N/A		N/A	N/A		VH	False	N/A	N/A	TACTCCCGTGGTACGCCCAA
 			   phred_scores )
 		self.assertEqual(results[0], self.corrected_seq)
 
+	def test_numpy(self):
+		import numpy as np
+		N = 10
+
+		sequences = np.array([self.sequence]*N)
+		germline_sequences = np.array([self.germline_sequence]*N)
+		phred_scores = np.array([self.phred_score]*N)
+
+		results = ex.correct_sequences(sequences, 
+			   germline_sequences,
+			   phred_scores )
+		self.assertEqual(results[0], self.corrected_seq)
+
+		import pandas as pd
+		sequences = pd.Series([self.sequence]*N)
+		germline_sequences = pd.Series([self.germline_sequence]*N)
+		phred_scores = pd.Series([self.phred_score]*N)
+
+		results = ex.correct_sequences(sequences, 
+			   germline_sequences,
+			   phred_scores )
+		self.assertEqual(results[0], self.corrected_seq)
+
 
 	def test_predicted_errors(self):
 
