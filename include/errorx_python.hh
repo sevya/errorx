@@ -79,6 +79,15 @@ double extract_double_attr( PyObject* const options, string const & attr );
 
 vector<string> pylist_to_vector( PyObject* const list );
 
+/**
+	Utilities functions to convert Python C api from 2.7 to 3.x
+	they eliminated PyString and replaced it with PyBytes
+*/
+PyObject* _PyString_FromString( const char* v );
+char* _PyString_AsString( PyObject* string );
+int _PyString_Check( PyObject* o );
+Py_ssize_t _PyString_Size( PyObject* string );
+
 } // namespace python
 } // namespace errorx
 

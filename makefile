@@ -21,7 +21,6 @@ ifeq ($(uname_S), Linux)
 	OS=linux
 	DLLEXT=so
 	PY_INC=-I/usr/include/python$(PY_VERSION)
-	PY_LINK=-L/usr/lib/python$(PY_VERSION)/config -lpython$(PY_VERSION)
 
 	JAVA_HOME=/home/sevya/jdk1.8.0_45/include/
 	JAVA_INC=-I$(JAVA_HOME) -I$(JAVA_HOME)linux/
@@ -36,7 +35,7 @@ ifeq ($(uname_S), Darwin)
 	OS=mac
 	DLLEXT=dylib
 	PY_INC=-I/System/Library/Frameworks/Python.framework/Versions/$(PY_VERSION)/include/python$(PY_VERSION)/
-	PY_LINK=-I/System/Library/Frameworks/Python.framework/Versions/$(PY_VERSION)/lib/python$(PY_VERSION)/ -lpython$(PY_VERSION)
+	PY3_INC=-I/Library/Frameworks/Python.framework/Versions/3.6/include/python3.6m/
 
 	JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home/include/
 	JAVA_INC=-I$(JAVA_HOME) -I$(JAVA_HOME)darwin/
@@ -71,13 +70,16 @@ binary: $(SRCS) src/main.cc
 
 
 library: $(SRCS)
-	$(CXX) $(CPPFLAGS) $(INC) -Ofast $(PY_INC) $(JAVA_INC) $(PY_LINK) $(LIBFLAGS) -o lib/liberrorx.$(DLLEXT) $(SRCS) src/errorx_java.cc src/errorx_python.cc $(BOOST) $(FINAL)
-
+	$(CXX) $(CPPFLAGS) $(INC) -Ofast $(PY_INC) $(JAVA_INC) $(LIBFLAGS) -o lib/liberrorx.$(DLLEXT) $(SRCS) src/errorx_java.cc src/errorx_python.cc $(BOOST) $(FINAL)
 
 python: library
 	cp lib/liberrorx.$(DLLEXT) python_bindings/$(OS)/errorx/errorx_lib.so
 	/usr/bin/python2.7 -m pip install python_bindings/$(OS)/
 
+python3:
+	$(CXX) $(CPPFLAGS) $(INC) -Ofast $(PY3_INC) $(JAVA_INC) $(LIBFLAGS) -o lib/liberrorx.$(DLLEXT) $(SRCS) src/errorx_java.cc src/errorx_python.cc $(BOOST) $(FINAL)
+	cp lib/liberrorx.$(DLLEXT) python3_bindings/$(OS)/errorx/errorx_lib.so
+	pip3 install python3_bindings/$(OS)/
 
 java: library
 	cp lib/liberrorx.$(DLLEXT) java_bindings/errorx/

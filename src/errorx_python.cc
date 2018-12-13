@@ -7,6 +7,8 @@ hopefully they can be more portable
 */
 
 #include <Python.h>
+#include <bytesobject.h>
+
 #include <iostream>
 #include <vector>
 
@@ -17,8 +19,17 @@ hopefully they can be more portable
 
 #include "errorx.hh"
 
+
 using namespace std;
 
+// check python version I'm compiling against
+// in Python 3+ they changed all the PyString functions
+// to PyBytes - build utilities functions to account for this
+#if PY_MAJOR_VERSION >= 3
+const bool PY3 = 1;
+#else
+const bool PY3 = 0;
+#endif
 
 namespace errorx {
 namespace python {
@@ -111,7 +122,7 @@ static PyObject* correct_sequences( PyObject* self, PyObject* args, PyObject* kw
 
 	for ( int ii = 0; ii < records->size(); ++ii ) {
 		string correctedSeq = records->get( ii )->full_nt_sequence_corrected();
-		PyList_SetItem( output, ii, PyString_FromString( correctedSeq.c_str() ));
+		PyList_SetItem( output, ii, _PyString_FromString( correctedSeq.c_str() ));
 	}
 
 	delete records;
@@ -147,25 +158,25 @@ static PyObject* get_predicted_errors( PyObject* self, PyObject* args, PyObject*
 
 	} 
 	// check arguments one by one to see if they are lists
-	if ( !PyString_Check( sequenceArg ) ) {
+	if ( !_PyString_Check( sequenceArg ) ) {
 		PyErr_SetString( PyExc_TypeError, "Error: sequence is an invalid format. Must be a string" );
 		return NULL;
 	}
 
-	if ( !PyString_Check( glArg ) ) {
+	if ( !_PyString_Check( glArg ) ) {
 		PyErr_SetString( PyExc_TypeError, "Error: germline_sequence is an invalid format. Must be a string" );
 		return NULL;
 	}
 
-	if ( !PyString_Check( phredArg ) ) {
+	if ( !_PyString_Check( phredArg ) ) {
 		PyErr_SetString( PyExc_TypeError, "Error: phred_score is an invalid format. Must be a string" );
 		return NULL;
 	}
 
 	// sanity check - make sure length of all sequences is uniform.
 	// if not set exception and return null
-	if ( PyString_Size( sequenceArg ) != PyString_Size( glArg ) or
-		 PyString_Size( sequenceArg ) != PyString_Size( phredArg ) ) {
+	if ( _PyString_Size( sequenceArg ) != _PyString_Size( glArg ) or
+		 _PyString_Size( sequenceArg ) != _PyString_Size( phredArg ) ) {
 		PyErr_SetString( PyExc_TypeError, "Error: the length of sequence, "
 		"germline_sequence, and phred_score are not uniform." );
 		return NULL;
@@ -186,9 +197,9 @@ static PyObject* get_predicted_errors( PyObject* self, PyObject* args, PyObject*
 		}
 	}
 
-	vector<string> sequences = { PyString_AsString( sequenceArg ) };
-	vector<string> gl_sequences = { PyString_AsString( glArg ) };
-	vector<string> phred_scores = { PyString_AsString( phredArg ) };
+	vector<string> sequences = { _PyString_AsString( sequenceArg ) };
+	vector<string> gl_sequences = { _PyString_AsString( glArg ) };
+	vector<string> phred_scores = { _PyString_AsString( phredArg ) };
 
 	// now I'm ready to run a query - use the function submit_query to 
 	// run error correction and get the resulting SequenceRecords
@@ -308,7 +319,7 @@ string extract_string_attr( PyObject* const options, string const & attr ) {
 		throw invalid_argument( "Error: attribute "+attr+" not present." );
 	}
 	PyObject* attrObj = PyObject_GetAttrString( options, attr.c_str() );
-	string attrStr = PyString_AsString( attrObj );
+	string attrStr = _PyString_AsString( attrObj );
 	Py_DECREF( attrObj );
 	return attrStr;
 }
@@ -318,7 +329,7 @@ int extract_int_attr( PyObject* const options, string const & attr ) {
 		throw invalid_argument( "Error: attribute "+attr+" not present." );
 	}
 	PyObject* attrObj = PyObject_GetAttrString( options, attr.c_str() );
-	int attrInt = (int)PyInt_AsLong( attrObj );
+	int attrInt = (int)PyLong_AsLong( attrObj );
 	Py_DECREF( attrObj );
 	return attrInt;
 }
@@ -341,15 +352,46 @@ vector<string> pylist_to_vector( PyObject* const list ) {
 
 	for ( int ii = 0; ii < length; ++ii ) {
 		item = PyList_GetItem( list, ii );
-		if ( !PyString_Check(item) ) {
+		if ( !_PyString_Check(item) ) {
 			throw invalid_argument( "Invalid entry. ErrorX only accepts lists of strings as input");
 		} else {
-			string element = PyString_AsString( item );
+			string element = _PyString_AsString( item );
 			out_vect[ ii ] = element;
 		}
 	}
 
 	return out_vect;
+}
+
+PyObject* _PyString_FromString( const char* v ) {
+	#if PY_MAJOR_VERSION >= 3
+		return PyBytes_FromString( v );
+	#else
+		return PyString_FromString( v );
+	#endif
+}
+
+char* _PyString_AsString( PyObject* string ) {
+	#if PY_MAJOR_VERSION >= 3
+		return PyBytes_AsString( string );
+	#else
+		return PyString_AsString( string );
+	#endif
+}
+int _PyString_Check( PyObject* o ){
+	#if PY_MAJOR_VERSION >= 3
+		return PyBytes_Check( o );
+	#else
+		return PyString_Check( o );
+	#endif
+}
+
+Py_ssize_t _PyString_Size( PyObject* string ) {
+	#if PY_MAJOR_VERSION >= 3
+		return PyBytes_Size( string );
+	#else
+		return PyString_Size( string );
+	#endif
 }
 
 } // namespace python
