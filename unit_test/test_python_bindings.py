@@ -68,7 +68,7 @@ SRR3175015.933		N/A	N/A		N/A	N/A		N/A	N/A		VH	False	N/A	N/A	TACTCCCGTGGTACGCCCAA
 				   phred_scores )
 			self.assertEqual(results[0], self.corrected_seq)
 		except ImportError:
-			continue
+			pass
 
 		try:
 			import pandas as pd
@@ -81,7 +81,7 @@ SRR3175015.933		N/A	N/A		N/A	N/A		N/A	N/A		VH	False	N/A	N/A	TACTCCCGTGGTACGCCCAA
 				   phred_scores )
 			self.assertEqual(results[0], self.corrected_seq)
 		except ImportError:
-			continue
+			pass
 
 
 	def test_predicted_errors(self):
