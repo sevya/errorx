@@ -21,11 +21,11 @@ class TestErrorXLibrary(unittest.TestCase):
 		output = '''
 SRR3175015.933	IGHV1-76*01	73.276000	1.12E-18	N/A	N/A	N/A	IGHJ2*01	94.872000	2.38E-14	-	VH	True	GCGGGAGAGGAGGCTTTGTCCTTCGTTTACTAC	AGEEALSFVYY	TACTCCCGTGGTACGCCCAAGGACGGAGGCACACGGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGCGCGCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCGGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG	TACTACAATGAGAAGTTCAAGGGCAAGGCCACACTGACTGCAGAAAAATCCTCCAGCACTGCCTACATGCAGCTCAGCAGCCTGACATCTGAGGACTCTGCTGTCTATTTCTGTGC--------------------------ACTACTGGGGCCAAGGCACCACTCTCACAGTCTCCTCAG	###########################################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4,	YSRGTPKDGGTRSADKSSSAACLARSSLKAGDSAVCSGAGEEALSFVYYWGQGTTLTGSS	TACTCCCGTGGTACGCCCAAGGACGGAGGCACACNGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGNGCNCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCNGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG	YSRGTPKDGGTXSADKSSSAACLXXSSLKAGDSAVCSXAGEEALSFVYYWGQGTTLTGSS	4
 '''.strip()
-
-		self.assertEqual(
-			open( 'testing/out.tsv' ).readlines()[1].strip(),
-			output 
-			)
+	
+		with open( 'testing/out.tsv', 'r' ) as f:
+			file_contents = f.readlines()[1].strip()
+		
+		self.assertEqual( file_contents, output )
 	
 
 		options = ex.ErrorXOptions('testing/test.tsv','tsv')
@@ -37,21 +37,20 @@ SRR3175015.933	IGHV1-76*01	73.276000	1.12E-18	N/A	N/A	N/A	IGHJ2*01	94.872000	2.3
 SRR3175015.933		N/A	N/A		N/A	N/A		N/A	N/A		VH	False	N/A	N/A	TACTCCCGTGGTACGCCCAAGGACGGAGGCACACGGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGCGCGCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCGGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG	TACTACAATGAGAAGTTCAAGGGCAAGGCCACACTGACTGCAGAAAAATCCTCCAGCACTGCCTACATGCAGCTCAGCAGCCTGACATCTGAGGACTCTGCTGTCTATTTCTGTGC--------------------------ACTACTGGGGCCAAGGCACCACTCTCACAGTCTCCTCAG	###########################################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4,	N/A	TACTCCCGTGGTACGCCCAAGGACGGAGGCACACNGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGNGCNCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCNGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG	N/A	4
 		'''.strip()
 
-		self.assertEqual(
-			open( 'testing/out.tsv' ).readlines()[1].strip(),
-			output 
-			)
+		with open( 'testing/out.tsv', 'r' ) as f:
+			file_contents = f.readlines()[1].strip()
+		
+		self.assertEqual( file_contents, output )
 
 	def test_correct_sequences(self):
-
 		N = 501
 		sequences = [self.sequence]*N
-
 		germline_sequences = [self.germline_sequence]*N
 		phred_scores = [self.phred_score]*N
 		results = ex.correct_sequences(sequences, 
 			   germline_sequences,
 			   phred_scores )
+
 		self.assertEqual(results[0], self.corrected_seq)
 
 	def test_numpy(self):

@@ -1,6 +1,6 @@
-import errorx_lib
+from . import errorx_lib
 
-from ErrorXOptions import ErrorXOptions
+from .ErrorXOptions import ErrorXOptions
 import os
 
 '''
@@ -54,10 +54,14 @@ def correct_sequences(sequences,
 	## the C++ code is expecting a Python list - wrapping
 	## the args in list() allows it to accept numpy arrays,
 	## Pandas series, etc.
-	return errorx_lib.correct_sequences( 
+	results = errorx_lib.correct_sequences( 
 		list(sequences),
 		list(germline_sequences),
 		list(phred_scores), options )
+
+	## the Python3 API returns bytes, not string
+	## I have to decode them manually
+	return [a.decode('utf-8') for a in results]
 
 '''
 	Get the predicted likelihood that each base along a NT sequence
@@ -69,8 +73,8 @@ def correct_sequences(sequences,
 	@param options ErrorXOptions object to control options. If 
 	None, will set up default values internally
 
-	@return Python list of tuples showing the probability of error for each base, 
-	each tuple representing (position, probability)
+	@return Python list of probability of error for each base, 
+	where position i is prob error at position i
 '''
 def get_predicted_errors(sequence, 
 			   germline_sequence,

@@ -26,6 +26,7 @@ java_bindings/ErrorX.jar
 java_bindings/errorx/liberrorx*
 
 python_bindings/mac/errorx/errorx_lib.so
+python3_bindings/mac/errorx/errorx_lib.so
 
 build_test/new/*
 !build_test/new/.gitkeep
