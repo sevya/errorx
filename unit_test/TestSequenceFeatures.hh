@@ -79,8 +79,13 @@ public:
 		test_vector = {0,0,0,0,0,0};
 		TS_ASSERT_EQUALS( sf.nt_to_binary( 'X' ), test_vector );
 
-		TS_ASSERT_EQUALS( sf.nt_to_binary( '?' ), test_vector );
-
+		// converting ? to binary should throw an exception
+		// try { 
+			TS_ASSERT_THROWS( sf.nt_to_binary( '?' ), invalid_argument );
+		// 	TS_ASSERT( 0 );
+		// } catch ( invalid_argument & exc ) {
+		// 	TS_ASSERT( 1 );
+		// }
 	}
 
 	void testSequenceEncoding(void) {
