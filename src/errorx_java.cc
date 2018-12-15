@@ -13,6 +13,7 @@
 #include "ErrorPredictor.hh"
 #include "errorx.hh"
 #include "SequenceQuery.hh"
+#include "exceptions.hh"
 
 #include <vector>
 #include <string>
@@ -41,6 +42,7 @@ JNIEXPORT jobject JNICALL Java_errorx_ErrorX_correctSequences( JNIEnv *env, jobj
 			);
 	}
 
+	delete records;
 	return vector_to_array( env, corrected_sequences );
 }
 
@@ -74,6 +76,8 @@ JNIEXPORT jdoubleArray JNICALL Java_errorx_ErrorX_getPredictedErrors( JNIEnv* en
 		predicted_errors.push_back( probability );
 	}
 
+	delete records;
+	
 	return vector_to_array( env, predicted_errors );
 
 }
@@ -82,7 +86,12 @@ JNIEXPORT void JNICALL Java_errorx_ErrorX_runProtocol( JNIEnv *env, jobject this
 					 jobject options ) // ErrorXOptions
 {
 	errorx::ErrorXOptions options_cpp = joptions_to_options( env, options );
-	errorx::run_protocol_write( options_cpp );
+	try {
+		errorx::run_protocol_write( options_cpp );
+	} catch ( errorx::InvalidLicenseException & exc ) {
+		cout << exc.what() << endl;
+		exit(1);
+	}
 }	
 
 
@@ -139,8 +148,14 @@ errorx::SequenceRecords* get_corrected_records( JNIEnv* env,
 	errorx::DataScaler scaler;
 	errorx::ErrorPredictor predictor( options.verbose() );
 
-	errorx::SequenceRecords* records = run_protocol( queries, options );
-	return records;
+	try {
+		errorx::SequenceRecords* records = run_protocol( queries, options );
+		return records;	
+	} catch ( errorx::InvalidLicenseException & exc ) {
+		cout << exc.what() << endl;
+		exit(1);
+	}
+	
 }
 
 

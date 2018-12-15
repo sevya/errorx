@@ -108,6 +108,7 @@ SequenceRecords* run_protocol( vector<SequenceQuery> & queries,
 void run_protocol_write( ErrorXOptions & options ) {
 	SequenceRecords* records = run_protocol( options );
 	records->write_summary();
+	delete records;
 }
 
 void run_protocol_write_features( ErrorXOptions & options ) {
@@ -159,7 +160,7 @@ void run_protocol_write_features( ErrorXOptions & options ) {
 	// Write features
 	records->write_features();
 
-	
+	delete records;
 }
 
 } // namespace errorx

@@ -106,17 +106,18 @@ public:
 			TS_ASSERT_EQUALS( code[ii], encrypted[ii] );
 		}
 	
-		util::write_license("MattRyan");
+		util::write_license( encrypted );
 		string home = (util::get_home()/".errorx").string();
+		
 		string code2 = util::decrypt_from_file( home );
 		TS_ASSERT_EQUALS( code2, matt );
 
 		TS_ASSERT( util::valid_license() );
 
-		util::write_license("Matt Ryan");
+		util::write_license("NfvOY( <u");
 		TS_ASSERT( !util::valid_license() );
 
-		util::write_license("MattRyan");
+		util::write_license("NfvOY(<u");
 	}
 
 	void testTokenize(void) {

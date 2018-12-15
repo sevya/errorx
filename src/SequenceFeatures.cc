@@ -118,12 +118,12 @@ vector<int> SequenceFeatures::nt_to_binary( char nt ) const {
 	vector<int> array = {0,0,0,0,0,0};
 	vector<char> nts = {'A','T','C','G','N','-'};
 
+	// X is used internally to denote when a window goes past the end
+	// or before the beginning of a sequence
 	if ( nt == 'X' ) return array;
 	if ( find( nts.begin(), nts.end(), nt )==nts.end() ) {
-		// TODO fix this for unit test
-		return array;
-		// throw invalid_argument("Error: "+to_string(nt)+" is not a valid nucleotide. "
-			// "Please make sure you are inputting nucleotide sequences for correction.");
+		throw invalid_argument("Error: "+string(1, nt)+" is not a valid nucleotide. "
+			"Please make sure you are inputting DNA sequences for correction.");
 	};
 
 	int index = distance( nts.begin(),

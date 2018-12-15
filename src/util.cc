@@ -235,6 +235,12 @@ string decrypt_string( vector<char> const & chars ) {
 
 }
 
+void write_to_file( string const & fname, string const & message ) {
+	ofstream out( fname.c_str() );
+	out << message;
+	out.close();
+}
+
 void encrypt_to_file( string const & fname, string const & message ) {
 	ofstream out( fname.c_str() );
 	vector<char> chars = encrypt_string( message );
@@ -259,7 +265,7 @@ string decrypt_from_file( string const & fname ) {
 
 void write_license( string key ) {
 	boost::filesystem::path config = util::get_home() / ".errorx";
-	encrypt_to_file( config.string(), key );
+	write_to_file( config.string(), key );
 }
 
 bool valid_license() {

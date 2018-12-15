@@ -68,10 +68,9 @@ ErrorXOptions::ErrorXOptions( ErrorXOptions const & other ) :
 	correction_(other.correction_),
 	infasta_(other.infasta_),
 	igblast_output_(other.igblast_output_),
+	errorx_base_(other.errorx_base_),
 	trial_(other.trial_)
-{
-	errorx_base( util::get_root_path().string() );
-}
+{}
 
 
 void ErrorXOptions::fastq_to_fasta() {

@@ -268,6 +268,14 @@ string decrypt_string( vector<char> const & chars );
 void encrypt_to_file( string const & fname, string const & message );
 
 /**
+	Write unencrypted string to a file
+
+	@param fname file to write to
+	@param message string to write
+*/
+void write_to_file( string const & fname, string const & message );
+
+/**
 	Decrypt the string contained in a file
 
 	@param fname file to read from

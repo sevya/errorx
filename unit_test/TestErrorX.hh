@@ -79,6 +79,66 @@ public:
 		TS_ASSERT_DELTA( predicted_errors[138].second, 0.513773250, delta)
 	}
 
+	void testFromOptionsChar(void) {
+		options_.infile( "testing/test.fastq" );
+
+		options_.format( "fastq" );
+		options_.outfile( "testing/test_out.tsv");
+
+		options_.species( "mouse" );
+		options_.verbose( 1 );
+		options_.nthreads( 1 );
+		string base = "../";
+		options_.errorx_base( base );
+
+		ErrorXOptions options( options_ );
+		options.correction( 'X' );
+
+		SequenceRecords* records = run_protocol( options );
+
+		TS_ASSERT_EQUALS(
+			records->get(0)->quality_string(),
+			"###########################################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4,"
+			);
+
+		TS_ASSERT_EQUALS(
+			records->get(0)->full_nt_sequence(),
+			"TACTCCCGTGGTACGCCCAAGGACGGAGGCACACGGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGCGCGCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCGGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG"
+			);
+
+		TS_ASSERT_EQUALS(
+			records->get(0)->full_gl_nt_sequence(),
+			"TACTACAATGAGAAGTTCAAGGGCAAGGCCACACTGACTGCAGAAAAATCCTCCAGCACTGCCTACATGCAGCTCAGCAGCCTGACATCTGAGGACTCTGCTGTCTATTTCTGTGC--------------------------ACTACTGGGGCCAAGGCACCACTCTCACAGTCTCCTCAG"
+			);
+
+		TS_ASSERT_EQUALS(
+			records->get(0)->full_aa_sequence(),
+			"YSRGTPKDGGTRSADKSSSAACLARSSLKAGDSAVCSGAGEEALSFVYYWGQGTTLTGSS"
+			);
+
+		TS_ASSERT_EQUALS(
+			records->get(0)->cdr3_aa_sequence(),
+			"AGEEALSFVYY"
+			);
+
+
+		TS_ASSERT_EQUALS(
+			records->get(0)->full_nt_sequence_corrected(),
+			"TACTCCCGTGGTACGCCCAAGGACGGAGGCACACXGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGXGCXCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCXGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG"
+			);
+
+		vector<pair<int,double>> predicted_errors = records->get(0)->get_predicted_errors();
+
+		double delta = 0.0000001;
+		TS_ASSERT_DELTA( predicted_errors[132].second, 0.486122388, delta)
+		TS_ASSERT_DELTA( predicted_errors[133].second, 0.348359625, delta)
+		TS_ASSERT_DELTA( predicted_errors[134].second, 0.143818731, delta)
+		TS_ASSERT_DELTA( predicted_errors[135].second, 0.458915133, delta)
+		TS_ASSERT_DELTA( predicted_errors[136].second, 0.306816917, delta)
+		TS_ASSERT_DELTA( predicted_errors[137].second, 0.022584986, delta)
+		TS_ASSERT_DELTA( predicted_errors[138].second, 0.513773250, delta)
+	}
+
 
 	void testFromOptionsTSV(void) {
 		options_.infile( "testing/test.tsv" );

@@ -73,6 +73,8 @@ int main( int argc, char* argv[] ) {
 
 		if ( vm.count("license")) {
 			util::write_license( vm["license"].as<string>() );
+			cout << "Successfully wrote license file!" << endl;
+			return 0;
 		}
 
 	// try {
