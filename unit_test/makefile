@@ -59,7 +59,7 @@ BOOST_LIBS=../dependencies/boost/linux/libboost_filesystem.a \
 
 CXXGEN=cxxtest/bin/cxxtestgen
 
-all: TestSequenceFeatures TestIGBlastParser TestUtil TestErrorX
+all: TestSequenceFeatures TestIGBlastParser TestUtil TestErrorX TestLinking
 
 TestSequenceFeatures: $(SRCS)
 	$(CXXGEN) --error-printer -o TestSequenceFeatures.cc TestSequenceFeatures.hh

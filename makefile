@@ -14,7 +14,7 @@ endif
 ifeq ($(uname_S), Linux)
 	# set Linux compiler, flags, and paths
 	CXX=clang++
-	CPPFLAGS=-pthread -std=c++11 -Wall -Wno-sign-compare
+	CPPFLAGS=-pthread -std=c++11 -Wall -Wno-sign-compare -Wno-deprecated-register
 	LIBFLAGS=-shared -fPIC
 	FINAL=-ldl
 
@@ -67,20 +67,19 @@ binary_testing: $(SRCS) src/testing.cc
 	$(CXX) $(CPPFLAGS) $(INC) -Ofast -o bin/errorx_testing $(SRCS) src/testing.cc $(BOOST_LIBS) $(FINAL)
 
 library: $(SRCS)
-# leave out python/java stuff for now
-# $(CXX) $(CPPFLAGS) $(INC) -Ofast $(PYTHON_INC) $(JAVA_INC) $(PYTHON_LINK) $(LIBFLAGS) -o lib/liberrorx.$(DLLEXT) $(SRCS) src/errorx_java.cc src/errorx_python.cc $(BOOST_LIBS) dependencies/boost/mac/libboost_python27.a $(FINAL)
 	$(CXX) $(CPPFLAGS) $(INC) -Ofast $(LIBFLAGS) -o lib/liberrorx.$(DLLEXT) $(SRCS) $(BOOST_LIBS) $(FINAL)
 
 
 binary: $(SRCS) src/main.cc
 	$(CXX) $(CPPFLAGS) $(INC) -Ofast $(BOOST_LIBS) -o bin/errorx $(SRCS) src/main.cc $(BOOST_LIBS) $(FINAL)
 
-python: library
-	cp lib/liberrorx.$(DLLEXT) python_bindings/$(OS)/errorx/errorx_lib.so
-	pip install python_bindings/$(OS)/
+python: $(SRCS)
+	$(CXX) $(CPPFLAGS) $(INC) $(PYTHON_INC) -Ofast $(LIBFLAGS) -o python_bindings/$(OS)/errorx/errorx_lib.so $(SRCS) src/errorx_python.cc $(BOOST_LIBS) $(FINAL)
+	sudo pip install python_bindings/$(OS)/
 
-java: library
-	cp lib/liberrorx.$(DLLEXT) java_bindings/$(OS)/errorx/
+java: $(SRCS)
+	$(CXX) $(CPPFLAGS) $(INC) $(JAVA_INC) -Ofast $(LIBFLAGS) -o java_bindings/errorx/liberrorx.$(DLLEXT) $(SRCS) src/errorx_java.cc $(BOOST_LIBS) $(FINAL)
+	cd java_bindings; make
 
 debug: $(SRCS) src/main.cc
 	$(CXX) $(CPPFLAGS) $(INC) -g -o bin/errorx_debug $(SRCS) src/main.cc $(BOOST_LIBS) $(FINAL)

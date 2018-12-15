@@ -54,19 +54,49 @@ SRR3175015.933		N/A	N/A		N/A	N/A		N/A	N/A		VH	False	N/A	N/A	TACTCCCGTGGTACGCCCAA
 			   phred_scores )
 		self.assertEqual(results[0], self.corrected_seq)
 
+	def test_numpy(self):
+		try:
+			import numpy as np
+			N = 10
+
+			sequences = np.array([self.sequence]*N)
+			germline_sequences = np.array([self.germline_sequence]*N)
+			phred_scores = np.array([self.phred_score]*N)
+
+			results = ex.correct_sequences(sequences, 
+				   germline_sequences,
+				   phred_scores )
+			self.assertEqual(results[0], self.corrected_seq)
+		except ImportError:
+			pass
+
+		try:
+			import pandas as pd
+			sequences = pd.Series([self.sequence]*N)
+			germline_sequences = pd.Series([self.germline_sequence]*N)
+			phred_scores = pd.Series([self.phred_score]*N)
+
+			results = ex.correct_sequences(sequences, 
+				   germline_sequences,
+				   phred_scores )
+			self.assertEqual(results[0], self.corrected_seq)
+		except ImportError:
+			pass
+
+
 	def test_predicted_errors(self):
 
 		result = ex.get_predicted_errors( self.sequence, 
 			   self.germline_sequence,
 			   self.phred_score )
 
-		self.assertAlmostEqual(result[132][1], 0.486122388, 9)
-		self.assertAlmostEqual(result[133][1], 0.348359625, 9)
-		self.assertAlmostEqual(result[134][1], 0.143818731, 9)
-		self.assertAlmostEqual(result[135][1], 0.458915133, 9)
-		self.assertAlmostEqual(result[136][1], 0.306816917, 9)
-		self.assertAlmostEqual(result[137][1], 0.022584986, 9)
-		self.assertAlmostEqual(result[138][1], 0.513773250, 9)
+		self.assertAlmostEqual(result[132], 0.486122388, 9)
+		self.assertAlmostEqual(result[133], 0.348359625, 9)
+		self.assertAlmostEqual(result[134], 0.143818731, 9)
+		self.assertAlmostEqual(result[135], 0.458915133, 9)
+		self.assertAlmostEqual(result[136], 0.306816917, 9)
+		self.assertAlmostEqual(result[137], 0.022584986, 9)
+		self.assertAlmostEqual(result[138], 0.513773250, 9)
 
 
 if __name__ == '__main__':

@@ -5,13 +5,13 @@ sublime.sublime-workspace
 .cproject
 .project
 .settings/
+.DS_Store
 unit_test/hs_err*.log
 
-bin/errorx
-bin/errorx_testing
-bin/errorx_debug
+bin/errorx*
 
 lib/*
+!lib/.gitkeep
 
 unit_test/testing/test.fasta.out
 unit_test/bin/*
@@ -22,9 +22,10 @@ unit_test/testing/out.tsv
 
 java_bindings/errorx/*.class
 java_bindings/ErrorX.jar
-java_bindings/errorx/liberrorx_java.dylib
+java_bindings/errorx/liberrorx*
 
-python_bindings/production/errorx/errorx_lib.so
+python_bindings/mac/errorx/errorx_lib.so
+python_bindings/linux/errorx/errorx_lib.so
 
 build_test/new/*
 !build_test/new/.gitkeep
