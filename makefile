@@ -79,10 +79,15 @@ python: $(SRCS)
 	$(CXX) $(CPPFLAGS) $(INC) $(PY_INC) -Ofast $(LIBFLAGS) -o python_bindings/errorx/errorx_lib.so $(SRCS) src/errorx_python.cc $(BOOST) $(FINAL)
 	sudo $(PY_EXE) -m pip install -I python_bindings/
 
+python_package: python
+	tar cfz ErrorX-1.0_linux_python2.7.tar.gz python_bindings/ --transform "s/python_bindings/ErrorX-1.0_$(OS)_python2.7/"
+
 java: $(SRCS)
 	$(CXX) $(CPPFLAGS) $(INC) $(JAVA_INC) -Ofast $(LIBFLAGS) -o java_bindings/errorx/liberrorx.$(DLLEXT) $(SRCS) src/errorx_java.cc $(BOOST) $(FINAL)
 	cd java_bindings; make
 
+java_package: java
+	tar cvfz ErrorX-1.0_linux_java.tar.gz java_bindings/bin java_bindings/database java_bindings/errorx/liberrorx* java_bindings/ErrorX.jar java_bindings/internal_data java_bindings/optional_file --transform "s/java_bindings/ErrorX-1.0_linux_java/"
 
 clean: 
 	rm -rf bin/errorx* lib/* python_bindings/$(OS)/errorx/errorx_lib.so java_bindings/errorx/liberrorx.$(DLLEXT)

@@ -8,6 +8,8 @@ sublime.sublime-workspace
 .DS_Store
 unit_test/hs_err*.log
 
+*tar.gz 
+
 bin/errorx*
 
 lib/*
