@@ -76,8 +76,8 @@ library: $(SRCS)
 	$(CXX) $(CPPFLAGS) $(INC) -Ofast $(LIBFLAGS) -o lib/liberrorx.$(DLLEXT) $(SRCS) $(BOOST) $(FINAL)
 
 python: $(SRCS)
-	$(CXX) $(CPPFLAGS) $(INC) $(PY_INC) -Ofast $(LIBFLAGS) -o python_bindings/$(OS)/errorx/errorx_lib.so $(SRCS) src/errorx_python.cc $(BOOST) $(FINAL)
-	sudo $(PY_EXE) -m pip install -I python_bindings/$(OS)/
+	$(CXX) $(CPPFLAGS) $(INC) $(PY_INC) -Ofast $(LIBFLAGS) -o python_bindings/errorx/errorx_lib.so $(SRCS) src/errorx_python.cc $(BOOST) $(FINAL)
+	sudo $(PY_EXE) -m pip install -I python_bindings/
 
 java: $(SRCS)
 	$(CXX) $(CPPFLAGS) $(INC) $(JAVA_INC) -Ofast $(LIBFLAGS) -o java_bindings/errorx/liberrorx.$(DLLEXT) $(SRCS) src/errorx_java.cc $(BOOST) $(FINAL)
