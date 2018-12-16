@@ -21,6 +21,16 @@ unit_test/*.cc
 unit_test/*.class
 unit_test/testing/out.tsv
 
+unit_test/cxxtest/COPYING
+unit_test/cxxtest/Versions
+unit_test/cxxtest/cxxtest
+unit_test/cxxtest/test/
+unit_test/cxxtest/README
+unit_test/cxxtest/admin/
+unit_test/cxxtest/build_tools/
+unit_test/cxxtest/doc/
+unit_test/cxxtest/sample/
+
 java_bindings/errorx/*.class
 java_bindings/ErrorX.jar
 java_bindings/errorx/liberrorx*
