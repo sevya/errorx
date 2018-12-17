@@ -95,7 +95,7 @@ python3: $(SRCS) src/errorx_python.cc
 	sudo $(PY3_EXE) -m pip install -I python3_bindings/
 
 python3_package: python3
-	$(tar) cfz ErrorX-1.0_$(OS)_python3.6.tar.gz python_bindings/ --transform "s/python_bindings/ErrorX-1.0_$(OS)_python2.7/"
+	$(tar) cfz ErrorX-1.0_$(OS)_python3.6.tar.gz python_bindings/ --transform "s/python_bindings/ErrorX-1.0_$(OS)_python3.6/"
 
 java: $(SRCS)
 	$(CXX) $(CPPFLAGS) $(INC) $(JAVA_INC) -Ofast $(LIBFLAGS) -o java_bindings/errorx/liberrorx.$(DLLEXT) $(SRCS) src/errorx_java.cc $(BOOST) $(FINAL)
