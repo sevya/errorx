@@ -33,7 +33,6 @@ BOOST=../dependencies/boost/mac/libboost_filesystem.a \
 	  ../dependencies/boost/mac/libboost_program_options.a \
 	  ../dependencies/boost/mac/libboost_system.a
 		   
-
 CXXGEN=cxxtest/bin/cxxtestgen
 
 all: TestSequenceFeatures TestIGBlastParser TestUtil TestErrorX TestLinking

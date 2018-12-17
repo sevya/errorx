@@ -5,7 +5,7 @@ echo "Running binary..."
 
 echo "Running c++ library..."
 make -s TestLinking
-setenv DYLD_LIBRARY_PATH ../lib/
+setenv LD_LIBRARY_PATH ../lib/
 ./a.out
  
 echo "Running Python..."

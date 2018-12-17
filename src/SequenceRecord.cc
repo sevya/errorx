@@ -95,6 +95,8 @@ SequenceRecord::SequenceRecord( vector<string> const & lines,
 	try {
 		for ( int ii = 0; ii < lines.size(); ++ii ) {
 			vector<string> tokens = util::tokenize_string<string>(lines[ii]);
+			
+			if ( tokens.size() < 2 ) continue;
 
 			if ( tokens[1] == "Query:" ) {
 				data_map.insert( make_pair("query_string", tokens) );

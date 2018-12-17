@@ -107,7 +107,8 @@ public:
 		}
 	
 		util::write_license( encrypted );
-		string home = "/Users/sevy/.errorx";
+		string home = (util::get_home()/".errorx").string();
+		
 		string code2 = util::decrypt_from_file( home );
 		TS_ASSERT_EQUALS( code2, matt );
 

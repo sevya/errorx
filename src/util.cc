@@ -160,6 +160,7 @@ int count_queries( string & file ) {
 	int ii = 0;
 	while( getline(in,line) ) {
 		vector<string> tokens = util::tokenize_string<string>(line);
+		if ( tokens.size() < 2 ) continue;
 		if ( tokens[1] == "Query:" ) ++ii;
 	}
 	return ii;
@@ -274,7 +275,7 @@ bool valid_license() {
 	string key;
 	try {
 		key = decrypt_from_file( config.string() );
-	} catch ( invalid_argument ) {
+	} catch ( invalid_argument & exc ) {
 		// license file does not exist - run in trial version
 		return 0;
 	}
