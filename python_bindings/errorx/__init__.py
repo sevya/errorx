@@ -69,8 +69,8 @@ def correct_sequences(sequences,
 	@param options ErrorXOptions object to control options. If 
 	None, will set up default values internally
 
-	@return Python list of tuples showing the probability of error for each base, 
-	each tuple representing (position, probability)
+	@return Python list of probability of error for each base, 
+	where position i is prob error at position i
 '''
 def get_predicted_errors(sequence, 
 			   germline_sequence,

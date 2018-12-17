@@ -1,7 +1,5 @@
 .DEFAULT_GOAL := binary
 
-PY_VERSION=2.7
-
 ifeq ($(OS),Windows_NT)
 	uname_S := Windows
 else
@@ -20,9 +18,11 @@ ifeq ($(uname_S), Linux)
 
 	OS=linux
 	DLLEXT=so
-	PY_INC=-I/usr/include/python$(PY_VERSION)
-	PY_LINK=-L/usr/lib/python$(PY_VERSION)/config -lpython$(PY_VERSION)
+	PY_INC=-I/usr/include/python2.7
+	PY3_INC=-I/usr/include/python3.6
+
 	PY_EXE=/usr/bin/python
+	PY3_EXE=/usr/bin/python3
 
 	JAVA_HOME=/home/sevya/jdk1.8.0_45/include/
 	JAVA_INC=-I$(JAVA_HOME) -I$(JAVA_HOME)linux/
@@ -37,8 +37,10 @@ ifeq ($(uname_S), Darwin)
 	OS=mac
 	DLLEXT=dylib
 	PY_EXE=/usr/bin/python
-	PY_INC=-I/System/Library/Frameworks/Python.framework/Versions/$(PY_VERSION)/include/python$(PY_VERSION)/
-	PY_LINK=-I/System/Library/Frameworks/Python.framework/Versions/$(PY_VERSION)/lib/python$(PY_VERSION)/ -lpython$(PY_VERSION)
+	PY3_EXE=/Library/Frameworks/Python.framework/Versions/3.6/bin/python3
+
+	PY_INC=-I/System/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7/
+	PY3_INC=-I/Library/Frameworks/Python.framework/Versions/3.6/include/python3.6m/
 
 	JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home/include/
 	JAVA_INC=-I$(JAVA_HOME) -I$(JAVA_HOME)darwin/
@@ -75,20 +77,29 @@ debug: $(SRCS) src/main.cc
 library: $(SRCS)
 	$(CXX) $(CPPFLAGS) $(INC) -Ofast $(LIBFLAGS) -o lib/liberrorx.$(DLLEXT) $(SRCS) $(BOOST) $(FINAL)
 
-python: $(SRCS)
+
+python: $(SRCS) src/errorx_python.cc
 	$(CXX) $(CPPFLAGS) $(INC) $(PY_INC) -Ofast $(LIBFLAGS) -o python_bindings/errorx/errorx_lib.so $(SRCS) src/errorx_python.cc $(BOOST) $(FINAL)
 	sudo $(PY_EXE) -m pip install -I python_bindings/
 
+
 python_package: python
-	tar cfz ErrorX-1.0_linux_python2.7.tar.gz python_bindings/ --transform "s/python_bindings/ErrorX-1.0_$(OS)_python2.7/"
+	tar cfz ErrorX-1.0_$(OS)_python2.7.tar.gz python_bindings/ --transform "s/python_bindings/ErrorX-1.0_$(OS)_python2.7/"
+
+python3: $(SRCS) src/errorx_python.cc
+	$(CXX) $(CPPFLAGS) $(INC) $(PY3_INC) -Ofast $(LIBFLAGS) -o python3_bindings/errorx/errorx_lib.so $(SRCS) src/errorx_python.cc $(BOOST) $(FINAL)
+	sudo $(PY3_EXE) -m pip3 install -I python3_bindings/
+
+python3_package: python3
+	tar cfz ErrorX-1.0_$(OS)_python3.6.tar.gz python_bindings/ --transform "s/python_bindings/ErrorX-1.0_$(OS)_python2.7/"
 
 java: $(SRCS)
 	$(CXX) $(CPPFLAGS) $(INC) $(JAVA_INC) -Ofast $(LIBFLAGS) -o java_bindings/errorx/liberrorx.$(DLLEXT) $(SRCS) src/errorx_java.cc $(BOOST) $(FINAL)
 	cd java_bindings; make
 
 java_package: java
-	tar cvfz ErrorX-1.0_linux_java.tar.gz java_bindings/bin java_bindings/database java_bindings/errorx/liberrorx* java_bindings/ErrorX.jar java_bindings/internal_data java_bindings/optional_file --transform "s/java_bindings/ErrorX-1.0_linux_java/"
+	tar cvfz ErrorX-1.0_$(OS)_java.tar.gz java_bindings/bin java_bindings/database java_bindings/errorx/liberrorx* java_bindings/ErrorX.jar java_bindings/internal_data java_bindings/optional_file --transform "s/java_bindings/ErrorX-1.0_$(OS)_java/"
 
 clean: 
-	rm -rf bin/errorx* lib/* python_bindings/$(OS)/errorx/errorx_lib.so java_bindings/errorx/liberrorx.$(DLLEXT)
+	rm -rf bin/errorx* lib/* python_bindings/errorx/errorx_lib.so java_bindings/errorx/liberrorx.$(DLLEXT)
 	

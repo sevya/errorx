@@ -1,13 +1,13 @@
 /**
-@file errorx_python_beta.hh
+@file errorx_python.hh
 @brief Python bindings to expose ErrorX interface
 @detail These bindings do not rely on boost/python at all,
 hopefully they can be more portable
 @author Alex Sevy (alex.sevy@gmail.com)
 */
 
-#ifndef INCLUDE_ERRORX_PYTHON_BETA_HH_
-#define INCLUDE_ERRORX_PYTHON_BETA_HH_
+#ifndef INCLUDE_ERRORX_PYTHON_HH_
+#define INCLUDE_ERRORX_PYTHON_HH_
 
 #include <Python.h>
 #include <string>
@@ -79,7 +79,14 @@ double extract_double_attr( PyObject* const options, string const & attr );
 
 vector<string> pylist_to_vector( PyObject* const list );
 
+/**
+	Utilities functions to convert Python C api from 2.7 to 3.x
+	they eliminated PyString and replaced it with PyBytes
+*/
+PyObject* _PyString_FromString( const char* v );
+string _PyString_AsString( PyObject* obj );
+
 } // namespace python
 } // namespace errorx
 
-#endif /* INCLUDE_ERRORX_PYTHON_BETA_HH_ */
+#endif /* INCLUDE_ERRORX_PYTHON_HH_ */
