@@ -30,7 +30,7 @@
 			[
 				"src",
 				"include",
-				"python_bindings",
+				"python2_bindings",
 				"python3_bindings",
 				"mac",
 				"java_bindings",

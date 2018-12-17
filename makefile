@@ -83,21 +83,21 @@ library: $(SRCS)
 	$(CXX) $(CPPFLAGS) $(WNO) $(INC) -Ofast $(LIBFLAGS) -o lib/liberrorx.$(DLLEXT) $(SRCS) $(BOOST) $(FINAL)
 
 package: binary library
-	$(tar) cfz ErrorX-1.0_$(OS).tar.gz bin/errorx bin/igblastn_* build_test/ database/ dependencies/ documentation/ internal_data/ lib/ optional_file/ test_case/ python_bindings/ python3_bindings/ java_bindings/ --transform "s/^/ErrorX\//"
+	$(tar) cfz ErrorX-1.0_$(OS).tar.gz bin/errorx bin/igblastn_* build_test/ database/ dependencies/ documentation/ internal_data/ lib/ optional_file/ test_case/ python2_bindings/ python3_bindings/ java_bindings/ --transform "s/^/ErrorX\//"
 
 python: $(SRCS) src/errorx_python.cc
-	$(CXX) $(CPPFLAGS) $(WNO) $(INC) $(PY_INC) -Ofast $(LIBFLAGS) -o python_bindings/errorx/errorx_lib.so $(SRCS) src/errorx_python.cc $(BOOST) $(FINAL)
-	sudo $(PY_EXE) -m pip install -I python_bindings/
+	$(CXX) $(CPPFLAGS) $(WNO) $(INC) $(PY_INC) -Ofast $(LIBFLAGS) -o python2_bindings/errorx/errorx_lib.so $(SRCS) src/errorx_python.cc $(BOOST) $(FINAL)
+	sudo $(PY_EXE) -m pip install -I python2_bindings/
 
 python_package: python
-	$(tar) cfz ErrorX-1.0_$(OS)_python2.7.tar.gz python_bindings/ --transform "s/python_bindings/ErrorX_python2.7/"
+	$(tar) cfz ErrorX-1.0_$(OS)_python2.7.tar.gz python2_bindings/ --transform "s/python2_bindings/ErrorX_python2.7/"
 
 python3: $(SRCS) src/errorx_python.cc
 	$(CXX) $(CPPFLAGS) $(WNO) $(INC) $(PY3_INC) -Ofast $(LIBFLAGS) -o python3_bindings/errorx/errorx_lib.so $(SRCS) src/errorx_python.cc $(BOOST) $(FINAL)
 	sudo $(PY3_EXE) -m pip install -I python3_bindings/
 
 python3_package: python3
-	$(tar) cfz ErrorX-1.0_$(OS)_python3.6.tar.gz python_bindings/ --transform "s/python_bindings/ErrorX_python3.6/"
+	$(tar) cfz ErrorX-1.0_$(OS)_python3.6.tar.gz python2_bindings/ --transform "s/python2_bindings/ErrorX_python3.6/"
 
 java: $(SRCS)
 	$(CXX) $(CPPFLAGS) $(WNO) $(INC) $(JAVA_INC) -Ofast $(LIBFLAGS) -o java_bindings/errorx/liberrorx.$(DLLEXT) $(SRCS) src/errorx_java.cc $(BOOST) $(FINAL)
