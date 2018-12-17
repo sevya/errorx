@@ -12,7 +12,7 @@ endif
 ifeq ($(uname_S), Linux)
 	# set Linux compiler, flags, and paths
 	CXX=clang++
-	CPPFLAGS=-pthread -std=c++11 -Wall -Wno-sign-compare -Wno-deprecated-register
+	WNO=-Wno-sign-compare -Wno-deprecated-register
 	LIBFLAGS=-shared -fPIC
 	FINAL=-ldl
 
@@ -32,7 +32,7 @@ endif
 ifeq ($(uname_S), Darwin)
 	# set Mac compiler, flags, and paths
 	CXX=clang++
-	CPPFLAGS=-pthread -std=c++11 -Wall -Wno-deprecated-register
+	WNO=-Wno-deprecated-register
 	LIBFLAGS=-shared -undefined dynamic_lookup
 	FINAL=
 
@@ -50,6 +50,7 @@ ifeq ($(uname_S), Darwin)
 	tar=/usr/local/bin/tar
 endif
 
+CPPFLAGS=-pthread -std=c++11 -Wall 
 
 INC=-Iinclude/
 
@@ -70,39 +71,40 @@ libraries: library python java
 
 
 binary_testing: $(SRCS) src/testing.cc
-	$(CXX) $(CPPFLAGS) $(INC) -Ofast -o bin/errorx_testing $(SRCS) src/testing.cc $(BOOST) $(FINAL)
+	$(CXX) $(CPPFLAGS) $(WNO) $(INC) -Ofast -o bin/errorx_testing $(SRCS) src/testing.cc $(BOOST) $(FINAL)
 
 binary: $(SRCS) src/main.cc
-	$(CXX) $(CPPFLAGS) $(INC) -Ofast -o bin/errorx $(SRCS) src/main.cc $(BOOST) $(FINAL)
+	$(CXX) $(CPPFLAGS) $(WNO) $(INC) -Ofast -o bin/errorx $(SRCS) src/main.cc $(BOOST) $(FINAL)
 
 debug: $(SRCS) src/main.cc
-	$(CXX) $(CPPFLAGS) $(INC) -g -o bin/errorx_debug $(SRCS) src/main.cc $(BOOST) $(FINAL)
+	$(CXX) $(CPPFLAGS) $(WNO) $(INC) -g -o bin/errorx_debug $(SRCS) src/main.cc $(BOOST) $(FINAL)
 
 library: $(SRCS)
-	$(CXX) $(CPPFLAGS) $(INC) -Ofast $(LIBFLAGS) -o lib/liberrorx.$(DLLEXT) $(SRCS) $(BOOST) $(FINAL)
+	$(CXX) $(CPPFLAGS) $(WNO) $(INC) -Ofast $(LIBFLAGS) -o lib/liberrorx.$(DLLEXT) $(SRCS) $(BOOST) $(FINAL)
 
+package: binary library
+	$(tar) cfz ErrorX-1.0_$(OS).tar.gz bin/errorx bin/igblastn_* build_test/ database/ dependencies/ documentation/ internal_data/ lib/ optional_file/ test_case/ --transform "s/^/ErrorX\//"
 
 python: $(SRCS) src/errorx_python.cc
-	$(CXX) $(CPPFLAGS) $(INC) $(PY_INC) -Ofast $(LIBFLAGS) -o python_bindings/errorx/errorx_lib.so $(SRCS) src/errorx_python.cc $(BOOST) $(FINAL)
+	$(CXX) $(CPPFLAGS) $(WNO) $(INC) $(PY_INC) -Ofast $(LIBFLAGS) -o python_bindings/errorx/errorx_lib.so $(SRCS) src/errorx_python.cc $(BOOST) $(FINAL)
 	sudo $(PY_EXE) -m pip install -I python_bindings/
 
-
 python_package: python
-	$(tar) cfz ErrorX-1.0_$(OS)_python2.7.tar.gz python_bindings/ --transform "s/python_bindings/ErrorX-1.0_$(OS)_python2.7/"
+	$(tar) cfz ErrorX-1.0_$(OS)_python2.7.tar.gz python_bindings/ --transform "s/python_bindings/ErrorX_python2.7/"
 
 python3: $(SRCS) src/errorx_python.cc
-	$(CXX) $(CPPFLAGS) $(INC) $(PY3_INC) -Ofast $(LIBFLAGS) -o python3_bindings/errorx/errorx_lib.so $(SRCS) src/errorx_python.cc $(BOOST) $(FINAL)
+	$(CXX) $(CPPFLAGS) $(WNO) $(INC) $(PY3_INC) -Ofast $(LIBFLAGS) -o python3_bindings/errorx/errorx_lib.so $(SRCS) src/errorx_python.cc $(BOOST) $(FINAL)
 	sudo $(PY3_EXE) -m pip install -I python3_bindings/
 
 python3_package: python3
-	$(tar) cfz ErrorX-1.0_$(OS)_python3.6.tar.gz python_bindings/ --transform "s/python_bindings/ErrorX-1.0_$(OS)_python3.6/"
+	$(tar) cfz ErrorX-1.0_$(OS)_python3.6.tar.gz python_bindings/ --transform "s/python_bindings/ErrorX_python3.6/"
 
 java: $(SRCS)
-	$(CXX) $(CPPFLAGS) $(INC) $(JAVA_INC) -Ofast $(LIBFLAGS) -o java_bindings/errorx/liberrorx.$(DLLEXT) $(SRCS) src/errorx_java.cc $(BOOST) $(FINAL)
+	$(CXX) $(CPPFLAGS) $(WNO) $(INC) $(JAVA_INC) -Ofast $(LIBFLAGS) -o java_bindings/errorx/liberrorx.$(DLLEXT) $(SRCS) src/errorx_java.cc $(BOOST) $(FINAL)
 	cd java_bindings; make
 
 java_package: java
-	$(tar) cfz ErrorX-1.0_$(OS)_java.tar.gz java_bindings/bin java_bindings/database java_bindings/errorx/liberrorx* java_bindings/ErrorX.jar java_bindings/internal_data java_bindings/optional_file --transform "s/java_bindings/ErrorX-1.0_$(OS)_java/"
+	$(tar) cfz ErrorX-1.0_$(OS)_java.tar.gz java_bindings/bin java_bindings/database java_bindings/errorx/liberrorx* java_bindings/ErrorX.jar java_bindings/internal_data java_bindings/optional_file --transform "s/java_bindings/ErrorX_java/"
 
 clean: 
 	rm -rf bin/errorx* lib/* python*_bindings/errorx/errorx_lib.so java_bindings/errorx/liberrorx.$(DLLEXT)
