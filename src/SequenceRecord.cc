@@ -14,6 +14,7 @@ or directly from a SequenceQuery.
 #include <vector>
 #include <map>
 
+#include "constants.hh"
 #include "util.hh"
 
 #include <boost/lexical_cast.hpp>
@@ -305,7 +306,7 @@ void SequenceRecord::parse_vregion_string( vector<string> const & data ) {
 		query_start_ = boost::lexical_cast<int>( data[8] );
 		gl_start_ = boost::lexical_cast<int>( data[10] );
 
-		if ( v_evalue_ > 1e-3 ) {
+		if ( v_evalue_ > constants::V_EVALUE_CUTOFF ) {
 			if ( verbose_ > 1 ) {
 				cout << "Bad match for V : " << sequenceID_<< endl;
 			}
@@ -339,7 +340,7 @@ void SequenceRecord::parse_dregion_string( vector<string> const & data ) {
 		d_nts_ = data[16];
 		d_gl_nts_ = data[17];
 		
-		if ( d_evalue_ > 0.01 ) {
+		if ( d_evalue_ > constants::D_EVALUE_CUTOFF ) {
 			d_gene_ = "N/A";
 			hasD_ = 0;
 			d_gl_nts_ = string( d_nts_.size(), '-' );
@@ -369,7 +370,7 @@ void SequenceRecord::parse_jregion_string( vector<string> const & data ) {
 		j_nts_ = data[16];
 		j_gl_nts_ = data[17];	
 
-		if ( j_evalue_ > 0.01 ) {
+		if ( j_evalue_ > constants::J_EVALUE_CUTOFF ) {
 			j_gene_ = "N/A";
 			hasJ_ = 0;
 			j_gl_nts_ = string( j_nts_.size(), '-' );

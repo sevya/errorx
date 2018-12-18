@@ -21,6 +21,14 @@ const double OPTIMIZED_RECALL = 0.448;
 */
 const int WINDOW = 8;
 
+/**
+	E value cutoffs when assigning V, D, and J genes
+*/
+const double V_EVALUE_CUTOFF = 1e-3;
+const double D_EVALUE_CUTOFF = 0.01;
+const double J_EVALUE_CUTOFF = 0.01;
+
+
 
 } // namespace constants
 } // namespace errorx
