@@ -82,21 +82,25 @@ debug: $(SRCS) src/main.cc
 library: $(SRCS)
 	$(CXX) $(CPPFLAGS) $(WNO) $(INC) -Ofast $(LIBFLAGS) -o lib/liberrorx.$(DLLEXT) $(SRCS) $(BOOST) $(FINAL)
 
-package: binary library
+package: binary library python python3 java
 	$(tar) cfz ErrorX-1.0_$(OS).tar.gz bin/errorx bin/igblastn_* build_test/ database/ dependencies/ documentation/ internal_data/ lib/ optional_file/ test_case/ python2_bindings/ python3_bindings/ java_bindings/ --transform "s/^/ErrorX\//"
 
 python: $(SRCS) src/errorx_python.cc
 	$(CXX) $(CPPFLAGS) $(WNO) $(INC) $(PY_INC) -Ofast $(LIBFLAGS) -o python2_bindings/errorx/errorx_lib.so $(SRCS) src/errorx_python.cc $(BOOST) $(FINAL)
+	
+python_install: python
 	sudo $(PY_EXE) -m pip install -I python2_bindings/
 
-python_package: python
+python_package: python_install
 	$(tar) cfz ErrorX-1.0_$(OS)_python2.7.tar.gz python2_bindings/ --transform "s/python2_bindings/ErrorX_python2.7/"
 
 python3: $(SRCS) src/errorx_python.cc
 	$(CXX) $(CPPFLAGS) $(WNO) $(INC) $(PY3_INC) -Ofast $(LIBFLAGS) -o python3_bindings/errorx/errorx_lib.so $(SRCS) src/errorx_python.cc $(BOOST) $(FINAL)
+	
+python3_install: python3
 	sudo $(PY3_EXE) -m pip install -I python3_bindings/
 
-python3_package: python3
+python3_package: python3_install
 	$(tar) cfz ErrorX-1.0_$(OS)_python3.6.tar.gz python3_bindings/ --transform "s/python3_bindings/ErrorX_python3.6/"
 
 java: $(SRCS)
