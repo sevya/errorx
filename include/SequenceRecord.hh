@@ -151,7 +151,7 @@ public:
 	double shm() const;
 	chain_type chain() const;
 	string quality_string() const;
-
+	int gl_start() const;
 
 private:
 	/**

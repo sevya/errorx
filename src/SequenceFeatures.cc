@@ -41,16 +41,19 @@ SequenceFeatures::SequenceFeatures( SequenceRecord* const record, int position )
 
 	quality_window_ = get_window( quality_array, position, window );
 
-	// abs_position_ = position;
-	rel_position_ = (double)position/(double)full_nt_sequence.length();
+	// to calculate the relative position along the antibody sequence,
+	// I have to consider that the V gene match may be in the middle of 
+	// the framework, for example if only the CDR3 is seen in the sequence
+	// To do this I calculate the position from the start of the V gene,
+	// and normalize to the maximum (reasonable) length of an Ab sequence
+	rel_position_ = (double)(position + record->gl_start()) / constants::MAX_AB_LENGTH;
+	// rel_position_ = (double)position/(double)full_nt_sequence.length();
 
-	// global_GC_count_ = record->gc_count();
 	global_GC_pct_ = record->gc_pct();
 
 	pair<int,double> local_metrics =
 			util::calculate_metrics( sequence_window_, gl_sequence_window_ );
 
-	// local_GC_count_ = local_metrics.first;
 	local_GC_pct_ = (double)local_metrics.first/(double)sequence_window_.length();
 	
 	local_SHM_ = local_metrics.second;
@@ -68,11 +71,8 @@ SequenceFeatures::SequenceFeatures( SequenceFeatures const & other ) :
 		sequence_window_(other.sequence_window_),
 		gl_sequence_window_(other.gl_sequence_window_),
 		quality_window_(other.quality_window_),
-		// abs_position_(other.abs_position_),
 		rel_position_(other.rel_position_),
-		// global_GC_count_(other.global_GC_count_),
 		global_GC_pct_(other.global_GC_pct_),
-		// local_GC_count_(other.local_GC_count_),
 		local_GC_pct_(other.local_GC_pct_),
 		global_SHM_(other.global_SHM_),
 		local_SHM_(other.local_SHM_),
