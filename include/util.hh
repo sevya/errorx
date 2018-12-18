@@ -23,15 +23,6 @@ using namespace std;
 namespace errorx{
 namespace util {
 
-/** 
-	Optimized threshold for best balance between precision and recall
-	this value may change in future releases but I want it to be 
-	defined here
-*/
-const double OPTIMIZED_THRESHOLD = 0.884311;
-const double OPTIMIZED_PRECISION =  0.663;
-const double OPTIMIZED_RECALL = 0.448;
-
 /**
 	Break a string into tokens based on the provided delimiter. 
 	When multiple characters are present in the delimiter it 

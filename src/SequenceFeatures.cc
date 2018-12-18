@@ -13,9 +13,10 @@ ErrorPredictor to do the actual transformation and prediction.
 #include <vector>
 #include <numeric>
 
-#include "util.hh"
 #include "SequenceFeatures.hh"
 #include "SequenceRecord.hh"
+#include "util.hh"
+#include "constants.hh"
 
 using namespace std;
 
@@ -23,7 +24,7 @@ namespace errorx {
 
 SequenceFeatures::SequenceFeatures( SequenceRecord* const record, int position ) {
 
-	int window = 8;
+	int window = constants::WINDOW;
 
 	string full_nt_sequence = record->full_nt_sequence();
 	string full_gl_nt_sequence = record->full_gl_nt_sequence();

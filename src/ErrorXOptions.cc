@@ -13,6 +13,7 @@
 
 #include "ErrorXOptions.hh"
 #include "util.hh"
+#include "constants.hh"
 
 #include <boost/filesystem.hpp>
 
@@ -26,7 +27,7 @@ ErrorXOptions::ErrorXOptions() :
 	outfile_("out.tsv"),
 	species_("human"),
 	verbose_(1),
-	error_threshold_( util::OPTIMIZED_THRESHOLD ),
+	error_threshold_( constants::OPTIMIZED_THRESHOLD ),
 	allow_nonproductive_(0),
 	correction_('N'),
 	infasta_(""),
@@ -42,7 +43,7 @@ ErrorXOptions::ErrorXOptions( string input_file, string file_format ) :
 	outfile_("out.tsv"),
 	species_("human"),
 	verbose_(1),
-	error_threshold_( util::OPTIMIZED_THRESHOLD ),
+	error_threshold_( constants::OPTIMIZED_THRESHOLD ),
 	allow_nonproductive_(0),
 	correction_('N'),
 	infasta_(""),
@@ -189,8 +190,6 @@ void ErrorXOptions::infile( string const & infile ) { infile_ = infile; }
 void ErrorXOptions::infasta( string const & infasta ) { infasta_ = infasta; }
 void ErrorXOptions::igblast_output( string const & igblast_output ) { igblast_output_ = igblast_output; }
 void ErrorXOptions::errorx_base( string const & errorx_base ) { errorx_base_ = errorx_base; }
-// void ErrorXOptions::errorx_base( boost::filesystem::path const & errorx_base ) { errorx_base_ = errorx_base.string(); }
-
 void ErrorXOptions::verbose( int const & verbose ) { verbose_ = verbose; }
 void ErrorXOptions::error_threshold( double const & error_threshold ) { error_threshold_ = error_threshold; }
 void ErrorXOptions::correction( char const & correction ) { correction_ = correction; }

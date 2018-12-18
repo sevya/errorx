@@ -4,8 +4,7 @@
 data associated with input sequences and corrected sequences
 @details Holds all SequenceRecord objects associated with an
 ErrorX query. In addition it holds ErrorXOptions that has 
-settings for processing, DataScaler that scales the input
-data, and ErrorPredictor that does the error correction itself.
+settings for processing, and ErrorPredictor that does the error correction itself.
 @author Alex Sevy (alex.sevy@gmail.com)
 */
 

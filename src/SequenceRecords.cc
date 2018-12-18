@@ -4,8 +4,7 @@
 data associated with input sequences and corrected sequences
 @details Holds all SequenceRecord objects associated with an
 ErrorX query. In addition it holds ErrorXOptions that has 
-settings for processing, DataScaler that scales the input
-data, and ErrorPredictor that does the error correction itself.
+settings for processing, and ErrorPredictor that does the error correction itself.
 @author Alex Sevy (alex.sevy@gmail.com)
 */
 
@@ -22,9 +21,7 @@ data, and ErrorPredictor that does the error correction itself.
 #include "SequenceFeatures.hh"
 #include "DataScaler.hh"
 #include "util.hh"
-
-#include <boost/foreach.hpp>
-
+#include "constants.hh"
 
 using namespace std;
 
@@ -150,8 +147,8 @@ float SequenceRecords::estimate_error_rate() const {
  	int total_errors = 0;
  	int total_bases = 0;
 
- 	double recall = util::OPTIMIZED_RECALL;
- 	double precision = util::OPTIMIZED_PRECISION;
+ 	double recall = constants::OPTIMIZED_RECALL;
+ 	double precision = constants::OPTIMIZED_PRECISION;
 
 	for ( int ii = 0; ii < records_.size(); ++ii ) {
  		if ( records_[ ii ]->isGood() ) {
@@ -180,8 +177,8 @@ vector<vector<string>> SequenceRecords::get_summary() const {
 
 int SequenceRecords::good_records() const {
 	int good_records = 0;
-	BOOST_FOREACH( SequenceRecord* record, records_ ) {
-		if ( record->isGood() ) good_records++;
+	for ( int ii = 0; ii < records_.size(); ++ii ) {
+		if ( records_[ii]->isGood() ) good_records++;
 	}
 	return good_records;
  }
