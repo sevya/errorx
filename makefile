@@ -24,8 +24,7 @@ ifeq ($(uname_S), Linux)
 	PY_EXE=/usr/bin/python
 	PY3_EXE=/usr/bin/python3
 
-	JAVA_HOME=/home/sevya/jdk1.8.0_45/include/
-	JAVA_INC=-I$(JAVA_HOME) -I$(JAVA_HOME)linux/
+	JAVA_INC=-Idependencies/java1.8.0_45/
 
 	tar=tar
 endif
@@ -40,15 +39,10 @@ ifeq ($(uname_S), Darwin)
 	DLLEXT=dylib
 	PY_EXE=/usr/bin/python
 	PY3_EXE=/Library/Frameworks/Python.framework/Versions/3.6/bin/python3
-
-	PY_INC=-I/System/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7/
-	PY3_INC=-I/Library/Frameworks/Python.framework/Versions/3.6/include/python3.6m/
 	
 	PY_INC=-Idependencies/python2.7/
 	PY3_INC=-Idependencies/python3.6/
 
-	JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home/include/
-	JAVA_INC=-I$(JAVA_HOME) -I$(JAVA_HOME)darwin/
 	JAVA_INC=-Idependencies/java1.8.0_45/
 	tar=/usr/local/bin/tar
 endif
