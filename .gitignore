@@ -24,7 +24,6 @@ unit_test/testing/out.tsv
 
 unit_test/cxxtest/COPYING
 unit_test/cxxtest/Versions
-unit_test/cxxtest/cxxtest
 unit_test/cxxtest/test/
 unit_test/cxxtest/README
 unit_test/cxxtest/admin/
