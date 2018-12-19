@@ -43,10 +43,13 @@ ifeq ($(uname_S), Darwin)
 
 	PY_INC=-I/System/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7/
 	PY3_INC=-I/Library/Frameworks/Python.framework/Versions/3.6/include/python3.6m/
+	
+	PY_INC=-Idependencies/python2.7/
+	PY3_INC=-Idependencies/python3.6/
 
 	JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home/include/
 	JAVA_INC=-I$(JAVA_HOME) -I$(JAVA_HOME)darwin/
-
+	JAVA_INC=-Idependencies/java1.8.0_45/
 	tar=/usr/local/bin/tar
 endif
 
@@ -60,9 +63,9 @@ SRCS=src/SequenceRecords.cc src/SequenceRecord.cc src/IGBlastParser.cc \
 	 src/util.cc src/model.cc src/SequenceQuery.cc \
 	 src/errorx.cc
 
-BOOST=dependencies/boost/mac/libboost_filesystem.a \
-	  dependencies/boost/mac/libboost_program_options.a \
-	  dependencies/boost/mac/libboost_system.a
+BOOST=dependencies/boost_1_68_0/$(OS)/libboost_filesystem.a \
+	  dependencies/boost_1_68_0/$(OS)/libboost_program_options.a \
+	  dependencies/boost_1_68_0/$(OS)/libboost_system.a
 
 
 all: binary_testing library binary python java
