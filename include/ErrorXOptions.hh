@@ -1,4 +1,7 @@
-/**
+/** Copyright (C) Endeavor Bio, Inc. - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Code contained herein is proprietary and confidential.
+
 @file ErrorXOptions.hh
 @brief Controls the options around running the ErrorX protocol
 @details 

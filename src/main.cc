@@ -1,4 +1,7 @@
-/**
+/** Copyright (C) Endeavor Bio, Inc. - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Code contained herein is proprietary and confidential.
+
 @file main.cc
 @brief Run the ErrorX protocol from the command line
 @author Alex Sevy (alex.sevy@gmail.com)

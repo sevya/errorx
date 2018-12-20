@@ -1,4 +1,7 @@
-/**
+/** Copyright (C) Endeavor Bio, Inc. - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Code contained herein is proprietary and confidential.
+
 @file errorx.hh
 @brief Interface to ErrorX error correction
 @details Public interface to ErrorX processing. Input 

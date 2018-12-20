@@ -1,4 +1,7 @@
-/**
+/** Copyright (C) Endeavor Bio, Inc. - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Code contained herein is proprietary and confidential.
+
 @file DataScaler.hh
 @brief A simple class to scale features before prediction
 using a neural network

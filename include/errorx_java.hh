@@ -1,4 +1,7 @@
-/** 
+/** Copyright (C) Endeavor Bio, Inc. - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Code contained herein is proprietary and confidential.
+
 @file errorx_java.hh
 @brief Java bindings to expose ErrorX interface
 @author Alex Sevy (alex.sevy@gmail.com)

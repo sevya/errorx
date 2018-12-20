@@ -1,4 +1,7 @@
-/**
+/** Copyright (C) Endeavor Bio, Inc. - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Code contained herein is proprietary and confidential.
+
 @file SequenceFeatures.hh
 @brief The features extracted from a nucleotide sequence to be 
 used for neural network processing and error correction

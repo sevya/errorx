@@ -1,4 +1,7 @@
-/**
+/** Copyright (C) Endeavor Bio, Inc. - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Code contained herein is proprietary and confidential.
+
 @file IGBlastParser.cc
 @brief Class to run IGBlast on a set of query sequences and parse the output
 @details IGBlastParser runs the executable, then breaks the output

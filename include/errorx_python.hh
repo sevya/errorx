@@ -1,4 +1,7 @@
-/**
+/** Copyright (C) Endeavor Bio, Inc. - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Code contained herein is proprietary and confidential.
+
 @file errorx_python.hh
 @brief Python bindings to expose ErrorX interface
 @detail These bindings do not rely on boost/python at all,

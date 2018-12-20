@@ -1,3 +1,9 @@
+'''
+ Copyright (C) Endeavor Bio, Inc. - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Code contained herein is proprietary and confidential.
+'''
+
 import numpy as np
 np.random.seed(1337)
 from keras.models import Sequential, model_from_json

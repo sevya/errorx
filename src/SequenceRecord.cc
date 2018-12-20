@@ -1,4 +1,7 @@
-/**
+/** Copyright (C) Endeavor Bio, Inc. - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Code contained herein is proprietary and confidential.
+
 @file SequenceRecord.cc
 @brief A record of one sequence to be error corrected
 @details Single nucleotide sequence to be fed to error
