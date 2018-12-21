@@ -21,6 +21,7 @@ Code contained herein is proprietary and confidential.
 #include "SequenceRecords.hh"
 #include "util.hh"
 #include "constants.hh"
+#include "exceptions.hh"
 
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
