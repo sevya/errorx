@@ -36,7 +36,7 @@ int main( int argc, char* argv[] ) {
 			"Allowed options");
 
 	desc.add_options()
-		("help,h", "produce help message")
+	    ("help,h", "produce help message")
 		("format,f", program_options::value<string>(), "input file format. Valid entries are fastq or tsv.")
 		("out,o", program_options::value<string>()->default_value("out.tsv"), "output file (Default=out.tsv)")
 		("species,s", program_options::value<string>()->default_value("human"), "Species for IGBLAST search. Valid entries are human or mouse. (Default=human)")
@@ -44,12 +44,15 @@ int main( int argc, char* argv[] ) {
 		("error-threshold,e", program_options::value<double>()->default_value(constants::OPTIMIZED_THRESHOLD,to_string(constants::OPTIMIZED_THRESHOLD)), "Probability cutoff for a base to be considered an error. "
 				"Higher=more stringent in calling errors. Don't change this value unless you know what you are doing.")
 		("infile", program_options::value<vector<string>>(), "input file")
+		("version", "Print ErrorX version information and exit")
 		("verbose,v", program_options::value<int>()->default_value(1), 
 		"Verbosity level: should ErrorX output extra warnings and messages?\n"
 		"0: don't output any message at all\n"
 		"1: output progress during processing\n"
 		"2: output progress and debugging messages\n"
 		"(default=1)")
+		("allow-nonproductive", program_options::bool_switch()->default_value(false), "Allow nonproductive and out-of-frame sequences to be included? (default=No)")
+		("license", program_options::value<string>(), "License key to activate full version of ErrorX")
 		;
 
 
@@ -57,61 +60,76 @@ int main( int argc, char* argv[] ) {
 	positional.add("infile", -1);
 
 	program_options::variables_map vm;
-
-	program_options::store(program_options::command_line_parser(argc, argv).
-			  options(desc).positional(positional).run(), vm);
-	program_options::notify(vm);
-
-	if ( vm.count("help") or argc == 1 ) {
-		cout << desc << "\n";
-		return 0;
-	}
-
 	try {
-		string infile;
+		program_options::store(program_options::command_line_parser(argc, argv).
+				options(desc).positional(positional).run(), vm);
+		program_options::notify(vm);
+
+		if ( vm.count("help") or argc == 1 ) {
+			cout << desc << "\n";
+			return 1;
+		}
+
+		if ( vm.count("version")) {
+			cout << "ErrorX v1.0 by EndeavorBio. Creator: Alex Sevy, alex.sevy@gmail.com" << "\n";
+			return 1;
+		}
+
+		if ( vm.count("license")) {
+			util::write_license( vm["license"].as<string>() );
+			cout << "Successfully wrote license file!" << endl;
+			return 0;
+		}
+
+	// try {
+		ErrorXOptions options;
+
 		if ( vm.count("infile") ) {
 			vector<string> infiles = vm["infile"].as<vector<string>>();
 			if ( infiles.size() > 1 ) {
 				cout << "Warning: " << infiles.size() << " files were passed, but only the first will be used" << endl;
 			}
-			infile = infiles[0];
+			options.infile( infiles[0] );
 		} else {
 			cout << "Error - please enter an input file to analyze." << endl;
-			return 0;
+			return 1;
 		}
 
-		string format;
 		if ( vm.count("format") ) {
-			format = vm["format"].as<string>();
-			if ( format != "fastq" and format != "tsv" ) {
-				cout << "Error: input format must be either fastq or tsv" << endl;
-				return 0;
-			}
+			options.format( vm["format"].as<string>());
 		} else {
 			cout << "Error - you must enter the input file format." << endl;
-			return 0;
+			return 1;
 		}
 
-		ErrorXOptions options( infile, format );
+		options.outfile( vm["out"].as<string>());
 
-		options.outfile( vm["out"].as<string>() );
+		options.species( vm["species"].as<string>());
 
-		options.species( vm["species"].as<string>() );
+		options.nthreads( vm["nthreads"].as<int>());
 
-		options.nthreads( vm["nthreads"].as<int>() );
-
-		options.error_threshold( vm["error-threshold"].as<double>() );
+		options.error_threshold( vm["error-threshold"].as<double>());
 
 		options.verbose( vm["verbose"].as<int>());
 
+		options.allow_nonproductive( vm["allow-nonproductive"].as<bool>());
+
 		run_protocol_write_features( options );
+		return 0;
+	} catch ( program_options::unknown_option & exc) {
+		cout << "Error: "<< exc.what() << endl;
+		return 1;
+	} catch ( InvalidLicenseException & exc ) {
+		cout << exc.what() << endl;
 		return 1;
 	} catch ( std::exception & e ) {
 		// cout << "Exception encountered..." << endl;
 		cout << e.what() << endl;
-		return 0;
+		return 1;
 	}
 }
+
+
 
 
 
