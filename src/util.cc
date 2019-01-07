@@ -266,6 +266,20 @@ string decrypt_from_file( string const & fname ) {
 	return decrypt_string( chars );	
 }
 
+string read_from_file( string const & fname ) {
+	ifstream infile( fname );
+	if ( !infile.good()) {
+		throw invalid_argument("Error: file "+fname+" does not exist.");
+	}
+	string out;
+	
+	char x;
+	while (infile.get(x)) out += x;
+
+	infile.close();
+	return out;	
+}
+
 void write_license( string key ) {
 	boost::filesystem::path config = util::get_home() / ".errorx";
 	write_to_file( config.string(), key );
