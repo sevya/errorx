@@ -5,11 +5,15 @@ echo "Running binary..."
 
 echo "Running c++ library..."
 make -s TestLinking
-setenv LD_LIBRARY_PATH ../lib/
+if ( `uname -s` == "DARWIN" || `uname -s` == "Darwin" ) then
+    setenv DYLD_LIBRARY_PATH ../lib/
+else
+    setenv LD_LIBRARY_PATH ../lib/
+endif
 ./a.out
  
-echo "Running Python..."
-python test_python_bindings.py
+echo "Running Python2..."
+/usr/bin/python test_python_bindings.py
 
 echo "Running Java..."
 make -s TestJava

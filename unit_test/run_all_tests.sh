@@ -4,7 +4,7 @@ bin/TestErrorX
 bin/TestIGBlastParser
 bin/TestSequenceFeatures
 bin/TestUtil
-if ( `uname -s` == "DARWIN" ) then
+if ( `uname -s` == "DARWIN" || `uname -s` == "Darwin" ) then
 	setenv DYLD_LIBRARY_PATH ../lib/
 else
 	setenv LD_LIBRARY_PATH ../lib/

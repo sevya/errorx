@@ -228,7 +228,7 @@ SequenceRecords* submit_query( vector<string> & sequences,
 	}
 
 	DataScaler scaler;
-	ErrorPredictor predictor( options.verbose() );
+	ErrorPredictor predictor( options );
 
 	try {
 		SequenceRecords* records = run_protocol( queries, options );
