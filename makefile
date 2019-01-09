@@ -53,9 +53,8 @@ INC=-Iinclude/
 
 SRCS=src/SequenceRecords.cc src/SequenceRecord.cc src/IGBlastParser.cc \
 	 src/ErrorPredictor.cc src/SequenceFeatures.cc src/DataScaler.cc \
-	 src/ErrorXOptions.cc src/keras_model.cc  \
-	 src/util.cc src/model.cc src/SequenceQuery.cc \
-	 src/errorx.cc
+	 src/ErrorXOptions.cc src/keras_model.cc src/util.cc \
+	 src/SequenceQuery.cc src/errorx.cc
 
 BOOST=dependencies/boost_1_68_0/$(OS)/libboost_filesystem.a \
 	  dependencies/boost_1_68_0/$(OS)/libboost_program_options.a \

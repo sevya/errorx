@@ -14,7 +14,6 @@ specifically to scale data in one context
 
 #include "DataScaler.hh"
 #include "util.hh"
-#include "model.hh"
 
 using namespace std;
 

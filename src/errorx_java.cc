@@ -149,7 +149,7 @@ errorx::SequenceRecords* get_corrected_records( JNIEnv* env,
 	}
 
 	errorx::DataScaler scaler;
-	errorx::ErrorPredictor predictor( options.verbose() );
+	errorx::ErrorPredictor predictor( options );
 
 	try {
 		errorx::SequenceRecords* records = run_protocol( queries, options );

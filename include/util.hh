@@ -275,6 +275,14 @@ void write_to_file( string const & fname, string const & message );
 	@param fname file to read from
 */
 string decrypt_from_file( string const & fname );
+
+/**
+	Read the string contained in a file
+
+	@param fname file to read from
+*/
+string read_from_file( string const & fname );
+
 ///////////// END Encryption and license checking modules /////////////
 
 } // namespace util

@@ -19,10 +19,10 @@ then this class is used to make a NN prediction
 #include <vector>
 #include <stdio.h>
 #include <stdlib.h>
-#include "keras_model.hh"
 
+#include "keras_model.hh"
+#include "ErrorXOptions.hh"
 #include "SequenceFeatures.hh"
-#include "DataScaler.hh"
 
 using namespace std;
 
@@ -34,7 +34,7 @@ public:
 	/**
 		Default constructor
 	*/
-	ErrorPredictor( int verbose=0 );
+	ErrorPredictor( ErrorXOptions const & options );
 
 	/**
 		Copy constructor
@@ -66,7 +66,7 @@ public:
 
 private:
 
-	int verbose_;
+	ErrorXOptions options_;
 	keras::KerasModel keras_model_;
 };
 
