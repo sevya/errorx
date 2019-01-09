@@ -30,7 +30,8 @@ public:
 	void testFastq(void) {
 
 		ErrorXOptions options( "testing/test.fastq", "fastq" );
-
+		options.errorx_base( "../" );
+		
 		options.fastq_to_fasta();
 
 		ifstream infile( options.infasta() );
@@ -75,6 +76,7 @@ public:
 		options.infasta( util::get_root_path(0).string()+"/testing/test.fasta" );
 		options.igblast_output( util::get_root_path(0).string()+"/testing/test.fasta.out" );
 		options.verbose( 2 );
+		options.errorx_base( "../" );
 
 		records = parser.parse_output( options );
 

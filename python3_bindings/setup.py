@@ -10,6 +10,7 @@ setup(name='ErrorX',
 		{'errorx': 
 			['ErrorXOptions.py',
 			 'errorx_lib.so',
+			 'model.nnet',
 			 'bin/*',
 			 'database/human/*',
 			 'database/mouse/*',

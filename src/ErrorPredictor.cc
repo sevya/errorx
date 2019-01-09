@@ -10,24 +10,27 @@ then this class is used to make a NN prediction
 */
 
 #include "ErrorPredictor.hh"
+#include "ErrorXOptions.hh"
 #include "SequenceFeatures.hh"
+#include "DataScaler.hh"
 #include "keras_model.hh"
 #include "util.hh"
-#include "model.hh"
 
 using namespace std;
 
 namespace errorx {
 
-ErrorPredictor::ErrorPredictor( ErrorPredictor const & other) :
-		verbose_( other.verbose_ ),
-		keras_model_( model::get_model(), 1, verbose_ )
+ErrorPredictor::ErrorPredictor( ErrorXOptions const & options ) :
+		options_( options ),
+		keras_model_( options )
 {}
 
-ErrorPredictor::ErrorPredictor( int verbose ) :
-		verbose_( verbose ),
-		keras_model_( model::get_model(), 1, verbose_ )
+ErrorPredictor::ErrorPredictor( ErrorPredictor const & other ) :
+		options_( other.options_ ),
+		keras_model_( other.options_ )
 {}
+
+
 
 double ErrorPredictor::apply_model( SequenceFeatures const & features ) const {
 	using namespace keras;

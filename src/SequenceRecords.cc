@@ -32,7 +32,7 @@ namespace errorx {
 
 SequenceRecords::SequenceRecords( ErrorXOptions const & options ) :
 	options_(new ErrorXOptions( options )),
-	predictor_ (new ErrorPredictor( options.verbose() ))
+	predictor_ (new ErrorPredictor( options ))
 {}
 
 SequenceRecords::~SequenceRecords() {
@@ -73,7 +73,7 @@ SequenceRecords::SequenceRecords( vector<SequenceRecords*> const & others ) {
 	// note: this just uses the settings from the first item in the vector
 	// if they're not all uniform it will cause a bug
 	options_ = new ErrorXOptions( *(others[0]->options_ ));
-	predictor_ = new ErrorPredictor( *(others[0]->predictor_ ));
+	predictor_ = new ErrorPredictor( *(others[0]->predictor_ ) );
 }
 
 SequenceRecords::SequenceRecords( vector<SequenceRecord*> const & record_vector, 
@@ -86,7 +86,7 @@ SequenceRecords::SequenceRecords( vector<SequenceRecord*> const & record_vector,
 		);
 	}
 	options_ = new ErrorXOptions( options );
-	predictor_ = new ErrorPredictor( options.verbose() );
+	predictor_ = new ErrorPredictor( options );
 }
 
 void SequenceRecords::import_from_tsv() {

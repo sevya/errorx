@@ -9,14 +9,17 @@ Code contained herein is proprietary and confidential.
 
 
 #include "keras_model.hh"
+#include "ErrorXOptions.hh"
+#include "util.hh"
 
 #include <iostream>
 #include <fstream>
 #include <algorithm>
 #include <vector>
 #include <sstream>
-
 #include <math.h>
+
+#include <boost/filesystem.hpp>
 
 using namespace std;
 
@@ -202,6 +205,17 @@ void keras::LayerDense::load_weights(istringstream &fin) {
 	fin >> tmp_char; // for ']'
 	//cout << "bias " << m_bias.size() << endl;
 
+}
+
+keras::KerasModel::KerasModel( errorx::ErrorXOptions const & options ) :
+	m_verbose( options.verbose() )
+{
+	namespace fs = boost::filesystem;
+	fs::path base( options.errorx_base() );
+	string model_path = (base / "model.nnet").string();
+
+	string model_string = errorx::util::read_from_file( model_path );
+	load_weights_from_string( model_string );
 }
 
 keras::KerasModel::KerasModel( const string & input_fname, bool from_string, int verbose)
