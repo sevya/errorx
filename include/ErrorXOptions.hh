@@ -57,6 +57,7 @@ public:
 	string outfile() const;
 	string format() const;
 	string species() const;
+	string igtype() const;
 	string infile() const;
 	string infasta() const;
 	string igblast_output() const;
@@ -74,6 +75,7 @@ public:
 	void outfile( string const & outfile );
 	void format( string const & format );
 	void species( string const & species );
+	void igtype( string const & igtype );
 	void infile( string const & infile );
 	void infasta( string const & infasta );
 	void igblast_output( string const & igblast_output );
@@ -96,6 +98,7 @@ private:
 		Default out.tsv
 		species_: species to use for germline assignment. Currently supported
 		are human or mouse. Default human
+		igtype_: type of receptor to analyze. Either Ig or TCR. Default Ig
 		verbose_: Verbosity level: should ErrorX output extra warnings and messages? 
 		0: don't output any message at all
 		1: output progress during processing
@@ -112,6 +115,7 @@ private:
 	string format_;
 	string outfile_;
 	string species_;
+	string igtype_;
 	int verbose_;
 	int nthreads_;
 	double error_threshold_;

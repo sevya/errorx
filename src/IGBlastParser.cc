@@ -40,10 +40,11 @@ void IGBlastParser::blast( ErrorXOptions & options ) {
 	fs::path executable = root / "bin" / exename;
 
 	string species = options.species();
+	string igtype = options.igtype();
 
-	fs::path germline_db_V = root / "database" / species / (species+"_gl_V");
-	fs::path germline_db_D = root / "database" / species / (species+"_gl_D");
-	fs::path germline_db_J = root / "database" / species / (species+"_gl_J");
+	fs::path germline_db_V = root / "database" / igtype / species / (species+"_gl_V");
+	fs::path germline_db_D = root / "database" / igtype / species / (species+"_gl_D");
+	fs::path germline_db_J = root / "database" / igtype / species / (species+"_gl_J");
 
 	fs::path aux_data = root / "optional_file" / (species+"_gl.aux");
 	options.igblast_output( options.infasta()+".out" );
@@ -54,10 +55,11 @@ void IGBlastParser::blast( ErrorXOptions & options ) {
 		" -germline_db_J "+germline_db_J.string()+
 		" -query "+options.infasta()+
 		" -auxiliary_data "+aux_data.string() +
-		" -num_alignments_V 1 -num_alignments_D 1 "+
-		" -num_clonotype 0 "+
-		"-num_alignments_J 1 -outfmt \"7 std qframe sframe qseq sseq\" "+
-		"-out "+options.igblast_output()+" -num_threads "+to_string(options.nthreads());
+		" -num_alignments_V 1 -num_alignments_D 1"+
+		" -num_clonotype 0"+
+		" -ig_seqtype "+options.igtype()+
+		" -num_alignments_J 1 -outfmt \"7 std qframe sframe qseq sseq\""+
+		" -out "+options.igblast_output()+" -num_threads "+to_string(options.nthreads());
 
 	if ( options.verbose() > 1 ) {
 		cout << command << endl;

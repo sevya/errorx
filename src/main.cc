@@ -40,6 +40,7 @@ int main( int argc, char* argv[] ) {
 		("format,f", program_options::value<string>(), "input file format. Valid entries are fastq or tsv.")
 		("out,o", program_options::value<string>()->default_value("out.tsv"), "output file (Default=out.tsv)")
 		("species,s", program_options::value<string>()->default_value("human"), "Species for IGBLAST search. Valid entries are human or mouse. (Default=human)")
+		("igtype", program_options::value<string>()->default_value("Ig"), "Receptor type for IGBLAST search. Valid entries are Ig or TCR. (Default=Ig)")
 		("nthreads,n", program_options::value<int>()->default_value(-1), "Number of threads to use during execution. Enter -1 to use all available (Default=-1)")
 		("error-threshold,e", program_options::value<double>()->default_value(constants::OPTIMIZED_THRESHOLD,to_string(constants::OPTIMIZED_THRESHOLD)), "Probability cutoff for a base to be considered an error. "
 				"Higher=more stringent in calling errors. Don't change this value unless you know what you are doing.")
@@ -105,6 +106,8 @@ int main( int argc, char* argv[] ) {
 		options.outfile( vm["out"].as<string>());
 
 		options.species( vm["species"].as<string>());
+
+		options.igtype( vm["igtype"].as<string>());
 
 		options.nthreads( vm["nthreads"].as<int>());
 

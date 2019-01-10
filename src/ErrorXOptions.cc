@@ -29,6 +29,7 @@ ErrorXOptions::ErrorXOptions() :
 	format_(""),
 	outfile_("out.tsv"),
 	species_("human"),
+	igtype_("Ig"),
 	verbose_(1),
 	error_threshold_( constants::OPTIMIZED_THRESHOLD ),
 	allow_nonproductive_(0),
@@ -45,6 +46,7 @@ ErrorXOptions::ErrorXOptions() :
 ErrorXOptions::ErrorXOptions( string input_file, string file_format ) :
 	outfile_("out.tsv"),
 	species_("human"),
+	igtype_("Ig"),
 	verbose_(1),
 	error_threshold_( constants::OPTIMIZED_THRESHOLD ),
 	allow_nonproductive_(0),
@@ -65,6 +67,7 @@ ErrorXOptions::ErrorXOptions( ErrorXOptions const & other ) :
 	format_(other.format_),	
 	outfile_(other.outfile_),
 	species_(other.species_),
+	igtype_(other.igtype_),
 	verbose_(other.verbose_),
 	nthreads_(other.nthreads_),
 	error_threshold_(other.error_threshold_),
@@ -165,6 +168,21 @@ void ErrorXOptions::species( string const & species ) {
 	species_ = species; 
 }
 
+void ErrorXOptions::igtype( string const & igtype ) { 
+	vector<string> valid_types = {"Ig", "TCR"};
+
+	if ( find( valid_types.begin(), valid_types.end(), igtype )
+			== valid_types.end() ) {
+		string out_msg = "Error: invalid igtype. Igtype must be one of the following:\n";
+		for ( int ii = 0; ii < valid_types.size(); ++ii ) {
+			out_msg += valid_types[ii];
+			out_msg += " ";
+		}
+		throw invalid_argument(out_msg);
+	}
+	igtype_ = igtype; 
+}
+
 void ErrorXOptions::nthreads( int const & nthreads ) { 
 	if ( nthreads == -1 ) nthreads_ = thread::hardware_concurrency();
 	else if ( nthreads < 1) {
@@ -177,6 +195,7 @@ void ErrorXOptions::nthreads( int const & nthreads ) {
 string ErrorXOptions::outfile() const { return outfile_; }
 string ErrorXOptions::format() const { return format_; }
 string ErrorXOptions::species() const { return species_; }
+string ErrorXOptions::igtype() const { return igtype_; }
 string ErrorXOptions::infile() const { return infile_; }
 string ErrorXOptions::infasta() const { return infasta_; }
 string ErrorXOptions::igblast_output() const { return igblast_output_; }
