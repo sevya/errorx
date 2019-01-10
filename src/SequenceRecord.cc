@@ -105,20 +105,20 @@ SequenceRecord::SequenceRecord( vector<string> const & lines,
 			if ( tokens[1] == "Query:" ) {
 				data_map.insert( make_pair("query_string", tokens) );
 			}
-			else if ( tokens[1] == "V-(D)-J" and tokens[2] == "rearrangement" ) {
+			else if ( tokens[1] == "V-(D)-J" && tokens[2] == "rearrangement" ) {
 				data_map.insert( make_pair("rearrangement_string", util::tokenize_string<string>(lines[ii+1])) );
-			} else if ( tokens[1] == "V-(D)-J" and tokens[2] == "junction" ) {
+			} else if ( tokens[1] == "V-(D)-J" && tokens[2] == "junction" ) {
 				data_map.insert( make_pair("junction_string", util::tokenize_string<string>(lines[ii+1])) );
 
 			} else if ( tokens[1] == "Sub-region" ) {
 				data_map.insert( make_pair("subregion_string", util::tokenize_string<string>(lines[ii+1])) );
-			} else if ( tokens[0] == "V" or tokens[0] == "D" or tokens[0] == "J" ) {
+			} else if ( tokens[0] == "V" || tokens[0] == "D" || tokens[0] == "J" ) {
 				data_map.insert( make_pair(tokens[0]+"region_string", tokens ));
 			}
 		}
 
-		if ( data_map.find("query_string") == data_map.end() or
-			 data_map.find("rearrangement_string") == data_map.end() or
+		if ( data_map.find("query_string") == data_map.end() ||
+			 data_map.find("rearrangement_string") == data_map.end() ||
 			 // EDIT 11.1.18
 			 // sometimes the sub-region annotation is not available
 			 // not sure why this happens. If it's not there then
@@ -177,7 +177,7 @@ void SequenceRecord::initialize_variables() {
 	d_gene_ = "";
 	j_gene_ = "";
 	strand_ = "";
-	chain_ = chain_type::VH;
+	chain_ = "VH";
 	productive_ = 0;
 	cdr3_nt_sequence_ = "";
 	cdr3_aa_sequence_ = "";
@@ -227,17 +227,17 @@ void SequenceRecord::parse_query_string( vector<string> const & tokens ) {
 void SequenceRecord::parse_rearrangement_string( vector<string> const & summary_data ) {
 	v_gene_ = summary_data[0];
 	if ( summary_data.size() == 7 ) {
-		// this is a light chain
+		// this is either VL or VA
 		j_gene_ = summary_data[1];
-		chain_ = chain_type::VL;
+		chain_ = summary_data[2];
 		productive_ = summary_data[3]=="No";
 
 		strand_ = summary_data[6];
 	} else if ( summary_data.size() == 8 ) {
-		// this is a heavy chain
+		// this is either VH or VB
 		d_gene_ = summary_data[1];
 		j_gene_ = summary_data[2];
-		chain_ = chain_type::VH;
+		chain_ = summary_data[3];
 		productive_ = summary_data[4]=="No";
 
 		strand_ = summary_data[7];
@@ -247,7 +247,7 @@ void SequenceRecord::parse_rearrangement_string( vector<string> const & summary_
 	hasD_ = d_gene_!="N/A";
 	hasJ_ = j_gene_!="N/A";
 
-	if ( !productive_ and !allow_nonproductive_ ) {
+	if ( !productive_ && !allow_nonproductive_ ) {
 		if ( verbose_ > 1 ) {
 			cout << "Sequence is not productive." << endl;
 		}
@@ -516,7 +516,7 @@ vector<string> SequenceRecord::get_summary() const {
 			(hasJ_) ? to_string( j_identity_ ) : "N/A",
 			(hasJ_) ? util::to_scientific( j_evalue_ ) : "N/A",
 			strand_,
-			(chain_==chain_type::VH) ? "VH" : "VL",
+			chain_,
 			(productive_) ? "True" : "False",
 			(cdr3_nt_sequence_=="") ? "N/A": cdr3_nt_sequence_,
 			(cdr3_aa_sequence_=="") ? "N/A": cdr3_aa_sequence_,
@@ -602,7 +602,7 @@ string SequenceRecord::j_gene() const { return j_gene_; }
 double SequenceRecord::v_identity() const { return v_identity_; }
 double SequenceRecord::d_identity() const { return d_identity_; }
 double SequenceRecord::j_identity() const { return j_identity_; }
-chain_type SequenceRecord::chain() const { return chain_; }
+string SequenceRecord::chain() const { return chain_; }
 string SequenceRecord::quality_string() const { return quality_string_; }
 
 } // namespace errorx

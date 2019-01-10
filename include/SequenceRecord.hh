@@ -25,11 +25,7 @@ using namespace std;
 
 namespace errorx {
 
-/**
-	Enum representing whether a SequenceRecord is
-	an antibody heavy or light chain
-*/
-enum chain_type{ VH, VL };
+// enum chain_type{ VH, VL, VA, VB };
 
 class SequenceRecord {
 
@@ -152,7 +148,7 @@ public:
 	int gc_count() const;
 	double gc_pct() const;
 	double shm() const;
-	chain_type chain() const;
+	string chain() const;
 	string quality_string() const;
 
 
@@ -234,7 +230,7 @@ private:
 	string d_gene_;
 	string j_gene_;
 	string strand_;
-	chain_type chain_;
+	string chain_;
 	bool productive_;
 
 	string cdr3_nt_sequence_;
