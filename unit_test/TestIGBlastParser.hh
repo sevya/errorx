@@ -108,6 +108,8 @@ public:
 			"DGGTRSADKSSSAACLARSSLKAGDSAVCSGAGEEALSFVYYWGQGTTLTGSS"
 			);
 
+		delete records;
+
 	}
 
 
@@ -461,6 +463,7 @@ public:
 		TS_ASSERT_EQUALS( record.d_identity(), -1);
 		TS_ASSERT_EQUALS( record.j_identity(), 100);
 
+		delete records;
 	}
 
 	void testTCRB(void) {
@@ -488,6 +491,8 @@ public:
 		TS_ASSERT_EQUALS( record.v_identity(), 97.518);
 		TS_ASSERT_EQUALS( record.d_identity(), 100);
 		TS_ASSERT_EQUALS( record.j_identity(), 100);
+
+		delete records;
 	}
 };
 

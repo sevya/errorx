@@ -10,6 +10,8 @@
 
 #include <cxxtest/TestSuite.h>
 
+#include <iostream>
+
 #include "errorx.hh"
 #include "SequenceRecords.hh"
 #include "ErrorXOptions.hh"
@@ -51,6 +53,7 @@ public:
 			"TACTCCCGTGGTACGCCCAAGGACGGAGGCACACNGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGNGCNCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCNGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG"
 			);
 
+
 		vector<pair<int,double>> predicted_errors = records->get(0)->get_predicted_errors();
 
 		double delta = 0.0000001;
@@ -61,6 +64,9 @@ public:
 		TS_ASSERT_DELTA( predicted_errors[136].second, 0.306816917, delta)
 		TS_ASSERT_DELTA( predicted_errors[137].second, 0.022584986, delta)
 		TS_ASSERT_DELTA( predicted_errors[138].second, 0.513773250, delta)
+
+		delete records;
+
 	}
 		
 };
