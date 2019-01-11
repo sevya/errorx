@@ -29,9 +29,9 @@ SRCS=../src/SequenceRecords.cc ../src/SequenceRecord.cc ../src/IGBlastParser.cc 
 	 ../src/ErrorXOptions.cc ../src/keras_model.cc ../src/errorx.cc \
 	 ../src/util.cc ../src/model.cc ../src/SequenceQuery.cc
 
-BOOST=../dependencies/boost/mac/libboost_filesystem.a \
-	  ../dependencies/boost/mac/libboost_program_options.a \
-	  ../dependencies/boost/mac/libboost_system.a
+BOOST=../dependencies/boost_1_68_0/mac/libboost_filesystem.a \
+	  ../dependencies/boost_1_68_0/mac/libboost_program_options.a \
+	  ../dependencies/boost_1_68_0/mac/libboost_system.a
 		   
 CXXGEN=cxxtest/bin/cxxtestgen
 
