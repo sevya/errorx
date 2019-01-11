@@ -150,7 +150,7 @@ public:
 	double shm() const;
 	string chain() const;
 	string quality_string() const;
-
+	int gl_start() const;
 
 private:
 	/**

@@ -2,9 +2,8 @@
 Unauthorized copying of this file, via any medium is strictly prohibited
 Code contained herein is proprietary and confidential.
 
-@file main.cc
-@brief
-@details
+@file testing.cc
+@brief Run the ErrorX protocol from the command line
 @author Alex Sevy (alex.sevy@gmail.com)
 */
 
@@ -21,6 +20,7 @@ Code contained herein is proprietary and confidential.
 #include "SequenceRecords.hh"
 #include "util.hh"
 #include "constants.hh"
+#include "exceptions.hh"
 
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
@@ -115,6 +115,7 @@ int main( int argc, char* argv[] ) {
 		options.allow_nonproductive( vm["allow-nonproductive"].as<bool>());
 
 		run_protocol_write_features( options );
+		
 		return 0;
 	} catch ( program_options::unknown_option & exc) {
 		cout << "Error: "<< exc.what() << endl;

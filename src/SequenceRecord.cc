@@ -598,5 +598,7 @@ double SequenceRecord::d_identity() const { return d_identity_; }
 double SequenceRecord::j_identity() const { return j_identity_; }
 string SequenceRecord::chain() const { return chain_; }
 string SequenceRecord::quality_string() const { return quality_string_; }
+int SequenceRecord::gl_start() const { return gl_start_; }
+
 
 } // namespace errorx

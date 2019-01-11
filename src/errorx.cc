@@ -160,6 +160,8 @@ void run_protocol_write_features( ErrorXOptions & options ) {
 		records->import_from_tsv();
 	}
 
+	// Write summary
+	records->write_summary();
 	// Write features
 	records->write_features();
 
