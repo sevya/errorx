@@ -266,30 +266,24 @@ void SequenceRecord::parse_rearrangement_string( vector<string> const & summary_
 void SequenceRecord::parse_junction_string( vector<string> const & junction_data ) {
 	if ( !isGood() ) return;
 
-	switch ( chain_ ) {
-		case VH:
-		{
-			string vd_junction_nts = (junction_data[1]=="N/A") ? "" : junction_data[1];
-			string dregion_nts = (junction_data[2]=="N/A") ? "" : junction_data[2];
-			string dj_junction_nts = (junction_data[3]=="N/A") ? "" : junction_data[3];
+	if ( chain_ == "VH" || chain_ == "VB" ) {
+		string vd_junction_nts = (junction_data[1]=="N/A") ? "" : junction_data[1];
+		string dregion_nts = (junction_data[2]=="N/A") ? "" : junction_data[2];
+		string dj_junction_nts = (junction_data[3]=="N/A") ? "" : junction_data[3];
 
-			full_junction_ = vd_junction_nts + d_nts_ + dj_junction_nts; 
+		full_junction_ = vd_junction_nts + d_nts_ + dj_junction_nts; 
 
-			full_gl_junction_ = string(vd_junction_nts.size(), '-') +
-								d_gl_nts_ +
-								string(dj_junction_nts.size(), '-');
+		full_gl_junction_ = string(vd_junction_nts.size(), '-') +
+							d_gl_nts_ +
+							string(dj_junction_nts.size(), '-');
+	} else if ( chain_ == "VL" || chain_ == "VK" || chain_ == "VA" ) {
+		string vj_junction_nts = (junction_data[1]=="N/A") ? "" : junction_data[1];
 
-			break;
-		}
-		case VL:
-		{
-			string vj_junction_nts = (junction_data[1]=="N/A") ? "" : junction_data[1];
-
-			full_junction_ = vj_junction_nts;
-			full_gl_junction_ = string(vj_junction_nts.size(), '-');
-
-			break;
-		}
+		full_junction_ = vj_junction_nts;
+		full_gl_junction_ = string(vj_junction_nts.size(), '-');
+	} else {
+		// TODO: implement TCRG and D
+		throw invalid_argument("Error: invalid chain type "+chain_+" detected");
 	}
 }
 
