@@ -9,6 +9,10 @@ Code contained herein is proprietary and confidential.
 
 #include "util.hh"
 
+#if defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+#endif
+
 #include <iostream>
 #include <fstream>
 #include <map>
@@ -98,12 +102,13 @@ pair<int,double> calculate_metrics( string & sequence, string & gl_sequence ) {
 	int mutations = 0;
 	int gc_count = 0;
 	for ( int ii = 0; ii < sequence.length(); ++ii ) {
-		if ( sequence[ii] != gl_sequence[ii] and gl_sequence[ii] != '-' ) mutations++;
-		if ( sequence[ii] == 'G' or sequence[ii] == 'C' ) gc_count++;
+		if ( sequence[ii] != gl_sequence[ii] && gl_sequence[ii] != '-' ) mutations++;
+		if ( sequence[ii] == 'G' || sequence[ii] == 'C' ) gc_count++;
 	}
 	return pair<int,double> (gc_count, (double)mutations/(double)sequence.length());
 }
 
+/** Removed for windows compatibility
 string exec(const char* cmd) {
 	array<char, 128> buffer;
 	string result;
@@ -115,10 +120,19 @@ string exec(const char* cmd) {
 	}
 	return result;
 }
+*/
 
+ bool set_env(string key, string value) {
+#if defined(_WIN32) || defined(_WIN64)
+	return SetEnvironmentVariable(key.c_str(), value.c_str());
+#elif defined(__APPLE__) || defined(__MACH__) || defined(__linux__)
+	int result = setenv(key, value.c_str(), 1);
+	return result == 0;
+#endif
+}
 boost::filesystem::path get_home() {
 	namespace fs = boost::filesystem;
-	if ( get_os() == "win32" or get_os() == "win64") {
+	if ( get_os() == "win" ) {
 		string drive = getenv("HOMEDRIVE");
 		string path = getenv("HOMEPATH");
 		return fs::path( drive ) / fs::path( path );
@@ -292,7 +306,7 @@ bool valid_license() {
 	string key;
 	try {
 		key = decrypt_from_file( config.string() );
-	} catch ( invalid_argument & exc ) {
+	} catch ( invalid_argument & ) {
 		// license file does not exist - run in trial version
 		return 0;
 	}

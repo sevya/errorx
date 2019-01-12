@@ -14,6 +14,7 @@ Code contained herein is proprietary and confidential.
 #include <string>
 #include <vector>
 #include <map>
+#include <stdlib.h>
 
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
@@ -56,18 +57,26 @@ vector<T> tokenize_string( string str, string delim="\t " ) {
 	@return OS as a string, either windows, mac, or linux
 */	
 inline string get_os() {
-	#ifdef _WIN32
-		return "win32";
-	#elif _WIN64
-		return "win64";
-	#elif __APPLE__ || __MACH__
+	#if defined(_WIN32) || defined(_WIN64)
+		return "win";
+	#elif defined(__APPLE__) || defined(__MACH__)
 		return "mac";
-	#elif __linux__
+	#elif defined(__linux__)
 		return "linux";
 	#endif
 
 	throw invalid_argument("Error: OS type not recognized");
 }
+
+/** 
+	Set environmental variable, depending on the OS type
+
+	@param key the name of the variable to set
+	@param value the value to set it to
+
+	@return 1 if operation was successful, 0 if not
+*/
+bool set_env(string key, string value);
 
 /**
 	Get home directory based on the OS 
@@ -169,7 +178,9 @@ pair<int,double> calculate_metrics( string & sequence, string & gl_sequence );
 
 	@return command output as a string
 */
+/** Removed for windows compatibility
 string exec(const char* cmd);
+*/
 
 
 /**

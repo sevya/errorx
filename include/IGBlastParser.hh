@@ -66,7 +66,7 @@ private:
 	void exec_in_thread( string command ) ;
 
 	atomic<bool> thread_finished_;
-	string thread_output_;
+//	string thread_output_;
 };
 
 } // namespace errorx
