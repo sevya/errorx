@@ -25,10 +25,10 @@ CLASS=errorx/NativeUtils.class errorx/ErrorX.class errorx/ErrorXOptions.class
 all: class jar
 
 class: $(SRCS)
-	javac $(SRCS)
+	"C:/Program Files/Java/jdk1.8.0_45/bin/javac.exe" $(SRCS)
 
 jar: 
-	jar cf ErrorX.jar $(CLASS) $(LIB)
+	"C:/Program Files/Java/jdk1.8.0_45/bin/jar.exe" cf ErrorX.jar $(CLASS) $(LIB)
 
 
 clean: 

@@ -36,11 +36,22 @@ java_bindings/errorx/*.class
 java_bindings/ErrorX.jar
 java_bindings/errorx/liberrorx*
 
-python2_bindings/errorx/errorx_lib.so
-python3_bindings/errorx/errorx_lib.so
+python2_bindings/errorx/errorx_lib.*
+python3_bindings/errorx/errorx_lib.*
 
 build_test/new/*
 !build_test/new/.gitkeep
 build_test/TestErrorX.class
 build_test/input_files/test.fasta*
 build_test/a.out
+
+x64/
+Release/
+Debug/
+
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+
+.vs/

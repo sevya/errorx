@@ -12,13 +12,23 @@ Code contained herein is proprietary and confidential.
 #ifndef INCLUDE_ERRORXOPTIONS_HH_
 #define INCLUDE_ERRORXOPTIONS_HH_
 
+#if defined(_WIN32) || defined(_WIN64)
+	#ifdef ERRORX_EXPORTS
+		#define ERRORX_API __declspec(dllexport)
+	#else
+		#define ERRORX_API __declspec(dllimport)
+	#endif
+#else
+	#define ERRORX_API 
+#endif
+
 #include <string>
 
 using namespace std;
 
 namespace errorx {
 	
-class ErrorXOptions {
+class ERRORX_API ErrorXOptions {
 public:
 	/**
 		Empty constructor. Initializes to default values.

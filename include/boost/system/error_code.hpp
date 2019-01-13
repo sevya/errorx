@@ -397,12 +397,12 @@ public:
 
 #define BOOST_SYSTEM_REQUIRE_CONST_INIT
 
-#if defined(__has_cpp_attribute)
-#if __has_cpp_attribute(clang::require_constant_initialization)
-# undef BOOST_SYSTEM_REQUIRE_CONST_INIT
-# define BOOST_SYSTEM_REQUIRE_CONST_INIT [[clang::require_constant_initialization]]
-#endif
-#endif
+// #if defined(__has_cpp_attribute)
+// #if __has_cpp_attribute(clang::require_constant_initialization)
+// # undef BOOST_SYSTEM_REQUIRE_CONST_INIT
+// # define BOOST_SYSTEM_REQUIRE_CONST_INIT [[clang::require_constant_initialization]]
+// #endif
+// #endif
 
 #if defined(BOOST_ERROR_CODE_HEADER_ONLY)
 

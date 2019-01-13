@@ -9,7 +9,7 @@ setup(name='ErrorX',
 	package_data=
 		{'errorx': 
 			['ErrorXOptions.py',
-			 'errorx_lib.so',
+			 'errorx_lib.pyd',
 			 'model.nnet',
 			 'bin/*',
 			 'database/human/*',
