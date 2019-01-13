@@ -13,6 +13,18 @@ or a std::vector of SequenceQuery objects
 #ifndef INCLUDE_ERRORX_HH_
 #define INCLUDE_ERRORX_HH_
 
+/// manages dllexport and import for windows
+/// does nothing on Mac/Linux
+#if defined(_WIN32) || defined(_WIN64)
+	#ifdef ERRORX_EXPORTS
+		#define ERRORX_API __declspec(dllexport)
+	#else
+		#define ERRORX_API __declspec(dllimport)
+	#endif
+#else
+	#define ERRORX_API 
+#endif
+
 #include <string>
 #include "SequenceQuery.hh"
 #include "ErrorXOptions.hh"
@@ -38,7 +50,7 @@ namespace errorx {
 	@return SequenceRecords* containing query sequences and their
 	corrected versions
 */
-SequenceRecords* run_protocol( ErrorXOptions & options );
+ERRORX_API SequenceRecords* run_protocol( ErrorXOptions & options );
 
 /**
 	Runs the ErrorX prediction method on a std::vector of 
@@ -51,7 +63,7 @@ SequenceRecords* run_protocol( ErrorXOptions & options );
 	@return SequenceRecords* containing query sequences and their
 	corrected versions
 */
-SequenceRecords* run_protocol( vector<SequenceQuery> & queries, ErrorXOptions & options );
+ERRORX_API SequenceRecords* run_protocol( vector<SequenceQuery> & queries, ErrorXOptions & options );
 
 /**
 	Wrapper for the run_protocol( ErrorXOptions & options ) function.
@@ -65,7 +77,7 @@ SequenceRecords* run_protocol( vector<SequenceQuery> & queries, ErrorXOptions & 
 	@throws invalid_argument if either infile or format are not provided
 	in options	
 */
-void run_protocol_write( ErrorXOptions & options );
+ERRORX_API void run_protocol_write( ErrorXOptions & options );
 
 /**
 	Debugging function to output features of input sequences as well as
