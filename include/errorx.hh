@@ -13,6 +13,8 @@ or a std::vector of SequenceQuery objects
 #ifndef INCLUDE_ERRORX_HH_
 #define INCLUDE_ERRORX_HH_
 
+/// manages dllexport and import for windows
+/// does nothing on Mac/Linux
 #if defined(_WIN32) || defined(_WIN64)
 	#ifdef ERRORX_EXPORTS
 		#define ERRORX_API __declspec(dllexport)

@@ -27,7 +27,7 @@ INC=-I../include/ -Icxxtest/
 SRCS=../src/SequenceRecords.cc ../src/SequenceRecord.cc ../src/IGBlastParser.cc \
 	 ../src/ErrorPredictor.cc ../src/SequenceFeatures.cc ../src/DataScaler.cc \
 	 ../src/ErrorXOptions.cc ../src/keras_model.cc ../src/errorx.cc \
-	 ../src/util.cc ../src/model.cc ../src/SequenceQuery.cc
+	 ../src/util.cc ../src/SequenceQuery.cc
 
 BOOST=../dependencies/boost/mac/libboost_filesystem.a \
 	  ../dependencies/boost/mac/libboost_program_options.a \

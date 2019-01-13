@@ -6,6 +6,7 @@ sublime.sublime-workspace
 .project
 .settings/
 .DS_Store
+.*.swp
 unit_test/hs_err*.log
 
 *tar.gz 

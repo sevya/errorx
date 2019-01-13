@@ -122,14 +122,15 @@ string exec(const char* cmd) {
 }
 */
 
- bool set_env(string key, string value) {
-#if defined(_WIN32) || defined(_WIN64)
-	return SetEnvironmentVariable(key.c_str(), value.c_str());
-#elif defined(__APPLE__) || defined(__MACH__) || defined(__linux__)
-	int result = setenv(key, value.c_str(), 1);
-	return result == 0;
-#endif
+bool set_env(string key, string value) {
+	#if defined(_WIN32) || defined(_WIN64)
+		return SetEnvironmentVariable(key.c_str(), value.c_str());
+	#elif defined(__APPLE__) || defined(__MACH__) || defined(__linux__)
+		int result = setenv(key.c_str(), value.c_str(), 1);
+		return result == 0;
+	#endif
 }
+
 boost::filesystem::path get_home() {
 	namespace fs = boost::filesystem;
 	if ( get_os() == "win" ) {
