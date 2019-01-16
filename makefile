@@ -61,7 +61,7 @@ BOOST=dependencies/boost_1_68_0/$(OS)/libboost_filesystem.a \
 	  dependencies/boost_1_68_0/$(OS)/libboost_system.a
 
 
-all: binary_testing library binary python java
+all: binary binary_testing library python_install python3_install java
 
 libraries: library python java
 

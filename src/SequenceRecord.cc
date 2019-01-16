@@ -105,20 +105,20 @@ SequenceRecord::SequenceRecord( vector<string> const & lines,
 			if ( tokens[1] == "Query:" ) {
 				data_map.insert( make_pair("query_string", tokens) );
 			}
-			else if ( tokens[1] == "V-(D)-J" and tokens[2] == "rearrangement" ) {
+			else if ( tokens[1] == "V-(D)-J" && tokens[2] == "rearrangement" ) {
 				data_map.insert( make_pair("rearrangement_string", util::tokenize_string<string>(lines[ii+1])) );
-			} else if ( tokens[1] == "V-(D)-J" and tokens[2] == "junction" ) {
+			} else if ( tokens[1] == "V-(D)-J" && tokens[2] == "junction" ) {
 				data_map.insert( make_pair("junction_string", util::tokenize_string<string>(lines[ii+1])) );
 
 			} else if ( tokens[1] == "Sub-region" ) {
 				data_map.insert( make_pair("subregion_string", util::tokenize_string<string>(lines[ii+1])) );
-			} else if ( tokens[0] == "V" or tokens[0] == "D" or tokens[0] == "J" ) {
+			} else if ( tokens[0] == "V" || tokens[0] == "D" || tokens[0] == "J" ) {
 				data_map.insert( make_pair(tokens[0]+"region_string", tokens ));
 			}
 		}
 
-		if ( data_map.find("query_string") == data_map.end() or
-			 data_map.find("rearrangement_string") == data_map.end() or
+		if ( data_map.find("query_string") == data_map.end() ||
+			 data_map.find("rearrangement_string") == data_map.end() ||
 			 // EDIT 11.1.18
 			 // sometimes the sub-region annotation is not available
 			 // not sure why this happens. If it's not there then
@@ -157,7 +157,7 @@ SequenceRecord::SequenceRecord( vector<string> const & lines,
 
 		parse_junction_string( data_map["junction_string"] );
 
-	} catch ( bad_alloc& ba ) {
+	} catch ( bad_alloc & ) {
 		if ( verbose_ > 1 ) {
 			cout << sequenceID_ << ": something is wrong with the format" << endl;
 		}
@@ -247,7 +247,7 @@ void SequenceRecord::parse_rearrangement_string( vector<string> const & summary_
 	hasD_ = d_gene_!="N/A";
 	hasJ_ = j_gene_!="N/A";
 
-	if ( !productive_ and !allow_nonproductive_ ) {
+	if ( !productive_ && !allow_nonproductive_ ) {
 		if ( verbose_ > 1 ) {
 			cout << "Sequence is not productive." << endl;
 		}
@@ -437,7 +437,7 @@ void SequenceRecord::assemble_full_sequence() {
 
 	try {
 		quality_string_ = quality_string_full_.substr( query_start_-1, full_nt_sequence_.size() );
-	} catch ( out_of_range & e ) {
+	} catch ( out_of_range & ) {
 		if ( verbose_ > 1 ) {
 			cout << "Quality string is not long enough. Some formatting error. : " << sequenceID_ << endl;
 		}

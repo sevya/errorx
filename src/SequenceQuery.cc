@@ -28,7 +28,7 @@ SequenceQuery::SequenceQuery( string sequenceID,
 		germline_sequence_( germline_sequence ),
 		phred_string_( phred_string ) 
 {
-	if ( sequence_.size() != germline_sequence_.size() or 
+	if ( sequence_.size() != germline_sequence_.size() || 
 		 sequence_.size() != phred_string_.size() ) {
 		throw invalid_argument( "Error: invalid sequences given for correcting. "
 			"Sequence, germline sequence and PHRED string must have same length. "

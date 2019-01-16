@@ -1,6 +1,10 @@
 .DEFAULT_GOAL := all
 
 
+JAVAC=javac
+JAR=jar
+CP='.:../java_bindings/ErrorX.jar'
+
 ifeq ($(OS),Windows_NT)
 	uname_S := Windows
 else
@@ -9,6 +13,9 @@ endif
 
 ifeq ($(uname_S), Windows)
 	LIB=errorx/liberrorx.dll
+	JAVAC="C:/Program Files/Java/jdk1.8.0_45/bin/javac.exe"
+	JAR="C:/Program Files/Java/jdk1.8.0_45/bin/jar.exe"
+	CP='.;../java_bindings/ErrorX.jar'
 endif
 ifeq ($(uname_S), Linux)
 	LIB=errorx/liberrorx.so
@@ -25,10 +32,10 @@ CLASS=errorx/NativeUtils.class errorx/ErrorX.class errorx/ErrorXOptions.class
 all: class jar
 
 class: $(SRCS)
-	javac $(SRCS)
+	$(JAVAC) $(SRCS)
 
 jar: 
-	jar cf ErrorX.jar $(CLASS) $(LIB)
+	$(JAR) cf ErrorX.jar $(CLASS) $(LIB)
 
 
 clean: 
