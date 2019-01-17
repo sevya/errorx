@@ -44,16 +44,11 @@ SequenceFeatures::SequenceFeatures( SequenceRecord* const record, int position )
 
 	quality_window_ = get_window( quality_array, position, window );
 
-	// abs_position_ = position;
-	rel_position_ = (double)position/(double)full_nt_sequence.length();
-
-	// global_GC_count_ = record->gc_count();
 	global_GC_pct_ = record->gc_pct();
 
 	pair<int,double> local_metrics =
 			util::calculate_metrics( sequence_window_, gl_sequence_window_ );
 
-	// local_GC_count_ = local_metrics.first;
 	local_GC_pct_ = (double)local_metrics.first/(double)sequence_window_.length();
 	
 	local_SHM_ = local_metrics.second;
@@ -71,11 +66,7 @@ SequenceFeatures::SequenceFeatures( SequenceFeatures const & other ) :
 		sequence_window_(other.sequence_window_),
 		gl_sequence_window_(other.gl_sequence_window_),
 		quality_window_(other.quality_window_),
-		// abs_position_(other.abs_position_),
-		rel_position_(other.rel_position_),
-		// global_GC_count_(other.global_GC_count_),
 		global_GC_pct_(other.global_GC_pct_),
-		// local_GC_count_(other.local_GC_count_),
 		local_GC_pct_(other.local_GC_pct_),
 		global_SHM_(other.global_SHM_),
 		local_SHM_(other.local_SHM_),
@@ -161,7 +152,7 @@ vector<double> SequenceFeatures::get_feature_vector() const {
 	/// are count-based and not normalized
 	/// These three are abs_position, global_gc, and local_gc
 
-	/* rel_position global_gc_pct
+	/* global_gc_pct
 	 * local_gc_pct global_avg_phred
 	 * local_avg_phred nt_-81 nt_-82 nt_-83 nt_-84
 	 * nt_-85 nt_-86 nt_-71 nt_-72 nt_-73 nt_-74
@@ -209,7 +200,6 @@ vector<double> SequenceFeatures::get_feature_vector() const {
 
 
 	vector<double> feature_vector = {
-			rel_position_,
 			global_GC_pct_,
 			local_GC_pct_,
 			global_quality_avg_, 
@@ -235,6 +225,5 @@ vector<double> SequenceFeatures::get_feature_vector() const {
 }
 
 bool SequenceFeatures::is_germline() const { return is_germline_; }
-double SequenceFeatures::rel_position() const { return rel_position_; }
 
 } // namespace errorx

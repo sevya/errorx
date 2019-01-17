@@ -36,17 +36,7 @@ double ErrorPredictor::apply_model( SequenceFeatures const & features ) const {
 	using namespace keras;
 
 	if ( features.is_germline() ) return 0.0;
-	/**
-	12.7.18 AMS I noticed that in several validation sets the
-	early positions are consistently where the false positives
-	are occurring. This is because in my training data I cut off
-	the first 40 bp which are generally unreliable. To get around
-	this I introduced this (slightly hacky) solution, where I just
-	make anything within the first 13% of the sequence (roughly 40 bp)
-	predicted as 0. This greatly improves my precision/recall curves.
-	*/
-	if ( features.rel_position() < 0.13 ) return 0.0;
-
+	
 	DataScaler scaler;
 
 	const vector<double> scaled_vector = scaler.scale_data( features.get_feature_vector() );
