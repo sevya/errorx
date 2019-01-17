@@ -29,7 +29,8 @@ const vector<double> DataScaler::scale_data( vector<double> const & feature_vect
 	// scale features - all are pre-scaled except for PHRED-based features
 	// those should be divided by the maximum phred score (40)
 	vector<int> indices_to_scale = {
-		3,4,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123
+		2,3,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122
+		// 3,4,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123
 	};
 
 	for ( int ii = 0; ii < indices_to_scale.size(); ++ii ) {
