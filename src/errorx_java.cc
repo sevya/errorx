@@ -148,7 +148,6 @@ errorx::SequenceRecords* get_corrected_records( JNIEnv* env,
 		queries.push_back( query );
 	}
 
-	errorx::DataScaler scaler;
 	errorx::ErrorPredictor predictor( options );
 
 	try {

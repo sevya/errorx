@@ -160,16 +160,17 @@ vector<double> SequenceFeatures::get_feature_vector() const {
 	vector<double> feature_vector = {
 			global_GC_pct_,
 			local_GC_pct_,
-			global_quality_avg_, 
-			local_quality_avg_};
+			global_quality_avg_ / 40.0, 
+			local_quality_avg_ / 40.0 
+		};
 
 	feature_vector.insert( feature_vector.end(),
 			sequence_window_binary_.begin(),
 			sequence_window_binary_.end());
 
-	feature_vector.insert( feature_vector.end(),
-			quality_window_.begin(),
-			quality_window_.end());
+	for ( int ii = 0; ii < quality_window_.size(); ++ii ) {
+		feature_vector.push_back( quality_window_[ ii ] / 40.0 );
+	}
 
 	feature_vector.insert( feature_vector.end(),
 			gl_sequence_window_binary_.begin(),

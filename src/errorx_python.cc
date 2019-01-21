@@ -227,7 +227,6 @@ SequenceRecords* submit_query( vector<string> & sequences,
 		queries.push_back( query );
 	}
 
-	DataScaler scaler;
 	ErrorPredictor predictor( options );
 
 	try {

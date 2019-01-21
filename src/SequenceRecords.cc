@@ -22,7 +22,6 @@ settings for processing, and ErrorPredictor that does the error correction itsel
 #include "SequenceRecord.hh"
 #include "ErrorPredictor.hh"
 #include "SequenceFeatures.hh"
-#include "DataScaler.hh"
 #include "util.hh"
 #include "constants.hh"
 
@@ -360,7 +359,6 @@ void SequenceRecords::write_features() {
 	vector<vector<double>> features_2d;
 	
 	vector<string> ids;
-	DataScaler scaler;
 
 	for ( int ii = 0; ii < size(); ++ii ) {
 		try {
@@ -372,7 +370,7 @@ void SequenceRecords::write_features() {
 		
 			for ( int jj = 0; jj < temp_features.size(); ++jj ) {
 				ids.push_back( get(ii)->sequenceID()+"_"+to_string(jj) );
-				features_2d.push_back( scaler.scale_data( temp_features[jj] ));
+				features_2d.push_back( temp_features[jj] );
 			}
 
 		} catch ( exception & e ) {

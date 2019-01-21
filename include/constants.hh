@@ -15,9 +15,9 @@ namespace constants {
 	this value may change in future releases but I want it to be 
 	defined here
 */
-const double OPTIMIZED_THRESHOLD = 0.884311;
-const double OPTIMIZED_PRECISION =  0.663;
-const double OPTIMIZED_RECALL = 0.448;
+const double OPTIMIZED_THRESHOLD = 0.805312;
+const double OPTIMIZED_PRECISION =  0.668;
+const double OPTIMIZED_RECALL = 0.402;
 
 /**
 	Sequence window used for feature calculation
