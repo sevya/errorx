@@ -2,7 +2,7 @@
 Unauthorized copying of this file, via any medium is strictly prohibited
 Code contained herein is proprietary and confidential.
 
-@file testing.cc
+@file main.cc
 @brief Run the ErrorX protocol from the command line
 @author Alex Sevy (alex.sevy@gmail.com)
 */
@@ -40,6 +40,7 @@ int main( int argc, char* argv[] ) {
 		("format,f", program_options::value<string>(), "input file format. Valid entries are fastq or tsv.")
 		("out,o", program_options::value<string>()->default_value("out.tsv"), "output file (Default=out.tsv)")
 		("species,s", program_options::value<string>()->default_value("human"), "Species for IGBLAST search. Valid entries are human or mouse. (Default=human)")
+		("igtype", program_options::value<string>()->default_value("Ig"), "Receptor type for IGBLAST search. Valid entries are Ig or TCR. (Default=Ig)")
 		("nthreads,n", program_options::value<int>()->default_value(-1), "Number of threads to use during execution. Enter -1 to use all available (Default=-1)")
 		("error-threshold,e", program_options::value<double>()->default_value(constants::OPTIMIZED_THRESHOLD,to_string(constants::OPTIMIZED_THRESHOLD)), "Probability cutoff for a base to be considered an error. "
 				"Higher=more stringent in calling errors. Don't change this value unless you know what you are doing.")
@@ -106,6 +107,8 @@ int main( int argc, char* argv[] ) {
 
 		options.species( vm["species"].as<string>());
 
+		options.igtype( vm["igtype"].as<string>());
+
 		options.nthreads( vm["nthreads"].as<int>());
 
 		options.error_threshold( vm["error-threshold"].as<double>());
@@ -115,7 +118,7 @@ int main( int argc, char* argv[] ) {
 		options.allow_nonproductive( vm["allow-nonproductive"].as<bool>());
 
 		run_protocol_write_features( options );
-		
+
 		return 0;
 	} catch ( program_options::unknown_option & exc) {
 		cout << "Error: "<< exc.what() << endl;
@@ -129,8 +132,6 @@ int main( int argc, char* argv[] ) {
 		return 1;
 	}
 }
-
-
 
 
 

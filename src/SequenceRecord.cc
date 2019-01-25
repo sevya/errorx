@@ -283,7 +283,8 @@ void SequenceRecord::parse_junction_string( vector<string> const & junction_data
 		full_gl_junction_ = string(vj_junction_nts.size(), '-');
 	} else {
 		// TODO: implement TCRG and D
-		throw invalid_argument("Error: invalid chain type "+chain_+" detected");
+		cout << "Warning: invalid chain type "+chain_+" detected" << endl;
+		good_sequence_ = 0;
 	}
 }
 
