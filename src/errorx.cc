@@ -19,8 +19,6 @@ or a std::vector of SequenceQuery objects
 #include "util.hh"
 #include "exceptions.hh"
 
-#include <boost/program_options.hpp>
-
 using namespace std;
 
 namespace errorx {
@@ -162,6 +160,8 @@ void run_protocol_write_features( ErrorXOptions & options ) {
 
 	// Write features
 	records->write_features();
+	// Write summary
+	records->write_summary();
 
 	delete records;
 }

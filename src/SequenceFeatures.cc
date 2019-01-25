@@ -169,7 +169,11 @@ vector<double> SequenceFeatures::get_feature_vector() const {
 			sequence_window_binary_.end());
 
 	for ( int ii = 0; ii < quality_window_.size(); ++ii ) {
-		feature_vector.push_back( quality_window_[ ii ] / 40.0 );
+		// if the window extends before the beginning or after the end
+		// of the sequence, its placeholder value is -1
+		if ( quality_window_[ ii ] >= 0 ) {
+			feature_vector.push_back( quality_window_[ ii ] / 40.0 );
+		}
 	}
 
 	feature_vector.insert( feature_vector.end(),

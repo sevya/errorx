@@ -186,11 +186,9 @@ string exec(const char* cmd);
 /**
 	Get the root path where the ErrorX directory is located
 
-	@param from_gui whether ErrorX is being invoked from a GUI
-
 	@return path to the base of the ErrorX directory
 */
-boost::filesystem::path get_root_path( bool from_gui=0 );
+boost::filesystem::path get_root_path();
 
 /**
 	Average PHRED quality scores in realspace. Since they are 

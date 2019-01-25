@@ -209,6 +209,26 @@ public:
 
 	}
 
+
+	void testPhredWindow(void) {
+
+		string sequence = "AGGACGGAGGCACACGGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGCGCGCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCGGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCA";
+		string gl_sequence = "AGGGCAGAGTCACGATTACCGCGGACAAATCCACGAGCACAGCCTACATGGAGCTGAGCAGCCTGAGATCTGAGGACACGGCCGTGTATTACTGTGCGAGAGA------------------------CTGGGGCCAAGGGACCACGGTCACCGTCTCCTCA";
+		string phred_str = "########################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4";
+
+		SequenceQuery query( "test",sequence, gl_sequence, phred_str );
+		SequenceRecord* record = new SequenceRecord( query, 1 );
+		SequenceFeatures sf = SequenceFeatures( record, 122 );
+
+		cout << "getting quality window:" << endl;
+		vector<int> quals = {2,2,2,2,2,2,34,25,28,24,31,22,10,34,21,10,10};
+		for ( int ii = 0; ii < sf.quality_window_.size(); ++ii ) {
+			TS_ASSERT_EQUALS( quals[ii], sf.quality_window_[ ii ] );
+		}
+
+		delete record;
+	}
+
 	void testFull(void) {
 
 		SequenceFeatures features ( record_, 136 );
@@ -222,11 +242,6 @@ public:
 		}
 		TS_ASSERT_EQUALS( results_vector_test, raw_vector_ );
 
-		DataScaler scaler;
-
-		vector<double> scaled_vector_test = scaler.scale_data( results_vector_test );
-		TS_ASSERT_EQUALS( scaled_vector_test, scaled_vector_ );
-	
 		ErrorXOptions options( "tmp", "tsv" );
 		options.errorx_base("../");
 		options.verbose(0);
@@ -243,7 +258,6 @@ public:
 		options.verbose(0);
 		ErrorPredictor predictor( options );
 
-		DataScaler scaler;
 
 		vector<double> pred1 = predictor.apply_model( vector<vector<double>> {scaled_vector_} );
 
@@ -275,8 +289,6 @@ public:
 		options.errorx_base("../");
 		options.verbose(0);
 		ErrorPredictor predictor( options );
-
-		DataScaler scaler;
 
 		vector<double> pred1 = predictor.apply_model( vector<vector<double>> {scaled_vector_} );
 

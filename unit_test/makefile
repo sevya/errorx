@@ -25,7 +25,7 @@ endif
 INC=-I../include/ -Icxxtest/
 
 SRCS=../src/SequenceRecords.cc ../src/SequenceRecord.cc ../src/IGBlastParser.cc \
-	 ../src/ErrorPredictor.cc ../src/SequenceFeatures.cc ../src/DataScaler.cc \
+	 ../src/ErrorPredictor.cc ../src/SequenceFeatures.cc \
 	 ../src/ErrorXOptions.cc ../src/keras_model.cc ../src/errorx.cc \
 	 ../src/util.cc ../src/SequenceQuery.cc
 

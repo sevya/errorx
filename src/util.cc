@@ -18,7 +18,6 @@ Code contained herein is proprietary and confidential.
 #include <map>
 #include <vector>
 
-#include <boost/foreach.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -143,18 +142,12 @@ boost::filesystem::path get_home() {
 	}
 }
 
-boost::filesystem::path get_root_path( bool from_gui ) {
+boost::filesystem::path get_root_path() {
 
 	namespace fs = boost::filesystem;
 	fs::path path = boost::dll::program_location();
 
-	// TODO adapt this for Windows
-	if ( from_gui ) {
-		fs::path app_bundle = path.parent_path().parent_path();
-		return app_bundle / "Resources";
-	} else { 
-		return path.parent_path().parent_path();
-	}
+	return path.parent_path().parent_path();
 }
 
 double phred_avg_realspace( vector<int> const & phred_arr ) {
@@ -162,7 +155,7 @@ double phred_avg_realspace( vector<int> const & phred_arr ) {
 	int count = 0;
 
 	for ( int ii = 0; ii < phred_arr.size(); ++ii ) {
-		if ( phred_arr[ii] != -1 ) {
+		if ( phred_arr[ii] >= 0 ) {
 			sum += pow(10, (-(float)phred_arr[ii])/10);
 			count++;
 		}
