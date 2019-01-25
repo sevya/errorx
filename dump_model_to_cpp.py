@@ -17,6 +17,7 @@ parser = argparse.ArgumentParser(description='This is a simple script to dump Ke
 
 parser.add_argument('-a', '--architecture', help="JSON with model architecture", required=True)
 parser.add_argument('-w', '--weights', help="Model weights in HDF5 format", required=True)
+parser.add_argument('-o', '--out', help="Output file name", default='model.nnet')
 
 args = parser.parse_args()
 
@@ -24,6 +25,14 @@ print 'Read architecture from', args.architecture
 print 'Read weights from', args.weights
 
 model_string = mf.get_model_as_string( args.architecture, args.weights )
+
+with open(args.out,'w') as out:
+	# for line in model_string.split('\n'):
+	# 	out.write(line)
+	# 	out.write('\n')
+	out.write(model_string)
+
+exit()
 
 cpp_base = '''
 /** 

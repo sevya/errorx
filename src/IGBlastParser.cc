@@ -36,6 +36,8 @@ void IGBlastParser::blast( ErrorXOptions & options ) {
 	namespace fs = boost::filesystem;
 
 	fs::path root = options.errorx_base();
+	string os = util::get_os();
+	if ( os == "win" ) os += ".exe";
 	string exename = "igblastn_"+util::get_os();
 	fs::path executable = root / "bin" / exename;
 
@@ -73,11 +75,10 @@ void IGBlastParser::blast( ErrorXOptions & options ) {
 
     // IGBlast needs an environmental variable called IGDATA pointing 
     // to the path to database
-	setenv("IGDATA", root.c_str(), 1);
+	util::set_env( "IGDATA", root.string() );
 
 	// TODO: FIGURE out a better way to capture output, since this doesn't work
 	thread_finished_ = false;
-	thread_output_ = "";
 
 	thread worker_thread = thread( &IGBlastParser::exec_in_thread, this, command );
 	
@@ -87,11 +88,6 @@ void IGBlastParser::blast( ErrorXOptions & options ) {
 		track_progress( options );
 	}
 	worker_thread.join();
-
-	if ( thread_output_ != "" ) {
-		cout << "IGBLASTN gave the following output:\n" << thread_output_ << endl;
-		return;
-	}
 }
 
 SequenceRecords* IGBlastParser::parse_output( ErrorXOptions & options  )
@@ -115,8 +111,8 @@ SequenceRecords* IGBlastParser::parse_output( ErrorXOptions & options  )
 
 		// If this is the first line of a query, and it's not the first line 
 		// in the file, make a SequenceRecord from the previous query
-		if ( tokens.size()==2 and 
-			 tokens[1] == "IGBLASTN" and 
+		if ( tokens.size()==2 && 
+			 tokens[1] == "IGBLASTN" && 
 			 !lines.empty() ) {
 			
 			SequenceRecord* record = new SequenceRecord( 
@@ -130,8 +126,8 @@ SequenceRecords* IGBlastParser::parse_output( ErrorXOptions & options  )
 		} 
 		// If all the queries are done, and I'm at the end of the file, 
 		// make a SequenceRecord and finish up
-		else if ( tokens.size()==4 and 
-				  tokens[0] == "Total" and 
+		else if ( tokens.size()==4 && 
+				  tokens[0] == "Total" && 
 				  tokens[1] == "queries" ) {
 
 			SequenceRecord* record = new SequenceRecord( 
@@ -175,7 +171,9 @@ void IGBlastParser::track_progress( ErrorXOptions & options ) {
 }
 
 void IGBlastParser::exec_in_thread( string command ) {
-	thread_output_ = util::exec( command.c_str() );
+	// TODO: come up with a more robust way to capture the output of this command
+	system( command.c_str() );
+//	thread_output_ = util::exec( command.c_str() );
 	thread_finished_ = true;
 }
 

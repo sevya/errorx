@@ -21,7 +21,6 @@ or directly from a SequenceQuery.
 #include "util.hh"
 
 #include <boost/lexical_cast.hpp>
-#include <boost/foreach.hpp>
 
 using namespace std;
 
@@ -157,7 +156,7 @@ SequenceRecord::SequenceRecord( vector<string> const & lines,
 
 		parse_junction_string( data_map["junction_string"] );
 
-	} catch ( bad_alloc& ba ) {
+	} catch ( bad_alloc & ) {
 		if ( verbose_ > 1 ) {
 			cout << sequenceID_ << ": something is wrong with the format" << endl;
 		}
@@ -432,7 +431,7 @@ void SequenceRecord::assemble_full_sequence() {
 
 	try {
 		quality_string_ = quality_string_full_.substr( query_start_-1, full_nt_sequence_.size() );
-	} catch ( out_of_range & e ) {
+	} catch ( out_of_range & ) {
 		if ( verbose_ > 1 ) {
 			cout << "Quality string is not long enough. Some formatting error. : " << sequenceID_ << endl;
 		}

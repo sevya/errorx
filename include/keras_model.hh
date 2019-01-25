@@ -11,6 +11,8 @@ Code contained herein is proprietary and confidential.
 #ifndef KERAS_MODEL__H
 #define KERAS_MODEL__H
 
+#include "ErrorXOptions.hh"
+
 #include <string>
 #include <vector>
 #include <fstream>
@@ -213,6 +215,7 @@ public:
 
 class KerasModel {
 public:
+	KerasModel( errorx::ErrorXOptions const & options );
 	KerasModel( const string &input_fname, int verbose );
 	KerasModel( const string &input_fname, bool from_string, int verbose);
 

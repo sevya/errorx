@@ -22,7 +22,6 @@ settings for processing, and ErrorPredictor that does the error correction itsel
 #include "SequenceRecord.hh"
 #include "ErrorPredictor.hh"
 #include "SequenceFeatures.hh"
-#include "DataScaler.hh"
 #include "util.hh"
 #include "constants.hh"
 
@@ -32,7 +31,7 @@ namespace errorx {
 
 SequenceRecords::SequenceRecords( ErrorXOptions const & options ) :
 	options_(new ErrorXOptions( options )),
-	predictor_ (new ErrorPredictor( options.verbose() ))
+	predictor_ (new ErrorPredictor( options ))
 {}
 
 SequenceRecords::~SequenceRecords() {
@@ -73,7 +72,7 @@ SequenceRecords::SequenceRecords( vector<SequenceRecords*> const & others ) {
 	// note: this just uses the settings from the first item in the vector
 	// if they're not all uniform it will cause a bug
 	options_ = new ErrorXOptions( *(others[0]->options_ ));
-	predictor_ = new ErrorPredictor( *(others[0]->predictor_ ));
+	predictor_ = new ErrorPredictor( *(others[0]->predictor_ ) );
 }
 
 SequenceRecords::SequenceRecords( vector<SequenceRecord*> const & record_vector, 
@@ -86,7 +85,7 @@ SequenceRecords::SequenceRecords( vector<SequenceRecord*> const & record_vector,
 		);
 	}
 	options_ = new ErrorXOptions( options );
-	predictor_ = new ErrorPredictor( options.verbose() );
+	predictor_ = new ErrorPredictor( options );
 }
 
 void SequenceRecords::import_from_tsv() {
@@ -358,8 +357,8 @@ void SequenceRecords::correct_sequences( SequenceRecords* & records ) {
 
 void SequenceRecords::write_features() {
 	vector<vector<double>> features_2d;
+	
 	vector<string> ids;
-	DataScaler scaler;
 
 	for ( int ii = 0; ii < size(); ++ii ) {
 		try {
@@ -371,7 +370,7 @@ void SequenceRecords::write_features() {
 		
 			for ( int jj = 0; jj < temp_features.size(); ++jj ) {
 				ids.push_back( get(ii)->sequenceID()+"_"+to_string(jj) );
-				features_2d.push_back( scaler.scale_data( temp_features[jj] ));
+				features_2d.push_back( temp_features[jj] );
 			}
 
 		} catch ( exception & e ) {
@@ -389,7 +388,7 @@ void SequenceRecords::write_features() {
 	/// 11.28.18 AMS changed to remove three features that
 	/// are count-based and not normalized
 	/// These three are abs_position, global_gc, and local_gc
-	vector<string> labels = {"name","rel_position","global_gc_pct","local_gc_pct","global_avg_phred","local_avg_phred","nt_-81","nt_-82","nt_-83","nt_-84","nt_-85","nt_-86","nt_-71","nt_-72","nt_-73","nt_-74","nt_-75","nt_-76","nt_-61","nt_-62","nt_-63","nt_-64","nt_-65","nt_-66","nt_-51","nt_-52","nt_-53","nt_-54","nt_-55","nt_-56","nt_-41","nt_-42","nt_-43","nt_-44","nt_-45","nt_-46","nt_-31","nt_-32","nt_-33","nt_-34","nt_-35","nt_-36","nt_-21","nt_-22","nt_-23","nt_-24","nt_-25","nt_-26","nt_-11","nt_-12","nt_-13","nt_-14","nt_-15","nt_-16","nt_01","nt_02","nt_03","nt_04","nt_05","nt_06","nt_11","nt_12","nt_13","nt_14","nt_15","nt_16","nt_21","nt_22","nt_23","nt_24","nt_25","nt_26","nt_31","nt_32","nt_33","nt_34","nt_35","nt_36","nt_41","nt_42","nt_43","nt_44","nt_45","nt_46","nt_51","nt_52","nt_53","nt_54","nt_55","nt_56","nt_61","nt_62","nt_63","nt_64","nt_65","nt_66","nt_71","nt_72","nt_73","nt_74","nt_75","nt_76","nt_81","nt_82","nt_83","nt_84","nt_85","nt_86","phred_-8","phred_-7","phred_-6","phred_-5","phred_-4","phred_-3","phred_-2","phred_-1","phred_0","phred_1","phred_2","phred_3","phred_4","phred_5","phred_6","phred_7","phred_8","glnt_-81","glnt_-82","glnt_-83","glnt_-84","glnt_-85","glnt_-86","glnt_-71","glnt_-72","glnt_-73","glnt_-74","glnt_-75","glnt_-76","glnt_-61","glnt_-62","glnt_-63","glnt_-64","glnt_-65","glnt_-66","glnt_-51","glnt_-52","glnt_-53","glnt_-54","glnt_-55","glnt_-56","glnt_-41","glnt_-42","glnt_-43","glnt_-44","glnt_-45","glnt_-46","glnt_-31","glnt_-32","glnt_-33","glnt_-34","glnt_-35","glnt_-36","glnt_-21","glnt_-22","glnt_-23","glnt_-24","glnt_-25","glnt_-26","glnt_-11","glnt_-12","glnt_-13","glnt_-14","glnt_-15","glnt_-16","glnt_01","glnt_02","glnt_03","glnt_04","glnt_05","glnt_06","glnt_11","glnt_12","glnt_13","glnt_14","glnt_15","glnt_16","glnt_21","glnt_22","glnt_23","glnt_24","glnt_25","glnt_26","glnt_31","glnt_32","glnt_33","glnt_34","glnt_35","glnt_36","glnt_41","glnt_42","glnt_43","glnt_44","glnt_45","glnt_46","glnt_51","glnt_52","glnt_53","glnt_54","glnt_55","glnt_56","glnt_61","glnt_62","glnt_63","glnt_64","glnt_65","glnt_66","glnt_71","glnt_72","glnt_73","glnt_74","glnt_75","glnt_76","glnt_81","glnt_82","glnt_83","glnt_84","glnt_85","glnt_86","is_germline","local_SHM","global_SHM"};
+	vector<string> labels = {"name","global_gc_pct","local_gc_pct","global_avg_phred","local_avg_phred","nt_-81","nt_-82","nt_-83","nt_-84","nt_-85","nt_-86","nt_-71","nt_-72","nt_-73","nt_-74","nt_-75","nt_-76","nt_-61","nt_-62","nt_-63","nt_-64","nt_-65","nt_-66","nt_-51","nt_-52","nt_-53","nt_-54","nt_-55","nt_-56","nt_-41","nt_-42","nt_-43","nt_-44","nt_-45","nt_-46","nt_-31","nt_-32","nt_-33","nt_-34","nt_-35","nt_-36","nt_-21","nt_-22","nt_-23","nt_-24","nt_-25","nt_-26","nt_-11","nt_-12","nt_-13","nt_-14","nt_-15","nt_-16","nt_01","nt_02","nt_03","nt_04","nt_05","nt_06","nt_11","nt_12","nt_13","nt_14","nt_15","nt_16","nt_21","nt_22","nt_23","nt_24","nt_25","nt_26","nt_31","nt_32","nt_33","nt_34","nt_35","nt_36","nt_41","nt_42","nt_43","nt_44","nt_45","nt_46","nt_51","nt_52","nt_53","nt_54","nt_55","nt_56","nt_61","nt_62","nt_63","nt_64","nt_65","nt_66","nt_71","nt_72","nt_73","nt_74","nt_75","nt_76","nt_81","nt_82","nt_83","nt_84","nt_85","nt_86","phred_-8","phred_-7","phred_-6","phred_-5","phred_-4","phred_-3","phred_-2","phred_-1","phred_0","phred_1","phred_2","phred_3","phred_4","phred_5","phred_6","phred_7","phred_8","glnt_-81","glnt_-82","glnt_-83","glnt_-84","glnt_-85","glnt_-86","glnt_-71","glnt_-72","glnt_-73","glnt_-74","glnt_-75","glnt_-76","glnt_-61","glnt_-62","glnt_-63","glnt_-64","glnt_-65","glnt_-66","glnt_-51","glnt_-52","glnt_-53","glnt_-54","glnt_-55","glnt_-56","glnt_-41","glnt_-42","glnt_-43","glnt_-44","glnt_-45","glnt_-46","glnt_-31","glnt_-32","glnt_-33","glnt_-34","glnt_-35","glnt_-36","glnt_-21","glnt_-22","glnt_-23","glnt_-24","glnt_-25","glnt_-26","glnt_-11","glnt_-12","glnt_-13","glnt_-14","glnt_-15","glnt_-16","glnt_01","glnt_02","glnt_03","glnt_04","glnt_05","glnt_06","glnt_11","glnt_12","glnt_13","glnt_14","glnt_15","glnt_16","glnt_21","glnt_22","glnt_23","glnt_24","glnt_25","glnt_26","glnt_31","glnt_32","glnt_33","glnt_34","glnt_35","glnt_36","glnt_41","glnt_42","glnt_43","glnt_44","glnt_45","glnt_46","glnt_51","glnt_52","glnt_53","glnt_54","glnt_55","glnt_56","glnt_61","glnt_62","glnt_63","glnt_64","glnt_65","glnt_66","glnt_71","glnt_72","glnt_73","glnt_74","glnt_75","glnt_76","glnt_81","glnt_82","glnt_83","glnt_84","glnt_85","glnt_86","is_germline","local_SHM","global_SHM"};
 
 	for ( int ii = 0; ii < labels.size(); ++ii ) {
 		file << labels[ ii ];
@@ -400,7 +399,6 @@ void SequenceRecords::write_features() {
 
 	for ( int ii = 0; ii < features_2d.size(); ++ii ) {
 		file << ids[ii] << delimiter;
-
 		for ( int jj = 0; jj < features_2d[ii].size(); ++jj ) {
 			file << features_2d[ ii ][ jj ];
 			if ( jj != features_2d[ii].size()-1) file << delimiter;

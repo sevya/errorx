@@ -22,7 +22,6 @@ settings for processing, and ErrorPredictor that does the error correction itsel
 #include "SequenceRecord.hh"
 #include "ErrorXOptions.hh"
 #include "ErrorPredictor.hh"
-#include "DataScaler.hh"
 
 using namespace std;
 

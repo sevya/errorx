@@ -87,15 +87,15 @@ public:
 		Getter
 	*/
 	bool is_germline() const;
-	double rel_position() const;
 
 private:
 	void initialize();
 
 	string sequence_window_;
 	string gl_sequence_window_;
+public:
 	vector<int> quality_window_;
-	double rel_position_;
+private:
 	double global_GC_pct_;
 	double local_GC_pct_;
 	double global_SHM_;

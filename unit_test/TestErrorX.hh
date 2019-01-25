@@ -201,6 +201,7 @@ public:
 		queries.push_back( query );
 
 		ErrorXOptions options( "tmp", "tsv" );
+		options.errorx_base( "../" );
 		SequenceRecords* records = run_protocol( queries, options );
 
 		SequenceRecord* record = records->get(0);

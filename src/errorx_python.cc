@@ -73,7 +73,7 @@ static PyObject* correct_sequences( PyObject* self, PyObject* args, PyObject* kw
 
 	// sanity check - make sure length of all lists is uniform.
 	// if not set exception and return null
-	if ( PyList_Size( sequenceArg ) != PyList_Size( glArg ) or
+	if ( PyList_Size( sequenceArg ) != PyList_Size( glArg ) ||
 		 PyList_Size( sequenceArg ) != PyList_Size( phredArg ) ) {
 		PyErr_SetString( PyExc_TypeError, "Error: the length of sequence_list, "
 		"germline_sequence_list, and phred_score_list are not uniform." );
@@ -227,8 +227,7 @@ SequenceRecords* submit_query( vector<string> & sequences,
 		queries.push_back( query );
 	}
 
-	DataScaler scaler;
-	ErrorPredictor predictor( options.verbose() );
+	ErrorPredictor predictor( options );
 
 	try {
 		SequenceRecords* records = run_protocol( queries, options );

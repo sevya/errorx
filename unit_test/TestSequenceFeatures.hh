@@ -12,6 +12,7 @@
 
 #include "SequenceFeatures.hh"
 #include "SequenceQuery.hh"
+#include "ErrorXOptions.hh"
 #include "ErrorPredictor.hh"
 #include "util.hh"
 #include <string>
@@ -208,6 +209,26 @@ public:
 
 	}
 
+
+	void testPhredWindow(void) {
+
+		string sequence = "AGGACGGAGGCACACGGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGCGCGCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCGGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCA";
+		string gl_sequence = "AGGGCAGAGTCACGATTACCGCGGACAAATCCACGAGCACAGCCTACATGGAGCTGAGCAGCCTGAGATCTGAGGACACGGCCGTGTATTACTGTGCGAGAGA------------------------CTGGGGCCAAGGGACCACGGTCACCGTCTCCTCA";
+		string phred_str = "########################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4";
+
+		SequenceQuery query( "test",sequence, gl_sequence, phred_str );
+		SequenceRecord* record = new SequenceRecord( query, 1 );
+		SequenceFeatures sf = SequenceFeatures( record, 122 );
+
+		cout << "getting quality window:" << endl;
+		vector<int> quals = {2,2,2,2,2,2,34,25,28,24,31,22,10,34,21,10,10};
+		for ( int ii = 0; ii < sf.quality_window_.size(); ++ii ) {
+			TS_ASSERT_EQUALS( quals[ii], sf.quality_window_[ ii ] );
+		}
+
+		delete record;
+	}
+
 	void testFull(void) {
 
 		SequenceFeatures features ( record_, 136 );
@@ -221,22 +242,22 @@ public:
 		}
 		TS_ASSERT_EQUALS( results_vector_test, raw_vector_ );
 
-		DataScaler scaler;
-
-		vector<double> scaled_vector_test = scaler.scale_data( results_vector_test );
-		TS_ASSERT_EQUALS( scaled_vector_test, scaled_vector_ );
-	
-		ErrorPredictor predictor (0);
+		ErrorXOptions options( "tmp", "tsv" );
+		options.errorx_base("../");
+		options.verbose(0);
+		ErrorPredictor predictor( options );
 
 		TS_ASSERT_EQUALS( predicted_value_, predictor.apply_model( features ));
+
 	}
 
-	// These methods cause it to crash/hold - figure it out
 	void testErrorRate_singlethread() {
 
-		ErrorPredictor predictor (0);
+		ErrorXOptions options( "tmp", "tsv" );
+		options.errorx_base("../");
+		options.verbose(0);
+		ErrorPredictor predictor( options );
 
-		DataScaler scaler;
 
 		vector<double> pred1 = predictor.apply_model( vector<vector<double>> {scaled_vector_} );
 
@@ -247,8 +268,8 @@ public:
 		}
 
 
-		ErrorXOptions options( "test", "fastq" );
-
+		options = ErrorXOptions( "test", "fastq" );
+		options.errorx_base( "../" );
 		options.nthreads( 1 );
 
 		SequenceRecords* records = new SequenceRecords( options );
@@ -262,12 +283,12 @@ public:
 		delete records;
 	}
 
-	// These methods cause it to crash/hold - figure it out
 	void testErrorRate_multithread() {
 
-		ErrorPredictor predictor (0);
-
-		DataScaler scaler;
+		ErrorXOptions options( "tmp", "tsv" );
+		options.errorx_base("../");
+		options.verbose(0);
+		ErrorPredictor predictor( options );
 
 		vector<double> pred1 = predictor.apply_model( vector<vector<double>> {scaled_vector_} );
 
@@ -276,8 +297,8 @@ public:
 			TS_ASSERT_EQUALS( pred1[0], pred2[0] );
 		}
 
-		ErrorXOptions options( "test", "fastq" );
-
+		options = ErrorXOptions( "test", "fastq" );
+		options.errorx_base("../");
 		options.nthreads( -1 );
 
 		SequenceRecords* records = new SequenceRecords( options );
@@ -295,6 +316,7 @@ public:
 	void testTSVInput_singlethread() {
 		// sequenceID,nt_sequence,gl_sequence,quality_string
 		ErrorXOptions options( util::get_root_path(0).string()+"/testing/test.tsv", "tsv" );
+		options.errorx_base("../");
 		options.nthreads( 1 );
 
 		SequenceRecords* records = new SequenceRecords( options );
@@ -311,6 +333,7 @@ public:
 	void testTSVInput_multithread() {
 		// sequenceID,nt_sequence,gl_sequence,quality_string
 		ErrorXOptions options( util::get_root_path(0).string()+"/testing/test.tsv", "tsv" );
+		options.errorx_base("../");
 		options.nthreads( -1 );
 
 		SequenceRecords* records = new SequenceRecords( options );

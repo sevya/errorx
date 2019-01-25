@@ -25,9 +25,9 @@ endif
 INC=-I../include/ -Icxxtest/
 
 SRCS=../src/SequenceRecords.cc ../src/SequenceRecord.cc ../src/IGBlastParser.cc \
-	 ../src/ErrorPredictor.cc ../src/SequenceFeatures.cc ../src/DataScaler.cc \
+	 ../src/ErrorPredictor.cc ../src/SequenceFeatures.cc \
 	 ../src/ErrorXOptions.cc ../src/keras_model.cc ../src/errorx.cc \
-	 ../src/util.cc ../src/model.cc ../src/SequenceQuery.cc
+	 ../src/util.cc ../src/SequenceQuery.cc
 
 BOOST=../dependencies/boost_1_68_0/mac/libboost_filesystem.a \
 	  ../dependencies/boost_1_68_0/mac/libboost_program_options.a \

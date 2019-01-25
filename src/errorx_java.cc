@@ -109,7 +109,7 @@ errorx::SequenceRecords* get_corrected_records( JNIEnv* env,
 	jsize gl_sequence_len = env->GetArrayLength( germline_sequence_list ); 
 	jsize phred_len = env->GetArrayLength( phred_score_list );
 		
-	if ( sequence_len != gl_sequence_len or sequence_len != phred_len ) {
+	if ( sequence_len != gl_sequence_len || sequence_len != phred_len ) {
 		throw invalid_argument("Error: the length of lists containing sequences, "
 			"germline sequences, and phred scores are not uniform.");
 	}
@@ -131,7 +131,7 @@ errorx::SequenceRecords* get_corrected_records( JNIEnv* env,
 					 ) 
 {
 
-	if ( sequence_list.size() != germline_sequence_list.size() or 
+	if ( sequence_list.size() != germline_sequence_list.size() || 
 		 sequence_list.size() != phred_score_list.size() ) {
 		throw invalid_argument("Error: the length of lists containing sequences, "
 			"germline sequences, and phred scores are not uniform.");
@@ -148,8 +148,7 @@ errorx::SequenceRecords* get_corrected_records( JNIEnv* env,
 		queries.push_back( query );
 	}
 
-	errorx::DataScaler scaler;
-	errorx::ErrorPredictor predictor( options.verbose() );
+	errorx::ErrorPredictor predictor( options );
 
 	try {
 		errorx::SequenceRecords* records = run_protocol( queries, options );
@@ -164,19 +163,20 @@ errorx::SequenceRecords* get_corrected_records( JNIEnv* env,
 
 jdoubleArray vector_to_array( JNIEnv* env, vector<double> & in_vector ) {
 	jdoubleArray out_array;
-	int size = in_vector.size();
+	const int size = in_vector.size();
 	out_array = env->NewDoubleArray( size );
 	if ( out_array == NULL ) {
 		return NULL; // out of memory
 	}
 
 	// fill a temp structure to use to populate the java int array
-	jdouble fill[size];
+	jdouble* fill = new jdouble [size];
 	for ( int ii = 0; ii < size; ++ii ) {
 		fill[ ii ] = in_vector[ ii ];
 	}
 	// move from the temp structure to the java structure
 	env->SetDoubleArrayRegion( out_array, 0, size, fill );
+	delete[] fill;
 	return out_array;
 }
 
