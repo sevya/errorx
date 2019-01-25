@@ -173,6 +173,8 @@ vector<double> SequenceFeatures::get_feature_vector() const {
 		// of the sequence, its placeholder value is -1
 		if ( quality_window_[ ii ] >= 0 ) {
 			feature_vector.push_back( quality_window_[ ii ] / 40.0 );
+		} else {
+			feature_vector.push_back( quality_window_[ ii ] );
 		}
 	}
 
