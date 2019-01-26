@@ -21,7 +21,6 @@ or directly from a SequenceQuery.
 #include "util.hh"
 
 #include <boost/lexical_cast.hpp>
-#include <boost/foreach.hpp>
 
 using namespace std;
 

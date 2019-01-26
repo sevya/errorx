@@ -18,7 +18,6 @@ Code contained herein is proprietary and confidential.
 #include <map>
 #include <vector>
 
-#include <boost/foreach.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/split.hpp>
