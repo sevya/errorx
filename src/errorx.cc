@@ -113,50 +113,7 @@ void run_protocol_write( ErrorXOptions & options ) {
 }
 
 void run_protocol_write_features( ErrorXOptions & options ) {
-	SequenceRecords* records;
-	options.trial( !util::valid_license() );
-	options.validate();
-
-	if ( options.format() == "fastq" ) {
-		if ( options.trial() ) {
-			// Trial version only allows querying 500 sequences
-			// since each FASTQ query is 4 lines check and make
-			// sure there are < 2000 lines
-			string infile = options.infile();
-			int num_lines = util::count_lines( infile );
-			if ( num_lines > 2000 ) {
-				throw InvalidLicenseException();
-			} 
-		}
-
-		// Convert FASTQ to FASTA
-		if ( options.verbose() > 0 ) {
-			cout << "Converting fastq to fasta..." << endl;
-		}
-		options.fastq_to_fasta();
-
-		// Run IGBlast query on FASTA file
-		IGBlastParser parser;
-		parser.blast( options );
-
-		// Parse the IGBlast output
-		records = parser.parse_output( options );
-
-	} else {
-		if ( options.trial() ) {
-			// Trial version only allows querying 500 sequences
-			string infile = options.infile();
-			int num_lines = util::count_lines( infile );
-			if ( num_lines > 500 ) {
-				throw InvalidLicenseException();
-			} 
-		}
-
-		// Parse the TSV file
-		// TSV files are in the following format: sequenceID,nt_sequence,gl_sequence,quality_string
-		records = new SequenceRecords( options );
-		records->import_from_tsv();
-	}
+	SequenceRecords* records = run_protocol( options );
 
 	// Write features
 	records->write_features();

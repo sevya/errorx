@@ -541,6 +541,7 @@ void SequenceRecord::correct_sequence(
 	int position;
 	double probability;
 	full_nt_sequence_corrected_ = full_nt_sequence_;
+	n_errors_ = 0;
 
 	for ( int ii = 0; ii < predicted_errors_all_.size(); ++ii ) {
 		position = predicted_errors_all_[ ii ].first;
@@ -560,12 +561,13 @@ void SequenceRecord::correct_sequence(
 void SequenceRecord::predict_errors( ErrorPredictor const & predictor,
 		ErrorXOptions const & options ) {
 
-	// SequenceRecord* const current_record( this );
+	// just in case it's been used before
+	predicted_errors_all_.clear();
+		
 	for ( int ii = 0; ii < full_nt_sequence_.length(); ++ii ) {
 		SequenceFeatures features( this, ii );
 
 		double error_probability = predictor.apply_model( features );
-
 		predicted_errors_all_.push_back( pair<int,double>( ii, error_probability ));
 	}
 }
