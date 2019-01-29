@@ -71,10 +71,11 @@ public:
 		IGBlastParser parser;
 		SequenceRecords* records;
 
-		ErrorXOptions options( "testing/test.fastq", "fastq" );
+		ErrorXOptions options( (util::get_root_path() / "testing" / "test.fastq").string(),
+			"fastq" );
 
-		options.infasta( util::get_root_path(0).string()+"/testing/test.fasta" );
-		options.igblast_output( util::get_root_path(0).string()+"/testing/test.fasta.out" );
+		options.infasta( util::get_root_path().string()+"/testing/test.fasta" );
+		options.igblast_output( util::get_root_path().string()+"/testing/test.fasta.out" );
 		options.verbose( 2 );
 		options.errorx_base( "../" );
 

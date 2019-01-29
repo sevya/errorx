@@ -3,7 +3,7 @@
 echo "Running binary..."
 ./test_binary.sh
 
-echo "Running c++ library..."
+echo "Running C++ library..."
 make -s TestLinking
 if ( `uname -s` == "DARWIN" || `uname -s` == "Darwin" ) then
     setenv DYLD_LIBRARY_PATH ../lib/
@@ -25,7 +25,7 @@ foreach build ( binary java python linking )
 	foreach format ( fastq tsv )
 		set output = `diff new/$build"_"$format"_out.tsv" old/$format"_out.tsv"`
 		if ( "$output" != "") then
-			echo $file" is different! Build test failed"
+			echo $build"_"$format" is different! Build test failed"
 			# @ failed = $failed + 1
 			@ failed +=  1
 		endif

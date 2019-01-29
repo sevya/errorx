@@ -1,23 +1,34 @@
-## Precision/recall thresholds
-| Precision Cutoff | Recall in SRR024 | Precision in All | Recall in All | Numeric threshold  |
-|:-----------------|:-----------------|:-----------------|:---------------|:-------------------|
-| 0.90 | 0.388 | 0.761 | 0.280 | 0.971274 | 
-| 0.85 | 0.519 | 0.701 | 0.396 | 0.931368 | 
-| **0.80** | **0.581** | **0.663** | **0.448** | **0.884311** | 
-| 0.75 | 0.614 | 0.628 | 0.478 | 0.839779 | 
-| 0.70 | 0.668 | 0.584 | 0.521 | 0.753237 | 
-| 0.65 | 0.692 | 0.554 | 0.540 | 0.693183 | 
-| 0.60 | 0.720 | 0.511 | 0.564 | 0.624195 |
-
-
 ## Runtime calculation
 
 Runtime per 1K sequences in seconds
+<table>
+	<tr>
+    	<th colspan=2>ErrorX + IGBlast</th>
+    	<th colspan=2>ErrorX alone</th> 
+	</tr>
+	<tr>
+    	<td>**Single thread**</td>
+    	<td>**4 thread**</td> 
+    	<td>**Single thread**</td>
+    	<td>**4 thread**</td> 
+	</tr>
+	<tr>
+		<td>69.9</td>
+		<td>39.1</td>
+		<td>6.9</td>
+		<td>4.3</td>
+	</tr>
+</table>
+	
+## False positive/negative calculations
+|        | 24407 (human validation) | SRR3175021 (mouse validation) | SRRX (TCR validation) |
+|---------------|-------------|--------------|---|
+| **TN**        | 3016532     | 1322563      |   |
+| **FN**        | 9251        | 1084         |   |
+| **FP**        | 2920        | 683          |   |
+| **TP**        | 5062        | 1905         |   |
+|--------       |-------------|--------------|   |
+| **FPR**       | 9.57e-4     | 5.16e-4      |   |
+| **Precision** | 0.634       | 0.736        |   |
+| **Recall**    | 0.354       | 0.637        |   |
 
-| IGBlast+ErrorX |          | ErrorX alone  |          |
-| -------------- | -------- | ------------- | -------- |
-| Single thread  | 4 thread | Single thread | 4 thread |
-| 90.1           | 47.2     | 9.5           | 6.5      |
-
-## Error rate estimation
-In sample SRR3620122 from Ellebedy 2016 dataset, the error rate as predicted by ErrorX is 5.6 errors per kb. The error rate implied by the sequencing quality is 8.7 errors per kb.

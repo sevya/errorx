@@ -18,7 +18,7 @@ class ErrorXOptions:
 				  species='human',
 				  nthreads=-1, 
 				  verbose=1, 
-				  error_threshold=0.884311,
+				  error_threshold=0.757264,
 				  allow_nonproductive=0, 
 				  correction='N' ):
 
@@ -45,7 +45,7 @@ class ErrorXOptions:
 				  species='human',
 				  nthreads=-1, 
 				  verbose=1, 
-				  error_threshold=0.884311,
+				  error_threshold=0.757264,
 				  allow_nonproductive=0, 
 				  correction='N' ):
 

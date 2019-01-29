@@ -47,7 +47,7 @@ ifeq ($(uname_S), Darwin)
 	tar=/usr/local/bin/tar
 endif
 
-CPPFLAGS=-pthread -std=c++11 -Wall 
+CPPFLAGS=-pthread -std=c++11 -Wall
 
 INC=-Iinclude/
 
