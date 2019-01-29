@@ -28,4 +28,6 @@ The ErrorX Java library is also located in the gzipped archive, in the folder `j
 
 `-cp 'ErrorX-1.0/java_bindings/ErrorX.jar'` 
 
-to make sure the JAR is linked, and you are all set!
+to make sure the JAR is linked, and you are all set! 
+
+**Note:** the JAR relies on data files contained in the `java_bindings` folder. For best results, leave the directory structure of `java_bindings` intact and only link the JAR. Alternatively, if you have to move the JAR file, make sure to move all the other directories in `java_bindings` along with it.
