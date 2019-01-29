@@ -21,7 +21,6 @@ or directly from a SequenceQuery.
 #include "util.hh"
 
 #include <boost/lexical_cast.hpp>
-#include <boost/foreach.hpp>
 
 using namespace std;
 
@@ -506,16 +505,16 @@ void SequenceRecord::print() const {
 vector<string> SequenceRecord::get_summary() const {
 	return vector<string> {
 			sequenceID_,
-			v_gene_,
+			(hasV_) ? v_gene_ : "N/A",
 			(hasV_) ? to_string( v_identity_ ) : "N/A",
 			(hasV_) ? util::to_scientific( v_evalue_ ) : "N/A",
-			d_gene_,
+			(hasD_) ? d_gene_ : "N/A",
 			(hasD_) ? to_string( d_identity_ ) : "N/A",
 			(hasD_) ? util::to_scientific( d_evalue_ ) : "N/A",
-			j_gene_,
+			(hasJ_) ? j_gene_ : "N/A",
 			(hasJ_) ? to_string( j_identity_ ) : "N/A",
 			(hasJ_) ? util::to_scientific( j_evalue_ ) : "N/A",
-			strand_,
+			(strand_!="") ? strand_ : "",
 			(chain_==chain_type::VH) ? "VH" : "VL",
 			(productive_) ? "True" : "False",
 			(cdr3_nt_sequence_=="") ? "N/A": cdr3_nt_sequence_,
