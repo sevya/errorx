@@ -1,6 +1,6 @@
 
 # ErrorX User Guide
-The following is a guide to how to run the ErrorX command line application. ErrorX supports error correction for B-cell receptor sequences from human or mouse samples. 
+The following is a guide to how to run the ErrorX command line application. ErrorX supports error correction for B-cell and T-cell receptor sequences from human or mouse samples. 
 
 ### Overview
 
@@ -17,34 +17,34 @@ ErrorX accepts two file formats: FASTQ files, where ErrorX will do the germline 
 
 Below are the acceptable command line options for running ErrorX. You can also see this list by running `/path/to/ErrorX/bin/errorx -h`
 
-	-h [ --help ]                         produce help message
+ 	-h [ --help ]                         produce help message
 	-f [ --format ] arg                   input file format. Valid entries are
-	                                      fastq or tsv.
+	                                    fastq or tsv.
 	-o [ --out ] arg (=out.tsv)           output file (Default=out.tsv)
 	-s [ --species ] arg (=human)         Species for IGBLAST search. Valid
-	                                      entries are human or mouse.
-	                                      (Default=human)
+	                                    entries are human or mouse.
+	                                    (Default=human)
 	-n [ --nthreads ] arg (=-1)           Number of threads to use during
-	                                      execution. Enter -1 to use all
-	                                      available (Default=-1)
-	-e [ --error-threshold ] arg (=0.884311)
-	                                      Probability cutoff for a base to be
-	                                      considered an error. Higher=more
-	                                      stringent in calling errors. Don't
-	                                      change this value unless you know what
-	                                      you are doing.
+	                                    execution. Enter -1 to use all
+	                                    available (Default=-1)
+	-e [ --error-threshold ] arg (=0.757264)
+	                                    Probability cutoff for a base to be
+	                                    considered an error. Higher=more
+	                                    stringent in calling errors. Don't
+	                                    change this value unless you know what
+	                                    you are doing.
 	--infile arg                          input file
 	--version                             Print ErrorX version information and
-	                                      exit
+	                                    exit
 	-v [ --verbose ] arg (=1)             Verbosity level: should ErrorX output
-	                                      extra warnings and messages?
-	                                      0: don't output any message at all
-	                                      1: output progress during processing
-	                                      2: output progress and debugging
-	                                      messages
-	                                      (default=1)
+	                                    extra warnings and messages?
+	                                    0: don't output any message at all
+	                                    1: output progress during processing
+	                                    2: output progress and debugging
+	                                    messages
+	                                    (default=1)
 	--allow-nonproductive                 Allow nonproductive and out-of-frame
-	                                      sequences to be included? (default=No)
+	                                    sequences to be included? (default=No)
 	--license arg                         License key to activate full version of
-	                                      ErrorX
+	                                    ErrorX
 	

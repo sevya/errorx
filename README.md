@@ -4,8 +4,7 @@ ErrorX is a revolutionary software for correction of DNA sequencing errors. In n
 
 ErrorX solves this problem by using deep neural networks to predict sites where an error has been introduced. Trained on a dataset of tens of millions of sequences, ErrorX can pinpoint with extremely high accuracy positions where an error was likely introduced, saving valuable time and energy by removing these bases from further analysis. In benchmark studies, ErrorX was able to identify errors with an accuracy of 99.9% and a false positive rate of only 0.1%. 
 
-ErrorX currently supports processing of antibody repertoire sequencing data from human and mice, gathered on Illumina HiSeq and MiSeq instruments.
+ErrorX currently supports processing of antibody and T-cell repertoire sequencing data from human and mice, gathered on Illumina HiSeq and MiSeq instruments.
 
-To install ErrorX, simply extract the `tar.gz` archive, which contains binaries for running the application and libraries for building the ErrorX platform into a C++, Python, or Java application.
-
+See the documentation pages for more information on how to set up error correction.
 
