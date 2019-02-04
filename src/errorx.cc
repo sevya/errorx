@@ -62,7 +62,8 @@ SequenceRecords* run_protocol( ErrorXOptions & options ) {
 				cout << 
 				"You are currently running the trial version of ErrorX, "
 				"which can only process 500 sequences at a time. "
-				"Please limit your query size or request access to the full version."
+				"Please limit your query size or request a license "
+				"from contact@endeavorbio.com to use the full version"
 				<< endl;
 				exit(0);
 			} 

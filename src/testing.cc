@@ -72,7 +72,7 @@ int main( int argc, char* argv[] ) {
 		}
 
 		if ( vm.count("version")) {
-			cout << "ErrorX v1.0 by EndeavorBio. Creator: Alex Sevy, alex.sevy@gmail.com" << "\n";
+			cout << "ErrorX v1.0 by EndeavorBio. Creator: Alex Sevy, alex@endeavorbio.com" << "\n";
 			return 1;
 		}
 
