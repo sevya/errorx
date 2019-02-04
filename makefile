@@ -79,7 +79,7 @@ library: $(SRCS)
 	$(CXX) $(CPPFLAGS) $(WNO) $(INC) -Ofast $(LIBFLAGS) -o lib/liberrorx.$(DLLEXT) $(SRCS) $(BOOST) $(FINAL)
 
 package: binary library python python3 java
-	$(tar) cfz ErrorX-1.0_$(OS).tar.gz bin/errorx bin/igblastn_* build_test/ database/ documentation/ include/ internal_data/ lib/ optional_file/ test_case/ python2_bindings/ python3_bindings/ java_bindings/ --transform "s/^/ErrorX\//"
+	$(tar) cfz ErrorX-1.0_$(OS).tar.gz bin/errorx bin/igblastn_* build_test/new/ build_test/test_binary.sh build_test/TestErrorX.java build_test/input_files/ build_test/old/ build_test/test_python_bindings.py build_test/TestLinking.cc build_test/makefile build_test/run_build_test.sh database/ documentation/ include/ internal_data/ lib/ optional_file/ test_case/ python2_bindings/ python3_bindings/ java_bindings/ --transform "s/^/ErrorX\//"
 
 python: $(SRCS) src/errorx_python.cc
 	$(CXX) $(CPPFLAGS) $(WNO) $(INC) $(PY_INC) -Ofast $(LIBFLAGS) -o python2_bindings/errorx/errorx_lib.so $(SRCS) src/errorx_python.cc $(BOOST) $(FINAL)
