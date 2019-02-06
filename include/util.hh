@@ -125,6 +125,7 @@ vector<vector<T>> split_vector( vector<T> const & vect, int nchunks ) {
 */	
 template <typename T>
 string to_scientific( T a ) {
+	// TODO potential overflow - fix this!
 	char buffer [256];
 	sprintf( buffer, "%.2E", a);
 	string a_str = buffer;
@@ -232,20 +233,6 @@ void write_progress_bar( float progress, int done, int total );
 
 
 ///////////// Encryption and license checking modules /////////////
-/**
-	Writes a license key to the filesystem
-
-	@param key the license key to write
-*/
-void write_license( string key );
-
-/**
-	Checks if there is a valid license key on the filesystem
-
-	@return true if there is a valid license, 
-	false if there is an invalid or no license
-*/
-bool valid_license();
 
 /**
 	Encrypt or decrypt a character
@@ -259,8 +246,8 @@ char decrypt( char const c, int const shift );
 	to vectors of chars, vectors of chars are decrypted
 	to strings
 */
-vector<char> encrypt_string( string const & str );
-string decrypt_string( vector<char> const & chars );
+string encrypt_string( string const & str );
+string decrypt_string( string const & chars );
 
 /**
 	Encrypt a string and write to a file
@@ -293,6 +280,58 @@ string decrypt_from_file( string const & fname );
 string read_from_file( string const & fname );
 
 ///////////// END Encryption and license checking modules /////////////
+
+
+//////////// BEGIN licensing based on date modules ////////////////////
+/**
+	Gets current date as a vector of ints
+	where the vector is { year, month, day }
+
+	@return vector of ints representing date
+*/
+vector<int> get_current_date();
+
+/**
+	Gets date as a formatted string in the format 
+	20190206. Takes in an offset to increment the
+	date before formatting, in the form of a 
+	vector { year, month, day }
+
+	@param offset Amount of time to offset the
+	current date before formatting
+
+	@return formatted string representing date
+*/
+string get_formatted_date( vector<int> offset );
+
+/**
+	Parses a formatted date to get the int values. 
+	Takes a string of format 20190206. 
+
+	@param date string representing date
+
+	@return vector of ints representing date
+*/
+vector<int> parse_formatted_date( string date );
+
+/**
+	Write a license appending the current date to the key
+	Takes in an offset to increment the
+	date before formatting, in the form of a 
+	vector { year, month, day }
+
+	@param key key to write
+	@param vector of ints representing date
+*/
+void write_license( string key );
+
+/**
+	Checks if a license is valid based on date and cipher
+
+	@return boolean value true if license is valid
+*/
+bool valid_license();
+//////////// END licensing based on date modules ////////////////////
 
 } // namespace util
 } // namespace errorx

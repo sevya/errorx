@@ -27,4 +27,16 @@ public:
 	}
 };
 
+
+/**
+	Exception is thrown when a bad license is given on the command line
+*/	
+class BadLicenseException : public std::exception {
+public:
+	const char* what () const throw ()
+	{
+		return "License is not valid. Please contact help@endeavorbio.com for assistance";
+	}
+};
+
 } // namespace errorx

@@ -123,6 +123,9 @@ int main( int argc, char* argv[] ) {
 	} catch ( InvalidLicenseException & exc ) {
 		cout << exc.what() << endl;
 		return 1;
+	} catch ( BadLicenseException & exc ) {
+		cout << exc.what() << endl;
+		return 1;
 	} catch ( std::exception & e ) {
 		// cout << "Exception encountered..." << endl;
 		cout << e.what() << endl;

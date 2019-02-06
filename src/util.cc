@@ -26,6 +26,10 @@ Code contained herein is proprietary and confidential.
 #include <boost/dll/runtime_symbol_info.hpp>
 #include <boost/filesystem.hpp>
 
+#include <ctime>
+
+#include "exceptions.hh"
+
 using namespace std;
 
 namespace errorx {
@@ -224,19 +228,18 @@ char decrypt( char const c, int const shift ) {
 	return char(newval);
 }
 
-vector<char> encrypt_string( string const & str ) {
+string encrypt_string( string const & str ) {
 
 	vector<int> keys = {1,5,2,56,7,12,56,7,23,23,9};
 
-	vector<char> out_vector( str.size() );
+	string out_str = "";
 	for ( int ii = 0; ii < str.size(); ++ii ) {
-		char x = str[ ii ];
-		out_vector[ ii ] = util::encrypt( x, keys[ ii%(keys.size()) ] );
+		out_str += util::encrypt( str[ii], keys[ ii%(keys.size()) ] );
 	}
-	return out_vector;
+	return out_str;
 }
 
-string decrypt_string( vector<char> const & chars ) {
+string decrypt_string( string const & chars ) {
 	vector<int> keys = {1,5,2,56,7,12,56,7,23,23,9};
 	string out_str = "";
 	for ( int ii = 0; ii < chars.size(); ++ii ) {
@@ -254,7 +257,7 @@ void write_to_file( string const & fname, string const & message ) {
 
 void encrypt_to_file( string const & fname, string const & message ) {
 	ofstream out( fname.c_str() );
-	vector<char> chars = encrypt_string( message );
+	string chars = encrypt_string( message );
 	for ( int ii = 0; ii < chars.size(); ++ii ) out << chars[ ii ];
 	out.close();
 }
@@ -266,9 +269,9 @@ string decrypt_from_file( string const & fname ) {
 	}
 	char x;
 	
-	vector<char> chars;
+	string chars;
 	while (infile.get(x)) {
-		chars.push_back( x );
+		chars += x;
 	}
 	infile.close();
 	return decrypt_string( chars );	
@@ -288,9 +291,75 @@ string read_from_file( string const & fname ) {
 	return out;	
 }
 
+
+///////////// END encryption modules /////////////
+
+
+///////////// BEGIN date/time modules /////////////
+vector<int> get_current_date() {
+	time_t now = time(0);
+
+	tm *ltm = localtime(&now);
+
+	// print various components of tm structure.
+	int year = 1900 + ltm->tm_year;
+	int month = 1 + ltm->tm_mon;
+	int day = ltm->tm_mday;
+
+
+	vector<int> date = { year, month, day };
+	return date;
+}
+
+string get_formatted_date( vector<int> offset ) {
+	vector<int> date = get_current_date();
+	for ( int ii = 0; ii < offset.size(); ++ii ) {
+		date[ii] += offset[ii];
+	}
+
+	// TODO potential buffer overflow - fix this!
+	char buffer1 [256];
+	sprintf( buffer1, "%.2i", date[0]);
+	string year_str = buffer1;
+	
+	char buffer2 [256];
+	sprintf( buffer2, "%.2i", date[1]);
+	string month_str = buffer2;
+
+	char buffer3 [256];
+	sprintf( buffer3, "%.2i", date[2]);
+	string day_str = buffer3;
+
+	return year_str+month_str+day_str;
+}
+
+vector<int> parse_formatted_date( string date ) {
+	int year = stoi( date.substr( 0, 4 ));
+	int month = stoi(date.substr( 4, 2 ));
+	int day = stoi(date.substr( 6, 2 ));
+	vector<int> date_vector = {
+		year, month, day
+	};
+	return date_vector;
+}
+
 void write_license( string key ) {
+	
+	string decoded = decrypt_string( key );
+	vector<int> offset;
+	if ( decoded == "YEAR" ) { 
+		offset = {1,1,0};
+	} else if ( decoded == "INFINITE" ) {
+		offset = {1000,0,0};
+	} else {
+		throw BadLicenseException();
+	}
+
 	boost::filesystem::path config = util::get_home() / ".errorx";
-	write_to_file( config.string(), key );
+	string date_fmt = get_formatted_date( offset );
+	string date_encrypted = encrypt_string( date_fmt );
+
+	write_to_file( config.string(), date_encrypted );
 }
 
 bool valid_license() {
@@ -299,32 +368,25 @@ bool valid_license() {
 
 	string key;
 	try {
-		key = decrypt_from_file( config.string() );
+		key = read_from_file( config.string() );
 	} catch ( invalid_argument & ) {
-		// license file does not exist - run in trial version
+		// license file does not exist - run in trial mode
 		return 0;
 	}
 
-	vector<string> valid_keys = {
-		"MattRyan",
-		"DevontaFreeman",
-		"TevinColeman",
-		"JulioJones",
-		"DeionJones",
-		"VicBeasley",
-		"KeanuNeal",
-		"GradyJarrett",
-		"CalvinRidley",
-		"MattBryant"
-	};
+	vector<int> expire_date = parse_formatted_date( decrypt_string( key ));
 
-	// if key is found in list of valid keys - return 1 for
-	// valid license
-	return find( valid_keys.begin(), valid_keys.end(), key ) 
-		 != valid_keys.end();
+	vector<int> current_date = get_current_date();
+	if ( current_date[0] > expire_date[0] ) return 0;
+	else if ( current_date[1] > expire_date[1] ) return 0;
+	else if ( current_date[2] > expire_date[2] ) return 0;
 
+
+	return 1;
 }
-///////////// END encryption modules /////////////
+
+
+///////////// END date/time modules /////////////
 
 
 } // namespace util
