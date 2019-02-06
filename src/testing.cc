@@ -3,8 +3,7 @@ Unauthorized copying of this file, via any medium is strictly prohibited
 Code contained herein is proprietary and confidential.
 
 @file main.cc
-@brief
-@details
+@brief Run the ErrorX protocol from the command line
 @author Alex Sevy (alex@endeavorbio.com)
 */
 
@@ -77,7 +76,7 @@ int main( int argc, char* argv[] ) {
 		}
 
 		if ( vm.count("license")) {
-			util::write_license( vm["license"].as<string>(), { 1, 1, 0 } );
+			util::write_license( vm["license"].as<string>() );
 			cout << "Successfully wrote license file!" << endl;
 			return 0;
 		}
@@ -116,11 +115,15 @@ int main( int argc, char* argv[] ) {
 		options.allow_nonproductive( vm["allow-nonproductive"].as<bool>());
 
 		run_protocol_write_features( options );
+
 		return 0;
 	} catch ( program_options::unknown_option & exc) {
 		cout << "Error: "<< exc.what() << endl;
 		return 1;
 	} catch ( InvalidLicenseException & exc ) {
+		cout << exc.what() << endl;
+		return 1;
+	} catch ( BadLicenseException & exc ) {
 		cout << exc.what() << endl;
 		return 1;
 	} catch ( std::exception & e ) {
@@ -129,8 +132,6 @@ int main( int argc, char* argv[] ) {
 		return 1;
 	}
 }
-
-
 
 
 
