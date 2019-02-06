@@ -1,4 +1,4 @@
-/** Copyright (C) Endeavor Bio, Inc. - All Rights Reserved
+/** Copyright (C) EndeavorBio, Inc. - All Rights Reserved
 Unauthorized copying of this file, via any medium is strictly prohibited
 Code contained herein is proprietary and confidential.
 
@@ -8,7 +8,7 @@ used for neural network processing and error correction
 @details This class calculates, from an NT sequence, the features
 that are used in the NN implementation. It is then given to 
 ErrorPredictor to do the actual transformation and prediction.
-@author Alex Sevy (alex.sevy@gmail.com)
+@author Alex Sevy (alex@endeavorbio.com)
 */
 
 

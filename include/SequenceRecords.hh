@@ -1,4 +1,4 @@
-/** Copyright (C) Endeavor Bio, Inc. - All Rights Reserved
+/** Copyright (C) EndeavorBio, Inc. - All Rights Reserved
 Unauthorized copying of this file, via any medium is strictly prohibited
 Code contained herein is proprietary and confidential.
 
@@ -8,7 +8,7 @@ data associated with input sequences and corrected sequences
 @details Holds all SequenceRecord objects associated with an
 ErrorX query. In addition it holds ErrorXOptions that has 
 settings for processing, and ErrorPredictor that does the error correction itself.
-@author Alex Sevy (alex.sevy@gmail.com)
+@author Alex Sevy (alex@endeavorbio.com)
 */
 
 #ifndef SEQUENCERECORDS_HH_

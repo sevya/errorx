@@ -1,4 +1,4 @@
-/** Copyright (C) Endeavor Bio, Inc. - All Rights Reserved
+/** Copyright (C) EndeavorBio, Inc. - All Rights Reserved
 Unauthorized copying of this file, via any medium is strictly prohibited
 Code contained herein is proprietary and confidential.
 
@@ -6,7 +6,7 @@ Code contained herein is proprietary and confidential.
 @brief Python bindings to expose ErrorX interface
 @detail These bindings do not rely on boost/python at all,
 hopefully they can be more portable
-@author Alex Sevy (alex.sevy@gmail.com)
+@author Alex Sevy (alex@endeavorbio.com)
 */
 
 #ifndef INCLUDE_ERRORX_PYTHON_HH_

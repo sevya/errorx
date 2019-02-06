@@ -1,4 +1,4 @@
-/** Copyright (C) Endeavor Bio, Inc. - All Rights Reserved
+/** Copyright (C) EndeavorBio, Inc. - All Rights Reserved
 Unauthorized copying of this file, via any medium is strictly prohibited
 Code contained herein is proprietary and confidential.
 
@@ -7,7 +7,7 @@ Code contained herein is proprietary and confidential.
 @details Public interface to ErrorX processing. Input 
 sequences can be given as a FASTQ file, a TSV file,
 or a std::vector of SequenceQuery objects
-@author Alex Sevy (alex.sevy@gmail.com)
+@author Alex Sevy (alex@endeavorbio.com)
 */
 
 #include "errorx.hh"
