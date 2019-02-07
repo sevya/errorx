@@ -20,22 +20,19 @@ public class ErrorX {
 
 	static {
 		try {
-			System.loadLibrary("errorx"); // used for tests. This library in classpath only
-		} catch ( UnsatisfiedLinkError e ) {
-			try {
-				String OS = getOS();
-				String extension = "";
-				if ( OS=="mac" ) extension = "dylib";
-				else if ( OS=="win" ) extension = "dll";
-				else if ( OS=="linux" ) extension = "so";
-				
-				NativeUtils.loadLibraryFromJar("/errorx/liberrorx."+extension); 
-				// during runtime. .DLL within .JAR
-			} catch ( IOException exc ) {
-				throw new RuntimeException( exc );
-			}
+			String OS = getOS();
+			String extension = "";
+			if ( OS=="mac" ) extension = "dylib";
+			else if ( OS=="win" ) extension = "dll";
+			else if ( OS=="linux" ) extension = "so";
+			
+			NativeUtils.loadLibraryFromJar("/errorx/liberrorx."+extension); 
+			// during runtime. .DLL within .JAR
+		} catch ( IOException exc ) {
+			throw new RuntimeException( exc );
 		}
-	}	
+	}
+		
 
 	/**
 		Error correct the provided sequences. All parameters

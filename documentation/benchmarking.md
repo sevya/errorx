@@ -8,20 +8,20 @@ Runtime per 1K sequences in seconds
 	</tr>
 	<tr>
     	<td>**Single thread**</td>
-    	<td>**4 thread**</td> 
+    	<td>**Multi thread**</td> 
     	<td>**Single thread**</td>
-    	<td>**4 thread**</td> 
+    	<td>**Multi thread**</td> 
 	</tr>
 	<tr>
-		<td>69.9</td>
-		<td>39.1</td>
-		<td>6.9</td>
-		<td>4.3</td>
+		<td>50.9</td>
+		<td>15.5</td>
+		<td>8.3</td>
+		<td>3.3</td>
 	</tr>
 </table>
 	
 ## False positive/negative calculations
-|        | 24407 (human validation) | SRR3175021 (mouse validation) | SRRX (TCR validation) |
+|        | 24407 (human validation) | SRR3175021 (mouse validation) | SRR5676647 (TCR validation) |
 |---------------|-------------|--------------|---|
 | **TN**        | 3016532     | 1322563      |   |
 | **FN**        | 9251        | 1084         |   |

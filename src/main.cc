@@ -1,10 +1,10 @@
-/** Copyright (C) Endeavor Bio, Inc. - All Rights Reserved
+/** Copyright (C) EndeavorBio, Inc. - All Rights Reserved
 Unauthorized copying of this file, via any medium is strictly prohibited
 Code contained herein is proprietary and confidential.
 
 @file main.cc
 @brief Run the ErrorX protocol from the command line
-@author Alex Sevy (alex.sevy@gmail.com)
+@author Alex Sevy (alex@endeavorbio.com)
 */
 
 #include <stdlib.h> 
@@ -72,7 +72,7 @@ int main( int argc, char* argv[] ) {
 		}
 
 		if ( vm.count("version")) {
-			cout << "ErrorX v1.0 by EndeavorBio. Creator: Alex Sevy, alex.sevy@gmail.com" << "\n";
+			cout << "ErrorX v1.0 by EndeavorBio. Creator: Alex Sevy, alex@endeavorbio.com" << "\n";
 			return 1;
 		}
 
@@ -124,6 +124,9 @@ int main( int argc, char* argv[] ) {
 		cout << "Error: "<< exc.what() << endl;
 		return 1;
 	} catch ( InvalidLicenseException & exc ) {
+		cout << exc.what() << endl;
+		return 1;
+	} catch ( BadLicenseException & exc ) {
 		cout << exc.what() << endl;
 		return 1;
 	} catch ( std::exception & e ) {

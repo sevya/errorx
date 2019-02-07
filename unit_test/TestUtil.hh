@@ -11,6 +11,8 @@
 #include <cxxtest/TestSuite.h>
 
 #include "util.hh"
+#include "exceptions.hh"
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -99,25 +101,31 @@ public:
 	}
 
 	void testEncrypt(void) {
-		string matt = "MattRyan";
-		vector<char> code = util::encrypt_string( matt );
-		string encrypted = "NfvOY(<u";
-		for ( int ii = 0; ii < code.size(); ++ii ) {
-			TS_ASSERT_EQUALS( code[ii], encrypted[ii] );
-		}
-	
-		util::write_license( encrypted );
-		string home = (util::get_home()/".errorx").string();
-		
-		string code2 = util::decrypt_from_file( home );
-		TS_ASSERT_EQUALS( code2, matt );
+		string year_cipher = "ZJC-";
+		string inf_cipher = "JSH$UU/L";
 
+		vector<int> date = util::parse_formatted_date( "20190206" );
+		TS_ASSERT_EQUALS( date[0], 2019 );
+		TS_ASSERT_EQUALS( date[1], 02 );
+		TS_ASSERT_EQUALS( date[2], 06 );
+
+		// write license to expire in 13 months
+		util::write_license( year_cipher );
 		TS_ASSERT( util::valid_license() );
 
-		util::write_license("NfvOY( <u");
-		TS_ASSERT( !util::valid_license() );
+		// write license to never expire
+		util::write_license( inf_cipher );
+		TS_ASSERT( util::valid_license() );
 
-		util::write_license("NfvOY(<u");
+		// put bad license key
+		TS_ASSERT_THROWS( util::write_license( "ZJC- " ), BadLicenseException );
+
+		// put bad license key
+		TS_ASSERT_THROWS( util::write_license( "ZXC-" ), BadLicenseException );
+
+		TS_ASSERT_THROWS( util::write_license( "ZXC-" ), BadLicenseException );
+
+		util::write_license( inf_cipher );
 	}
 
 	void testTokenize(void) {

@@ -37,25 +37,28 @@ CXXGEN=cxxtest/bin/cxxtestgen
 
 all: TestSequenceFeatures TestIGBlastParser TestUtil TestErrorX TestLinking
 
-TestSequenceFeatures: $(SRCS)
+CopyLibrary: 
+	cp ../lib/liberrorx.dylib lib/
+
+TestSequenceFeatures: CopyLibrary
 	$(CXXGEN) --error-printer -o TestSequenceFeatures.cc TestSequenceFeatures.hh
-	$(CXX) $(CPPFLAGS) $(INC) -o bin/TestSequenceFeatures $(SRCS) TestSequenceFeatures.cc $(BOOST) $(FINAL)
+	$(CXX) $(CPPFLAGS) $(INC) -Llib/ -lerrorx -o bin/TestSequenceFeatures TestSequenceFeatures.cc $(BOOST) $(FINAL)
 	
-TestIGBlastParser: $(SRCS)
+TestIGBlastParser: CopyLibrary
 	$(CXXGEN) --error-printer -o TestIGBlastParser.cc TestIGBlastParser.hh
-	$(CXX) $(CPPFLAGS) $(INC) -o bin/TestIGBlastParser $(SRCS) TestIGBlastParser.cc $(BOOST) $(FINAL)
+	$(CXX) $(CPPFLAGS) $(INC) -Llib/ -lerrorx -o bin/TestIGBlastParser TestIGBlastParser.cc $(BOOST) $(FINAL)
 
-TestErrorX: $(SRCS)
+TestErrorX: CopyLibrary
 	$(CXXGEN) --error-printer -o TestErrorX.cc TestErrorX.hh
-	$(CXX) $(CPPFLAGS) $(INC) -o bin/TestErrorX $(SRCS) TestErrorX.cc $(BOOST) $(FINAL)
+	$(CXX) $(CPPFLAGS) $(INC) -Llib/ -lerrorx -o bin/TestErrorX TestErrorX.cc $(BOOST) $(FINAL)
 
-TestUtil: ../src/util.cc
+TestUtil: CopyLibrary
 	$(CXXGEN) --error-printer -o TestUtil.cc TestUtil.hh
-	$(CXX) $(CPPFLAGS) $(INC) -o bin/TestUtil ../src/util.cc TestUtil.cc $(BOOST) $(FINAL)
+	$(CXX) $(CPPFLAGS) $(INC) -Llib/ -lerrorx -o bin/TestUtil TestUtil.cc $(BOOST) $(FINAL)
 
-TestLinking: 
+TestLinking: CopyLibrary
 	$(CXXGEN) --error-printer -o TestLinking.cc TestLinking.hh
-	$(CXX) $(CPPFLAGS) $(INC) -L../lib/ -lerrorx -o bin/TestLinking TestLinking.cc $(FINAL)
+	$(CXX) $(CPPFLAGS) $(INC) -Llib/ -lerrorx -o bin/TestLinking TestLinking.cc $(FINAL)
 
 TestJava: TestErrorX.java 
 	javac -cp '.:../java_bindings/ErrorX.jar:hamcrest-core-1.3.jar:junit-4.12.jar' TestErrorX.java

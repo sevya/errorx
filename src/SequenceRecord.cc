@@ -1,4 +1,4 @@
-/** Copyright (C) Endeavor Bio, Inc. - All Rights Reserved
+/** Copyright (C) EndeavorBio, Inc. - All Rights Reserved
 Unauthorized copying of this file, via any medium is strictly prohibited
 Code contained herein is proprietary and confidential.
 
@@ -7,7 +7,7 @@ Code contained herein is proprietary and confidential.
 @details Single nucleotide sequence to be fed to error
 correction. Can be initialized from a FASTQ file, TSV file,
 or directly from a SequenceQuery.
-@author Alex Sevy (alex.sevy@gmail.com)
+@author Alex Sevy (alex@endeavorbio.com)
 */
 
 #include "SequenceRecord.hh"

@@ -1,4 +1,4 @@
-/** Copyright (C) Endeavor Bio, Inc. - All Rights Reserved
+/** Copyright (C) EndeavorBio, Inc. - All Rights Reserved
 Unauthorized copying of this file, via any medium is strictly prohibited
 Code contained herein is proprietary and confidential.
 
@@ -7,7 +7,7 @@ Code contained herein is proprietary and confidential.
 @details Public interface to ErrorX processing. Input 
 sequences can be given as a FASTQ file, a TSV file,
 or a std::vector of SequenceQuery objects
-@author Alex Sevy (alex.sevy@gmail.com)
+@author Alex Sevy (alex@endeavorbio.com)
 */
 
 #include "errorx.hh"
@@ -62,7 +62,8 @@ SequenceRecords* run_protocol( ErrorXOptions & options ) {
 				cout << 
 				"You are currently running the trial version of ErrorX, "
 				"which can only process 500 sequences at a time. "
-				"Please limit your query size or request access to the full version."
+				"Please limit your query size or request a license "
+				"from contact@endeavorbio.com to use the full version"
 				<< endl;
 				exit(0);
 			} 
