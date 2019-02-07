@@ -120,6 +120,11 @@ public:
 		// put bad license key
 		TS_ASSERT_THROWS( util::write_license( "ZJC- " ), BadLicenseException );
 
+		// put bad license key
+		TS_ASSERT_THROWS( util::write_license( "ZXC-" ), BadLicenseException );
+
+		TS_ASSERT_THROWS( util::write_license( "ZXC-" ), BadLicenseException );
+
 		util::write_license( inf_cipher );
 	}
 
