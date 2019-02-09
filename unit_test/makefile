@@ -14,47 +14,40 @@ ifeq ($(uname_S), Linux)
 	CXX=clang++
 	CPPFLAGS=-pthread -std=c++11 -Wall -Wno-sign-compare
 	FINAL=-ldl
+	DLLEXT=so
 endif
 ifeq ($(uname_S), Darwin)
 	# set Mac compiler, flags, and paths
 	CXX=clang++
 	CPPFLAGS=-pthread -std=c++11 -Wall -Wno-deprecated-register
 	FINAL=
+	DLLEXT=dylib
 endif
 
 INC=-I../include/ -Icxxtest/
 
-SRCS=../src/SequenceRecords.cc ../src/SequenceRecord.cc ../src/IGBlastParser.cc \
-	 ../src/ErrorPredictor.cc ../src/SequenceFeatures.cc \
-	 ../src/ErrorXOptions.cc ../src/keras_model.cc ../src/errorx.cc \
-	 ../src/util.cc ../src/SequenceQuery.cc
-
-BOOST=../dependencies/boost_1_68_0/mac/libboost_filesystem.a \
-	  ../dependencies/boost_1_68_0/mac/libboost_program_options.a \
-	  ../dependencies/boost_1_68_0/mac/libboost_system.a
-		   
 CXXGEN=cxxtest/bin/cxxtestgen
 
 all: TestSequenceFeatures TestIGBlastParser TestUtil TestErrorX TestLinking
 
 CopyLibrary: 
-	cp ../lib/liberrorx.dylib lib/
+	cp ../lib/liberrorx.$(DLLEXT) lib/
 
 TestSequenceFeatures: CopyLibrary
 	$(CXXGEN) --error-printer -o TestSequenceFeatures.cc TestSequenceFeatures.hh
-	$(CXX) $(CPPFLAGS) $(INC) -Llib/ -lerrorx -o bin/TestSequenceFeatures TestSequenceFeatures.cc $(BOOST) $(FINAL)
+	$(CXX) $(CPPFLAGS) $(INC) -Llib/ -lerrorx -o bin/TestSequenceFeatures TestSequenceFeatures.cc $(FINAL)
 	
 TestIGBlastParser: CopyLibrary
 	$(CXXGEN) --error-printer -o TestIGBlastParser.cc TestIGBlastParser.hh
-	$(CXX) $(CPPFLAGS) $(INC) -Llib/ -lerrorx -o bin/TestIGBlastParser TestIGBlastParser.cc $(BOOST) $(FINAL)
+	$(CXX) $(CPPFLAGS) $(INC) -Llib/ -lerrorx -o bin/TestIGBlastParser TestIGBlastParser.cc $(FINAL)
 
 TestErrorX: CopyLibrary
 	$(CXXGEN) --error-printer -o TestErrorX.cc TestErrorX.hh
-	$(CXX) $(CPPFLAGS) $(INC) -Llib/ -lerrorx -o bin/TestErrorX TestErrorX.cc $(BOOST) $(FINAL)
+	$(CXX) $(CPPFLAGS) $(INC) -Llib/ -lerrorx -o bin/TestErrorX TestErrorX.cc $(FINAL)
 
 TestUtil: CopyLibrary
 	$(CXXGEN) --error-printer -o TestUtil.cc TestUtil.hh
-	$(CXX) $(CPPFLAGS) $(INC) -Llib/ -lerrorx -o bin/TestUtil TestUtil.cc $(BOOST) $(FINAL)
+	$(CXX) $(CPPFLAGS) $(INC) -Llib/ -lerrorx -o bin/TestUtil TestUtil.cc $(FINAL)
 
 TestLinking: CopyLibrary
 	$(CXXGEN) --error-printer -o TestLinking.cc TestLinking.hh
