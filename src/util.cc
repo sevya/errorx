@@ -377,17 +377,17 @@ bool valid_license() {
 		vector<int> expire_date = parse_formatted_date( decrypt_string( key ));
 
     	vector<int> current_date = get_current_date();
-    	if ( current_date[0] > expire_date[0] ) return 0;
+		if ( current_date[0] > expire_date[0] ) return 0;
     	else if ( current_date[1] > expire_date[1] ) return 0;
     	else if ( current_date[2] > expire_date[2] ) return 0;
-
+		
 
     	return 1;
 	} catch ( invalid_argument & ) {
 		// license file does not exist - run in trial mode
 		return 0;
 	} catch ( BadLicenseException & ) {
-		// license file is corrupted
+		// license file is corrupted - run in trial mode
 		return 0;
 	}
 }

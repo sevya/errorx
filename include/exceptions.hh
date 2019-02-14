@@ -35,7 +35,7 @@ class BadLicenseException : public std::exception {
 public:
 	const char* what () const throw ()
 	{
-		return "License is not valid. Please contact help@endeavorbio.com for assistance";
+		return "License is not valid. Please contact alex@endeavorbio.com for assistance";
 	}
 };
 

@@ -120,8 +120,6 @@ void run_protocol_write_features( ErrorXOptions & options ) {
 	records->write_summary();
 	// Write features
 	records->write_features();
-	// Write summary
-	records->write_summary();
 
 	delete records;
 }
