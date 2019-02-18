@@ -326,6 +326,15 @@ vector<int> parse_formatted_date( string date );
 void write_license( string key );
 
 /**
+	Calculates Julian date for a given date vector
+	date vector is of form {year, month, day}
+
+	@param date date to calculate
+	@return int julian date
+*/
+int julian( vector<int> & date );
+
+/**
 	Checks if a license is valid based on date and cipher
 
 	@return boolean value true if license is valid

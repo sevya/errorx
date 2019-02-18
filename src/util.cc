@@ -367,6 +367,13 @@ void write_license( string key ) {
 	write_to_file( config.string(), date_encrypted );
 }
 
+int julian( vector<int> & date ) {
+	int m = (date[1] + 9) % 12;
+	int y = date[0] - date[1]/10;
+	int d = date[2];
+	return (365*y) + (y/4) - (y/100) + (y/400) + (m*306 + 5)/10 + ( d - 1 );
+}
+
 bool valid_license() {
 	
 	boost::filesystem::path config = util::get_home() / ".errorx";
@@ -376,13 +383,14 @@ bool valid_license() {
 		key = read_from_file( config.string() );
 		vector<int> expire_date = parse_formatted_date( decrypt_string( key ));
 
-    	vector<int> current_date = get_current_date();
-		if ( current_date[0] > expire_date[0] ) return 0;
-    	else if ( current_date[1] > expire_date[1] ) return 0;
-    	else if ( current_date[2] > expire_date[2] ) return 0;
-		
+		vector<int> current_date = get_current_date();
 
-    	return 1;
+		int expire_J = julian(expire_date);
+		int current_J = julian(current_date);
+		cout << "comparing expiry " << expire_J << " to current " << current_J << endl;
+
+		return (expire_J - current_J) >= 0;
+
 	} catch ( invalid_argument & ) {
 		// license file does not exist - run in trial mode
 		return 0;

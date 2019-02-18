@@ -59,13 +59,7 @@ SequenceRecords* run_protocol( ErrorXOptions & options ) {
 			string infile = options.infile();
 			int num_lines = util::count_lines( infile );
 			if ( num_lines > 500 ) {
-				cout << 
-				"You are currently running the trial version of ErrorX, "
-				"which can only process 500 sequences at a time. "
-				"Please limit your query size or request a license "
-				"from contact@endeavorbio.com to use the full version"
-				<< endl;
-				exit(0);
+				throw InvalidLicenseException();
 			} 
 		}
 
