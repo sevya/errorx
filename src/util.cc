@@ -387,7 +387,6 @@ bool valid_license() {
 
 		int expire_J = julian(expire_date);
 		int current_J = julian(current_date);
-		cout << "comparing expiry " << expire_J << " to current " << current_J << endl;
 
 		return (expire_J - current_J) >= 0;
 
