@@ -1,0 +1,127 @@
+\hypertarget{classerrorx_1_1_error_x}{}\section{errorx.\+ErrorX Class Reference}
+\label{classerrorx_1_1_error_x}\index{errorx.ErrorX@{errorx.ErrorX}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+native String \mbox{[}$\,$\mbox{]} \mbox{\hyperlink{classerrorx_1_1_error_x_a96f670671af3f6e4193c4e83a547cf2b}{correct\+Sequences}} (String\mbox{[}$\,$\mbox{]} sequence\+\_\+list, String\mbox{[}$\,$\mbox{]} germline\+\_\+sequence\+\_\+list, String\mbox{[}$\,$\mbox{]} phred\+\_\+score\+\_\+list, \mbox{\hyperlink{classerrorx_1_1_error_x_options}{Error\+X\+Options}} options)
+\item 
+native double \mbox{[}$\,$\mbox{]} \mbox{\hyperlink{classerrorx_1_1_error_x_a114588f106010753dbb4c47aeabd10d1}{get\+Predicted\+Errors}} (String sequence, String germline\+\_\+sequence, String phred\+\_\+score, \mbox{\hyperlink{classerrorx_1_1_error_x_options}{Error\+X\+Options}} options)
+\item 
+String \mbox{[}$\,$\mbox{]} \mbox{\hyperlink{classerrorx_1_1_error_x_a12c9a526c2e14c24df262dd468b8e4bf}{correct\+Sequences}} (String\mbox{[}$\,$\mbox{]} sequence\+\_\+list, String\mbox{[}$\,$\mbox{]} germline\+\_\+sequence\+\_\+list, String\mbox{[}$\,$\mbox{]} phred\+\_\+score\+\_\+list)
+\item 
+double \mbox{[}$\,$\mbox{]} \mbox{\hyperlink{classerrorx_1_1_error_x_a2b05ab1d7a0a9e7747722e154055a760}{get\+Predicted\+Errors}} (String sequence, String germline\+\_\+sequence, String phred\+\_\+score)
+\item 
+native void \mbox{\hyperlink{classerrorx_1_1_error_x_a083d0d3215ef15747ca71f7e68c5b44b}{run\+Protocol}} (\mbox{\hyperlink{classerrorx_1_1_error_x_options}{Error\+X\+Options}} options)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\mbox{\hyperlink{classerrorx_1_1_error_x}{ErrorX}} bindings for Java. This file provides an interface for using the \mbox{\hyperlink{classerrorx_1_1_error_x}{ErrorX}} dynamically linked library in a Java package 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classerrorx_1_1_error_x_a96f670671af3f6e4193c4e83a547cf2b}\label{classerrorx_1_1_error_x_a96f670671af3f6e4193c4e83a547cf2b}} 
+\index{errorx.ErrorX@{errorx.ErrorX}!correctSequences@{correctSequences}}
+\index{correctSequences@{correctSequences}!errorx.ErrorX@{errorx.ErrorX}}
+\subsubsection{\texorpdfstring{correctSequences()}{correctSequences()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily native String \mbox{[}$\,$\mbox{]} errorx.\+Error\+X.\+correct\+Sequences (\begin{DoxyParamCaption}\item[{String \mbox{[}$\,$\mbox{]}}]{sequence\+\_\+list,  }\item[{String \mbox{[}$\,$\mbox{]}}]{germline\+\_\+sequence\+\_\+list,  }\item[{String \mbox{[}$\,$\mbox{]}}]{phred\+\_\+score\+\_\+list,  }\item[{\mbox{\hyperlink{classerrorx_1_1_error_x_options}{Error\+X\+Options}}}]{options }\end{DoxyParamCaption})}
+
+Error correct the provided sequences. All parameters are matched up elementwise, so they must have the same length.
+
+
+\begin{DoxyParams}{Parameters}
+{\em sequences} & String array of NT sequences to correct \\
+\hline
+{\em germline\+\_\+sequences} & String array of inferred germline sequences corresponding to the entries in {\ttfamily sequences} \\
+\hline
+{\em phred\+\_\+scores} & String array of P\+H\+R\+ED quality scores straight from the sequencer, corresponding to the entries in {\ttfamily sequences} \\
+\hline
+{\em options} & \mbox{\hyperlink{classerrorx_1_1_error_x_options}{Error\+X\+Options}} object to control options. If None, will set up default values internally\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+String array of corrected NT sequences corresponding to the input param {\ttfamily sequences} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classerrorx_1_1_error_x_a12c9a526c2e14c24df262dd468b8e4bf}\label{classerrorx_1_1_error_x_a12c9a526c2e14c24df262dd468b8e4bf}} 
+\index{errorx.ErrorX@{errorx.ErrorX}!correctSequences@{correctSequences}}
+\index{correctSequences@{correctSequences}!errorx.ErrorX@{errorx.ErrorX}}
+\subsubsection{\texorpdfstring{correctSequences()}{correctSequences()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily String \mbox{[}$\,$\mbox{]} errorx.\+Error\+X.\+correct\+Sequences (\begin{DoxyParamCaption}\item[{String \mbox{[}$\,$\mbox{]}}]{sequence\+\_\+list,  }\item[{String \mbox{[}$\,$\mbox{]}}]{germline\+\_\+sequence\+\_\+list,  }\item[{String \mbox{[}$\,$\mbox{]}}]{phred\+\_\+score\+\_\+list }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Wrapper for the native correct\+Sequences method, using default options
+
+
+\begin{DoxyParams}{Parameters}
+{\em sequences} & String array of NT sequences to correct \\
+\hline
+{\em germline\+\_\+sequences} & String array of inferred germline sequences corresponding to the entries in {\ttfamily sequences} \\
+\hline
+{\em phred\+\_\+scores} & String array of P\+H\+R\+ED quality scores straight from the sequencer, corresponding to the entries in {\ttfamily sequences} \\
+\hline
+{\em options} & \mbox{\hyperlink{classerrorx_1_1_error_x_options}{Error\+X\+Options}} object to control options. If None, will set up default values internally\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+String array of corrected NT sequences corresponding to the input param {\ttfamily sequences} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classerrorx_1_1_error_x_a114588f106010753dbb4c47aeabd10d1}\label{classerrorx_1_1_error_x_a114588f106010753dbb4c47aeabd10d1}} 
+\index{errorx.ErrorX@{errorx.ErrorX}!getPredictedErrors@{getPredictedErrors}}
+\index{getPredictedErrors@{getPredictedErrors}!errorx.ErrorX@{errorx.ErrorX}}
+\subsubsection{\texorpdfstring{getPredictedErrors()}{getPredictedErrors()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily native double \mbox{[}$\,$\mbox{]} errorx.\+Error\+X.\+get\+Predicted\+Errors (\begin{DoxyParamCaption}\item[{String}]{sequence,  }\item[{String}]{germline\+\_\+sequence,  }\item[{String}]{phred\+\_\+score,  }\item[{\mbox{\hyperlink{classerrorx_1_1_error_x_options}{Error\+X\+Options}}}]{options }\end{DoxyParamCaption})}
+
+Get the predicted likelihood that each base along a NT sequence is an error.
+
+
+\begin{DoxyParams}{Parameters}
+{\em sequence} & A single NT sequence to correct \\
+\hline
+{\em germline\+\_\+sequences} & Inferred germline sequence \\
+\hline
+{\em phred\+\_\+scores} & P\+H\+R\+ED quality scores \\
+\hline
+{\em options} & \mbox{\hyperlink{classerrorx_1_1_error_x_options}{Error\+X\+Options}} object to control options. If None, will set up default values internally\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Array of doubles representing the probability of error for each base. The probability of an error at position i is contained in index i of the array. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classerrorx_1_1_error_x_a2b05ab1d7a0a9e7747722e154055a760}\label{classerrorx_1_1_error_x_a2b05ab1d7a0a9e7747722e154055a760}} 
+\index{errorx.ErrorX@{errorx.ErrorX}!getPredictedErrors@{getPredictedErrors}}
+\index{getPredictedErrors@{getPredictedErrors}!errorx.ErrorX@{errorx.ErrorX}}
+\subsubsection{\texorpdfstring{getPredictedErrors()}{getPredictedErrors()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily double \mbox{[}$\,$\mbox{]} errorx.\+Error\+X.\+get\+Predicted\+Errors (\begin{DoxyParamCaption}\item[{String}]{sequence,  }\item[{String}]{germline\+\_\+sequence,  }\item[{String}]{phred\+\_\+score }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Wrapper for the native get\+Predicted\+Errors method, using default options
+
+
+\begin{DoxyParams}{Parameters}
+{\em sequences} & String array of NT sequences to correct \\
+\hline
+{\em germline\+\_\+sequences} & String array of inferred germline sequences corresponding to the entries in {\ttfamily sequences} \\
+\hline
+{\em phred\+\_\+scores} & String array of P\+H\+R\+ED quality scores straight from the sequencer, corresponding to the entries in {\ttfamily sequences} \\
+\hline
+{\em options} & \mbox{\hyperlink{classerrorx_1_1_error_x_options}{Error\+X\+Options}} object to control options. If None, will set up default values internally\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+String array of corrected NT sequences corresponding to the input param {\ttfamily sequences} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classerrorx_1_1_error_x_a083d0d3215ef15747ca71f7e68c5b44b}\label{classerrorx_1_1_error_x_a083d0d3215ef15747ca71f7e68c5b44b}} 
+\index{errorx.ErrorX@{errorx.ErrorX}!runProtocol@{runProtocol}}
+\index{runProtocol@{runProtocol}!errorx.ErrorX@{errorx.ErrorX}}
+\subsubsection{\texorpdfstring{runProtocol()}{runProtocol()}}
+{\footnotesize\ttfamily native void errorx.\+Error\+X.\+run\+Protocol (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classerrorx_1_1_error_x_options}{Error\+X\+Options}}}]{options }\end{DoxyParamCaption})}
+
+Run the \mbox{\hyperlink{classerrorx_1_1_error_x}{ErrorX}} protocol and write the results to a file
+
+
+\begin{DoxyParams}{Parameters}
+{\em options} & \mbox{\hyperlink{classerrorx_1_1_error_x_options}{Error\+X\+Options}} object with the processing details \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/alexsevy/\+Error\+X/java\+\_\+bindings/errorx/Error\+X.\+java\end{DoxyCompactItemize}

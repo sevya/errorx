@@ -1,0 +1,68 @@
+\hypertarget{constants_8hh}{}\section{Error\+X/include/constants.hh File Reference}
+\label{constants_8hh}\index{ErrorX/include/constants.hh@{ErrorX/include/constants.hh}}
+
+
+Numerical constants used during the ErrorX protocol.  
+
+
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const double \mbox{\hyperlink{constants_8hh_aadcca59533023a224a8b90e25435295f}{errorx\+::constants\+::\+O\+P\+T\+I\+M\+I\+Z\+E\+D\+\_\+\+T\+H\+R\+E\+S\+H\+O\+LD}} = 0.\+757264
+\item 
+\mbox{\Hypertarget{constants_8hh_a07f7b32e104d4f13f2a3126de8ccbfe9}\label{constants_8hh_a07f7b32e104d4f13f2a3126de8ccbfe9}} 
+const double {\bfseries errorx\+::constants\+::\+O\+P\+T\+I\+M\+I\+Z\+E\+D\+\_\+\+P\+R\+E\+C\+I\+S\+I\+ON} = 0.\+660
+\item 
+\mbox{\Hypertarget{constants_8hh_aa29782f8684142e28354544773fb7d4e}\label{constants_8hh_aa29782f8684142e28354544773fb7d4e}} 
+const double {\bfseries errorx\+::constants\+::\+O\+P\+T\+I\+M\+I\+Z\+E\+D\+\_\+\+R\+E\+C\+A\+LL} = 0.\+404
+\item 
+const int \mbox{\hyperlink{constants_8hh_acb2880ac79b3effae46d288c9401ec9b}{errorx\+::constants\+::\+W\+I\+N\+D\+OW}} = 8
+\item 
+const double \mbox{\hyperlink{constants_8hh_afd1a9537101a0b1aa366f9253916a7ee}{errorx\+::constants\+::\+V\+\_\+\+E\+V\+A\+L\+U\+E\+\_\+\+C\+U\+T\+O\+FF}} = 1e-\/3
+\item 
+\mbox{\Hypertarget{constants_8hh_ab293ef066af08fbc99d972757cb32b66}\label{constants_8hh_ab293ef066af08fbc99d972757cb32b66}} 
+const double {\bfseries errorx\+::constants\+::\+D\+\_\+\+E\+V\+A\+L\+U\+E\+\_\+\+C\+U\+T\+O\+FF} = 0.\+01
+\item 
+\mbox{\Hypertarget{constants_8hh_a6d52dce2629339293084b5e2ef6b7bd6}\label{constants_8hh_a6d52dce2629339293084b5e2ef6b7bd6}} 
+const double {\bfseries errorx\+::constants\+::\+J\+\_\+\+E\+V\+A\+L\+U\+E\+\_\+\+C\+U\+T\+O\+FF} = 0.\+01
+\item 
+const int \mbox{\hyperlink{constants_8hh_a375af5a0f72048bbfc4165741c051a28}{errorx\+::constants\+::\+M\+A\+X\+\_\+\+A\+B\+\_\+\+L\+E\+N\+G\+TH}} = 420
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Numerical constants used during the ErrorX protocol. 
+
+Copyright (C) Endeavor\+Bio, Inc. -\/ All Rights Reserved Unauthorized copying of this file, via any medium is strictly prohibited Code contained herein is proprietary and confidential.
+
+\begin{DoxyAuthor}{Author}
+Alex Sevy (\href{mailto:alex@endeavorbio.com}{\texttt{ alex@endeavorbio.\+com}}) 
+\end{DoxyAuthor}
+
+
+\subsection{Variable Documentation}
+\mbox{\Hypertarget{constants_8hh_file_a375af5a0f72048bbfc4165741c051a28}\label{constants_8hh_file_a375af5a0f72048bbfc4165741c051a28}} 
+\index{constants.hh@{constants.hh}!MAX\_AB\_LENGTH@{MAX\_AB\_LENGTH}}
+\index{MAX\_AB\_LENGTH@{MAX\_AB\_LENGTH}!constants.hh@{constants.hh}}
+\subsubsection{\texorpdfstring{MAX\_AB\_LENGTH}{MAX\_AB\_LENGTH}}
+{\footnotesize\ttfamily const int errorx\+::constants\+::\+M\+A\+X\+\_\+\+A\+B\+\_\+\+L\+E\+N\+G\+TH = 420}
+
+The longest antibody sequence in theory is around 420 N\+Ts, if you\textquotesingle{}re using the longest available V, D, and J. It\textquotesingle{}s possible it could be longer with a lot of non-\/templated N\+Ts but this is a reasonable upper bound \mbox{\Hypertarget{constants_8hh_file_aadcca59533023a224a8b90e25435295f}\label{constants_8hh_file_aadcca59533023a224a8b90e25435295f}} 
+\index{constants.hh@{constants.hh}!OPTIMIZED\_THRESHOLD@{OPTIMIZED\_THRESHOLD}}
+\index{OPTIMIZED\_THRESHOLD@{OPTIMIZED\_THRESHOLD}!constants.hh@{constants.hh}}
+\subsubsection{\texorpdfstring{OPTIMIZED\_THRESHOLD}{OPTIMIZED\_THRESHOLD}}
+{\footnotesize\ttfamily const double errorx\+::constants\+::\+O\+P\+T\+I\+M\+I\+Z\+E\+D\+\_\+\+T\+H\+R\+E\+S\+H\+O\+LD = 0.\+757264}
+
+Optimized threshold for best balance between precision and recall this value may change in future releases but I want it to be defined here \mbox{\Hypertarget{constants_8hh_file_afd1a9537101a0b1aa366f9253916a7ee}\label{constants_8hh_file_afd1a9537101a0b1aa366f9253916a7ee}} 
+\index{constants.hh@{constants.hh}!V\_EVALUE\_CUTOFF@{V\_EVALUE\_CUTOFF}}
+\index{V\_EVALUE\_CUTOFF@{V\_EVALUE\_CUTOFF}!constants.hh@{constants.hh}}
+\subsubsection{\texorpdfstring{V\_EVALUE\_CUTOFF}{V\_EVALUE\_CUTOFF}}
+{\footnotesize\ttfamily const double errorx\+::constants\+::\+V\+\_\+\+E\+V\+A\+L\+U\+E\+\_\+\+C\+U\+T\+O\+FF = 1e-\/3}
+
+E value cutoffs when assigning V, D, and J genes \mbox{\Hypertarget{constants_8hh_file_acb2880ac79b3effae46d288c9401ec9b}\label{constants_8hh_file_acb2880ac79b3effae46d288c9401ec9b}} 
+\index{constants.hh@{constants.hh}!WINDOW@{WINDOW}}
+\index{WINDOW@{WINDOW}!constants.hh@{constants.hh}}
+\subsubsection{\texorpdfstring{WINDOW}{WINDOW}}
+{\footnotesize\ttfamily const int errorx\+::constants\+::\+W\+I\+N\+D\+OW = 8}
+
+Sequence window used for feature calculation 

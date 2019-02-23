@@ -1,0 +1,57 @@
+\hypertarget{classerrorx_1_1_native_utils}{}\section{errorx.\+Native\+Utils Class Reference}
+\label{classerrorx_1_1_native_utils}\index{errorx.NativeUtils@{errorx.NativeUtils}}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \mbox{\hyperlink{classerrorx_1_1_native_utils_a673add9b19469f2d436ed69a12bd1360}{load\+Library\+From\+Jar}} (String path)  throws I\+O\+Exception 
+\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classerrorx_1_1_native_utils_ae5420a210f1d41fb2d8a00a6883476ea}\label{classerrorx_1_1_native_utils_ae5420a210f1d41fb2d8a00a6883476ea}} 
+static final String {\bfseries N\+A\+T\+I\+V\+E\+\_\+\+F\+O\+L\+D\+E\+R\+\_\+\+P\+A\+T\+H\+\_\+\+P\+R\+E\+F\+IX} = \char`\"{}nativeutils\char`\"{}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A simple library class which helps with loading dynamic libraries stored in the J\+AR archive. These libraries usually contain implementation of some methods in native code (using J\+NI -\/ Java Native Interface).
+
+\begin{DoxySeeAlso}{See also}
+\href{http://adamheinrich.com/blog/2012/how-to-load-native-jni-library-from-jar}{\texttt{ http\+://adamheinrich.\+com/blog/2012/how-\/to-\/load-\/native-\/jni-\/library-\/from-\/jar}} 
+
+\href{https://github.com/adamheinrich/native-utils}{\texttt{ https\+://github.\+com/adamheinrich/native-\/utils}} 
+\end{DoxySeeAlso}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classerrorx_1_1_native_utils_a673add9b19469f2d436ed69a12bd1360}\label{classerrorx_1_1_native_utils_a673add9b19469f2d436ed69a12bd1360}} 
+\index{errorx.NativeUtils@{errorx.NativeUtils}!loadLibraryFromJar@{loadLibraryFromJar}}
+\index{loadLibraryFromJar@{loadLibraryFromJar}!errorx.NativeUtils@{errorx.NativeUtils}}
+\subsubsection{\texorpdfstring{loadLibraryFromJar()}{loadLibraryFromJar()}}
+{\footnotesize\ttfamily static void errorx.\+Native\+Utils.\+load\+Library\+From\+Jar (\begin{DoxyParamCaption}\item[{String}]{path }\end{DoxyParamCaption}) throws I\+O\+Exception\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+Loads library from current J\+AR archive
+
+The file from J\+AR is copied into system temporary directory and then loaded. The temporary file is deleted after exiting. Method uses String as filename because the pathname is \char`\"{}abstract\char`\"{}, not system-\/dependent.
+
+
+\begin{DoxyParams}{Parameters}
+{\em path} & The path of file inside J\+AR as absolute path (beginning with \textquotesingle{}/\textquotesingle{}), e.\+g. /package/\+File.ext \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em I\+O\+Exception} & If temporary file creation or read/write operation fails \\
+\hline
+{\em Illegal\+Argument\+Exception} & If source file (param path) does not exist \\
+\hline
+{\em Illegal\+Argument\+Exception} & If the path is not absolute or if the filename is shorter than three characters (restriction of \mbox{\hyperlink{}{File\#create\+Temp\+File(java.\+lang.\+String, java.\+lang.\+String)}}). \\
+\hline
+{\em File\+Not\+Found\+Exception} & If the file could not be found inside the J\+AR. \\
+\hline
+\end{DoxyExceptions}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/alexsevy/\+Error\+X/java\+\_\+bindings/errorx/Native\+Utils.\+java\end{DoxyCompactItemize}
