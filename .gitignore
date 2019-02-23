@@ -47,6 +47,9 @@ build_test/TestErrorX.class
 build_test/input_files/test.fasta*
 build_test/a.out
 
+documentation/latex/
+documentation/html/
+
 x64/
 Release/
 Debug/
