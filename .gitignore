@@ -4,6 +4,7 @@
 dependencies_old/
 sublime.project
 sublime.sublime-workspace
+errorx.sublime-workspace
 .cproject
 .project
 .settings/
@@ -25,7 +26,6 @@ unit_test/*.cc
 unit_test/*.class
 unit_test/testing/out.tsv
 unit_test/lib/liberrorx.dylib
-
 unit_test/cxxtest/COPYING
 unit_test/cxxtest/Versions
 unit_test/cxxtest/test/
@@ -56,6 +56,8 @@ model.nnet.norel
 model.nnet.stable
 model_sanity_check/
 
+technical_docs/
+test_case/
 test.tsv
 
 x64/
