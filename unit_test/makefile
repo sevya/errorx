@@ -7,7 +7,9 @@ else
 endif
 
 ifeq ($(uname_S), Windows)
-	# set Windows compiler, flags, and paths
+	JAVAC="C:/Program Files/Java/jdk1.8.0_45/bin/javac.exe"
+	JAVA="C:/Program Files/Java/jdk1.8.0_45/bin/java.exe"
+	CP='.;../java_bindings/ErrorX.jar;hamcrest-core-1.3.jar;junit-4.12.jar'
 endif
 ifeq ($(uname_S), Linux)
 	# set Linux compiler, flags, and paths
@@ -15,6 +17,9 @@ ifeq ($(uname_S), Linux)
 	CPPFLAGS=-pthread -std=c++11 -Wall -Wno-sign-compare
 	FINAL=-ldl
 	DLLEXT=so
+	JAVAC=javac
+	JAVA=java
+	CP='.;../java_bindings/ErrorX.jar;hamcrest-core-1.3.jar;junit-4.12.jar'
 endif
 ifeq ($(uname_S), Darwin)
 	# set Mac compiler, flags, and paths
@@ -22,6 +27,8 @@ ifeq ($(uname_S), Darwin)
 	CPPFLAGS=-pthread -std=c++11 -Wall -Wno-deprecated-register
 	FINAL=
 	DLLEXT=dylib
+	JAVAC=javac
+	JAVA=java
 endif
 
 INC=-I../include/ -Icxxtest/
@@ -54,8 +61,8 @@ TestLinking: CopyLibrary
 	$(CXX) $(CPPFLAGS) $(INC) -Llib/ -lerrorx -o bin/TestLinking TestLinking.cc $(FINAL)
 
 TestJava: TestErrorX.java 
-	javac -cp '.:../java_bindings/ErrorX.jar:hamcrest-core-1.3.jar:junit-4.12.jar' TestErrorX.java
-	java -cp .:../java_bindings/ErrorX.jar:junit-4.12.jar:hamcrest-core-1.3.jar org.junit.runner.JUnitCore TestErrorX
+	$(JAVAC) -cp $(CP) TestErrorX.java
+	$(JAVA) -cp $(CP) org.junit.runner.JUnitCore TestErrorX
 
 clean: 
 	rm -rf bin/* 
