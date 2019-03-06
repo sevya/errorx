@@ -30,12 +30,12 @@ SequenceRecords* run_protocol( ErrorXOptions & options ) {
 	options.trial( !util::valid_license() );	
 	if ( options.format() == "fastq" ) {
 		if ( options.trial() ) {
-			// Trial version only allows querying 500 sequences
+			// Trial version only allows querying 100 sequences
 			// since each FASTQ query is 4 lines check and make
-			// sure there are < 2000 lines
+			// sure there are < 400 lines
 			string infile = options.infile();
 			int num_lines = util::count_lines( infile );
-			if ( num_lines > 2000 ) {
+			if ( num_lines > 400 ) {
 				throw InvalidLicenseException();
 			} 
 		}
@@ -55,17 +55,11 @@ SequenceRecords* run_protocol( ErrorXOptions & options ) {
 
 	} else {
 		if ( options.trial() ) {
-			// Trial version only allows querying 500 sequences
+			// Trial version only allows querying 100 sequences
 			string infile = options.infile();
 			int num_lines = util::count_lines( infile );
-			if ( num_lines > 500 ) {
-				cout << 
-				"You are currently running the trial version of ErrorX, "
-				"which can only process 500 sequences at a time. "
-				"Please limit your query size or request a license "
-				"from contact@endeavorbio.com to use the full version"
-				<< endl;
-				exit(0);
+			if ( num_lines > 100 ) {
+				throw InvalidLicenseException();
 			} 
 		}
 
@@ -120,8 +114,6 @@ void run_protocol_write_features( ErrorXOptions & options ) {
 	records->write_summary();
 	// Write features
 	records->write_features();
-	// Write summary
-	records->write_summary();
 
 	delete records;
 }
