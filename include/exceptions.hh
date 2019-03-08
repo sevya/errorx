@@ -22,7 +22,7 @@ public:
 	const char* what () const throw ()
 	{
 		return "You are currently running the trial version of ErrorX, "
-				"which can only process 500 sequences at a time. "
+				"which can only process 100 sequences at a time. "
 				"Please limit your query size or contact alex@endeavorbio "
 				"to request access to the full version.";
 	}

@@ -81,8 +81,8 @@ SequenceRecords* run_protocol( vector<SequenceQuery> & queries,
 	options.trial( !util::valid_license() );
 
 	if ( options.trial() ) {
-		// Trial version only allows querying 500 sequences
-		if ( queries.size() > 500 ) {
+		// Trial version only allows querying 100 sequences
+		if ( queries.size() > 100 ) {
 			throw InvalidLicenseException();
 		} 
 	}
