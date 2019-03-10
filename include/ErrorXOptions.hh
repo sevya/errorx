@@ -25,6 +25,10 @@ Code contained herein is proprietary and confidential.
 #endif
 
 #include <string>
+#include <functional>
+#include <mutex>
+
+#include "ProgressBar.hh"
 
 using namespace std;
 
@@ -80,6 +84,9 @@ public:
 	char correction() const;
 	bool trial() const;
 	bool allow_nonproductive() const;
+	function<void(int,int,mutex*)> increment() const;
+	function<void()> reset() const;
+	function<void()> finish() const;
 
 	/*
 		Setters
@@ -99,8 +106,14 @@ public:
 	void correction( char const & correction );
 	void trial( bool const & trial );
 	void allow_nonproductive( bool const & allow_nonproductive );
+	void increment( function<void(int,int,mutex*)> const & increment ) ;
+	void reset( function<void(void)> const & reset ) ;
+	void finish( function<void(void)> const & finish ) ;
 
 private:
+
+	void initialize_callback();
+
 	/**
 		User specified options:
 		
@@ -143,6 +156,31 @@ private:
 	string igblast_output_;
 	string errorx_base_;
 	bool trial_;
+
+	/**
+		Callback functions to update progress during error correction
+		By default, these will update a progress bar on the command 
+		line. Can also be used in a GUI to show a progress window.
+
+		Three callback functions are implemented:
+		
+		increment_: this increments the number of processed records. 
+			Takes in as arguments: (increment value, total records, mutex)
+			The mutex is needed whether or not it's a multithreaded context - 
+			if it's only one thread then it doesn't hurt, if it's multithreaded
+			it prevents them from talking over each other
+
+		reset_: resets the progress bar to 0. Used in the transition
+			from tracking progress on IGBlast to error correction
+
+		finish_: finishes the progress bar. Frequently the thread finishes and
+			progress updating is killed before it hits 100%. To make it look
+			pretty this function manually updates the bar to 100%.
+	*/
+	function<void(int,int,mutex*)> increment_;
+	function<void(void)> reset_;
+	function<void(void)> finish_;
+	ProgressBar _bar;
 	
 };
 

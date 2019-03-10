@@ -45,7 +45,7 @@ vector<T> tokenize_string( string str, string delim="\t " ) {
 	vector<T> float_array;
 
 	boost::split( array, str, boost::algorithm::is_any_of(delim), boost::token_compress_on );
-	for ( int ii = 0; ii < array.size(); ++ii ) {
+        for ( size_t ii = 0; ii < array.size(); ++ii ) {
 		float_array.push_back( boost::lexical_cast<T>( array[ii] ));
 	}
 	return float_array;

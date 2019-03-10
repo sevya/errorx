@@ -14,6 +14,8 @@ heavy lifting in terms of turning that output into a SequenceRecord object
 #include <fstream>
 #include <vector>
 #include <thread>
+#include <chrono>
+#include <mutex>
 
 #include "IGBlastParser.hh"
 #include "SequenceRecords.hh"
@@ -149,25 +151,44 @@ SequenceRecords* IGBlastParser::parse_output( ErrorXOptions & options  )
 }
 
 void IGBlastParser::track_progress( ErrorXOptions & options ) {
-		int done = 0;
-		float progress = 0.0;
-		float last_progress = -1;
+	int done = 0;
+	int last_done = 0;
+	// float progress = 0.0;
+	// float last_progress = -1;
 
-		string infile = options.infile();
-		string igblast_output = options.igblast_output();
-		int total_records = util::count_lines( infile )/4;
+	string infile = options.infile();
+	string igblast_output = options.igblast_output();
+	int total_records = util::count_lines( infile )/4;
 
-		while (!thread_finished_) {
-			done = util::count_queries( igblast_output );
-			progress = (float)done/(float)total_records;
+	function<void(int,int,mutex*)> increment = options.increment();
+	function<void(void)> reset = options.reset();
+	function<void(void)> finish = options.finish();
 
-			// only write to screen if the value has changed
-			if ( progress != last_progress ) { 
-				util::write_progress_bar( progress, done, total_records );
-			}
-			last_progress = progress;
+	/// This mutex doesn't actually do anything - it's just 
+	/// there for compatibility
+	mutex* m = new mutex;
+
+	increment( 0, total_records, m );
+
+	while (!thread_finished_) {
+		done = util::count_queries( igblast_output );
+		// only write to screen if the value has changed
+		if ( last_done != done ) {
+			// increment with the amount that it's changed
+			increment( done-last_done, total_records, m );
+
+			last_done = done;
 		}
-		cout << endl;
+		this_thread::sleep_for( chrono::milliseconds(500) );
+	}
+	// Finish the progress bar, since it's done now
+	finish();
+	reset();
+
+	// We're done with mutex
+	delete m;
+
+	cout << endl;
 }
 
 void IGBlastParser::exec_in_thread( string command ) {

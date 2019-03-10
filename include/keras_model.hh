@@ -49,7 +49,7 @@ public:
 	virtual vector<vector<vector<double> > > const & get_3d() const { throw "not implemented"; };
 	virtual void set_data(vector<vector<vector<double> > > const &) {};
 	virtual void set_data(vector<double> const &) {};
-	virtual void read_from_file(const string &fname) {};
+        virtual void read_from_file(const string &) {};
 	virtual void show_name() = 0;
 	virtual void show_values() = 0;
 };
@@ -66,10 +66,10 @@ public:
 
 	void show_values() {
 		cout << "DataChunk2D values:" << endl;
-    	for ( int i = 0; i < data.size(); ++i ) {
+        for ( size_t i = 0; i < data.size(); ++i ) {
 			cout << "Kernel " << i << endl;
-			for ( int j = 0; j < data[0].size(); ++j ) {
-				for ( int k = 0; k < data[0][0].size(); ++k ) {
+                        for ( size_t j = 0; j < data[0].size(); ++j ) {
+                                for ( size_t k = 0; k < data[0][0].size(); ++k ) {
 					cout << data[i][j][k] << " ";
 				}
         		cout << endl;
@@ -104,10 +104,10 @@ public:
   
 	void show_values() {
 		cout << "DataChunkFlat values:" << endl;
-		for ( int i = 0; i < f.size(); ++i ) cout << f[i] << " ";
+                for ( size_t i = 0; i < f.size(); ++i ) cout << f[i] << " ";
 		cout << endl;
 	}
-	void read_from_file(const string &fname) {};
+        void read_from_file(const string &) {};
 };
 
 class Layer {
@@ -131,8 +131,8 @@ public:
 class LayerFlatten : public Layer {
 public:
 	LayerFlatten() : Layer("Flatten") {}
-	void load_weights( ifstream &fin ) {};
-	void load_weights( istringstream &fin ) {};
+        void load_weights( ifstream & ) {};
+        void load_weights( istringstream & ) {};
 	keras::DataChunk* compute_output( DataChunk* );
 
 	virtual unsigned int get_input_rows() const { return 0; } // look for the value in the preceding layer

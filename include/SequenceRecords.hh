@@ -190,9 +190,12 @@ private:
 		Corrects a single SequenceRecords object in one thread.
 
 		@param records SequenceRecords object to be corrected
-		@param correction_progress atomic int to track progress
+		@param update callback function to update progress that takes in
+		(done,total,mutex*)
+		@param m mutex* to keep track of threads
+		@param total total number of records over all threads
 	*/
-	static void correct_sequences_threaded( SequenceRecords* & records, int* & correction_progress );
+	static void correct_sequences_threaded( SequenceRecords* & records, function<void(int,int,mutex*)>* update, mutex* m, int & total);
 
 	/**
 		Tracks progress of error correction in multiple threads 

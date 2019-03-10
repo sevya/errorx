@@ -16,6 +16,8 @@ settings for processing, and ErrorPredictor that does the error correction itsel
 #include <fstream>
 #include <chrono>
 #include <thread>
+#include <mutex>
+#include <functional>
 
 #include "SequenceRecords.hh"
 #include "SequenceQuery.hh"
@@ -252,7 +254,8 @@ void SequenceRecords::write_summary() const {
 }
 
 void SequenceRecords::correct_sequences_threaded( SequenceRecords* & records, 
-												  int* & correction_progress ) 
+												  function<void(int,int,mutex*)>* increment,
+												  mutex* m, int & total ) 
 {
 	for ( int ii = 0; ii < records->size(); ++ii ) {
 		try {
@@ -261,7 +264,10 @@ void SequenceRecords::correct_sequences_threaded( SequenceRecords* & records,
 				*(records->predictor_), 
 				*(records->options_) );
 
-			(*correction_progress)++;
+			// update in increments of 50
+			// cout << "working on record " << ii << " out of " << total << endl; // TODO remove
+			int incrementAmount = 10;
+			if ( ii%incrementAmount == 0 ) (*increment)( incrementAmount, total, m );
 
 		} catch ( exception & e ) {
 			cout << "record could not be processed - exception caught : " 
@@ -307,15 +313,6 @@ void SequenceRecords::correct_sequences( SequenceRecords* & records ) {
 	int total_records = records->size();
 	int verbose = records->options_->verbose();
 
-	// make vector of correction progress atomic ints -
-	// these are used to calculate progress across
-	// threads without sharing data and slowing it down
-	vector<int*> progress_vector( nthreads );
-	for ( int ii = 0; ii < nthreads; ++ii ) {
-		progress_vector[ ii ] = new int(0);
-		// cout << "assigning value at address " << progress_vector[ii] << " : " << *(progress_vector[ii]); // TODO remove
-	} 
-
 	// get chunked SequenceRecords
 	// this will deep copy the original pointers in records_
 	vector<SequenceRecords*> chunked_records = records->chunk_records();
@@ -325,23 +322,39 @@ void SequenceRecords::correct_sequences( SequenceRecords* & records ) {
 		
 	vector<thread*> threads( nthreads );
 
+	// Set up a callback function for each thread to update its progress
+	function<void(int,int,mutex*)> increment = records->options_->increment();
+	function<void(void)> finish = records->options_->finish();
+	
+	// Set up a mutex to coordinate between threads
+	mutex* m = new mutex;
+
+	if ( verbose > 0 ) {
+		cout << "Correcting sequences..." << endl;
+	}
+
 	for ( int ii = 0; ii < nthreads; ++ii ) {
 		threads[ii] = new std::thread(
 				&SequenceRecords::correct_sequences_threaded,
 				ref(chunked_records[ii]),
-				ref(progress_vector[ii])
+				&increment,
+				m,
+				ref(total_records)
 				);
 	}
 
-	if ( verbose > 0 ) {
-		cout << "Correcting sequences..." << endl;
-		track_progress( total_records, progress_vector );
-	}
 
 	// Wait for all threads to finish
 	for ( int ii = 0; ii < nthreads; ++ii ) {
 		threads[ii]->join();
   	}
+
+  	// Update to where all records are done
+  	finish();
+  	cout << endl;
+
+  	// I'm done with mutex now
+  	delete m;
 
 	// // Now I need to collect all the chunked SequenceRecords into the parent
 	records = new SequenceRecords( chunked_records );
@@ -351,7 +364,6 @@ void SequenceRecords::correct_sequences( SequenceRecords* & records ) {
 	for ( int ii = 0; ii < nthreads; ++ii ) {
 		delete threads[ii];
 		delete chunked_records[ii]; 
-		delete progress_vector[ii];
 	} 
 }
 

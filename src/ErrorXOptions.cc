@@ -13,10 +13,13 @@ Code contained herein is proprietary and confidential.
 #include <string>
 #include <vector>
 #include <thread>
+#include <functional>
+#include <mutex>
 
 #include "ErrorXOptions.hh"
 #include "util.hh"
 #include "constants.hh"
+#include "ProgressBar.hh"
 
 #include <boost/filesystem.hpp>
 
@@ -40,7 +43,8 @@ ErrorXOptions::ErrorXOptions() :
 {
 	nthreads(-1);
 	errorx_base( util::get_root_path().string() );
-
+	
+	initialize_callback();
 }
 
 ErrorXOptions::ErrorXOptions( string input_file, string file_format ) :
@@ -59,6 +63,8 @@ ErrorXOptions::ErrorXOptions( string input_file, string file_format ) :
 	format( file_format );
 	infile( input_file );
 	errorx_base( util::get_root_path().string() );
+
+	initialize_callback();
 }
 
 ErrorXOptions::ErrorXOptions( ErrorXOptions const & other ) :
@@ -76,9 +82,61 @@ ErrorXOptions::ErrorXOptions( ErrorXOptions const & other ) :
 	infasta_(other.infasta_),
 	igblast_output_(other.igblast_output_),
 	errorx_base_(other.errorx_base_),
-	trial_(other.trial_)
+	trial_(other.trial_),
+	increment_(other.increment_),
+	reset_(other.reset_),
+	finish_(other.finish_)
 {}
 
+void ErrorXOptions::initialize_callback() {
+	_bar = ProgressBar();
+
+	if ( verbose_ > 0 ) {
+		function<void(int,int,mutex*)> terminal_callback = std::bind( 
+								   &ProgressBar::increment,
+								   &_bar,
+								    placeholders::_1,
+								    placeholders::_2,
+								    placeholders::_3
+								 );
+		increment( terminal_callback );
+
+		function<void(void)> reset_callback = std::bind( 
+								   &ProgressBar::reset,
+								   &_bar
+								 );
+		reset( reset_callback );
+
+
+		function<void(void)> finish_callback = std::bind( 
+								   &ProgressBar::finish,
+								   &_bar
+								 );
+		finish( finish_callback );
+	} else { 
+		function<void(int,int,mutex*)> terminal_callback = std::bind( 
+								   &ProgressBar::blank,
+								   &_bar,
+								    placeholders::_1,
+								    placeholders::_2,
+								    placeholders::_3
+								 );
+		increment( terminal_callback );
+
+		function<void(void)> reset_callback = std::bind( 
+								   &ProgressBar::blank2,
+								   &_bar
+								 );
+		reset( reset_callback );
+
+
+		function<void(void)> finish_callback = std::bind( 
+								   &ProgressBar::blank2,
+								   &_bar
+								 );
+		finish( finish_callback );
+	}
+}
 
 void ErrorXOptions::fastq_to_fasta() {
 	ios_base::sync_with_stdio (false);
@@ -192,6 +250,18 @@ void ErrorXOptions::nthreads( int const & nthreads ) {
 
 }
 
+void ErrorXOptions::increment( function<void(int,int,mutex*)> const & increment ) {
+	increment_ = increment;
+}
+
+void ErrorXOptions::reset( function<void(void)> const & reset ) {
+	reset_ = reset;
+}
+
+void ErrorXOptions::finish( function<void(void)> const & finish ) {
+	finish_ = finish;
+}
+
 string ErrorXOptions::outfile() const { return outfile_; }
 string ErrorXOptions::format() const { return format_; }
 string ErrorXOptions::species() const { return species_; }
@@ -206,13 +276,19 @@ double ErrorXOptions::error_threshold() const { return error_threshold_; }
 char ErrorXOptions::correction() const { return correction_; }
 bool ErrorXOptions::trial() const { return trial_; }
 bool ErrorXOptions::allow_nonproductive() const { return allow_nonproductive_; }
+function<void(int,int,mutex*)> ErrorXOptions::increment() const { return increment_; }
+function<void(void)> ErrorXOptions::reset() const { return reset_; }
+function<void(void)> ErrorXOptions::finish() const { return finish_; }
 
 void ErrorXOptions::outfile( string const & outfile ) { outfile_ = outfile; }
 void ErrorXOptions::infile( string const & infile ) { infile_ = infile; }
 void ErrorXOptions::infasta( string const & infasta ) { infasta_ = infasta; }
 void ErrorXOptions::igblast_output( string const & igblast_output ) { igblast_output_ = igblast_output; }
 void ErrorXOptions::errorx_base( string const & errorx_base ) { errorx_base_ = errorx_base; }
-void ErrorXOptions::verbose( int const & verbose ) { verbose_ = verbose; }
+void ErrorXOptions::verbose( int const & verbose ) { 
+	verbose_ = verbose; 
+	initialize_callback();
+}
 void ErrorXOptions::error_threshold( double const & error_threshold ) { error_threshold_ = error_threshold; }
 void ErrorXOptions::correction( char const & correction ) { correction_ = correction; }
 void ErrorXOptions::trial( bool const & trial ) { trial_ = trial; }

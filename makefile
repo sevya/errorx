@@ -51,7 +51,7 @@ CPPFLAGS=-pthread -std=c++11 -Wall
 
 INC=-Iinclude/
 
-SRCS=src/SequenceRecords.cc src/SequenceRecord.cc src/IGBlastParser.cc \
+SRCS=src/ProgressBar.cc src/SequenceRecords.cc src/SequenceRecord.cc src/IGBlastParser.cc \
 	 src/ErrorPredictor.cc src/SequenceFeatures.cc \
 	 src/ErrorXOptions.cc src/keras_model.cc src/util.cc \
 	 src/SequenceQuery.cc src/errorx.cc
