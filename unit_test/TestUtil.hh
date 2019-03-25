@@ -303,6 +303,11 @@ public:
 
 
 	}
+
+	void testRoundedString(void) {
+		float value = 4.5434352;
+		TS_ASSERT_EQUALS( util::rounded_string( value ), "4.54" );
+	}
 };
 
 

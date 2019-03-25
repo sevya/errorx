@@ -141,11 +141,11 @@ string to_scientific( T a ) {
 */
 template <typename T>
 string rounded_string( T a ) {
-        // TODO potential overflow - fix this!
-        char buffer [256];
-        sprintf( buffer, "%.2f", a);
-        string a_str = buffer;
-        return a_str;
+	// TODO potential overflow - fix this!
+	char buffer [256];
+	sprintf( buffer, "%.2f", a);
+	string a_str = buffer;
+	return a_str;
 }
 
 /**

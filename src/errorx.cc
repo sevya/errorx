@@ -104,7 +104,6 @@ SequenceRecords* run_protocol( vector<SequenceQuery> & queries,
 void run_protocol_write( ErrorXOptions & options ) {
 	SequenceRecords* records = run_protocol( options );
 	records->write_summary();
-	cout << "total number of records: " << records->size() << endl;
 	delete records;
 }
 
