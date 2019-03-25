@@ -501,13 +501,13 @@ vector<string> SequenceRecord::get_summary() const {
 	return vector<string> {
 			sequenceID_,
 			v_gene_,
-			(hasV_) ? to_string( v_identity_ ) : "N/A",
+			(hasV_) ? util::rounded_string( v_identity_ ) : "N/A",
 			(hasV_) ? util::to_scientific( v_evalue_ ) : "N/A",
 			d_gene_,
-			(hasD_) ? to_string( d_identity_ ) : "N/A",
+			(hasD_) ? util::rounded_string( d_identity_ ) : "N/A",
 			(hasD_) ? util::to_scientific( d_evalue_ ) : "N/A",
 			j_gene_,
-			(hasJ_) ? to_string( j_identity_ ) : "N/A",
+			(hasJ_) ? util::rounded_string( j_identity_ ) : "N/A",
 			(hasJ_) ? util::to_scientific( j_evalue_ ) : "N/A",
 			strand_,
 			chain_,
@@ -599,8 +599,11 @@ double SequenceRecord::v_identity() const { return v_identity_; }
 double SequenceRecord::d_identity() const { return d_identity_; }
 double SequenceRecord::j_identity() const { return j_identity_; }
 string SequenceRecord::chain() const { return chain_; }
+bool SequenceRecord::productive() const { return productive_; }
 string SequenceRecord::quality_string() const { return quality_string_; }
 int SequenceRecord::gl_start() const { return gl_start_; }
+int SequenceRecord::translation_frame() const { return translation_frame_; }
+
 
 
 } // namespace errorx

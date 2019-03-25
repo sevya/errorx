@@ -133,6 +133,22 @@ string to_scientific( T a ) {
 }
 
 /**
+	Round a numeric type to a certain number of digits
+
+	@param a number to convert
+
+	@return string of rounded number
+*/
+template <typename T>
+string rounded_string( T a ) {
+        // TODO potential overflow - fix this!
+        char buffer [256];
+        sprintf( buffer, "%.2f", a);
+        string a_str = buffer;
+        return a_str;
+}
+
+/**
 	Writes a 2d vector to a file
 
 	@param filename file to write to
