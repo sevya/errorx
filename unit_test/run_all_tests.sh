@@ -10,6 +10,7 @@ bin/TestUtil
 bin/TestErrorX
 bin/TestIGBlastParser
 bin/TestSequenceFeatures
+bin/TestSequenceRecords
 bin/TestLinking
 
 /usr/bin/python test_python_bindings.py

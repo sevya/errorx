@@ -17,6 +17,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <functional>
 
 using namespace std;
 using namespace errorx;
@@ -191,7 +192,117 @@ public:
 	// 	string file = "testing/test.fastq";
 	// 	TS_ASSERT_EQUALS( util::count_lines(file), 4 );
 	// }
-		
+
+
+	void testComparator(void) {
+
+		// check equivalence of two keys using my custom comparators
+		string a;
+		string b;
+
+		a = "ATCG";
+		b = "ATCG";
+		TS_ASSERT( !util::vanilla_compare(a,b) && !util::vanilla_compare(b,a) );
+
+		a = "CTCG";
+		b = "ATCG";
+		TS_ASSERT( !(!util::vanilla_compare(a,b) && !util::vanilla_compare(b,a)) );
+
+		a = "ATCG";
+		b = "CTCG";
+		TS_ASSERT( !(!util::vanilla_compare(a,b) && !util::vanilla_compare(b,a)) );
+
+		a = "ATCG";
+		b = "NTCG";
+		TS_ASSERT( !(!util::vanilla_compare(a,b) && !util::vanilla_compare(b,a)) );
+
+
+		a = "ATCG";
+		b = "NTCG";
+		TS_ASSERT( !util::compare(a,b,'N') && !util::compare(b,a,'N') );
+
+		a = "NTCG";
+		b = "ATCG";
+		TS_ASSERT( !util::compare(a,b,'N') && !util::compare(b,a,'N') );
+
+		a = "ATCG";
+		b = "ATCG";
+		TS_ASSERT( !util::compare(a,b,'N') && !util::compare(b,a,'N') );
+
+		a = "ATCG";
+		b = "CTCG";
+		TS_ASSERT( !(!util::compare(a,b,'N') && !util::compare(b,a,'N')) );
+
+		a = "ATCG";
+		b = "CTCG";
+		TS_ASSERT( !(!util::compare(a,b,'N') && !util::compare(b,a,'N')) );
+
+
+		a = "IGHV3-23_ARTYSDFDV_IGHJ6";
+		b = "IGHV3-23_ARTYSDFDV_IGHJ6";
+		TS_ASSERT( !util::compare_clonotypes(a,b) && !util::compare_clonotypes(b,a) );
+
+		a = "IGHV3-23_ARTYSXFDV_IGHJ6";
+		b = "IGHV3-23_ARTYSDFDV_IGHJ6";
+		TS_ASSERT( !util::compare_clonotypes(a,b) && !util::compare_clonotypes(b,a) );
+
+		a = "IGHV3-23_ARTYSXFDV_IGHJ6";
+		b = "IGHV3-23_CARTYSDFDV_IGHJ6";
+		TS_ASSERT( !(!util::compare_clonotypes(a,b) && !util::compare_clonotypes(b,a)) );
+
+		a = "IGHV3-23_ARTYSXFDV_IGHJ6";
+		b = "IGHV3-21_ARTYSDFDV_IGHJ6";
+		TS_ASSERT( !(!util::compare_clonotypes(a,b) && !util::compare_clonotypes(b,a)) );
+
+		a = "IGHV3-23_ARTYSDFDV_IGHJ6";
+		b = "IGHV3-21_ARTYSDFDV_IGHJ6";
+		TS_ASSERT( !(!util::compare_clonotypes(a,b) && !util::compare_clonotypes(b,a)) );
+
+		a = "IGHV3-23_ARTYSDFDV_IGHJ6";
+		b = "IGHV3-23_ARTYSDFDV_IGHJ2";
+		TS_ASSERT( !(!util::compare_clonotypes(a,b) && !util::compare_clonotypes(b,a)) );
+
+		function< bool(string,string) > compareCorrectedSequences = 
+			std::bind( &util::compare, 
+					   placeholders::_1, 
+					   placeholders::_2, 
+					   'N'
+		);
+		map<string,int,function<bool(string,string)> > cmap( compareCorrectedSequences );
+
+		cmap.insert( pair<string,int>( "ACTG", 1 ));
+		cmap.insert( pair<string,int>( "NCTG", 1 ));
+		TS_ASSERT_EQUALS( cmap.size(), 1 );
+		cmap.clear();
+
+		cmap.insert( pair<string,int>( "NCTG", 1 ));
+		cmap.insert( pair<string,int>( "ACTG", 1 ));
+		TS_ASSERT_EQUALS( cmap.size(), 1 );
+		cmap.clear();
+
+		cmap.insert( pair<string,int>( "NCTG", 1 ));
+		cmap.insert( pair<string,int>( "ACTG", 1 ));
+		cmap.insert( pair<string,int>( "ACAG", 1 ));
+		TS_ASSERT_EQUALS( cmap.size(), 2 );
+		cmap.clear();
+
+		cmap.insert( pair<string,int>( "CCTG", 1 ));
+		cmap.insert( pair<string,int>( "ACTG", 1 ));
+		TS_ASSERT_EQUALS( cmap.size(), 2 );
+		cmap.clear();
+
+		cmap.insert( pair<string,int>( "CCTG", 1 ));
+		cmap.insert( pair<string,int>( "TCTG", 1 ));
+		TS_ASSERT_EQUALS( cmap.size(), 2 );
+		cmap.clear();
+
+		cmap.insert( pair<string,int>( "ACTG", 1 ));
+		cmap.insert( pair<string,int>( "ACTGN", 1 ));
+		TS_ASSERT_EQUALS( cmap.size(), 2 );
+		cmap.clear();
+
+
+	}
 };
 
 

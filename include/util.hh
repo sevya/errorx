@@ -358,6 +358,47 @@ int julian( vector<int> & date );
 bool valid_license();
 //////////// END licensing based on date modules ////////////////////
 
+
+
+//////////// aggregation functions ////////////////////
+/**
+	Compares sequences 
+
+	@return boolean if strings are equal
+*/
+bool vanilla_compare( const string & a, const string & b );
+
+/**
+	Compares sequences ignoring the correction character
+
+	@param N correction character
+	@return boolean if strings are equal
+*/
+bool compare( const string & a, const string & b, const char N );
+
+
+/**
+	Compares clonotypes in the following order: V gene, J gene, CDR3
+	Ignores the correction character (X for amino acids)
+
+	@param N correction character
+	@return boolean if strings are equal
+*/
+bool compare_clonotypes( const string & a, const string & b );
+
+
+/**
+	Adds key to map if not present with a value of 1. If it is present
+	increments the value by one
+
+	@param cmap map to check
+	@param key key to insert
+*/
+void add_if_not_present( map<string,int,function<bool(string,string)> > & cmap, string const & key );
+
+
+//////////// END aggregation functions ////////////////////
+
 } // namespace util
 } // namespace errorx
 

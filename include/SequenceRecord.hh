@@ -131,6 +131,14 @@ public:
 	/**
 		Getters and setters
 	*/
+	void full_nt_sequence( string const & );
+	void full_gl_nt_sequence( string const & );
+	void full_nt_sequence_corrected( string const & );
+	void cdr3_aa_sequence( string const & );
+	void full_aa_sequence( string const & );
+	void v_gene( string const & );
+	void j_gene( string const & );
+
 	string full_nt_sequence() const;
 	string full_gl_nt_sequence() const;
 	string full_nt_sequence_corrected() const;
@@ -149,8 +157,10 @@ public:
 	double gc_pct() const;
 	double shm() const;
 	string chain() const;
+	bool productive() const;
 	string quality_string() const;
 	int gl_start() const;
+	int translation_frame() const;
 
 private:
 	/**
@@ -267,9 +277,8 @@ private:
 	string full_gl_junction_;
 
 	int query_start_;
-public:
 	int gl_start_;
-private:
+
 	string quality_string_full_;
 
 	bool good_sequence_;
@@ -282,13 +291,11 @@ private:
 	int gc_count_;
 	double gc_pct_;
 	double shm_;
-public:
 	int translation_frame_;
-private:
-	
 
 	int verbose_;
 	bool allow_nonproductive_;
+
 
 };
 

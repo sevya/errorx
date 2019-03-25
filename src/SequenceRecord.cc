@@ -580,6 +580,30 @@ vector<vector<double>> SequenceRecord::get_features( ErrorPredictor const & pred
 	return features_2d;
 }
 
+void SequenceRecord::full_nt_sequence( string const & full_nt_sequence ) {
+	full_nt_sequence_ = full_nt_sequence;
+}
+
+void SequenceRecord::full_gl_nt_sequence( string const & full_gl_nt_sequence ) {
+	full_gl_nt_sequence_ = full_gl_nt_sequence;
+}
+
+void SequenceRecord::full_nt_sequence_corrected( string const & seq ) {
+	full_nt_sequence_corrected_ = seq; 
+}
+
+void SequenceRecord::cdr3_aa_sequence( string const & seq ) {
+	cdr3_aa_sequence_ = seq;
+}
+
+void SequenceRecord::full_aa_sequence( string const & seq ) {
+	full_aa_sequence_ = seq;
+}
+
+void SequenceRecord::v_gene( string const & v_gene ) { v_gene_ = v_gene; }
+void SequenceRecord::j_gene( string const & j_gene ) { j_gene_ = j_gene; }
+
+
 vector<pair<int,double>> SequenceRecord::get_predicted_errors() { return predicted_errors_all_; }
 string SequenceRecord::full_nt_sequence() const { return full_nt_sequence_; }
 string SequenceRecord::full_gl_nt_sequence() const { return full_gl_nt_sequence_; }

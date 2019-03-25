@@ -17,11 +17,14 @@ settings for processing, and ErrorPredictor that does the error correction itsel
 #include <vector>
 #include <iostream>
 #include <memory>
+#include <map>
+#include <functional>
 
 #include "SequenceQuery.hh"
 #include "SequenceRecord.hh"
 #include "ErrorXOptions.hh"
 #include "ErrorPredictor.hh"
+#include "util.hh"
 
 using namespace std;
 
@@ -127,10 +130,20 @@ public:
 		SequenceRecords are defined as "good" by the
 		IGBlastParser if they fit certain criteria,
 		such as confident V assignment, productive, etc.
+		Whether a nonproductive record is considered 
+		"good" is determined by option allow_nonproductive
+		in ErrorXOptions
 
 		@return number of "good" records
 	*/
 	int good_records() const;
+
+	/** 
+		Get number of productive SequenceRecord objects
+
+		@return number of productive records
+	*/
+	int productive_records() const;
 
 	/**
 		Returns a vector of string vectors, where each
@@ -176,6 +189,23 @@ public:
 		object and writes to a file.
 	*/
 	void write_features();
+
+	/**
+		Count the number of unique sequences and unique clonotypes
+		after error correction
+	*/
+	void count_sequences();
+	
+	
+	/**
+		Functions to return the count of unique sequences and clonotypes
+		of different types
+	*/
+	int unique_nt_sequences() const;
+	int unique_corrected_nt_sequences() const;
+	int unique_aa_sequences() const;
+	int unique_clonotypes() const;
+
 	
 private:
 	/**
@@ -206,11 +236,19 @@ private:
 	*/
 	static void track_progress( int & total_records, vector<int*> & progress_vector );
 
-	vector<SequenceRecord*> records_;
 
+	vector<SequenceRecord*> records_;
 	ErrorXOptions* options_;
 	ErrorPredictor* predictor_;
 
+	/**
+		Std maps that hold the unique sequences and clonotypes contained in 
+		the dataset
+	*/
+	map<string,int,function<bool(string,string)> > sequence_map_;
+	map<string,int,function<bool(string,string)> > corrected_sequence_map_;
+	map<string,int,function<bool(string,string)> > aa_sequence_map_;
+	map<string,int,function<bool(string,string)> > clonotype_map_;
 
 };
 

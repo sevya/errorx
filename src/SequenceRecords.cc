@@ -187,6 +187,14 @@ int SequenceRecords::good_records() const {
 	return good_records;
  }
 
+ int SequenceRecords::productive_records() const {
+	int productive_records = 0;
+	for ( int ii = 0; ii < records_.size(); ++ii ) {
+		if ( records_[ii]->productive() ) productive_records++;
+	}
+	return productive_records;
+ }
+
 vector<string> SequenceRecords::get_summary_labels() const {
 
 	return vector<string> {
@@ -264,8 +272,7 @@ void SequenceRecords::correct_sequences_threaded( SequenceRecords* & records,
 				*(records->predictor_), 
 				*(records->options_) );
 
-			// update in increments of 50
-			// cout << "working on record " << ii << " out of " << total << endl; // TODO remove
+			// update in increments of 10
 			int incrementAmount = 10;
 			if ( ii%incrementAmount == 0 ) (*increment)( incrementAmount, total, m );
 
@@ -443,5 +450,92 @@ void SequenceRecords::track_progress( int & total_records, vector<int*> & progre
 	}
 	cout << endl;
 }
+
+void SequenceRecords::count_sequences() {
+
+	function< bool(string,string) > compareCorrectedSequences = 
+		std::bind( &util::compare, 
+				   placeholders::_1, 
+				   placeholders::_2, 
+				   options_->correction()
+		);
+
+	function< bool(string,string) > compareClonotypes = &util::compare_clonotypes;
+
+	function< bool(string,string) > compareVanilla = &util::vanilla_compare;
+
+	// instantiate these maps with their comparators
+	corrected_sequence_map_ = map<string,int,function<bool(string,string)> > ( compareCorrectedSequences );
+	clonotype_map_ = map<string,int,function<bool(string,string)> > ( compareClonotypes );
+
+	sequence_map_ = map<string,int,function<bool(string,string)> > ( compareVanilla );
+	aa_sequence_map_ = map<string,int,function<bool(string,string)> > ( compareVanilla );
+
+	map<string,int>::iterator it;
+	string key;
+	for ( int ii = 0; ii < records_.size(); ++ii ) {
+		SequenceRecord* current_record = records_[ ii ];
+		if ( !current_record->isGood() ) continue;
+
+		key = current_record->full_nt_sequence();
+		it = sequence_map_.find( key );
+		if ( it == sequence_map_.end() ) {
+			sequence_map_.insert( pair<string,int>( key, 1 ));
+		} else {
+			it->second += 1;
+		}
+
+		key = current_record->full_nt_sequence_corrected();
+		it = corrected_sequence_map_.find( key );
+		if ( it == corrected_sequence_map_.end() ) {
+			corrected_sequence_map_.insert( pair<string,int>( key, 1 ));
+		} else {
+			it->second += 1;
+		}
+
+		key = current_record->full_aa_sequence();
+		it = aa_sequence_map_.find( key );
+		if ( it == aa_sequence_map_.end() ) {
+			aa_sequence_map_.insert( pair<string,int>( key, 1 ));
+		} else {
+			it->second += 1;
+		}
+
+		// check if all information is there to make a clonotype
+		if ( current_record->v_gene() == "" || 
+			 current_record->cdr3_aa_sequence() == "" || 
+			 current_record->j_gene() == "" ) {
+			continue;
+		}
+		key = current_record->v_gene() + "_" + 
+			  current_record->cdr3_aa_sequence() + "_" +
+			  current_record->j_gene();
+
+		it = clonotype_map_.find( key );
+		if ( it == clonotype_map_.end() ) {
+			clonotype_map_.insert( pair<string,int>( key, 1 ));
+		} else {
+			it->second += 1;
+		}
+
+	}
+}
+
+int SequenceRecords::unique_nt_sequences() const { 
+	return sequence_map_.size(); 
+}
+
+int SequenceRecords::unique_corrected_nt_sequences() const {
+	return corrected_sequence_map_.size(); 
+}
+int SequenceRecords::unique_aa_sequences() const {
+	return aa_sequence_map_.size();
+}
+
+int SequenceRecords::unique_clonotypes() const {
+	return clonotype_map_.size();
+}
+
+
 
 } // namespace errorx
