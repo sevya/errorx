@@ -361,12 +361,6 @@ bool valid_license();
 
 
 //////////// aggregation functions ////////////////////
-/**
-	Compares sequences 
-
-	@return boolean if strings are equal
-*/
-bool vanilla_compare( const string & a, const string & b );
 
 /**
 	Compares sequences ignoring the correction character
@@ -396,6 +390,7 @@ bool compare_clonotypes( const string & a, const string & b );
 */
 void add_if_not_present( map<string,int,function<bool(string,string)> > & cmap, string const & key );
 
+vector<pair<string,int>> sort_map( map<string,int> const & cmap, bool ascending=1 );
 
 //////////// END aggregation functions ////////////////////
 

@@ -462,14 +462,10 @@ void SequenceRecords::count_sequences() {
 
 	function< bool(string,string) > compareClonotypes = &util::compare_clonotypes;
 
-	function< bool(string,string) > compareVanilla = &util::vanilla_compare;
 
 	// instantiate these maps with their comparators
 	corrected_sequence_map_ = map<string,int,function<bool(string,string)> > ( compareCorrectedSequences );
 	clonotype_map_ = map<string,int,function<bool(string,string)> > ( compareClonotypes );
-
-	sequence_map_ = map<string,int,function<bool(string,string)> > ( compareVanilla );
-	aa_sequence_map_ = map<string,int,function<bool(string,string)> > ( compareVanilla );
 
 	map<string,int>::iterator it;
 	string key;
@@ -518,6 +514,22 @@ void SequenceRecords::count_sequences() {
 			it->second += 1;
 		}
 
+		key = current_record->v_gene();
+		it = vgene_map_.find( key );
+		if ( it == vgene_map_.end() ) {
+			vgene_map_.insert( pair<string,int>( key, 1 ));
+		} else {
+			it->second += 1;
+		}
+
+		key = current_record->j_gene();
+		it = jgene_map_.find( key );
+		if ( it == jgene_map_.end() ) {
+			jgene_map_.insert( pair<string,int>( key, 1 ));
+		} else {
+			it->second += 1;
+		}
+
 	}
 }
 
@@ -536,6 +548,14 @@ int SequenceRecords::unique_clonotypes() const {
 	return clonotype_map_.size();
 }
 
+map<string,int> SequenceRecords::vgene_counts() const {
+	return vgene_map_;
+}
 
+map<string,int> SequenceRecords::jgene_counts() const {
+	return jgene_map_;
+}
+
+ErrorXOptions* SequenceRecords::get_options() const { return options_; }
 
 } // namespace errorx

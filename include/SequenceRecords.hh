@@ -191,6 +191,11 @@ public:
 	void write_features();
 
 	/**
+		Get the options file used for these records
+	*/
+	ErrorXOptions* get_options() const;
+
+	/**
 		Count the number of unique sequences and unique clonotypes
 		after error correction
 	*/
@@ -205,7 +210,8 @@ public:
 	int unique_corrected_nt_sequences() const;
 	int unique_aa_sequences() const;
 	int unique_clonotypes() const;
-
+	map<string,int> vgene_counts() const;
+	map<string,int> jgene_counts() const;
 	
 private:
 	/**
@@ -245,11 +251,13 @@ private:
 		Std maps that hold the unique sequences and clonotypes contained in 
 		the dataset
 	*/
-	map<string,int,function<bool(string,string)> > sequence_map_;
+	map<string,int> sequence_map_;
 	map<string,int,function<bool(string,string)> > corrected_sequence_map_;
-	map<string,int,function<bool(string,string)> > aa_sequence_map_;
+	map<string,int> aa_sequence_map_;
 	map<string,int,function<bool(string,string)> > clonotype_map_;
 
+	map<string,int> vgene_map_;
+	map<string,int> jgene_map_;
 };
 
 } // namespace errorx
