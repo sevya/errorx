@@ -1,0 +1,511 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - TestErrorX.info - /Users/alexsevy/ErrorX/unit_test/cxxtest/cxxtest/ValueTraits.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../index.html">top level</a> - <a href="index.html">Users/alexsevy/ErrorX/unit_test/cxxtest/cxxtest</a> - ValueTraits.h<span style="font-size: 80%;"> (source / <a href="ValueTraits.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">TestErrorX.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">10</td>
+            <td class="headerCovTableEntry">35</td>
+            <td class="headerCovTableEntryLo">28.6 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-03-02 13:18:32</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">24</td>
+            <td class="headerCovTableEntryLo">8.3 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*</a>
+<span class="lineNum">       2 </span>            : -------------------------------------------------------------------------
+<span class="lineNum">       3 </span>            :  CxxTest: A lightweight C++ unit testing library.
+<span class="lineNum">       4 </span>            :  Copyright (c) 2008 Sandia Corporation.
+<span class="lineNum">       5 </span>            :  This software is distributed under the LGPL License v3
+<span class="lineNum">       6 </span>            :  For more information, see the COPYING file in the top CxxTest directory.
+<span class="lineNum">       7 </span>            :  Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
+<span class="lineNum">       8 </span>            :  the U.S. Government retains certain rights in this software.
+<span class="lineNum">       9 </span>            : -------------------------------------------------------------------------
+<span class="lineNum">      10 </span>            : */
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span>            : #ifndef __cxxtest__ValueTraits_h__
+<span class="lineNum">      13 </span>            : #define __cxxtest__ValueTraits_h__
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : //
+<span class="lineNum">      16 </span>            : // ValueTraits are used by CxxTest to convert arbitrary
+<span class="lineNum">      17 </span>            : // values used in TS_ASSERT_EQUALS() to a string representation.
+<span class="lineNum">      18 </span>            : //
+<span class="lineNum">      19 </span>            : // This header file contains value traits for builtin integral types.
+<span class="lineNum">      20 </span>            : // To declare value traits for new types you should instantiate the class
+<span class="lineNum">      21 </span>            : // ValueTraits&lt;YourClass&gt;.
+<span class="lineNum">      22 </span>            : //
+<span class="lineNum">      23 </span>            : 
+<span class="lineNum">      24 </span>            : #include &lt;cxxtest/Flags.h&gt;
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            : #ifdef _CXXTEST_OLD_TEMPLATE_SYNTAX
+<span class="lineNum">      27 </span>            : #   define CXXTEST_TEMPLATE_INSTANTIATION
+<span class="lineNum">      28 </span>            : #else // !_CXXTEST_OLD_TEMPLATE_SYNTAX
+<span class="lineNum">      29 </span>            : #   define CXXTEST_TEMPLATE_INSTANTIATION template&lt;&gt;
+<span class="lineNum">      30 </span>            : #endif // _CXXTEST_OLD_TEMPLATE_SYNTAX
+<span class="lineNum">      31 </span>            : 
+<span class="lineNum">      32 </span>            : #ifdef _CXXTEST_HAVE_STD
+<span class="lineNum">      33 </span>            : #include &lt;cmath&gt;
+<span class="lineNum">      34 </span>            : #else
+<span class="lineNum">      35 </span>            : #include &lt;math.h&gt;
+<span class="lineNum">      36 </span>            : #endif
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span>            : namespace CxxTest
+<span class="lineNum">      39 </span>            : {
+<span class="lineNum">      40 </span>            : //
+<span class="lineNum">      41 </span>            : // This is how we use the value traits
+<span class="lineNum">      42 </span>            : //
+<span class="lineNum">      43 </span>            : #   define TS_AS_STRING(x) CxxTest::traits(x).asString()
+<span class="lineNum">      44 </span>            : 
+<span class="lineNum">      45 </span>            : //
+<span class="lineNum">      46 </span>            : // Char representation of a digit
+<span class="lineNum">      47 </span>            : //
+<span class="lineNum">      48 </span>            : char digitToChar(unsigned digit);
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span>            : //
+<span class="lineNum">      51 </span>            : // Convert byte value to hex digits
+<span class="lineNum">      52 </span>            : // Returns pointer to internal buffer
+<span class="lineNum">      53 </span>            : //
+<span class="lineNum">      54 </span>            : const char *byteToHex(unsigned char byte);
+<span class="lineNum">      55 </span>            : 
+<span class="lineNum">      56 </span>            : //
+<span class="lineNum">      57 </span>            : // Convert byte values to string
+<span class="lineNum">      58 </span>            : // Returns one past the copied data
+<span class="lineNum">      59 </span>            : //
+<span class="lineNum">      60 </span>            : char *bytesToString(const unsigned char *bytes, unsigned numBytes, unsigned maxBytes, char *s);
+<span class="lineNum">      61 </span>            : 
+<span class="lineNum">      62 </span>            : //
+<span class="lineNum">      63 </span>            : // Copy a string.
+<span class="lineNum">      64 </span>            : // Returns one past the end of the destination string
+<span class="lineNum">      65 </span>            : // Remember -- we can't use the standard library!
+<span class="lineNum">      66 </span>            : //
+<span class="lineNum">      67 </span>            : char *copyString(char *dst, const char *src);
+<span class="lineNum">      68 </span>            : 
+<span class="lineNum">      69 </span>            : //
+<span class="lineNum">      70 </span>            : // Compare two strings.
+<span class="lineNum">      71 </span>            : // Remember -- we can't use the standard library!
+<span class="lineNum">      72 </span>            : //
+<span class="lineNum">      73 </span>            : bool stringsEqual(const char *s1, const char *s2);
+<span class="lineNum">      74 </span>            : 
+<span class="lineNum">      75 </span>            : //
+<span class="lineNum">      76 </span>            : // Represent a character value as a string
+<span class="lineNum">      77 </span>            : // Returns one past the end of the string
+<span class="lineNum">      78 </span>            : // This will be the actual char if printable or '\xXXXX' otherwise
+<span class="lineNum">      79 </span>            : //
+<span class="lineNum">      80 </span>            : char *charToString(unsigned long c, char *s);
+<span class="lineNum">      81 </span>            : 
+<span class="lineNum">      82 </span>            : //
+<span class="lineNum">      83 </span>            : // Prevent problems with negative (signed char)s
+<span class="lineNum">      84 </span>            : //
+<span class="lineNum">      85 </span>            : char *charToString(char c, char *s);
+<span class="lineNum">      86 </span>            : 
+<span class="lineNum">      87 </span>            : //
+<span class="lineNum">      88 </span>            : // The default ValueTraits class dumps up to 8 bytes as hex values
+<span class="lineNum">      89 </span>            : //
+<span class="lineNum">      90 </span>            : template &lt;class T&gt;
+<span class="lineNum">      91 </span>            : class ValueTraits
+<span class="lineNum">      92 </span>            : {
+<span class="lineNum">      93 </span>            :     enum { MAX_BYTES = 8 };
+<span class="lineNum">      94 </span>            :     char _asString[sizeof(&quot;{ &quot;) + sizeof(&quot;XX &quot;) * MAX_BYTES + sizeof(&quot;... }&quot;)];
+<span class="lineNum">      95 </span>            : 
+<span class="lineNum">      96 </span>            : public:
+<span class="lineNum">      97 </span>            :     ValueTraits(const T &amp;t) { bytesToString((const unsigned char *)&amp;t, sizeof(T), MAX_BYTES, _asString); }
+<span class="lineNum">      98 </span>            :     const char *asString(void) const { return _asString; }
+<span class="lineNum">      99 </span>            : };
+<span class="lineNum">     100 </span>            : 
+<span class="lineNum">     101 </span>            : //
+<span class="lineNum">     102 </span>            : // traits( T t )
+<span class="lineNum">     103 </span>            : // Creates an object of type ValueTraits&lt;T&gt;
+<a name="104"><span class="lineNum">     104 </span>            : //</a>
+<span class="lineNum">     105 </span>            : template &lt;class T&gt;
+<span class="lineNum">     106 </span>            : inline ValueTraits&lt;T&gt; traits(T t)
+<span class="lineNum">     107 </span>            : {
+<span class="lineNum">     108 </span><span class="lineNoCov">          0 :     return ValueTraits&lt;T&gt;(t);</span>
+<span class="lineNum">     109 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     110 </span>            : 
+<span class="lineNum">     111 </span>            : //
+<span class="lineNum">     112 </span>            : // You can duplicate the implementation of an existing ValueTraits
+<span class="lineNum">     113 </span>            : //
+<span class="lineNum">     114 </span>            : #   define CXXTEST_COPY_TRAITS(CXXTEST_NEW_CLASS, CXXTEST_OLD_CLASS) \
+<span class="lineNum">     115 </span>            :     CXXTEST_TEMPLATE_INSTANTIATION \
+<span class="lineNum">     116 </span>            :     class ValueTraits&lt; CXXTEST_NEW_CLASS &gt; \
+<span class="lineNum">     117 </span>            :     { \
+<span class="lineNum">     118 </span>            :         ValueTraits&lt; CXXTEST_OLD_CLASS &gt; _old; \
+<span class="lineNum">     119 </span>            :     public: \
+<span class="lineNum">     120 </span>            :         ValueTraits( CXXTEST_NEW_CLASS n ) : _old( (CXXTEST_OLD_CLASS)n ) {} \
+<span class="lineNum">     121 </span>            :         const char *asString( void ) const { return _old.asString(); } \
+<span class="lineNum">     122 </span>            :     }
+<span class="lineNum">     123 </span>            : 
+<span class="lineNum">     124 </span>            : //
+<span class="lineNum">     125 </span>            : // Certain compilers need separate declarations for T and const T
+<span class="lineNum">     126 </span>            : //
+<span class="lineNum">     127 </span>            : #   ifdef _CXXTEST_NO_COPY_CONST
+<span class="lineNum">     128 </span>            : #       define CXXTEST_COPY_CONST_TRAITS(CXXTEST_CLASS)
+<span class="lineNum">     129 </span>            : #   else // !_CXXTEST_NO_COPY_CONST
+<span class="lineNum">     130 </span>            : #       define CXXTEST_COPY_CONST_TRAITS(CXXTEST_CLASS) CXXTEST_COPY_TRAITS(CXXTEST_CLASS, const CXXTEST_CLASS)
+<span class="lineNum">     131 </span>            : #   endif // _CXXTEST_NO_COPY_CONST
+<span class="lineNum">     132 </span>            : 
+<span class="lineNum">     133 </span>            : //
+<a name="134"><span class="lineNum">     134 </span>            : // Avoid compiler warnings about unsigned types always &gt;= 0</a>
+<a name="135"><span class="lineNum">     135 </span>            : //</a>
+<span class="lineNum">     136 </span><span class="lineNoCov">          0 : template&lt;class N&gt; inline bool negative(N n) { return n &lt; 0; }</span>
+<span class="lineNum">     137 </span><span class="lineNoCov">          0 : template&lt;class N&gt; inline N abs(N n) { return negative(n) ? -n : n; }</span>
+<span class="lineNum">     138 </span>            : 
+<span class="lineNum">     139 </span>            : #   define CXXTEST_NON_NEGATIVE(Type) \
+<span class="lineNum">     140 </span>            :     CXXTEST_TEMPLATE_INSTANTIATION \
+<span class="lineNum">     141 </span>            :     inline bool negative&lt;Type&gt;( Type ) { return false; } \
+<span class="lineNum">     142 </span>            :     CXXTEST_TEMPLATE_INSTANTIATION \
+<span class="lineNum">     143 </span>            :     inline Type abs&lt;Type&gt;( Type value ) { return value; }
+<span class="lineNum">     144 </span>            : 
+<span class="lineNum">     145 </span>            : CXXTEST_NON_NEGATIVE(bool)
+<a name="146"><span class="lineNum">     146 </span>            : CXXTEST_NON_NEGATIVE(unsigned char)</a>
+<a name="147"><span class="lineNum">     147 </span>            : CXXTEST_NON_NEGATIVE(unsigned short int)</a>
+<span class="lineNum">     148 </span><span class="lineCov">          1 : CXXTEST_NON_NEGATIVE(unsigned int)</span>
+<span class="lineNum">     149 </span><span class="lineNoCov">          0 : CXXTEST_NON_NEGATIVE(unsigned long int)</span>
+<span class="lineNum">     150 </span>            : #   ifdef _CXXTEST_LONGLONG
+<span class="lineNum">     151 </span>            : CXXTEST_NON_NEGATIVE(unsigned _CXXTEST_LONGLONG)
+<span class="lineNum">     152 </span>            : #   endif // _CXXTEST_LONGLONG
+<span class="lineNum">     153 </span>            : 
+<span class="lineNum">     154 </span>            : //
+<span class="lineNum">     155 </span>            : // Represent (integral) number as a string
+<span class="lineNum">     156 </span>            : // Returns one past the end of the string
+<span class="lineNum">     157 </span>            : // Remember -- we can't use the standard library!
+<a name="158"><span class="lineNum">     158 </span>            : //</a>
+<span class="lineNum">     159 </span>            : template&lt;class N&gt;
+<span class="lineNum">     160 </span>            : char *numberToString(N n, char *s,
+<span class="lineNum">     161 </span>            :                      N base = 10,
+<span class="lineNum">     162 </span>            :                      unsigned skipDigits = 0,
+<span class="lineNum">     163 </span>            :                      unsigned maxDigits = (unsigned) - 1)
+<span class="lineNum">     164 </span>            : {
+<span class="lineNum">     165 </span><span class="lineCov">          1 :     if (negative(n))</span>
+<span class="lineNum">     166 </span>            :     {
+<span class="lineNum">     167 </span><span class="lineNoCov">          0 :         *s++ = '-';</span>
+<span class="lineNum">     168 </span><span class="lineNoCov">          0 :         n = abs(n);</span>
+<span class="lineNum">     169 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     170 </span>            : 
+<span class="lineNum">     171 </span><span class="lineCov">          1 :     N digit = 1;</span>
+<span class="lineNum">     172 </span><span class="lineCov">          2 :     while (digit &lt;= (n / base))</span>
+<span class="lineNum">     173 </span>            :     {
+<span class="lineNum">     174 </span><span class="lineNoCov">          0 :         digit *= base;</span>
+<span class="lineNum">     175 </span>            :     }
+<span class="lineNum">     176 </span>            :     N digitValue;
+<span class="lineNum">     177 </span><span class="lineCov">          4 :     for (; digit &gt;= 1 &amp;&amp; skipDigits; n -= digit * digitValue, digit /= base, -- skipDigits)</span>
+<span class="lineNum">     178 </span>            :     {
+<span class="lineNum">     179 </span><span class="lineNoCov">          0 :         digitValue = (unsigned)(n / digit);</span>
+<span class="lineNum">     180 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     181 </span><span class="lineCov">          7 :     for (; digit &gt;= 1 &amp;&amp; maxDigits; n -= digit * digitValue, digit /= base, -- maxDigits)</span>
+<span class="lineNum">     182 </span>            :     {
+<span class="lineNum">     183 </span><span class="lineCov">          1 :         *s++ = digitToChar((unsigned)(digitValue = (unsigned)(n / digit)));</span>
+<span class="lineNum">     184 </span><span class="lineCov">          1 :     }</span>
+<span class="lineNum">     185 </span>            : 
+<span class="lineNum">     186 </span><span class="lineCov">          1 :     *s = '\0';</span>
+<span class="lineNum">     187 </span><span class="lineCov">          1 :     return s;</span>
+<span class="lineNum">     188 </span>            : }
+<span class="lineNum">     189 </span>            : 
+<span class="lineNum">     190 </span>            : //
+<span class="lineNum">     191 </span>            : // All the specific ValueTraits follow.
+<span class="lineNum">     192 </span>            : // You can #define CXXTEST_USER_VALUE_TRAITS if you don't want them
+<span class="lineNum">     193 </span>            : //
+<span class="lineNum">     194 </span>            : 
+<span class="lineNum">     195 </span>            : #ifndef CXXTEST_USER_VALUE_TRAITS
+<span class="lineNum">     196 </span>            : //
+<span class="lineNum">     197 </span>            : // ValueTraits: const char * const &amp;
+<span class="lineNum">     198 </span>            : // This is used for printing strings, as in TS_FAIL( &quot;Message&quot; )
+<span class="lineNum">     199 </span>            : //
+<span class="lineNum">     200 </span>            : CXXTEST_TEMPLATE_INSTANTIATION
+<span class="lineNum">     201 </span>            : class ValueTraits&lt;const char * const &amp;&gt;
+<span class="lineNum">     202 </span>            : {
+<span class="lineNum">     203 </span>            :     ValueTraits &amp;operator=(const ValueTraits &amp;);
+<span class="lineNum">     204 </span>            :     const char *_asString;
+<a name="205"><span class="lineNum">     205 </span>            : </a>
+<span class="lineNum">     206 </span>            : public:
+<a name="207"><span class="lineNum">     207 </span><span class="lineNoCov">          0 :     ValueTraits(const char * const &amp;value) : _asString(value) {}</span></a>
+<span class="lineNum">     208 </span>            :     ValueTraits(const ValueTraits &amp;other) : _asString(other._asString) {}
+<span class="lineNum">     209 </span><span class="lineNoCov">          0 :     const char *asString(void) const { return _asString; }</span>
+<span class="lineNum">     210 </span>            : #if 0
+<span class="lineNum">     211 </span>            :     const char *asString(void) const
+<span class="lineNum">     212 </span>            :     {
+<span class="lineNum">     213 </span>            :         std::string tmp(1, '&quot;');
+<span class="lineNum">     214 </span>            :         for (char const* src = _asString; src &amp;&amp; *src; ++src)
+<span class="lineNum">     215 </span>            :         {
+<span class="lineNum">     216 </span>            :             switch (*src)
+<span class="lineNum">     217 </span>            :             {
+<span class="lineNum">     218 </span>            :             case '\\': tmp += &quot;\\\\&quot;; break;
+<span class="lineNum">     219 </span>            :             case '\n': tmp += &quot;\\n&quot;;  break;
+<span class="lineNum">     220 </span>            :             case '\r': tmp += &quot;\\r&quot;;  break;
+<span class="lineNum">     221 </span>            :             case '\t': tmp += &quot;\\t&quot;;  break;
+<span class="lineNum">     222 </span>            :             case '&quot;':  tmp += &quot;\\\&quot;&quot;; break;
+<span class="lineNum">     223 </span>            :             default:   tmp += *src;   break;
+<span class="lineNum">     224 </span>            :             }
+<span class="lineNum">     225 </span>            :         }
+<span class="lineNum">     226 </span>            :         tmp += '&quot;';
+<span class="lineNum">     227 </span>            : 
+<span class="lineNum">     228 </span>            :         char* res = new char[tmp.size() + 1];
+<span class="lineNum">     229 </span>            :         return strcpy(res, tmp.c_str());
+<span class="lineNum">     230 </span>            :     }
+<span class="lineNum">     231 </span>            : #endif
+<a name="232"><span class="lineNum">     232 </span>            : };</a>
+<span class="lineNum">     233 </span>            : 
+<span class="lineNum">     234 </span><span class="lineNoCov">          0 : CXXTEST_COPY_TRAITS(const char *, const char * const &amp;);</span>
+<span class="lineNum">     235 </span>            : CXXTEST_COPY_TRAITS(char *, const char * const &amp;);
+<span class="lineNum">     236 </span>            : 
+<span class="lineNum">     237 </span>            : //
+<span class="lineNum">     238 </span>            : // ValueTraits: bool
+<span class="lineNum">     239 </span>            : //
+<span class="lineNum">     240 </span>            : CXXTEST_TEMPLATE_INSTANTIATION
+<span class="lineNum">     241 </span>            : class ValueTraits&lt;const bool&gt;
+<span class="lineNum">     242 </span>            : {
+<span class="lineNum">     243 </span>            :     bool _value;
+<span class="lineNum">     244 </span>            : 
+<span class="lineNum">     245 </span>            : public:
+<span class="lineNum">     246 </span>            :     ValueTraits(const bool value) : _value(value) {}
+<span class="lineNum">     247 </span>            :     const char *asString(void) const { return _value ? &quot;true&quot; : &quot;false&quot;; }
+<span class="lineNum">     248 </span>            : };
+<span class="lineNum">     249 </span>            : 
+<span class="lineNum">     250 </span>            : CXXTEST_COPY_CONST_TRAITS(bool);
+<span class="lineNum">     251 </span>            : 
+<span class="lineNum">     252 </span>            : #   ifdef _CXXTEST_LONGLONG
+<span class="lineNum">     253 </span>            : //
+<span class="lineNum">     254 </span>            : // ValueTraits: signed long long
+<span class="lineNum">     255 </span>            : //
+<span class="lineNum">     256 </span>            : CXXTEST_TEMPLATE_INSTANTIATION
+<span class="lineNum">     257 </span>            : class ValueTraits&lt;const signed _CXXTEST_LONGLONG&gt;
+<span class="lineNum">     258 </span>            : {
+<span class="lineNum">     259 </span>            :     typedef _CXXTEST_LONGLONG T;
+<span class="lineNum">     260 </span>            :     char _asString[2 + 3 * sizeof(T)];
+<span class="lineNum">     261 </span>            : public:
+<span class="lineNum">     262 </span>            :     ValueTraits(T t) { numberToString&lt;T&gt;(t, _asString); }
+<span class="lineNum">     263 </span>            :     const char *asString(void) const { return _asString; }
+<span class="lineNum">     264 </span>            : };
+<span class="lineNum">     265 </span>            : 
+<span class="lineNum">     266 </span>            : CXXTEST_COPY_CONST_TRAITS(signed _CXXTEST_LONGLONG);
+<span class="lineNum">     267 </span>            : 
+<span class="lineNum">     268 </span>            : //
+<span class="lineNum">     269 </span>            : // ValueTraits: unsigned long long
+<span class="lineNum">     270 </span>            : //
+<span class="lineNum">     271 </span>            : CXXTEST_TEMPLATE_INSTANTIATION
+<span class="lineNum">     272 </span>            : class ValueTraits&lt;const unsigned _CXXTEST_LONGLONG&gt;
+<span class="lineNum">     273 </span>            : {
+<span class="lineNum">     274 </span>            :     typedef unsigned _CXXTEST_LONGLONG T;
+<span class="lineNum">     275 </span>            :     char _asString[1 + 3 * sizeof(T)];
+<span class="lineNum">     276 </span>            : public:
+<span class="lineNum">     277 </span>            :     ValueTraits(T t) { numberToString&lt;T&gt;(t, _asString); }
+<span class="lineNum">     278 </span>            :     const char *asString(void) const { return _asString; }
+<span class="lineNum">     279 </span>            : };
+<span class="lineNum">     280 </span>            : 
+<span class="lineNum">     281 </span>            : CXXTEST_COPY_CONST_TRAITS(unsigned _CXXTEST_LONGLONG);
+<span class="lineNum">     282 </span>            : #   endif // _CXXTEST_LONGLONG
+<span class="lineNum">     283 </span>            : 
+<span class="lineNum">     284 </span>            : //
+<span class="lineNum">     285 </span>            : // ValueTraits: signed long
+<span class="lineNum">     286 </span>            : //
+<span class="lineNum">     287 </span>            : CXXTEST_TEMPLATE_INSTANTIATION
+<span class="lineNum">     288 </span>            : class ValueTraits&lt;const signed long int&gt;
+<span class="lineNum">     289 </span>            : {
+<span class="lineNum">     290 </span>            :     typedef signed long int T;
+<span class="lineNum">     291 </span>            :     char _asString[2 + 3 * sizeof(T)];
+<span class="lineNum">     292 </span>            : public:
+<span class="lineNum">     293 </span>            :     ValueTraits(T t) { numberToString&lt;T&gt;(t, _asString); }
+<span class="lineNum">     294 </span>            :     const char *asString(void) const { return _asString; }
+<span class="lineNum">     295 </span>            : };
+<span class="lineNum">     296 </span>            : 
+<span class="lineNum">     297 </span>            : CXXTEST_COPY_CONST_TRAITS(signed long int);
+<span class="lineNum">     298 </span>            : 
+<span class="lineNum">     299 </span>            : //
+<span class="lineNum">     300 </span>            : // ValueTraits: unsigned long
+<span class="lineNum">     301 </span>            : //
+<span class="lineNum">     302 </span>            : CXXTEST_TEMPLATE_INSTANTIATION
+<span class="lineNum">     303 </span>            : class ValueTraits&lt;const unsigned long int&gt;
+<span class="lineNum">     304 </span>            : {
+<span class="lineNum">     305 </span>            :     typedef unsigned long int T;
+<span class="lineNum">     306 </span>            :     char _asString[1 + 3 * sizeof(T)];
+<span class="lineNum">     307 </span>            : public:
+<span class="lineNum">     308 </span>            :     ValueTraits(T t) { numberToString&lt;T&gt;(t, _asString); }
+<span class="lineNum">     309 </span>            :     const char *asString(void) const { return _asString; }
+<span class="lineNum">     310 </span>            : };
+<span class="lineNum">     311 </span>            : 
+<span class="lineNum">     312 </span>            : CXXTEST_COPY_CONST_TRAITS(unsigned long int);
+<span class="lineNum">     313 </span>            : 
+<span class="lineNum">     314 </span>            : //
+<span class="lineNum">     315 </span>            : // All decimals are the same as the long version
+<span class="lineNum">     316 </span>            : //
+<span class="lineNum">     317 </span>            : 
+<span class="lineNum">     318 </span>            : CXXTEST_COPY_TRAITS(const signed int, const signed long int);
+<span class="lineNum">     319 </span>            : CXXTEST_COPY_TRAITS(const unsigned int, const unsigned long int);
+<span class="lineNum">     320 </span>            : CXXTEST_COPY_TRAITS(const signed short int, const signed long int);
+<span class="lineNum">     321 </span>            : CXXTEST_COPY_TRAITS(const unsigned short int, const unsigned long int);
+<span class="lineNum">     322 </span>            : CXXTEST_COPY_TRAITS(const unsigned char, const unsigned long int);
+<span class="lineNum">     323 </span>            : 
+<span class="lineNum">     324 </span>            : CXXTEST_COPY_CONST_TRAITS(signed int);
+<span class="lineNum">     325 </span>            : CXXTEST_COPY_CONST_TRAITS(unsigned int);
+<span class="lineNum">     326 </span>            : CXXTEST_COPY_CONST_TRAITS(signed short int);
+<span class="lineNum">     327 </span>            : CXXTEST_COPY_CONST_TRAITS(unsigned short int);
+<span class="lineNum">     328 </span>            : CXXTEST_COPY_CONST_TRAITS(unsigned char);
+<span class="lineNum">     329 </span>            : 
+<span class="lineNum">     330 </span>            : //
+<span class="lineNum">     331 </span>            : // ValueTraits: char
+<span class="lineNum">     332 </span>            : // Returns 'x' for printable chars, '\x??' for others
+<span class="lineNum">     333 </span>            : //
+<span class="lineNum">     334 </span>            : CXXTEST_TEMPLATE_INSTANTIATION
+<span class="lineNum">     335 </span>            : class ValueTraits&lt;const char&gt;
+<span class="lineNum">     336 </span>            : {
+<span class="lineNum">     337 </span>            :     char _asString[sizeof(&quot;'\\xXX'&quot;)];
+<span class="lineNum">     338 </span>            : public:
+<span class="lineNum">     339 </span>            :     ValueTraits(char c) { copyString(charToString(c, copyString(_asString, &quot;'&quot;)), &quot;'&quot;); }
+<span class="lineNum">     340 </span>            :     const char *asString(void) const { return _asString; }
+<span class="lineNum">     341 </span>            : };
+<span class="lineNum">     342 </span>            : 
+<span class="lineNum">     343 </span>            : CXXTEST_COPY_CONST_TRAITS(char);
+<span class="lineNum">     344 </span>            : 
+<span class="lineNum">     345 </span>            : //
+<span class="lineNum">     346 </span>            : // ValueTraits: signed char
+<span class="lineNum">     347 </span>            : // Same as char, some compilers need it
+<span class="lineNum">     348 </span>            : //
+<span class="lineNum">     349 </span>            : CXXTEST_COPY_TRAITS(const signed char, const char);
+<span class="lineNum">     350 </span>            : CXXTEST_COPY_CONST_TRAITS(signed char);
+<span class="lineNum">     351 </span>            : 
+<span class="lineNum">     352 </span>            : //
+<span class="lineNum">     353 </span>            : // ValueTraits: double
+<span class="lineNum">     354 </span>            : //
+<span class="lineNum">     355 </span>            : CXXTEST_TEMPLATE_INSTANTIATION
+<span class="lineNum">     356 </span>            : class ValueTraits&lt;const double&gt;
+<a name="357"><span class="lineNum">     357 </span>            : {</a>
+<span class="lineNum">     358 </span>            : public:
+<span class="lineNum">     359 </span>            :     ValueTraits(double t)
+<span class="lineNum">     360 </span><span class="lineNoCov">          0 :     {</span>
+<span class="lineNum">     361 </span><span class="lineNoCov">          0 :         if ((t != t) || (t &gt;= HUGE_VAL) || (t == -HUGE_VAL))</span>
+<span class="lineNum">     362 </span>            :         {
+<span class="lineNum">     363 </span><span class="lineNoCov">          0 :             nonFiniteNumber(t);</span>
+<span class="lineNum">     364 </span><span class="lineNoCov">          0 :         }</span>
+<span class="lineNum">     365 </span><span class="lineNoCov">          0 :         else if (requiredDigitsOnLeft(t) &gt; MAX_DIGITS_ON_LEFT)</span>
+<span class="lineNum">     366 </span>            :         {
+<span class="lineNum">     367 </span><span class="lineNoCov">          0 :             hugeNumber(t);</span>
+<span class="lineNum">     368 </span><span class="lineNoCov">          0 :         }</span>
+<span class="lineNum">     369 </span>            :         else
+<span class="lineNum">     370 </span>            :         {
+<span class="lineNum">     371 </span><span class="lineNoCov">          0 :             normalNumber(t);</span>
+<span class="lineNum">     372 </span>            :         }
+<a name="373"><span class="lineNum">     373 </span><span class="lineNoCov">          0 :     }</span></a>
+<span class="lineNum">     374 </span>            : 
+<span class="lineNum">     375 </span><span class="lineNoCov">          0 :     const char *asString(void) const { return _asString; }</span>
+<span class="lineNum">     376 </span>            : 
+<span class="lineNum">     377 </span>            : private:
+<span class="lineNum">     378 </span>            :     enum { MAX_DIGITS_ON_LEFT = 24, DIGITS_ON_RIGHT = 4, BASE = 10 };
+<span class="lineNum">     379 </span>            :     char _asString[1 + MAX_DIGITS_ON_LEFT + 1 + DIGITS_ON_RIGHT + 1];
+<span class="lineNum">     380 </span>            : 
+<span class="lineNum">     381 </span>            :     static unsigned requiredDigitsOnLeft(double t);
+<span class="lineNum">     382 </span>            :     char *doNegative(double &amp;t);
+<span class="lineNum">     383 </span>            :     void hugeNumber(double t);
+<span class="lineNum">     384 </span>            :     void normalNumber(double t);
+<span class="lineNum">     385 </span>            :     void nonFiniteNumber(double t);
+<span class="lineNum">     386 </span>            :     char *doubleToString(double t, char *s, unsigned skip = 0, unsigned max = (unsigned) - 1);
+<a name="387"><span class="lineNum">     387 </span>            : };</a>
+<span class="lineNum">     388 </span>            : 
+<span class="lineNum">     389 </span><span class="lineNoCov">          0 : CXXTEST_COPY_CONST_TRAITS(double);</span>
+<span class="lineNum">     390 </span>            : 
+<span class="lineNum">     391 </span>            : //
+<span class="lineNum">     392 </span>            : // ValueTraits: float
+<span class="lineNum">     393 </span>            : //
+<span class="lineNum">     394 </span>            : CXXTEST_COPY_TRAITS(const float, const double);
+<span class="lineNum">     395 </span>            : CXXTEST_COPY_CONST_TRAITS(float);
+<span class="lineNum">     396 </span>            : #endif // !CXXTEST_USER_VALUE_TRAITS
+<span class="lineNum">     397 </span>            : }
+<span class="lineNum">     398 </span>            : 
+<span class="lineNum">     399 </span>            : #ifdef _CXXTEST_HAVE_STD
+<span class="lineNum">     400 </span>            : #   include &lt;cxxtest/StdValueTraits.h&gt;
+<span class="lineNum">     401 </span>            : #endif // _CXXTEST_HAVE_STD
+<span class="lineNum">     402 </span>            : 
+<span class="lineNum">     403 </span>            : namespace dummy_enum_ns {}
+<span class="lineNum">     404 </span>            : 
+<span class="lineNum">     405 </span>            : //
+<span class="lineNum">     406 </span>            : // CXXTEST_ENUM_TRAITS
+<span class="lineNum">     407 </span>            : //
+<span class="lineNum">     408 </span>            : #define CXXTEST_ENUM_TRAITS( TYPE, VALUES ) \
+<span class="lineNum">     409 </span>            :     namespace CxxTest \
+<span class="lineNum">     410 </span>            :     { \
+<span class="lineNum">     411 </span>            :         CXXTEST_TEMPLATE_INSTANTIATION \
+<span class="lineNum">     412 </span>            :         class ValueTraits&lt;TYPE&gt; \
+<span class="lineNum">     413 </span>            :         { \
+<span class="lineNum">     414 </span>            :             TYPE _value; \
+<span class="lineNum">     415 </span>            :             char _fallback[sizeof(&quot;(&quot; #TYPE &quot;)&quot;) + 3 * sizeof(TYPE)]; \
+<span class="lineNum">     416 </span>            :         public: \
+<span class="lineNum">     417 </span>            :             ValueTraits( TYPE value ) { \
+<span class="lineNum">     418 </span>            :                 _value = value; \
+<span class="lineNum">     419 </span>            :                 numberToString&lt;unsigned long int&gt;( _value, copyString( _fallback, &quot;(&quot; #TYPE &quot;)&quot; ) ); \
+<span class="lineNum">     420 </span>            :             } \
+<span class="lineNum">     421 </span>            :             const char *asString( void ) const \
+<span class="lineNum">     422 </span>            :             { \
+<span class="lineNum">     423 </span>            :                 switch ( _value ) \
+<span class="lineNum">     424 </span>            :                 { \
+<span class="lineNum">     425 </span>            :                     VALUES \
+<span class="lineNum">     426 </span>            :                     default: return _fallback; \
+<span class="lineNum">     427 </span>            :                 } \
+<span class="lineNum">     428 </span>            :             } \
+<span class="lineNum">     429 </span>            :         }; \
+<span class="lineNum">     430 </span>            :     } using namespace dummy_enum_ns
+<span class="lineNum">     431 </span>            : 
+<span class="lineNum">     432 </span>            : #define CXXTEST_ENUM_MEMBER( MEMBER ) \
+<span class="lineNum">     433 </span>            :     case MEMBER: return #MEMBER;
+<span class="lineNum">     434 </span>            : 
+<span class="lineNum">     435 </span>            : #endif // __cxxtest__ValueTraits_h__
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -28,7 +28,7 @@ INC=-I../include/ -Icxxtest/
 
 CXXGEN=cxxtest/bin/cxxtestgen
 
-all: TestSequenceFeatures TestIGBlastParser TestUtil TestErrorX TestLinking
+all: TestSequenceFeatures TestIGBlastParser TestUtil TestErrorX TestErrorXOptions TestLinking
 
 CopyLibrary: 
 	cp ../lib/liberrorx.$(DLLEXT) lib/
@@ -44,6 +44,10 @@ TestIGBlastParser: CopyLibrary
 TestErrorX: CopyLibrary
 	$(CXXGEN) --error-printer -o TestErrorX.cc TestErrorX.hh
 	$(CXX) $(CPPFLAGS) $(INC) -Llib/ -lerrorx -o bin/TestErrorX TestErrorX.cc $(FINAL)
+
+TestErrorXOptions: CopyLibrary
+	$(CXXGEN) --error-printer -o TestErrorXOptions.cc TestErrorXOptions.hh
+	$(CXX) $(CPPFLAGS) $(INC) -Llib/ -lerrorx -o bin/TestErrorXOptions TestErrorXOptions.cc $(FINAL)
 
 TestUtil: CopyLibrary
 	$(CXXGEN) --error-printer -o TestUtil.cc TestUtil.hh
