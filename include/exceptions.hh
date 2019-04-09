@@ -19,11 +19,10 @@ namespace errorx {
 */	
 class InvalidLicenseException : public std::exception {
 public:
-	const char* what () const throw ()
-	{
+	const char* what () const throw () {
 		return "You are currently running the trial version of ErrorX, "
 				"which can only process 100 sequences at a time. "
-				"Please limit your query size or contact alex@endeavorbio "
+				"Please limit your query size or contact alex@endeavorbio.com "
 				"to request access to the full version.";
 	}
 };
@@ -34,10 +33,10 @@ public:
 */	
 class BadLicenseException : public std::exception {
 public:
-	const char* what () const throw ()
-	{
+	const char* what () const throw () {
 		return "License is not valid. Please contact alex@endeavorbio.com for assistance";
 	}
 };
 
 } // namespace errorx
+

@@ -53,8 +53,14 @@ INC=-Iinclude/
 
 SRCS=src/SequenceRecords.cc src/SequenceRecord.cc src/IGBlastParser.cc \
 	 src/ErrorPredictor.cc src/SequenceFeatures.cc \
-	 src/ErrorXOptions.cc src/keras_model.cc src/util.cc \
+	 src/ErrorXOptions.cc src/util.cc \
 	 src/SequenceQuery.cc src/errorx.cc
+
+KERAS_SRCS=src/keras/DataChunkFlat.cc src/keras/LayerDense.cc \
+		   src/keras/KerasModel.cc src/keras/LayerActivation.cc 
+		   
+
+SRCS += $(KERAS_SRCS)
 
 BOOST=dependencies/boost_1_68_0/$(OS)/libboost_filesystem.a \
 	  dependencies/boost_1_68_0/$(OS)/libboost_program_options.a \

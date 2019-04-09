@@ -20,7 +20,8 @@ then this class is used to make a NN prediction
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "keras_model.hh"
+// #include "keras_model.hh"
+#include "keras/KerasModel.hh"
 #include "ErrorXOptions.hh"
 #include "SequenceFeatures.hh"
 

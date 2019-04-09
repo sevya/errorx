@@ -178,6 +178,21 @@ public:
 		TS_ASSERT_EQUALS( test_split[1], vector<string>( {"5","6","7","8"} ));
 		TS_ASSERT_EQUALS( test_split[2], vector<string>( {"9","10","11"} ));
 
+		test.push_back( "12" );
+		test_split = util::split_vector<string>( test, 3 );
+
+		TS_ASSERT_EQUALS( test_split[0], vector<string>( {"1","2","3","4"} ));
+		TS_ASSERT_EQUALS( test_split[1], vector<string>( {"5","6","7","8"} ));
+		TS_ASSERT_EQUALS( test_split[2], vector<string>( {"9","10","11","12"} ));
+
+		vector<int> test_int = {1,2,3,4,5,6,7,8,9,10,11,12};
+		vector<vector<int>> split_int = util::split_vector<int>( test_int, 3 );
+
+		TS_ASSERT_EQUALS( split_int[0], vector<int>( {1,2,3,4} ));
+		TS_ASSERT_EQUALS( split_int[1], vector<int>( {5,6,7,8} ));
+		TS_ASSERT_EQUALS( split_int[2], vector<int>( {9,10,11,12} ));
+
+
 		test = {"1"};
 		test_split = util::split_vector<string>( test, 3 );
 		TS_ASSERT_EQUALS( test_split[0], vector<string>( {"1"} ));

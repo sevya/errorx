@@ -22,7 +22,7 @@ ErrorPredictor to do the actual transformation and prediction.
 #include <vector>
 #include <stdio.h>
 #include <stdlib.h>
-#include "keras_model.hh"
+// #include "keras_model.hh"
 
 namespace errorx {
 
