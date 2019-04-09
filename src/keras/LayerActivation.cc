@@ -36,7 +36,7 @@ void LayerActivation::load_weights( istringstream & fin ) { fin >> activation_ty
 DataChunk* LayerActivation::compute_output( DataChunk* dc ) { 
 
 	if ( dc->get_data_dim() == 3 ) {
-		throw "Sorry, 3D data is not implemented (yet!)";
+		throw FunctionNotImplemented( "Sorry, 3D data is not implemented (yet!)" );
 
 		/**
 		vector<vector<vector<double>>> y = dc->get_3d();
@@ -82,7 +82,7 @@ DataChunk* LayerActivation::compute_output( DataChunk* dc ) {
 			}
 		} else {
 			// TODO turn this into an exception
-			throw "Activation type "+activation_type_+" not supported";
+			throw InvalidLayer( "Activation : "+activation_type_ );
 		}
 
 		keras::DataChunk *out = new DataChunkFlat();

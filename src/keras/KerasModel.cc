@@ -14,7 +14,7 @@ Code contained herein is proprietary and confidential.
 #include "keras/LayerDense.hh"
 
 #include "ErrorXOptions.hh"
-
+#include "exceptions.hh"
 #include "util.hh"
 
 #include <sstream>
@@ -36,18 +36,21 @@ KerasModel::KerasModel( errorx::ErrorXOptions const & options ) :
 	fs::path base( options.errorx_base() );
 	string model_path = (base / "model.nnet").string();
 
+	load_weights( model_path );
 	// TODO can I simplify this to one statement?
-	string model_string = errorx::util::read_from_file( model_path );
-	load_weights_from_string( model_string );
+	// string model_string = errorx::util::read_from_file( model_path );
+	// load_weights_from_string( model_string );
 }
 
 
 KerasModel::KerasModel( string const & file ) :
 	verbose_( 1 )
 {
+	load_weights( file );
+
 	// TODO can I simplify this to one statement?
-	string model_string = errorx::util::read_from_file( file );
-	load_weights_from_string( model_string );
+	// string model_string = errorx::util::read_from_file( file );
+	// load_weights_from_string( model_string );
 }
 
 KerasModel::~KerasModel() {
@@ -100,9 +103,13 @@ int KerasModel::get_output_length() const {
 	return layers_[i]->get_output_units();
 }
 
-void KerasModel::load_weights( string const & input_string ) {
-	if ( verbose_ > 1 ) cout << "Reading model from " << input_string << endl;
-	ifstream fin( input_string.c_str() );
+void KerasModel::load_weights( string const & infile ) {
+	if ( verbose_ > 1 ) cout << "Reading model from " << infile << endl;
+	ifstream fin( infile.c_str() );
+	
+	if ( !fin.good()) {
+		throw invalid_argument("Error: file "+infile+" does not exist.");
+	}
 
 	string layer_type = "";
 	string tmp_str = "";
@@ -165,9 +172,7 @@ Layer* KerasModel::create_layer( string const & layer_type ) {
 		// we don't need dropout layer in prediction mode
 		// leave it as null
 	} else {
-		// TODO throw an exception instead of cout
-		cout << "Error: Layer type " << layer_type << " not supported. Exiting gracefully..." << endl;
-		exit(0);
+		throw InvalidLayer( layer_type );
 	}
 
 
