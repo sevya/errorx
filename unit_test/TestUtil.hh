@@ -185,12 +185,31 @@ public:
 		TS_ASSERT_EQUALS( test_split[2], vector<string>( {} ));
 	}
 
+	void testScientific(void) {
+		double value = 1056.5;
+		TS_ASSERT_EQUALS(
+			util::to_scientific( value ),
+			"1.06E+03" 
+			);
 
-	// void testCountLines(void) {
+		value = 0.1035;
+		TS_ASSERT_EQUALS(
+			util::to_scientific( value ),
+			"1.03E-01" 
+			);
 
-	// 	string file = "testing/test.fastq";
-	// 	TS_ASSERT_EQUALS( util::count_lines(file), 4 );
-	// }
+		int intValue = 1056;
+		TS_ASSERT_EQUALS(
+			util::to_scientific( intValue ),
+			"1.06E+03" 
+			);
+
+		long longValue = 1056;
+		TS_ASSERT_EQUALS(
+			util::to_scientific( longValue ),
+			"1.06E+03" 
+			);
+	}
 		
 };
 

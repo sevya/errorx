@@ -168,6 +168,14 @@ double phred_avg_realspace( vector<int> const & phred_arr ) {
 	return 10*-log10(avg);
 }
 
+string to_scientific( double a ) {
+	// TODO potential overflow - fix this!
+	char buffer [256];
+	sprintf( buffer, "%.2E", a);
+	string a_str = buffer;
+	return a_str;
+}
+
 int count_queries( string & file ) {
 	std::ifstream in(file);
 	if ( !in.good() ) return 0;

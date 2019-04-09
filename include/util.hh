@@ -123,14 +123,7 @@ vector<vector<T>> split_vector( vector<T> const & vect, int nchunks ) {
 
 	@return string of number in scientific notation
 */	
-template <typename T>
-string to_scientific( T a ) {
-	// TODO potential overflow - fix this!
-	char buffer [256];
-	sprintf( buffer, "%.2E", a);
-	string a_str = buffer;
-	return a_str;
-}
+string to_scientific( double a );
 
 /**
 	Writes a 2d vector to a file

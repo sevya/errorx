@@ -12,6 +12,11 @@ errorx.sublime-workspace
 .*.swp
 unit_test/hs_err*.log
 
+*.gcno
+*.gcda
+out/
+*.info
+
 *tar.gz 
 
 bin/errorx*
