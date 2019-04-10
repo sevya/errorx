@@ -224,6 +224,23 @@ public:
 		delete record;
 	}
 
+	void testQuery(void) {
+		TS_ASSERT_THROWS(
+			SequenceQuery( "WhateverName", "ACTG", "GCTA", "FFFG " ),
+			invalid_argument
+			);
+
+		query_->sequenceID( "Name" );
+		query_->sequence("CGGG");
+		query_->germline_sequence("CGAG");
+		query_->phred_string("FFGF");
+
+		TS_ASSERT_EQUALS( query_->sequenceID(), "Name" );
+		TS_ASSERT_EQUALS( query_->sequence(), "CGGG");
+		TS_ASSERT_EQUALS( query_->germline_sequence(), "CGAG");
+		TS_ASSERT_EQUALS( query_->phred_string(), "FFGF");
+	}
+
 	void testFull(void) {
 
 		SequenceFeatures features ( record_, 136 );

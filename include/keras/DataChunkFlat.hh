@@ -70,6 +70,7 @@ public:
 	===========================================================
 	*/
 	int get_data_dim() const;
+	int num_features() const;
 	void show_name() const;
 	void show_values() const;
 	

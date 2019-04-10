@@ -13,6 +13,9 @@ Code contained herein is proprietary and confidential.
 
 using namespace std;
 
+#ifndef EXCEPTIONS_HH_
+#define EXCEPTIONS_HH_
+
 namespace errorx {
 
 /**
@@ -80,4 +83,38 @@ public:
 };
 
 
+/**
+	Exception is thrown when an uninitialize object is used
+*/	
+class ObjectNotInitialized : public exception {
+public:
+	ObjectNotInitialized() : message_("Sorry, you used an object that's not been initialized!") {}
+	ObjectNotInitialized( string const & message ) : message_( message ) {}
+
+	const char* what() const throw() {
+		return message_.c_str();
+	}
+
+	string message_;
+};
+
+
+/**
+	Exception is thrown when an uninitialize object is used
+*/	
+class BadModel : public exception {
+public:
+	BadModel() : message_("Model is malformed.") {}
+	BadModel( string const & message ) : message_( message ) {}
+
+	const char* what() const throw() {
+		return message_.c_str();
+	}
+
+	string message_;
+};
+
 } // namespace keras
+
+
+#endif // EXCEPTIONS_HH_

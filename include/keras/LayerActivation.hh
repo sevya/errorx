@@ -29,8 +29,7 @@ public:
 	                    Pure virtual functions 
 	===========================================================
 	*/
-	void load_weights( ifstream & fin );
-	void load_weights( istringstream & fin );
+	void load_weights( istream & fin );
 	DataChunk* compute_output( DataChunk* dc );
 	uint get_input_rows() const;
 	uint get_input_cols() const;

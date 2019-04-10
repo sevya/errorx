@@ -11,11 +11,15 @@ Code contained herein is proprietary and confidential.
 #include "keras/DataChunkFlat.hh"
 #include "keras/DataChunk2D.hh"
 
-#include <sstream>
-#include <fstream>
+#include "util.hh"
+
+#include <istream>
 #include <iostream>
 
+#include <boost/lexical_cast.hpp>
+
 using namespace std;
+using namespace errorx;
 
 namespace keras {
 
@@ -23,56 +27,82 @@ LayerDense::LayerDense() :
 	Layer( "Dense" ) 
 	{}
 
-void LayerDense::load_weights( ifstream & fin ) {
+void LayerDense::load_weights( istream & fin ) {
 	fin >> input_cnt_ >> neurons_;
-	double tmp_double;
+	// double tmp_double;
 	char tmp_char = ' ';
+
+	string tmp_double;
+
+	// iterate through input dimension
 	for ( int i = 0; i < input_cnt_; ++i ) {
 		vector<double> tmp_n;
 		fin >> tmp_char; // for '['
+		
+		// check that data truly starts here like it should
+		if ( tmp_char != '[' ) {
+			throw BadModel(
+			"Error: bad data in neuron weights. Make sure all lines "
+			"begin with [ and end with ] and that each neuron is on "
+			"its own line"
+			);
+		}
+
+		// iterate through neurons in each input dim
 		for ( int n = 0; n < neurons_; ++n ) {
 			fin >> tmp_double;
-			tmp_n.push_back( tmp_double );
+
+			if ( !util::isdouble(tmp_double) ) {
+				throw BadModel("bad value: "+tmp_double+" needs to be a double");
+			}
+			tmp_n.push_back( 
+				boost::lexical_cast<double>(tmp_double) 
+				);
 		}
+
 		fin >> tmp_char; // for ']'
+		// check that data truly ends here like it should
+		if ( tmp_char != ']' ) {
+			throw BadModel(
+			"Error: bad data in neuron weights. Make sure all lines "
+			"begin with [ and end with ] and that each neuron is on "
+			"its own line"
+			);
+		}
+
 		weights_.push_back( tmp_n );
 	}
 
 	fin >> tmp_char; // for '['
+	// check that data truly starts here like it should
+	if ( tmp_char != '[' ) {
+		throw BadModel(
+		"Error: bad data in bias weights. Make sure all lines "
+		"begin with [ and end with ] and that each neuron is on "
+		"its own line"
+		);
+	}
+
 	for ( int n = 0; n < neurons_; ++n ) {
 		fin >> tmp_double;
-		bias_.push_back( tmp_double );
+		if ( !util::isdouble(tmp_double) ) throw BadModel();
+		bias_.push_back( 
+			boost::lexical_cast<double>(tmp_double) 
+			);
 	}
 	fin >> tmp_char; // for ']'
+	if ( tmp_char != ']' ) {
+		throw BadModel(
+		"Error: bad data in bias weights. Make sure all lines "
+		"begin with [ and end with ] and that each neuron is on "
+		"its own line"
+		);
+	}
 }
 
-void LayerDense::load_weights( istringstream & fin ) {
-	fin >> input_cnt_ >> neurons_;
-	double tmp_double;
-	char tmp_char = ' ';
-	for ( int i = 0; i < input_cnt_; ++i ) {
-		vector<double> tmp_n;
-		fin >> tmp_char; // for '['
-		for ( int n = 0; n < neurons_; ++n ) {
-			fin >> tmp_double;
-			tmp_n.push_back( tmp_double );
-		}
-		fin >> tmp_char; // for ']'
-		weights_.push_back( tmp_n );
-	}
-
-	fin >> tmp_char; // for '['
-	for( int n = 0; n < neurons_; ++n) {
-		fin >> tmp_double;
-		bias_.push_back( tmp_double );
-	}
-	fin >> tmp_char; // for ']'
-}
 
 DataChunk* LayerDense::compute_output( DataChunk* dc ) {
-	//cout << "weights: input size " << m_weights.size() << endl;
-	//cout << "weights: neurons size " << m_weights[0].size() << endl;
-	//cout << "bias " << m_bias.size() << endl;
+
 	int size = weights_[0].size();
 	int size8 = size >> 3;
 	keras::DataChunkFlat* out = new DataChunkFlat( size, 0 );

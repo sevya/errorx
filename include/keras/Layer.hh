@@ -42,8 +42,7 @@ public:
 		Load weights for this layer based on either a file stream
 		or a string stream.
 	*/
-	virtual void load_weights( ifstream & fin ) = 0;
-	virtual void load_weights( istringstream & fin ) = 0;
+	virtual void load_weights( istream & fin ) = 0;
 
 	/**
 		Compute the output for this layer for an input data chunk

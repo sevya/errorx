@@ -32,6 +32,10 @@ public:
 	
 	KerasModel( string const & file );
 
+	KerasModel();
+
+	KerasModel( KerasModel const & other );
+
 	~KerasModel();
 
 	vector<double> compute_output( DataChunk* dc ) const;
@@ -43,10 +47,14 @@ public:
 	Layer* layer( int index ) const;
 	int no_layers() const;
 
-private:
 	void load_weights( string const & input_fname );
 	void load_weights_from_string( string const & input_fname );
 
+	int verbose() const;
+	void verbose( int verbose );
+
+private:
+	void load_weights_from_stream( istream & fin );
 	Layer* create_layer( string const & layer_name );
 
 	int layers_cnt_; // number of layers

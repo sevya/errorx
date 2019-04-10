@@ -35,6 +35,24 @@ using namespace std;
 namespace errorx {
 namespace util {
 
+bool isint( string const & str ) {
+	try {
+		boost::lexical_cast<int>( str );
+		return 1;
+	} catch ( boost::bad_lexical_cast & e ) {
+		return 0;
+	}
+}
+
+bool isdouble( string const & str ) {
+	try {
+		boost::lexical_cast<double>( str );
+		return 1;
+	} catch ( boost::bad_lexical_cast & e ) {
+		return 0;
+	}
+}
+
 void write_vector( string & filename,
 		vector<vector<string>> & vector2d,
 		string & delimiter ) {

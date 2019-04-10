@@ -28,6 +28,16 @@ namespace errorx{
 namespace util {
 
 /**
+	Use boost::lexical_cast to test if a string is an integer or double
+	
+	@param str input string
+
+	@return bool if it is an int/double
+*/
+bool isint( string const & str );
+bool isdouble( string const & str );
+
+/**
 	Break a string into tokens based on the provided delimiter. 
 	When multiple characters are present in the delimiter it 
 	will split by any of them (e.g. ", " will split on spaces

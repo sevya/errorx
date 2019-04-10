@@ -26,6 +26,8 @@ vector<vector<vector<double>>> const & DataChunk2D::get_3d() const { return data
 void DataChunk2D::set_data( vector<vector<vector<double>>> const & data ) { data_ = data; };
 
 int DataChunk2D::get_data_dim() const { return 3; }
+// TODO make sure this is right
+int DataChunk2D::num_features() const { return data_[1].size(); }
 
 void DataChunk2D::show_name() const {
 	cout << "DataChunk2D " << data_.size() << "x" << data_[0].size() << "x" << data_[0][0].size() << endl;

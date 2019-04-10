@@ -16,8 +16,7 @@ Code contained herein is proprietary and confidential.
 
 #include <string>
 #include <vector>
-#include <fstream>
-#include <sstream>
+#include <istream>
 #include <iostream>
 #include <math.h>
 
@@ -29,9 +28,7 @@ LayerActivation::LayerActivation() :
 	Layer( "Activation" ) 
 	{}
 
-void LayerActivation::load_weights( ifstream & fin ) { fin >> activation_type_; }
-
-void LayerActivation::load_weights( istringstream & fin ) { fin >> activation_type_; }
+void LayerActivation::load_weights( istream & fin ) { fin >> activation_type_; }
 
 DataChunk* LayerActivation::compute_output( DataChunk* dc ) { 
 
@@ -81,7 +78,6 @@ DataChunk* LayerActivation::compute_output( DataChunk* dc ) {
 				y[k] = tanh(y[k]);
 			}
 		} else {
-			// TODO turn this into an exception
 			throw InvalidLayer( "Activation : "+activation_type_ );
 		}
 

@@ -33,6 +33,7 @@ vector<double> & DataChunkFlat::get_1d_rw() { return data_; }
 void DataChunkFlat::set_data( vector<double> const & data ) { data_ = data; };
 
 int DataChunkFlat::get_data_dim() const { return 1; }
+int DataChunkFlat::num_features() const { return data_.size(); }
 
 void DataChunkFlat::show_name() const {
 	cout << "DataChunkFlat " << data_.size() << endl;

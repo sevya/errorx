@@ -13,6 +13,8 @@ Code contained herein is proprietary and confidential.
 
 #include <vector>
 
+#include "exceptions.hh"
+
 using namespace std;
 typedef unsigned int uint;
 
@@ -27,8 +29,12 @@ public:
 		Functions to access data held by data chunk. Implementation
 		and return type depend on shape of data
 	*/
-	virtual vector<double> const & get_1d() const { throw "not implemented"; };
-	virtual vector<vector<vector<double>>> const & get_3d() const { throw "not implemented"; };
+	virtual vector<double> const & get_1d() const { 
+		throw FunctionNotImplemented("function get_1d not implemented"); 
+	}
+	virtual vector<vector<vector<double>>> const & get_3d() const { 
+		throw FunctionNotImplemented("function get_3d not implemented"); 
+	}
 	
 	/**
 		Functions to set data held by data chunk. Implementation
@@ -50,6 +56,13 @@ public:
 		@return data dimensions
 	*/
 	virtual int get_data_dim() const = 0;
+
+	/**
+		Get number of features
+
+		@return num features
+	*/
+	virtual int num_features() const = 0;
 
 	/**
 		Print name of data chunk to stdout

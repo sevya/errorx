@@ -48,6 +48,16 @@ public:
 			);
 
 		TS_ASSERT_THROWS( 
+			options.igtype( "immunoglobulin" ),
+			invalid_argument
+			);
+		
+		TS_ASSERT_THROWS( 
+			options.species( "llama" ),
+			invalid_argument
+			);
+
+		TS_ASSERT_THROWS( 
 			options.nthreads( 0 ),
 			invalid_argument
 			);
@@ -62,6 +72,8 @@ public:
 
 		options.allow_nonproductive( 0 );
 		TS_ASSERT_EQUALS( options.allow_nonproductive(), 0 );
+
+		
 	}
 
 };
