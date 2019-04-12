@@ -15,6 +15,8 @@
 
 #include "ErrorXOptions.hh"
 
+#include <cmath>
+
 using namespace std;
 using namespace errorx;
 using namespace keras;
@@ -102,10 +104,10 @@ public:
 
 		output = model.compute_output( chunk );
 
-		TS_ASSERT_DELTA( output[0], 1.25, 4 );
-		TS_ASSERT_DELTA( output[1], 0.56, 4 );
-		TS_ASSERT_DELTA( output[2], 0.68, 4);
-		TS_ASSERT_DELTA( output[3], 0.80, 4 );
+		TS_ASSERT_DELTA( output[0], 1.25, pow(10,-4) );
+		TS_ASSERT_DELTA( output[1], 0.56, pow(10,-4) );
+		TS_ASSERT_DELTA( output[2], 0.68, pow(10,-4) );
+		TS_ASSERT_DELTA( output[3], 0.80, pow(10,-4) );
 
 		// Check output with sigmoid activation
 		model_str = 
@@ -127,10 +129,10 @@ public:
 
 		output = model.compute_output( chunk );
 
-		TS_ASSERT_DELTA( output[0], 0.777299861175, 9 );
-		TS_ASSERT_DELTA( output[1], 0.636452540282, 9 );
-		TS_ASSERT_DELTA( output[2], 0.663738697404, 9 );
-		TS_ASSERT_DELTA( output[3], 0.689974481128, 9 );
+		TS_ASSERT_DELTA( output[0], 0.777299861175, pow(10,-9) );
+		TS_ASSERT_DELTA( output[1], 0.636452540282, pow(10,-9) );
+		TS_ASSERT_DELTA( output[2], 0.663738697404, pow(10,-9) );
+		TS_ASSERT_DELTA( output[3], 0.689974481128, pow(10,-9) );
 
 
 		// Check output with tanh activation
@@ -148,10 +150,10 @@ public:
 
 		output = model.compute_output( chunk );
 
-		TS_ASSERT_DELTA( output[0], 0.84828364, 9 );
-		TS_ASSERT_DELTA( output[1], 0.507977433, 9 );
-		TS_ASSERT_DELTA( output[2], 0.591519395, 9 );
-		TS_ASSERT_DELTA( output[3], 0.66403677, 49 );
+		TS_ASSERT_DELTA( output[0], 0.84828364, pow(10,-9) );
+		TS_ASSERT_DELTA( output[1], 0.507977433, pow(10,-9) );
+		TS_ASSERT_DELTA( output[2], 0.591519395, pow(10,-9) );
+		TS_ASSERT_DELTA( output[3], 0.66403677, pow(10,-9) );
 
 
 		// Check output with softmax activation
@@ -168,10 +170,10 @@ public:
 		model.load_weights_from_string( model_str );
 
 		output = model.compute_output( chunk );
-		TS_ASSERT_DELTA( output[0], 0.369722718, 9 );
-		TS_ASSERT_DELTA( output[1], 0.185444067, 9 );
-		TS_ASSERT_DELTA( output[2], 0.209087602, 9 );
-		TS_ASSERT_DELTA( output[3], 0.235745613, 9 );
+		TS_ASSERT_DELTA( output[0], 0.369722718, pow(10,-9) );
+		TS_ASSERT_DELTA( output[1], 0.185444067, pow(10,-9) );
+		TS_ASSERT_DELTA( output[2], 0.209087602, pow(10,-9) );
+		TS_ASSERT_DELTA( output[3], 0.235745613, pow(10,-9) );
 
 
 		// Check output with relu activation
@@ -191,10 +193,10 @@ public:
 
 		output = model.compute_output( chunk );
 
-		TS_ASSERT_DELTA( output[0], 0.64, 4 );
-		TS_ASSERT_DELTA( output[1], 0, 4 );
-		TS_ASSERT_DELTA( output[2], 0, 4);
-		TS_ASSERT_DELTA( output[3], 0, 4 );
+		TS_ASSERT_DELTA( output[0], 0.64, pow(10,-4) );
+		TS_ASSERT_DELTA( output[1], 0, pow(10,-4) );
+		TS_ASSERT_DELTA( output[2], 0, pow(10,-4) );
+		TS_ASSERT_DELTA( output[3], 0, pow(10,-4) );
 
 		
 		

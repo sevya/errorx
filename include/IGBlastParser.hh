@@ -50,6 +50,18 @@ public:
 	*/
 	SequenceRecords* parse_output( ErrorXOptions & options );
 
+	/**
+		Parses a section of the IGBlast output file representing
+		one sequence. Turns it into an AbSequence that can then be
+		used to make a SequenceRecord
+
+		@param options ErrorXOptions to control processing
+
+		@return AbSequence object constructed from the IGBlast output
+	*/
+	AbSequence parse_lines( vector<string> const & lines, ErrorXOptions const & options );
+
+
 private:
 	/**
 		Tracks progress of the IGBlast query to make a progress bar
@@ -64,6 +76,7 @@ private:
 		@param command command to outsource to another thread
 	*/
 	void exec_in_thread( string command ) ;
+
 
 	atomic<bool> thread_finished_;
 //	string thread_output_;

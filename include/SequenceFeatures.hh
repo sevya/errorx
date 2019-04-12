@@ -87,15 +87,34 @@ public:
 		Getter
 	*/
 	bool is_germline() const;
+	vector<int> quality_window() const;
 
 private:
-	void initialize();
+	/**
+		Calculates metrics related to a DNA sequence. Will compute the 
+		GC content and the level of SHM and return a std::pair of those 
+		values in that order.
+
+		@param sequence DNA sequence
+		@param gl_sequence Germline DNA sequence
+
+		@return pair of <GC_pct,SHM>
+	*/	
+	pair<double,double> calculate_metrics( string const & sequence, string const & gl_sequence );
+
+	/**
+		Translates a character from a PHRED string 
+		to its integer counterpart. Assumes an offset
+		of 33, as used by Illumina.
+
+		@return int value corresponding to PHRED char
+	*/
+	int decode( char qual, int base );
 
 	string sequence_window_;
 	string gl_sequence_window_;
-public:
 	vector<int> quality_window_;
-private:
+
 	double global_GC_pct_;
 	double local_GC_pct_;
 	double global_SHM_;

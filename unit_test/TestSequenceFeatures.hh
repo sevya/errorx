@@ -19,6 +19,7 @@
 
 #include "SequenceRecord.hh"
 #include "IGBlastParser.hh"
+#include <cmath>
 
 using namespace std;
 using namespace errorx;
@@ -212,13 +213,13 @@ public:
 		string phred_str = "########################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4";
 
 		SequenceQuery query( "test",sequence, gl_sequence, phred_str );
-		SequenceRecord* record = new SequenceRecord( query, 1 );
+		SequenceRecord* record = new SequenceRecord( query );
 		SequenceFeatures sf = SequenceFeatures( record, 122 );
 
 		cout << "getting quality window:" << endl;
 		vector<int> quals = {2,2,2,2,2,2,34,25,28,24,31,22,10,34,21,10,10};
-		for ( int ii = 0; ii < sf.quality_window_.size(); ++ii ) {
-			TS_ASSERT_EQUALS( quals[ii], sf.quality_window_[ ii ] );
+		for ( int ii = 0; ii < sf.quality_window().size(); ++ii ) {
+			TS_ASSERT_EQUALS( quals[ii], sf.quality_window()[ ii ] );
 		}
 
 		delete record;
@@ -248,7 +249,7 @@ public:
 		vector<double> results_vector_test = features.get_feature_vector();
 		cout.precision(17);
 		for ( int ii = 0; ii < raw_vector_.size(); ++ii ) {
-			TS_ASSERT_DELTA( raw_vector_[ii], results_vector_test[ii], 0.0000001 )
+			TS_ASSERT_DELTA( raw_vector_[ii], results_vector_test[ii], pow(10,-9) )
 			if ( raw_vector_[ii]!=results_vector_test[ii] ) {
 				cout << ii << " : " << raw_vector_[ii] << " vs " << results_vector_test[ii] << endl;
 			}
@@ -259,7 +260,7 @@ public:
 		options.verbose(0);
 		ErrorPredictor predictor( options );
 
-		TS_ASSERT_DELTA( predicted_value_, predictor.apply_model( features ), 0.0000001);
+		TS_ASSERT_DELTA( predicted_value_, predictor.apply_model( features ), pow(10,-9) );
 
 	}
 
@@ -290,7 +291,7 @@ public:
 
 		SequenceRecords::correct_sequences( records );
 
-		TS_ASSERT_DELTA( predicted_error_rate_, records->estimate_error_rate(), 0.000001 );
+		TS_ASSERT_DELTA( predicted_error_rate_, records->estimate_error_rate(), pow(10,-9) );
 
 		delete records;
 	}
@@ -319,7 +320,7 @@ public:
 
 		SequenceRecords::correct_sequences( records );
 
-		TS_ASSERT_DELTA( predicted_error_rate_, records->estimate_error_rate(), 0.000001 );
+		TS_ASSERT_DELTA( predicted_error_rate_, records->estimate_error_rate(), pow(10,-9) );
 		
 		delete records;
 	}
@@ -336,7 +337,7 @@ public:
 	
 		SequenceRecords::correct_sequences( records );
 
-		TS_ASSERT_DELTA( predicted_error_rate_, records->estimate_error_rate(), 0.000001 );
+		TS_ASSERT_DELTA( predicted_error_rate_, records->estimate_error_rate(), pow(10,-9) );
 		delete records;
 
 	}
@@ -353,7 +354,7 @@ public:
 	
 		SequenceRecords::correct_sequences( records );
 
-		TS_ASSERT_DELTA( predicted_error_rate_, records->estimate_error_rate(), 0.000001 );
+		TS_ASSERT_DELTA( predicted_error_rate_, records->estimate_error_rate(), pow(10,-9) );
 		delete records;
 
 	}

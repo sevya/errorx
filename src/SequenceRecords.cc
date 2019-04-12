@@ -106,10 +106,7 @@ void SequenceRecords::import_from_tsv() {
 		}
 
 		SequenceQuery query( tokens[0], tokens[1], tokens[2], tokens[3] );
-		SequenceRecord* record = new SequenceRecord( 
-				query,
-				options_->verbose()
-				);
+		SequenceRecord* record = new SequenceRecord( query );
 		add_record( record );
 	}
 }
@@ -117,11 +114,7 @@ void SequenceRecords::import_from_tsv() {
 void SequenceRecords::import_from_list( vector<SequenceQuery> & queries ) {
 
 	for ( int ii = 0; ii < queries.size(); ++ii ) {	
-		SequenceRecord* record = new SequenceRecord( 
-				queries[ii],
-				options_->verbose()
-				);
-
+		SequenceRecord* record = new SequenceRecord( queries[ii] );
 		add_record( record );
 	}
 }
@@ -267,7 +260,7 @@ void SequenceRecords::correct_sequences_threaded( SequenceRecords* & records,
 			cout << "record could not be processed - exception caught : " 
 				<< records->get(ii)->sequenceID() << endl;
 			cout << e.what() << endl;
-			continue;
+			exit(1);
 		}
 	}
 }

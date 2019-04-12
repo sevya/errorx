@@ -37,6 +37,7 @@ namespace util {
 bool isint( string const & str );
 bool isdouble( string const & str );
 
+	
 /**
 	Break a string into tokens based on the provided delimiter. 
 	When multiple characters are present in the delimiter it 
@@ -163,17 +164,6 @@ string translate( string & nt_sequence, int frame );
 */	
 string reverse( string & sequence );
 
-/**
-	Calculates metrics related to a DNA sequence. Will compute the 
-	GC content and the level of SHM and return a std::pair of those 
-	values in that order.
-
-	@param sequence DNA sequence
-	@param gl_sequence Germline DNA sequence
-
-	@return pair of <GC_content,SHM>
-*/	
-pair<int,double> calculate_metrics( string & sequence, string & gl_sequence );
 
 /**
 	Execute a command in the shell and return its output

@@ -20,6 +20,9 @@ heavy lifting in terms of turning that output into a SequenceRecord object
 #include "SequenceRecord.hh"
 #include "ErrorXOptions.hh"
 #include "util.hh"
+#include "constants.hh"
+
+#include "AbSequence.hh"
 
 #include <boost/filesystem.hpp>
 
@@ -92,7 +95,7 @@ void IGBlastParser::blast( ErrorXOptions & options ) {
 
 SequenceRecords* IGBlastParser::parse_output( ErrorXOptions & options  )
 {
-	ios_base::sync_with_stdio (false);
+	ios_base::sync_with_stdio( false );
 	string line;
 	ifstream file( options.igblast_output() );
 
@@ -106,7 +109,7 @@ SequenceRecords* IGBlastParser::parse_output( ErrorXOptions & options  )
 		return records;
 	}
 
-	while (getline (file, line)) {
+	while ( getline (file, line) ) {
 		vector<string> tokens = util::tokenize_string<string>( line );
 
 		// If this is the first line of a query, and it's not the first line 
@@ -115,11 +118,9 @@ SequenceRecords* IGBlastParser::parse_output( ErrorXOptions & options  )
 			 tokens[1] == "IGBLASTN" && 
 			 !lines.empty() ) {
 			
-			SequenceRecord* record = new SequenceRecord( 
-					lines, 
-					options.verbose(), 
-					options.allow_nonproductive()
-					);
+			AbSequence sequence = parse_lines( lines, options );
+			SequenceRecord* record = new SequenceRecord( sequence );
+
 			records->add_record( record );
 
 			lines.clear();
@@ -129,12 +130,11 @@ SequenceRecords* IGBlastParser::parse_output( ErrorXOptions & options  )
 		else if ( tokens.size()==4 && 
 				  tokens[0] == "Total" && 
 				  tokens[1] == "queries" ) {
+			
+			AbSequence sequence = parse_lines( lines, options );
 
-			SequenceRecord* record = new SequenceRecord( 
-					lines, 
-					options.verbose(), 
-					options.allow_nonproductive()
-					);
+			SequenceRecord* record = new SequenceRecord( sequence );
+
 			records->add_record( record );
 			lines.clear();
 			break;
@@ -175,6 +175,184 @@ void IGBlastParser::exec_in_thread( string command ) {
 	system( command.c_str() );
 //	thread_output_ = util::exec( command.c_str() );
 	thread_finished_ = true;
+}
+
+
+AbSequence IGBlastParser::parse_lines( vector<string> const & lines, ErrorXOptions const & options ) {
+
+	// data map that holds different IGBlast output lines
+	map<string,vector<string>> data_map;
+
+	AbSequence sequence;
+
+	// Build record from the contents of the IGBlast output
+	for ( int ii = 0; ii < lines.size(); ++ii ) {
+		vector<string> tokens = util::tokenize_string<string>( lines[ii] );
+		
+		// if the line doesn't have enough tokens to parse, move on
+		if ( tokens.size() < 2 ) continue;
+
+		// Get query line with the name of sequence
+		if ( tokens[1] == "Query:" ) {
+			data_map.insert( make_pair("query_string", tokens) );
+		}
+		// Get VDJ rearrangement line
+		else if ( tokens[1] == "V-(D)-J" && tokens[2] == "rearrangement" ) {
+			data_map.insert( make_pair("rearrangement_string", util::tokenize_string<string>(lines[ii+1])) );
+		} 
+		// Get VDJ junction line
+		else if ( tokens[1] == "V-(D)-J" && tokens[2] == "junction" ) {
+			data_map.insert( make_pair("junction_string", util::tokenize_string<string>(lines[ii+1])) );
+
+		} 
+		// Get subregion line with info on CDR3
+		else if ( tokens[1] == "Sub-region" ) {
+			data_map.insert( make_pair("subregion_string", util::tokenize_string<string>(lines[ii+1])) );
+		} 
+		// Get V/D/J line 
+		else if ( tokens[0] == "V" || tokens[0] == "D" || tokens[0] == "J" ) {
+			data_map.insert( make_pair(tokens[0]+"region_string", tokens ));
+		}
+	}
+
+	// I need all three of these lines to have a successful record.
+	// if not mark it as bad and return
+	if ( data_map.find("query_string")         == data_map.end() ||
+		 data_map.find("rearrangement_string") == data_map.end() ||
+		 data_map.find("junction_string")      == data_map.end() ) 
+	{
+		return sequence;
+	}
+
+
+	// Now it's time to parse all of these lines
+	vector<string> data;
+	// Step 1. Get the sequence ID and the quality string
+	data = data_map["query_string"];
+	string ID_plus_qualstring = data[2];
+	vector<string> id_tokens = util::tokenize_string<string>( ID_plus_qualstring, "|" );
+	
+	if ( id_tokens.size() > 2 ) {
+		throw invalid_argument( 
+			"Error: misformed sequence ID. You can't "
+			"have the character \"|\" in your sequence ID." 
+			);
+	}
+	
+	sequence.sequenceID_ = id_tokens[0];
+	sequence.phred_ = id_tokens[1];
+
+
+
+	// Step 2. Get rearrangement info
+	// decide if this is a VH/VB or VL/VA
+	data = data_map["rearrangement_string"];
+	bool vh = (data.size() == 8);
+
+	int chain_idx      = vh ? 3 : 2;
+	int productive_idx = vh ? 4 : 3;
+	int strand_idx     = vh ? 7 : 6;
+
+	sequence.chain_      = data[chain_idx];
+	sequence.productive_ = data[productive_idx]=="No";
+	sequence.strand_     = data[strand_idx];
+
+	// bad chain ID - warn and keep going
+	vector<string> valid_chains = {"VH","VL","VA","VB","VK"};
+	if ( find( valid_chains.begin(), valid_chains.end(), sequence.chain() )
+			== valid_chains.end() ) {
+		// TODO: implement TCRG and D
+		cout << "Warning: invalid chain type "+sequence.chain_+" detected" << endl;
+	}
+
+
+	// Step 3. If the subregion line is there, get the CDR3 information
+	if ( data_map.find("subregion_string") != data_map.end() ) {
+		data = data_map["subregion_string"];
+		sequence.cdr3_nt_sequence_ = data[1];
+		sequence.cdr3_aa_sequence_ = data[2];
+	}
+
+	// Step 4. Get the junction information
+	data = data_map["junction_string"];
+
+	if ( sequence.chain_ == "VH" || sequence.chain_ == "VB" ) {
+		sequence.jxn_nts_ = vector<string>{ data[1], data[2], data[3] };
+	} else {
+		sequence.jxn_nts_ = vector<string>{ data[1] };
+	}
+
+	// Step 5. Get the V gene information
+	sequence.hasV_ = 0;
+	if ( data_map.find("Vregion_string") != data_map.end() ) {
+		data = data_map["Vregion_string"];
+		try {
+			sequence.v_gene_      = data[2];
+			sequence.v_identity_  = boost::lexical_cast<double>( data[3] );
+			sequence.v_evalue_    = boost::lexical_cast<double>( data[12] );
+			sequence.v_nts_       = data[16];
+			sequence.v_gl_nts_    = data[17];
+
+			sequence.query_start_ = boost::lexical_cast<int>( data[8] );
+			sequence.gl_start_    = boost::lexical_cast<int>( data[10] );
+
+			sequence.hasV_ = ( sequence.v_evalue_ < constants::V_EVALUE_CUTOFF );
+
+		} catch ( out_of_range & e ) {
+			return sequence;
+		} catch ( boost::bad_lexical_cast & e ) {
+			return sequence;
+		}
+	}
+
+
+	// Step 6. Get the D gene information
+	sequence.hasD_ = 0;
+	if ( data_map.find("Dregion_string") != data_map.end() ) {
+		data = data_map["Dregion_string"];
+		try {
+			sequence.d_gene_     = data[2];
+			sequence.d_identity_ = boost::lexical_cast<double>( data[3] );
+			sequence.d_evalue_   = boost::lexical_cast<double>( data[12] );
+			sequence.d_nts_      = data[16];
+			sequence.d_gl_nts_   = data[17];
+			
+			sequence.hasD_ = ( sequence.d_evalue_ < constants::D_EVALUE_CUTOFF );
+
+		} catch ( out_of_range & e ) {
+			return sequence;
+		} catch ( boost::bad_lexical_cast & e ) {
+			return sequence;
+		}
+	}
+
+
+
+	// Step 7. Get the J gene information
+	sequence.hasJ_ = 0;
+	if ( data_map.find("Jregion_string") != data_map.end() ) {
+		data = data_map["Jregion_string"];
+		try {
+			sequence.j_gene_     = data[2];
+			sequence.j_identity_ = boost::lexical_cast<double>( data[3] );
+			sequence.j_evalue_   = boost::lexical_cast<double>( data[12] );
+			sequence.j_nts_      = data[16];
+			sequence.j_gl_nts_   = data[17];	
+
+			sequence.hasJ_ = ( sequence.j_evalue_ < constants::J_EVALUE_CUTOFF );
+
+		} catch ( out_of_range & e ) {
+			return sequence;
+		} catch ( boost::bad_lexical_cast & e ) {
+			return sequence;
+		}
+	}
+
+	
+	// Step 8. Now I have all the information I need to build a sequence
+	sequence.build();
+
+	return sequence;
 }
 
 } // namespace errorx

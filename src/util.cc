@@ -118,17 +118,6 @@ string reverse( string & sequence ) {
 	return string (sequence.rbegin(), sequence.rend());
 }
 
-// Returns pair consisting of (GC_count, SHM)
-pair<int,double> calculate_metrics( string & sequence, string & gl_sequence ) {
-	int mutations = 0;
-	int gc_count = 0;
-	for ( int ii = 0; ii < sequence.length(); ++ii ) {
-		if ( sequence[ii] != gl_sequence[ii] && gl_sequence[ii] != '-' ) mutations++;
-		if ( sequence[ii] == 'G' || sequence[ii] == 'C' ) gc_count++;
-	}
-	return pair<int,double> (gc_count, (double)mutations/(double)sequence.length());
-}
-
 /** Removed for windows compatibility
 string exec(const char* cmd) {
 	array<char, 128> buffer;
