@@ -90,9 +90,9 @@ public:
 		After correcting the member SequenceRecord objects, 
 		calculates the error rate over the whole set 
 
-		@return float value of estimated error rate
+		@return double value of estimated error rate
 	*/
-	float estimate_error_rate() const;
+	double estimate_error_rate() const;
 
 	/**
 		Adds a SequenceRecord to the records_ member variable.
@@ -212,6 +212,7 @@ public:
 	int unique_clonotypes() const;
 	map<string,int> vgene_counts() const;
 	map<string,int> jgene_counts() const;
+	map<string,int> vjgene_counts() const;
 	
 private:
 	/**
@@ -258,6 +259,7 @@ private:
 
 	map<string,int> vgene_map_;
 	map<string,int> jgene_map_;
+	map<string,int> vjgene_map_;
 };
 
 } // namespace errorx

@@ -28,7 +28,7 @@ INC=-I../include/ -Icxxtest/
 
 CXXGEN=cxxtest/bin/cxxtestgen
 
-all: TestSequenceFeatures TestIGBlastParser TestUtil TestErrorX TestLinking
+all: TestSequenceFeatures TestIGBlastParser TestUtil TestErrorX TestErrorXOptions TestKerasModel TestLinking
 
 CopyLibrary: 
 	cp ../lib/liberrorx.$(DLLEXT) lib/
@@ -45,6 +45,10 @@ TestErrorX: CopyLibrary
 	$(CXXGEN) --error-printer -o TestErrorX.cc TestErrorX.hh
 	$(CXX) $(CPPFLAGS) $(INC) -Llib/ -lerrorx -o bin/TestErrorX TestErrorX.cc $(FINAL)
 
+TestErrorXOptions: CopyLibrary
+	$(CXXGEN) --error-printer -o TestErrorXOptions.cc TestErrorXOptions.hh
+	$(CXX) $(CPPFLAGS) $(INC) -Llib/ -lerrorx -o bin/TestErrorXOptions TestErrorXOptions.cc $(FINAL)
+
 TestUtil: CopyLibrary
 	$(CXXGEN) --error-printer -o TestUtil.cc TestUtil.hh
 	$(CXX) $(CPPFLAGS) $(INC) -Llib/ -lerrorx -o bin/TestUtil TestUtil.cc $(FINAL)
@@ -52,6 +56,10 @@ TestUtil: CopyLibrary
 TestSequenceRecords: CopyLibrary
 	$(CXXGEN) --error-printer -o TestSequenceRecords.cc TestSequenceRecords.hh
 	$(CXX) $(CPPFLAGS) $(INC) -Llib/ -lerrorx -o bin/TestSequenceRecords TestSequenceRecords.cc $(FINAL)
+
+TestKerasModel: CopyLibrary
+	$(CXXGEN) --error-printer -o TestKerasModel.cc TestKerasModel.hh
+	$(CXX) $(CPPFLAGS) $(INC) -Llib/ -lerrorx -o bin/TestKerasModel TestKerasModel.cc $(FINAL)
 
 TestLinking: CopyLibrary
 	$(CXXGEN) --error-printer -o TestLinking.cc TestLinking.hh

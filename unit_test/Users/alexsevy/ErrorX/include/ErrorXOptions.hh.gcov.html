@@ -1,0 +1,227 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - TestErrorX.info - /Users/alexsevy/ErrorX/include/ErrorXOptions.hh</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">Users/alexsevy/ErrorX/include</a> - ErrorXOptions.hh<span style="font-size: 80%;"> (source / <a href="ErrorXOptions.hh.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">TestErrorX.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-03-02 13:18:32</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /** Copyright (C) EndeavorBio, Inc. - All Rights Reserved</a>
+<span class="lineNum">       2 </span>            : Unauthorized copying of this file, via any medium is strictly prohibited
+<span class="lineNum">       3 </span>            : Code contained herein is proprietary and confidential.
+<span class="lineNum">       4 </span>            : 
+<span class="lineNum">       5 </span>            : @file ErrorXOptions.hh
+<span class="lineNum">       6 </span>            : @brief Controls the options around running the ErrorX protocol
+<span class="lineNum">       7 </span>            : @details 
+<span class="lineNum">       8 </span>            : @author Alex Sevy (alex@endeavorbio.com)
+<span class="lineNum">       9 </span>            : */
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span>            : #ifndef INCLUDE_ERRORXOPTIONS_HH_
+<span class="lineNum">      13 </span>            : #define INCLUDE_ERRORXOPTIONS_HH_
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : /// manages dllexport and import for windows
+<span class="lineNum">      16 </span>            : /// does nothing on Mac/Linux
+<span class="lineNum">      17 </span>            : #if defined(_WIN32) || defined(_WIN64)
+<span class="lineNum">      18 </span>            :         #ifdef ERRORX_EXPORTS
+<span class="lineNum">      19 </span>            :                 #define ERRORX_API __declspec(dllexport)
+<span class="lineNum">      20 </span>            :         #else
+<span class="lineNum">      21 </span>            :                 #define ERRORX_API __declspec(dllimport)
+<span class="lineNum">      22 </span>            :         #endif
+<span class="lineNum">      23 </span>            : #else
+<span class="lineNum">      24 </span>            :         #define ERRORX_API 
+<span class="lineNum">      25 </span>            : #endif
+<span class="lineNum">      26 </span>            : 
+<span class="lineNum">      27 </span>            : #include &lt;string&gt;
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span>            : using namespace std;
+<span class="lineNum">      30 </span>            : 
+<a name="31"><span class="lineNum">      31 </span>            : namespace errorx {</a>
+<span class="lineNum">      32 </span>            :         
+<span class="lineNum">      33 </span><span class="lineCov">          6 : class ERRORX_API ErrorXOptions {</span>
+<span class="lineNum">      34 </span>            : public:
+<span class="lineNum">      35 </span>            :         /**
+<span class="lineNum">      36 </span>            :                 Empty constructor. Initializes to default values.
+<span class="lineNum">      37 </span>            :                 Infile and format must be set before using the options though
+<span class="lineNum">      38 </span>            :         */      
+<span class="lineNum">      39 </span>            :         ErrorXOptions();
+<span class="lineNum">      40 </span>            : 
+<span class="lineNum">      41 </span>            :         /**
+<span class="lineNum">      42 </span>            :                 Constructor which initializes all to default values, except 
+<span class="lineNum">      43 </span>            :                 for required arguments infile and format 
+<span class="lineNum">      44 </span>            :         */      
+<span class="lineNum">      45 </span>            :         ErrorXOptions( string infile, string format );
+<span class="lineNum">      46 </span>            : 
+<span class="lineNum">      47 </span>            :         /**
+<span class="lineNum">      48 </span>            :                 Copy constructor
+<span class="lineNum">      49 </span>            :         */      
+<span class="lineNum">      50 </span>            :         ErrorXOptions( ErrorXOptions const &amp; other );
+<span class="lineNum">      51 </span>            : 
+<span class="lineNum">      52 </span>            :         /**
+<span class="lineNum">      53 </span>            :                 Converts a FASTQ file to FASTA file. Uses the infile_ variable
+<span class="lineNum">      54 </span>            :                 to read, and outputs to the same name with the extension .fasta,
+<span class="lineNum">      55 </span>            :                 which is then set to the variable infasta_
+<span class="lineNum">      56 </span>            :         */      
+<span class="lineNum">      57 </span>            :         void fastq_to_fasta();
+<span class="lineNum">      58 </span>            : 
+<span class="lineNum">      59 </span>            :         /**
+<span class="lineNum">      60 </span>            :                 Check that options are properly initialized before running. 
+<span class="lineNum">      61 </span>            : 
+<span class="lineNum">      62 </span>            :                 @throws invalid_argument if either infile or format are not specified
+<span class="lineNum">      63 </span>            :         */      
+<span class="lineNum">      64 </span>            :         void validate();
+<span class="lineNum">      65 </span>            :         
+<span class="lineNum">      66 </span>            :         /*
+<span class="lineNum">      67 </span>            :                 Getters
+<span class="lineNum">      68 </span>            :         */
+<span class="lineNum">      69 </span>            :         string outfile() const;
+<span class="lineNum">      70 </span>            :         string format() const;
+<span class="lineNum">      71 </span>            :         string species() const;
+<span class="lineNum">      72 </span>            :         string igtype() const;
+<span class="lineNum">      73 </span>            :         string infile() const;
+<span class="lineNum">      74 </span>            :         string infasta() const;
+<span class="lineNum">      75 </span>            :         string igblast_output() const;
+<span class="lineNum">      76 </span>            :         string errorx_base() const;
+<span class="lineNum">      77 </span>            :         int verbose() const;
+<span class="lineNum">      78 </span>            :         int nthreads() const;
+<span class="lineNum">      79 </span>            :         double error_threshold() const;
+<span class="lineNum">      80 </span>            :         char correction() const;
+<span class="lineNum">      81 </span>            :         bool trial() const;
+<span class="lineNum">      82 </span>            :         bool allow_nonproductive() const;
+<span class="lineNum">      83 </span>            : 
+<span class="lineNum">      84 </span>            :         /*
+<span class="lineNum">      85 </span>            :                 Setters
+<span class="lineNum">      86 </span>            :         */
+<span class="lineNum">      87 </span>            :         void outfile( string const &amp; outfile );
+<span class="lineNum">      88 </span>            :         void format( string const &amp; format );
+<span class="lineNum">      89 </span>            :         void species( string const &amp; species );
+<span class="lineNum">      90 </span>            :         void igtype( string const &amp; igtype );
+<span class="lineNum">      91 </span>            :         void infile( string const &amp; infile );
+<span class="lineNum">      92 </span>            :         void infasta( string const &amp; infasta );
+<span class="lineNum">      93 </span>            :         void igblast_output( string const &amp; igblast_output );
+<span class="lineNum">      94 </span>            :         void errorx_base( string const &amp; errorx_base );
+<span class="lineNum">      95 </span>            :         // void errorx_base( boost::filesystem::path const &amp; errorx_base );
+<span class="lineNum">      96 </span>            :         void verbose( int const &amp; verbose );
+<span class="lineNum">      97 </span>            :         void nthreads( int const &amp; nthreads );
+<span class="lineNum">      98 </span>            :         void error_threshold( double const &amp; error_threshold );
+<span class="lineNum">      99 </span>            :         void correction( char const &amp; correction );
+<span class="lineNum">     100 </span>            :         void trial( bool const &amp; trial );
+<span class="lineNum">     101 </span>            :         void allow_nonproductive( bool const &amp; allow_nonproductive );
+<span class="lineNum">     102 </span>            : 
+<span class="lineNum">     103 </span>            : private:
+<span class="lineNum">     104 </span>            :         /**
+<span class="lineNum">     105 </span>            :                 User specified options:
+<span class="lineNum">     106 </span>            :                 
+<span class="lineNum">     107 </span>            :                 infile_: input file, either FASTQ or TSV, to use for prediction
+<span class="lineNum">     108 </span>            :                 format_: format of infile_, either fastq or tsv
+<span class="lineNum">     109 </span>            :                 outfile_: name of the output file to write the final ErrorX predictions. 
+<span class="lineNum">     110 </span>            :                 Default out.tsv
+<span class="lineNum">     111 </span>            :                 species_: species to use for germline assignment. Currently supported
+<span class="lineNum">     112 </span>            :                 are human or mouse. Default human
+<span class="lineNum">     113 </span>            :                 igtype_: type of receptor to analyze. Either Ig or TCR. Default Ig
+<span class="lineNum">     114 </span>            :                 verbose_: Verbosity level: should ErrorX output extra warnings and messages? 
+<span class="lineNum">     115 </span>            :                 0: don't output any message at all
+<span class="lineNum">     116 </span>            :                 1: output progress during processing
+<span class="lineNum">     117 </span>            :                 2: output progress and debugging messages
+<span class="lineNum">     118 </span>            :                 nthreads_: how many threads to use? -1 for all available. Default -1
+<span class="lineNum">     119 </span>            :                 error_threshold_: what probability is enough to call a base an error?
+<span class="lineNum">     120 </span>            :                 Default 0.8
+<span class="lineNum">     121 </span>            :                 allow_nonproductive_: allow sequences through the protocol even if they
+<span class="lineNum">     122 </span>            :                 are nonproductive. Default no
+<span class="lineNum">     123 </span>            :                 correction_: when ErrorX corrects a sequence it replaces the original base
+<span class="lineNum">     124 </span>            :                 with a new character. What character should be used? Default N
+<span class="lineNum">     125 </span>            :         */
+<span class="lineNum">     126 </span>            :         string infile_;
+<span class="lineNum">     127 </span>            :         string format_;
+<span class="lineNum">     128 </span>            :         string outfile_;
+<span class="lineNum">     129 </span>            :         string species_;
+<span class="lineNum">     130 </span>            :         string igtype_;
+<span class="lineNum">     131 </span>            :         int verbose_;
+<span class="lineNum">     132 </span>            :         int nthreads_;
+<span class="lineNum">     133 </span>            :         double error_threshold_;
+<span class="lineNum">     134 </span>            :         bool allow_nonproductive_;
+<span class="lineNum">     135 </span>            :         char correction_;
+<span class="lineNum">     136 </span>            : 
+<span class="lineNum">     137 </span>            :         /**
+<span class="lineNum">     138 </span>            :                 Automatically generated options:
+<span class="lineNum">     139 </span>            :                 These options are set internally to ErrorX based on where it's called 
+<span class="lineNum">     140 </span>            :                 from and don't need to be changed.
+<span class="lineNum">     141 </span>            :         */
+<span class="lineNum">     142 </span>            :         string infasta_;
+<span class="lineNum">     143 </span>            :         string igblast_output_;
+<span class="lineNum">     144 </span>            :         string errorx_base_;
+<span class="lineNum">     145 </span>            :         bool trial_;
+<span class="lineNum">     146 </span>            :         
+<span class="lineNum">     147 </span>            : };
+<span class="lineNum">     148 </span>            : 
+<span class="lineNum">     149 </span>            : } // namespace errorx
+<span class="lineNum">     150 </span>            : 
+<span class="lineNum">     151 </span>            : #endif /* INCLUDE_ERRORXOPTIONS_HH_ */
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

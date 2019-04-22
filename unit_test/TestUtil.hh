@@ -124,8 +124,16 @@ public:
 		// put bad license key
 		TS_ASSERT_THROWS( util::write_license( "ZXC-" ), BadLicenseException );
 
-		TS_ASSERT_THROWS( util::write_license( "ZXC-" ), BadLicenseException );
-
+		// check on the message from bad license
+		try {
+			util::write_license( "ZXC-" );
+			TS_ASSERT(0);
+		} catch ( BadLicenseException & exc ) {
+			TS_ASSERT_EQUALS( 
+				exc.what(), 
+				"License is not valid. Please contact alex@endeavorbio.com for assistance"
+				);
+		}
 		util::write_license( inf_cipher );
 	}
 
@@ -179,6 +187,21 @@ public:
 		TS_ASSERT_EQUALS( test_split[1], vector<string>( {"5","6","7","8"} ));
 		TS_ASSERT_EQUALS( test_split[2], vector<string>( {"9","10","11"} ));
 
+		test.push_back( "12" );
+		test_split = util::split_vector<string>( test, 3 );
+
+		TS_ASSERT_EQUALS( test_split[0], vector<string>( {"1","2","3","4"} ));
+		TS_ASSERT_EQUALS( test_split[1], vector<string>( {"5","6","7","8"} ));
+		TS_ASSERT_EQUALS( test_split[2], vector<string>( {"9","10","11","12"} ));
+
+		vector<int> test_int = {1,2,3,4,5,6,7,8,9,10,11,12};
+		vector<vector<int>> split_int = util::split_vector<int>( test_int, 3 );
+
+		TS_ASSERT_EQUALS( split_int[0], vector<int>( {1,2,3,4} ));
+		TS_ASSERT_EQUALS( split_int[1], vector<int>( {5,6,7,8} ));
+		TS_ASSERT_EQUALS( split_int[2], vector<int>( {9,10,11,12} ));
+
+
 		test = {"1"};
 		test_split = util::split_vector<string>( test, 3 );
 		TS_ASSERT_EQUALS( test_split[0], vector<string>( {"1"} ));
@@ -186,128 +209,33 @@ public:
 		TS_ASSERT_EQUALS( test_split[2], vector<string>( {} ));
 	}
 
+	void testScientific(void) {
+		double value = 1056.5;
+		TS_ASSERT_EQUALS(
+			util::to_scientific( value ),
+			"1.06E+03" 
+			);
 
-	// void testCountLines(void) {
+		value = 0.1035;
+		TS_ASSERT_EQUALS(
+			util::to_scientific( value ),
+			"1.03E-01" 
+			);
 
-	// 	string file = "testing/test.fastq";
-	// 	TS_ASSERT_EQUALS( util::count_lines(file), 4 );
-	// }
+		int intValue = 1056;
+		TS_ASSERT_EQUALS(
+			util::to_scientific( intValue ),
+			"1.06E+03" 
+			);
 
-
-	void testComparator(void) {
-
-		// check equivalence of two keys using my custom comparators
-		string a;
-		string b;
-
-		a = "ATCG";
-		b = "ATCG";
-		TS_ASSERT( !util::vanilla_compare(a,b) && !util::vanilla_compare(b,a) );
-
-		a = "CTCG";
-		b = "ATCG";
-		TS_ASSERT( !(!util::vanilla_compare(a,b) && !util::vanilla_compare(b,a)) );
-
-		a = "ATCG";
-		b = "CTCG";
-		TS_ASSERT( !(!util::vanilla_compare(a,b) && !util::vanilla_compare(b,a)) );
-
-		a = "ATCG";
-		b = "NTCG";
-		TS_ASSERT( !(!util::vanilla_compare(a,b) && !util::vanilla_compare(b,a)) );
-
-
-		a = "ATCG";
-		b = "NTCG";
-		TS_ASSERT( !util::compare(a,b,'N') && !util::compare(b,a,'N') );
-
-		a = "NTCG";
-		b = "ATCG";
-		TS_ASSERT( !util::compare(a,b,'N') && !util::compare(b,a,'N') );
-
-		a = "ATCG";
-		b = "ATCG";
-		TS_ASSERT( !util::compare(a,b,'N') && !util::compare(b,a,'N') );
-
-		a = "ATCG";
-		b = "CTCG";
-		TS_ASSERT( !(!util::compare(a,b,'N') && !util::compare(b,a,'N')) );
-
-		a = "ATCG";
-		b = "CTCG";
-		TS_ASSERT( !(!util::compare(a,b,'N') && !util::compare(b,a,'N')) );
-
-
-		a = "IGHV3-23_ARTYSDFDV_IGHJ6";
-		b = "IGHV3-23_ARTYSDFDV_IGHJ6";
-		TS_ASSERT( !util::compare_clonotypes(a,b) && !util::compare_clonotypes(b,a) );
-
-		a = "IGHV3-23_ARTYSXFDV_IGHJ6";
-		b = "IGHV3-23_ARTYSDFDV_IGHJ6";
-		TS_ASSERT( !util::compare_clonotypes(a,b) && !util::compare_clonotypes(b,a) );
-
-		a = "IGHV3-23_ARTYSXFDV_IGHJ6";
-		b = "IGHV3-23_CARTYSDFDV_IGHJ6";
-		TS_ASSERT( !(!util::compare_clonotypes(a,b) && !util::compare_clonotypes(b,a)) );
-
-		a = "IGHV3-23_ARTYSXFDV_IGHJ6";
-		b = "IGHV3-21_ARTYSDFDV_IGHJ6";
-		TS_ASSERT( !(!util::compare_clonotypes(a,b) && !util::compare_clonotypes(b,a)) );
-
-		a = "IGHV3-23_ARTYSDFDV_IGHJ6";
-		b = "IGHV3-21_ARTYSDFDV_IGHJ6";
-		TS_ASSERT( !(!util::compare_clonotypes(a,b) && !util::compare_clonotypes(b,a)) );
-
-		a = "IGHV3-23_ARTYSDFDV_IGHJ6";
-		b = "IGHV3-23_ARTYSDFDV_IGHJ2";
-		TS_ASSERT( !(!util::compare_clonotypes(a,b) && !util::compare_clonotypes(b,a)) );
-
-		function< bool(string,string) > compareCorrectedSequences = 
-			std::bind( &util::compare, 
-					   placeholders::_1, 
-					   placeholders::_2, 
-					   'N'
-		);
-		map<string,int,function<bool(string,string)> > cmap( compareCorrectedSequences );
-
-		cmap.insert( pair<string,int>( "ACTG", 1 ));
-		cmap.insert( pair<string,int>( "NCTG", 1 ));
-		TS_ASSERT_EQUALS( cmap.size(), 1 );
-		cmap.clear();
-
-		cmap.insert( pair<string,int>( "NCTG", 1 ));
-		cmap.insert( pair<string,int>( "ACTG", 1 ));
-		TS_ASSERT_EQUALS( cmap.size(), 1 );
-		cmap.clear();
-
-		cmap.insert( pair<string,int>( "NCTG", 1 ));
-		cmap.insert( pair<string,int>( "ACTG", 1 ));
-		cmap.insert( pair<string,int>( "ACAG", 1 ));
-		TS_ASSERT_EQUALS( cmap.size(), 2 );
-		cmap.clear();
-
-		cmap.insert( pair<string,int>( "CCTG", 1 ));
-		cmap.insert( pair<string,int>( "ACTG", 1 ));
-		TS_ASSERT_EQUALS( cmap.size(), 2 );
-		cmap.clear();
-
-		cmap.insert( pair<string,int>( "CCTG", 1 ));
-		cmap.insert( pair<string,int>( "TCTG", 1 ));
-		TS_ASSERT_EQUALS( cmap.size(), 2 );
-		cmap.clear();
-
-		cmap.insert( pair<string,int>( "ACTG", 1 ));
-		cmap.insert( pair<string,int>( "ACTGN", 1 ));
-		TS_ASSERT_EQUALS( cmap.size(), 2 );
-		cmap.clear();
-
-
+		long longValue = 1056;
+		TS_ASSERT_EQUALS(
+			util::to_scientific( longValue ),
+			"1.06E+03" 
+			);
 	}
-
-	void testRoundedString(void) {
-		float value = 4.5434352;
-		TS_ASSERT_EQUALS( util::rounded_string( value ), "4.54" );
-	}
+		
+>>>>>>> origin/sequence_record_refactor
 };
 
 
