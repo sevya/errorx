@@ -147,7 +147,7 @@ SequenceRecord* SequenceRecords::get( int i ) const {
 
 int SequenceRecords::size() const { return records_.size(); }
 
-float SequenceRecords::estimate_error_rate() const {
+double SequenceRecords::estimate_error_rate() const {
  	int total_errors = 0;
  	int total_bases = 0;
 
@@ -469,6 +469,10 @@ void SequenceRecords::count_sequences() {
 
 	map<string,int>::iterator it;
 	string key;
+	string vkey;
+	string jkey;
+	vector<string> tokens;
+
 	for ( int ii = 0; ii < records_.size(); ++ii ) {
 		SequenceRecord* current_record = records_[ ii ];
 		if ( !current_record->isGood() ) continue;
@@ -514,18 +518,33 @@ void SequenceRecords::count_sequences() {
 			it->second += 1;
 		}
 
-		key = current_record->v_gene();
-		it = vgene_map_.find( key );
+		// remove allele information
+		tokens = util::tokenize_string<string>( current_record->v_gene(), "*" );
+		vkey = tokens[0];
+
+		it = vgene_map_.find( vkey );
 		if ( it == vgene_map_.end() ) {
-			vgene_map_.insert( pair<string,int>( key, 1 ));
+			vgene_map_.insert( pair<string,int>( vkey, 1 ));
 		} else {
 			it->second += 1;
 		}
 
-		key = current_record->j_gene();
-		it = jgene_map_.find( key );
+		// remove allele information
+		tokens = util::tokenize_string<string>( current_record->j_gene(), "*" );
+		jkey = tokens[0];
+
+		it = jgene_map_.find( jkey );
 		if ( it == jgene_map_.end() ) {
-			jgene_map_.insert( pair<string,int>( key, 1 ));
+			jgene_map_.insert( pair<string,int>( jkey, 1 ));
+		} else {
+			it->second += 1;
+		}
+
+
+		key = vkey + "_" + jkey;
+		it = vjgene_map_.find( key );
+		if ( it == vjgene_map_.end() ) {
+			vjgene_map_.insert( pair<string,int>( key, 1 ));
 		} else {
 			it->second += 1;
 		}
@@ -554,6 +573,10 @@ map<string,int> SequenceRecords::vgene_counts() const {
 
 map<string,int> SequenceRecords::jgene_counts() const {
 	return jgene_map_;
+}
+
+map<string,int> SequenceRecords::vjgene_counts() const {
+	return vjgene_map_;
 }
 
 ErrorXOptions* SequenceRecords::get_options() const { return options_; }
