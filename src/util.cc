@@ -495,6 +495,27 @@ vector<pair<string,int>> sort_map( map<string,int> const & cmap, bool ascending 
 	return vec;
 }
 
+vector<pair<string,int>> sort_map( map<string,int,function<bool(string,string)>> const & cmap, bool ascending ) {
+	// create a empty vector of pairs
+	vector<pair<string,int>> vec;
+
+	// copy key-value pairs from the map to the vector
+	std::copy( cmap.begin(), cmap.end(), std::back_inserter<vector<pair<string,int>>>(vec));
+
+	// sort the vector by increasing order of its pair's second value
+	// if second value are equal, order by the pair's first value
+	sort(vec.begin(), vec.end(),
+			[ascending]( const pair<string,int>& a, const pair<string,int>& b ) {
+				if ( ascending ) {
+					if ( a.second != b.second ) return a.second < b.second;
+					return a.first < b.first;
+				} else {
+					if ( a.second != b.second ) return a.second > b.second;
+					return a.first > b.first;
+				}
+			});
+	return vec;
+}
 
 //////////// END aggregation functions ////////////////////
 

@@ -501,53 +501,58 @@ void SequenceRecords::count_sequences() {
 			it->second += 1;
 		}
 
-		// check if all information is there to make a clonotype
-		if ( current_record->v_gene() == "" || 
-			 current_record->cdr3_aa_sequence() == "" || 
-			 current_record->j_gene() == "" ) {
-			continue;
-		}
-		key = current_record->v_gene() + "_" + 
-			  current_record->cdr3_aa_sequence() + "_" +
-			  current_record->j_gene();
-
-		it = clonotype_map_.find( key );
-		if ( it == clonotype_map_.end() ) {
-			clonotype_map_.insert( pair<string,int>( key, 1 ));
-		} else {
-			it->second += 1;
-		}
-
+	
 		// remove allele information
 		tokens = util::tokenize_string<string>( current_record->v_gene(), "*" );
 		vkey = tokens[0];
-
-		it = vgene_map_.find( vkey );
-		if ( it == vgene_map_.end() ) {
-			vgene_map_.insert( pair<string,int>( vkey, 1 ));
-		} else {
-			it->second += 1;
-		}
+		if ( vkey == "" ) continue;
 
 		// remove allele information
 		tokens = util::tokenize_string<string>( current_record->j_gene(), "*" );
 		jkey = tokens[0];
+		if ( jkey == "" ) continue;
 
-		it = jgene_map_.find( jkey );
-		if ( it == jgene_map_.end() ) {
-			jgene_map_.insert( pair<string,int>( jkey, 1 ));
+		string cdr3 = current_record->cdr3_aa_sequence();
+		if ( cdr3 == "" ) continue;
+
+		string clonotype_key = vkey + "_" + cdr3 + "_" + jkey;
+		string vj_key = vkey + "_" + jkey;
+
+		it = clonotype_map_.find( clonotype_key );
+		bool unique_clonotype = ( it == clonotype_map_.end() );
+
+		if ( unique_clonotype ) {
+			clonotype_map_.insert( pair<string,int>( clonotype_key, 1 ));
 		} else {
 			it->second += 1;
 		}
 
 
-		key = vkey + "_" + jkey;
 		it = vjgene_map_.find( key );
+
 		if ( it == vjgene_map_.end() ) {
 			vjgene_map_.insert( pair<string,int>( key, 1 ));
 		} else {
 			it->second += 1;
 		}
+
+		if ( unique_clonotype ) {
+			it = vgene_map_.find( vkey );
+			if ( it == vgene_map_.end() ) {
+				vgene_map_.insert( pair<string,int>( vkey, 1 ));
+			} else {
+				it->second += 1;
+			}
+			
+			it = jgene_map_.find( jkey );
+			if ( it == jgene_map_.end() ) {
+				jgene_map_.insert( pair<string,int>( jkey, 1 ));
+			} else {
+				it->second += 1;
+			}
+		}
+
+
 
 	}
 }
@@ -577,6 +582,10 @@ map<string,int> SequenceRecords::jgene_counts() const {
 
 map<string,int> SequenceRecords::vjgene_counts() const {
 	return vjgene_map_;
+}
+
+map<string,int,function<bool(string,string)>> SequenceRecords::clonotype_counts() const {
+	return clonotype_map_;
 }
 
 ErrorXOptions* SequenceRecords::get_options() const { return options_; }
