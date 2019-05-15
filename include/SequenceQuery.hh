@@ -44,10 +44,10 @@ public:
 	/**
 		Setters
 	*/
-	void sequenceID( string const sequenceID );
-	void sequence( string const sequence );
-	void germline_sequence( string const germline_sequence );
-	void phred_string( string const phred_string );
+	void sequenceID( string const & sequenceID );
+	void sequence( string const & sequence );
+	void germline_sequence( string const & germline_sequence );
+	void phred_string( string const & phred_string );
 
 	/**
 		Getters

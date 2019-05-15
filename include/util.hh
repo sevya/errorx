@@ -28,6 +28,17 @@ namespace errorx{
 namespace util {
 
 /**
+	Use boost::lexical_cast to test if a string is an integer or double
+	
+	@param str input string
+
+	@return bool if it is an int/double
+*/
+bool isint( string const & str );
+bool isdouble( string const & str );
+
+	
+/**
 	Break a string into tokens based on the provided delimiter. 
 	When multiple characters are present in the delimiter it 
 	will split by any of them (e.g. ", " will split on spaces
@@ -123,14 +134,7 @@ vector<vector<T>> split_vector( vector<T> const & vect, int nchunks ) {
 
 	@return string of number in scientific notation
 */	
-template <typename T>
-string to_scientific( T a ) {
-	// TODO potential overflow - fix this!
-	char buffer [256];
-	sprintf( buffer, "%.2E", a);
-	string a_str = buffer;
-	return a_str;
-}
+string to_scientific( double a );
 
 /**
 	Round a numeric type to a certain number of digits
@@ -176,17 +180,6 @@ string translate( string & nt_sequence, int frame );
 */	
 string reverse( string & sequence );
 
-/**
-	Calculates metrics related to a DNA sequence. Will compute the 
-	GC content and the level of SHM and return a std::pair of those 
-	values in that order.
-
-	@param sequence DNA sequence
-	@param gl_sequence Germline DNA sequence
-
-	@return pair of <GC_content,SHM>
-*/	
-pair<int,double> calculate_metrics( string & sequence, string & gl_sequence );
 
 /**
 	Execute a command in the shell and return its output

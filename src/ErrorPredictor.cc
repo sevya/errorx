@@ -12,7 +12,10 @@ then this class is used to make a NN prediction
 #include "ErrorPredictor.hh"
 #include "ErrorXOptions.hh"
 #include "SequenceFeatures.hh"
-#include "keras_model.hh"
+// #include "keras_model.hh"
+#include "keras/KerasModel.hh"
+#include "keras/DataChunkFlat.hh"
+
 #include "util.hh"
 
 using namespace std;

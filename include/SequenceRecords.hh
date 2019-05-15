@@ -214,7 +214,6 @@ public:
 	map<string,int> jgene_counts() const;
 	map<string,int> vjgene_counts() const;
 	map<string,int,function<bool(string,string)>> clonotype_counts() const;
-
 	
 private:
 	/**

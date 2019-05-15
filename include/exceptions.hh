@@ -9,6 +9,12 @@ Code contained herein is proprietary and confidential.
 
 #include <iostream>
 #include <exception>
+#include <string>
+
+using namespace std;
+
+#ifndef EXCEPTIONS_HH_
+#define EXCEPTIONS_HH_
 
 namespace errorx {
 
@@ -17,10 +23,9 @@ namespace errorx {
 	file found, and ErrorX is therefore running in 
 	trial mode
 */	
-class InvalidLicenseException : public std::exception {
+class InvalidLicenseException : public exception {
 public:
-	const char* what () const throw ()
-	{
+	const char* what () const throw () {
 		return "You are currently running the trial version of ErrorX, "
 				"which can only process 100 sequences at a time. "
 				"Please limit your query size or contact alex@endeavorbio.com "
@@ -32,12 +37,84 @@ public:
 /**
 	Exception is thrown when a bad license is given on the command line
 */	
-class BadLicenseException : public std::exception {
+class BadLicenseException : public exception {
 public:
-	const char* what () const throw ()
-	{
+	const char* what () const throw () {
 		return "License is not valid. Please contact alex@endeavorbio.com for assistance";
 	}
 };
 
 } // namespace errorx
+
+
+/** 
+	Exceptions thrown by the Keras module
+*/
+namespace keras {
+
+/**
+	Exception is thrown when an unimplemented function is called
+*/	
+class FunctionNotImplemented : public exception {
+public:
+	FunctionNotImplemented() : message_("Sorry, you called a function that's not implemented yet!") {}
+	FunctionNotImplemented( string const & message ) : message_( message ) {}
+
+	const char* what() const throw() {
+		return message_.c_str();
+	}
+
+	string message_;
+};
+
+/**
+	Exception is thrown when a layer type is used that is not support
+*/	
+class InvalidLayer : public exception {
+public:
+	InvalidLayer( string const & layer ) : layer_( layer ) {}
+
+	const char* what() const throw() {
+		string message = "Layer type "+layer_+" not implemented";
+		return message.c_str();
+	}
+
+	string layer_;
+};
+
+
+/**
+	Exception is thrown when an uninitialize object is used
+*/	
+class ObjectNotInitialized : public exception {
+public:
+	ObjectNotInitialized() : message_("Sorry, you used an object that's not been initialized!") {}
+	ObjectNotInitialized( string const & message ) : message_( message ) {}
+
+	const char* what() const throw() {
+		return message_.c_str();
+	}
+
+	string message_;
+};
+
+
+/**
+	Exception is thrown when an uninitialize object is used
+*/	
+class BadModel : public exception {
+public:
+	BadModel() : message_("Model is malformed.") {}
+	BadModel( string const & message ) : message_( message ) {}
+
+	const char* what() const throw() {
+		return message_.c_str();
+	}
+
+	string message_;
+};
+
+} // namespace keras
+
+
+#endif // EXCEPTIONS_HH_

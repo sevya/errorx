@@ -1,13 +1,21 @@
-errorx.sublime-workspace
+.-workspactable
+	model_sanity_check/
+	test.tsv
 dependencies_old/
 sublime.project
 sublime.sublime-workspace
+errorx.sublime-workspace
 .cproject
 .project
 .settings/
 .DS_Store
 .*.swp
 unit_test/hs_err*.log
+
+*.gcno
+*.gcda
+out/
+*.info
 
 *tar.gz 
 
@@ -23,7 +31,6 @@ unit_test/*.cc
 unit_test/*.class
 unit_test/testing/out.tsv
 unit_test/lib/liberrorx.dylib
-
 unit_test/cxxtest/COPYING
 unit_test/cxxtest/Versions
 unit_test/cxxtest/test/
@@ -33,6 +40,7 @@ unit_test/cxxtest/build_tools/
 unit_test/cxxtest/doc/
 unit_test/cxxtest/sample/
 unit_test/cxxtest/python/cxxtest/*.pyc
+unit_test/v1/
 
 java_bindings/errorx/*.class
 java_bindings/ErrorX.jar
@@ -49,6 +57,14 @@ build_test/a.out
 
 documentation/latex/
 documentation/html/
+
+model.nnet.norel
+model.nnet.stable
+model_sanity_check/
+
+technical_docs/
+test_case/
+test.tsv
 
 x64/
 Release/

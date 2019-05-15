@@ -35,6 +35,24 @@ using namespace std;
 namespace errorx {
 namespace util {
 
+bool isint( string const & str ) {
+	try {
+		boost::lexical_cast<int>( str );
+		return 1;
+	} catch ( boost::bad_lexical_cast & e ) {
+		return 0;
+	}
+}
+
+bool isdouble( string const & str ) {
+	try {
+		boost::lexical_cast<double>( str );
+		return 1;
+	} catch ( boost::bad_lexical_cast & e ) {
+		return 0;
+	}
+}
+
 void write_vector( string & filename,
 		vector<vector<string>> & vector2d,
 		string & delimiter ) {
@@ -100,17 +118,6 @@ string reverse( string & sequence ) {
 	return string (sequence.rbegin(), sequence.rend());
 }
 
-// Returns pair consisting of (GC_count, SHM)
-pair<int,double> calculate_metrics( string & sequence, string & gl_sequence ) {
-	int mutations = 0;
-	int gc_count = 0;
-	for ( int ii = 0; ii < sequence.length(); ++ii ) {
-		if ( sequence[ii] != gl_sequence[ii] && gl_sequence[ii] != '-' ) mutations++;
-		if ( sequence[ii] == 'G' || sequence[ii] == 'C' ) gc_count++;
-	}
-	return pair<int,double> (gc_count, (double)mutations/(double)sequence.length());
-}
-
 /** Removed for windows compatibility
 string exec(const char* cmd) {
 	array<char, 128> buffer;
@@ -166,6 +173,14 @@ double phred_avg_realspace( vector<int> const & phred_arr ) {
 	}
 	double avg = float(sum)/float(count);
 	return 10*-log10(avg);
+}
+
+string to_scientific( double a ) {
+	// TODO potential overflow - fix this!
+	char buffer [256];
+	sprintf( buffer, "%.2E", a);
+	string a_str = buffer;
+	return a_str;
 }
 
 int count_queries( string & file ) {
