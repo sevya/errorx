@@ -216,7 +216,7 @@ void AbSequence::translate_sequence( bool allow_nonproductive ) {
 	if      ( gl_start_ % 3 == 1 ) translation_frame_ = 1;
 	else if ( gl_start_ % 3 == 2 ) translation_frame_ = 3;
 	else if ( gl_start_ % 3 == 0 ) translation_frame_ = 2;
-
+	cout << full_nt_sequence_ << " : " << translation_frame_ << endl; // TODO remove
 	full_aa_sequence_ = util::translate( full_nt_sequence_, translation_frame_ );
 
 	// Make it a bad sequence if non-productive

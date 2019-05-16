@@ -308,7 +308,6 @@ vector<SequenceRecords*> SequenceRecords::chunk_records() {
 
 void SequenceRecords::correct_sequences( SequenceRecords* & records ) {
 
-
 	int nthreads = records->options_->nthreads();
 	int total_records = records->size();
 	int verbose = records->options_->verbose();
@@ -319,13 +318,13 @@ void SequenceRecords::correct_sequences( SequenceRecords* & records ) {
 
 	// delete the original record
 	delete records;
-		
+	
 	vector<thread*> threads( nthreads );
 
 	// Set up a callback function for each thread to update its progress
 	function<void(int,int,mutex*)> increment = records->options_->increment();
 	function<void(void)> finish = records->options_->finish();
-	
+		
 	// Set up a mutex to coordinate between threads
 	mutex* m = new mutex;
 

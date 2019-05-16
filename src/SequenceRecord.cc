@@ -162,6 +162,7 @@ double SequenceRecord::v_identity() const { return sequence_.v_identity(); }
 double SequenceRecord::d_identity() const { return sequence_.d_identity(); }
 double SequenceRecord::j_identity() const { return sequence_.j_identity(); }
 string SequenceRecord::chain() const { return sequence_.chain(); }
+bool SequenceRecord::productive() const { return sequence_.productive(); }
 string SequenceRecord::quality_string() const { return sequence_.quality_string_trimmed(); }
 int SequenceRecord::gl_start() const { return sequence_.gl_start(); }
 
