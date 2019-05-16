@@ -242,6 +242,8 @@ AbSequence IGBlastParser::parse_lines( vector<string> const & lines, ErrorXOptio
 		 data_map.find("rearrangement_string") == data_map.end() ||
 		 data_map.find("junction_string")      == data_map.end() ) 
 	{
+		sequence.good_ = 0;
+		sequence.failure_reason_ = "One of the following fields is missing from the IGBlast output: query_string, rearrangement_string, or junction_string";
 		return sequence;
 	}
 
@@ -261,7 +263,7 @@ AbSequence IGBlastParser::parse_lines( vector<string> const & lines, ErrorXOptio
 	}
 	
 	sequence.sequenceID_ = id_tokens[0];
-	sequence.phred_ = id_tokens[1];
+	sequence.phred_      = id_tokens[1];
 
 
 

@@ -159,17 +159,6 @@ public:
 		TS_ASSERT_EQUALS( util::reverse(seq), "GFEDCBA" );
 	}
 
-	void testCalculateMetrics(void) {
-		string one = "ACGTACGT";
-		string two = "ACGTCGGT";
-		pair<int,double> pair = util::calculate_metrics( one, two );
-		int gc_count = pair.first;
-		double shm = pair.second;
-
-		TS_ASSERT_EQUALS( gc_count, 4 );
-		TS_ASSERT_EQUALS( shm, 0.25 );
-	}
-
 	void testAvg(void) {
 		vector<int> phred = {31,32,40};
 		TS_ASSERT_DELTA( util::phred_avg_realspace( phred ), 32.9377009047, 0.0001 );
@@ -235,7 +224,6 @@ public:
 			);
 	}
 		
->>>>>>> origin/sequence_record_refactor
 };
 
 

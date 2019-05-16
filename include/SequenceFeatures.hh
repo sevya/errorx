@@ -73,8 +73,21 @@ public:
 	
 		@return string of vector of ints with the surrounding window
 	*/
-	string get_window( string sequence, int start, int end ) const;
+	string get_window( string const & sequence, int start, int end ) const;
 	vector<int> get_window( vector<int> const & array, int start, int end ) const;
+
+	/**
+		Calculates metrics related to a DNA sequence. Will compute the 
+		GC content and the level of SHM and return a std::pair of those 
+		values in that order.
+
+		@param sequence DNA sequence
+		@param gl_sequence Germline DNA sequence
+
+		@return pair of <GC_pct,SHM>
+	*/	
+	pair<double,double> calculate_metrics( string const & sequence, string const & gl_sequence );
+
 
 	/**
 		Encode a full NT sequence as a binary vector
@@ -90,18 +103,6 @@ public:
 	vector<int> quality_window() const;
 
 private:
-	/**
-		Calculates metrics related to a DNA sequence. Will compute the 
-		GC content and the level of SHM and return a std::pair of those 
-		values in that order.
-
-		@param sequence DNA sequence
-		@param gl_sequence Germline DNA sequence
-
-		@return pair of <GC_pct,SHM>
-	*/	
-	pair<double,double> calculate_metrics( string const & sequence, string const & gl_sequence );
-
 	/**
 		Translates a character from a PHRED string 
 		to its integer counterpart. Assumes an offset

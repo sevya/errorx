@@ -10,6 +10,7 @@ Code contained herein is proprietary and confidential.
 #include "AbSequence.hh"
 #include "ErrorXOptions.hh"
 #include "util.hh"
+#include "constants.hh"
 
 #include <iostream>
 
@@ -117,6 +118,8 @@ void AbSequence::build( ErrorXOptions const & options ) {
 }
 
 void AbSequence::build_nt_sequence() {
+	if ( !good_ ) return;
+
 	// Assemble the junction based on the given information
 	string full_junction;
 	string full_gl_junction;
@@ -187,9 +190,19 @@ void AbSequence::build_nt_sequence() {
 		failure_reason_ = "Full and GL sequences are not the same length";
 		return;
 	}
+
+
+	if ( full_nt_sequence_.size() < constants::WINDOW ) {
+		good_ = 0;
+		failure_reason_ = "Sequence is too short - minimum length is " + 
+							to_string( constants::WINDOW );
+		return;
+	}
 }
 
 void AbSequence::build_phred() {
+	if ( !good_ ) return;
+
 	// Find the portion of the quality string that corresponds to the query
 	// If the assignment was done on the reverse strand, flip the quality string
 	if ( strand_ == "-" ) phred_ = util::reverse( phred_ );
@@ -210,13 +223,15 @@ void AbSequence::build_phred() {
 }
 
 void AbSequence::translate_sequence( bool allow_nonproductive ) {
+	if ( !good_ ) return;
+
 	// base translation frame off of the match position of the germline
 	// assume that all IMGT germlines start in the same frame
 	// start % 3 == 1 -> already in correct frame
 	if      ( gl_start_ % 3 == 1 ) translation_frame_ = 1;
 	else if ( gl_start_ % 3 == 2 ) translation_frame_ = 3;
 	else if ( gl_start_ % 3 == 0 ) translation_frame_ = 2;
-	cout << full_nt_sequence_ << " : " << translation_frame_ << endl; // TODO remove
+
 	full_aa_sequence_ = util::translate( full_nt_sequence_, translation_frame_ );
 
 	// Make it a bad sequence if non-productive

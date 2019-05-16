@@ -216,7 +216,6 @@ public:
 		SequenceRecord* record = new SequenceRecord( query );
 		SequenceFeatures sf = SequenceFeatures( record, 122 );
 
-		cout << "getting quality window:" << endl;
 		vector<int> quals = {2,2,2,2,2,2,34,25,28,24,31,22,10,34,21,10,10};
 		for ( int ii = 0; ii < sf.quality_window().size(); ++ii ) {
 			TS_ASSERT_EQUALS( quals[ii], sf.quality_window()[ ii ] );
@@ -357,6 +356,19 @@ public:
 		TS_ASSERT_DELTA( predicted_error_rate_, records->estimate_error_rate(), pow(10,-9) );
 		delete records;
 
+	}
+
+
+	void testCalculateMetrics(void) {
+		SequenceFeatures sf = SequenceFeatures( record_, 2 );
+		string one = "ACGTACGT";
+		string two = "ACGTCGGT";
+		pair<double,double> pair = sf.calculate_metrics( one, two );
+		double gc_count = pair.first;
+		double shm = pair.second;
+
+		TS_ASSERT_EQUALS( gc_count, 0.5 );
+		TS_ASSERT_EQUALS( shm, 0.25 );
 	}
 
 	string sequenceID_;

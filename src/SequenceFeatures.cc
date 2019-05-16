@@ -28,7 +28,7 @@ namespace errorx {
 SequenceFeatures::SequenceFeatures( SequenceRecord* const record, int position ) {
 
 	int window = constants::WINDOW;
-
+	
 	string full_nt_sequence = record->full_nt_sequence();
 	string full_gl_nt_sequence = record->full_gl_nt_sequence();
 	if ( position >= full_nt_sequence.size() ) {
@@ -37,9 +37,17 @@ SequenceFeatures::SequenceFeatures( SequenceRecord* const record, int position )
 			);
 	}
 
+
 	// Get an array of PHRED scores as int, not char
 	string phred_string = record->sequence().quality_string_trimmed();
 	vector<int> phred_array = vector<int>( phred_string.size() );
+
+	if ( full_nt_sequence.size() != phred_array.size() ) {
+		throw invalid_argument(
+			"Internal error: NT sequence is not the same length as phred array "
+			"for sequence ID " + record->sequenceID()
+			);
+	}
 
 	// decode quality string into an array of integer values
 	for ( int ii = 0; ii < phred_string.size(); ++ii ) {
@@ -92,18 +100,18 @@ SequenceFeatures::SequenceFeatures( SequenceFeatures const & other ) :
 		gl_sequence_window_binary_( other.gl_sequence_window_binary_ )
 {}
 
-string SequenceFeatures::get_window( string sequence, int position, int window ) const {
+string SequenceFeatures::get_window( string const & sequence, int position, int window ) const {
 	string sequence_from_window;
 
 	if ( sequence.length() < window ) {
 		throw invalid_argument("Error: sequence is too short for the window you requested");
 	}
 
-	sequence = string(window, 'X') + sequence + string(window, 'X');
+	sequence_from_window = string(window, 'X') + sequence + string(window, 'X');
 	
 	position += window;
 
-	return sequence.substr( position-window, (window*2)+1 );
+	return sequence_from_window.substr( position-window, (window*2)+1 );
 }
 
 vector<int> SequenceFeatures::get_window( vector<int> const & array, int position, int window ) const {
@@ -113,9 +121,9 @@ vector<int> SequenceFeatures::get_window( vector<int> const & array, int positio
 	}
 
 	vector<int> new_array;
-	for ( int ii = 0; ii < window; ++ii ) new_array.push_back( -1 );
+	for ( int ii = 0; ii < window; ++ii )       new_array.push_back( -1 );
 	for ( int ii = 0; ii < array.size(); ++ii ) new_array.push_back( array[ii] );
-	for ( int ii = 0; ii < window; ++ii ) new_array.push_back( -1 );
+	for ( int ii = 0; ii < window; ++ii )       new_array.push_back( -1 );
 
 	position += window;
 
