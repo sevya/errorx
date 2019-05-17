@@ -215,7 +215,6 @@ public:
 		SequenceRecord* record = new SequenceRecord( query, 1 );
 		SequenceFeatures sf = SequenceFeatures( record, 122 );
 
-		cout << "getting quality window:" << endl;
 		vector<int> quals = {2,2,2,2,2,2,34,25,28,24,31,22,10,34,21,10,10};
 		for ( int ii = 0; ii < sf.quality_window_.size(); ++ii ) {
 			TS_ASSERT_EQUALS( quals[ii], sf.quality_window_[ ii ] );
@@ -244,6 +243,26 @@ public:
 
 		TS_ASSERT_DELTA( predicted_value_, predictor.apply_model( features ), 0.0000001);
 
+	}
+
+	void testPositionalPrediction() {
+		ErrorXOptions options( "testing/test.fastq", "tsv" );
+		options.errorx_base("../");
+		options.verbose(0);
+		ErrorPredictor predictor( options );
+
+		string line;
+		ifstream infile ( "validation.txt" );
+		int position;
+		double probability;
+		while (getline (infile, line)) {
+			stringstream line_stream( line );
+			line_stream >> position >> probability;
+			
+			SequenceFeatures features( record_, position );
+			double pred = predictor.apply_model( features );
+			TS_ASSERT_DELTA( probability, pred, pow(10,-5));
+		}
 	}
 
 	void testErrorRate_singlethread() {
