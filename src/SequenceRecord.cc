@@ -27,7 +27,8 @@ using namespace std;
 
 namespace errorx {
 
-SequenceRecord::SequenceRecord() : 
+SequenceRecord::SequenceRecord() :
+	sequence_(),
 	n_errors_( 0 )
 {}
 
@@ -39,6 +40,7 @@ SequenceRecord::SequenceRecord(SequenceRecord const & other) :
 {}
 
 SequenceRecord::SequenceRecord( SequenceQuery & query ) : 
+	sequence_(),
 	n_errors_( 0 )
 {
 	sequence_.sequenceID( query.sequenceID() );
@@ -165,6 +167,14 @@ string SequenceRecord::chain() const { return sequence_.chain(); }
 bool SequenceRecord::productive() const { return sequence_.productive(); }
 string SequenceRecord::quality_string() const { return sequence_.quality_string_trimmed(); }
 int SequenceRecord::gl_start() const { return sequence_.gl_start(); }
+
+void SequenceRecord::full_nt_sequence( string const & seq ) { sequence_.full_nt_sequence(seq); }
+void SequenceRecord::full_nt_sequence_corrected( string const & seq ) 
+{ sequence_.full_nt_sequence_corrected(seq); }
+
+void SequenceRecord::v_gene( string const & vgene ) { sequence_.v_gene( vgene ); }
+void SequenceRecord::j_gene( string const & jgene ) { sequence_.j_gene( jgene ); }
+void SequenceRecord::cdr3_aa_sequence( string const & cdr3_aa_sequence ) { sequence_.cdr3_aa_sequence( cdr3_aa_sequence ); }
 
 
 } // namespace errorx

@@ -335,4 +335,8 @@ void AbSequence::full_aa_sequence_corrected( string const & seq ) {
 	full_aa_sequence_corrected_ = seq;
 }
 
+void AbSequence::v_gene( string const & vgene ) { v_gene_ = vgene; }
+void AbSequence::j_gene( string const & jgene ) { j_gene_ = jgene; }
+void AbSequence::cdr3_aa_sequence( string const & cdr3_aa_sequence ) { cdr3_aa_sequence_ = cdr3_aa_sequence; }
+
 } // namespace errorx

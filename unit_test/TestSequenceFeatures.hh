@@ -39,7 +39,7 @@ public:
 		quality_string_ =
 			"###########################################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4,";
 
-		query_ = new SequenceQuery( sequenceID_, sequence_, gl_sequence_, quality_string_ );
+		query_  = new SequenceQuery( sequenceID_, sequence_, gl_sequence_, quality_string_ );
 		record_ = new SequenceRecord( *query_ );
 
 		
@@ -48,6 +48,8 @@ public:
 
 		predicted_value_ = 0.027573684313656657;
 		predicted_error_rate_ = 0.054154586729391;
+
+		cout.precision( 9 );
 	}
 
 	void tearDown() {
@@ -55,7 +57,18 @@ public:
 		delete record_;
 	}
 
-	void testCharEncoding(void) {
+	void testAbSequence() {
+		TS_ASSERT_EQUALS( record_->full_nt_sequence(), 
+		"TACTCCCGTGGTACGCCCAAGGACGGAGGCACACGGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGCGCGCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCGGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG" );
+
+		TS_ASSERT_EQUALS( record_->full_gl_nt_sequence(), 
+		"TACTACAATGAGAAGTTCAAGGGCAAGGCCACACTGACTGCAGAAAAATCCTCCAGCACTGCCTACATGCAGCTCAGCAGCCTGACATCTGAGGACTCTGCTGTCTATTTCTGTGC--------------------------ACTACTGGGGCCAAGGCACCACTCTCACAGTCTCCTCAG" );
+		
+		TS_ASSERT_EQUALS( record_->quality_string(),
+		"###########################################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4," );
+	}
+
+	void testCharEncoding() {
 		SequenceFeatures sf = SequenceFeatures( record_, 2 );
 
 		vector<int> test_vector;
@@ -85,7 +98,7 @@ public:
 		TS_ASSERT_THROWS( sf.nt_to_binary( '?' ), invalid_argument );
 	}
 
-	void testSequenceEncoding(void) {
+	void testSequenceEncoding() {
 		SequenceFeatures sf = SequenceFeatures( record_, 2 );
 
 		vector<int> test_vector = {
@@ -106,7 +119,7 @@ public:
 		TS_ASSERT_EQUALS( sf.encode_sequence( "AACTGCTN-XTA" ), test_vector );
 	}
 
-	void testSequenceWindow(void) {
+	void testSequenceWindow() {
 		SequenceFeatures sf = SequenceFeatures( record_, 2 );
 
 		string sequence = "ATCGCAGTCCTA";
@@ -151,7 +164,7 @@ public:
 		TS_ASSERT_EQUALS( sf.get_window( sequence, position, window ), "CCTAXXX" );
 	}
 
-	void testIntWindow(void) {
+	void testIntWindow() {
 		SequenceFeatures sf = SequenceFeatures( record_, 2 );
 		vector<int> sequence = {	
 				39,37,40,40,32,35,36,31,30,29,25,34
@@ -198,7 +211,7 @@ public:
 
 	}
 
-	void testFeatureVectorSize(void) {
+	void testFeatureVectorSize() {
 		SequenceFeatures sf ( record_, 12 );
 		vector<double> features = sf.get_feature_vector();
 		TS_ASSERT_EQUALS( features.size(), 228 );
@@ -206,7 +219,7 @@ public:
 	}
 
 
-	void testPhredWindow(void) {
+	void testPhredWindow() {
 
 		string sequence = "AGGACGGAGGCACACGGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGCGCGCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCGGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCA";
 		string gl_sequence = "AGGGCAGAGTCACGATTACCGCGGACAAATCCACGAGCACAGCCTACATGGAGCTGAGCAGCCTGAGATCTGAGGACACGGCCGTGTATTACTGTGCGAGAGA------------------------CTGGGGCCAAGGGACCACGGTCACCGTCTCCTCA";
@@ -224,7 +237,7 @@ public:
 		delete record;
 	}
 
-	void testQuery(void) {
+	void testQuery() {
 		TS_ASSERT_THROWS(
 			SequenceQuery( "WhateverName", "ACTG", "GCTA", "FFFG " ),
 			invalid_argument
@@ -241,18 +254,41 @@ public:
 		TS_ASSERT_EQUALS( query_->phred_string(), "FFGF");
 	}
 
-	void testFull(void) {
+	void testPositionalPrediction() {
+		ErrorXOptions options( "testing/test.fastq", "tsv" );
+		options.errorx_base("../");
+		options.verbose(0);
+		ErrorPredictor predictor( options );
 
+		string line;
+		ifstream infile( "validation.txt" );
+		int position;
+		double probability;
+		double pred;
+
+		while (getline (infile, line)) {
+			stringstream line_stream( line );
+			line_stream >> position >> probability;
+			
+			SequenceFeatures features( record_, position );
+			pred = predictor.apply_model( features );
+
+			TS_ASSERT_DELTA( probability, pred, pow(10,-5));
+		}
+	}
+
+	void testFeaturesProperlyCalculated() {
 		SequenceFeatures features ( record_, 136 );
 
 		vector<double> results_vector_test = features.get_feature_vector();
-		cout.precision(17);
+
 		for ( int ii = 0; ii < raw_vector_.size(); ++ii ) {
 			TS_ASSERT_DELTA( raw_vector_[ii], results_vector_test[ii], pow(10,-9) )
-			if ( raw_vector_[ii]!=results_vector_test[ii] ) {
-				cout << ii << " : " << raw_vector_[ii] << " vs " << results_vector_test[ii] << endl;
-			}
 		}
+	}
+
+	void testProperPredictionsFromFeatures() {
+		SequenceFeatures features ( record_, 136 );
 
 		ErrorXOptions options( "tmp", "tsv" );
 		options.errorx_base("../");
@@ -260,7 +296,6 @@ public:
 		ErrorPredictor predictor( options );
 
 		TS_ASSERT_DELTA( predicted_value_, predictor.apply_model( features ), pow(10,-9) );
-
 	}
 
 	void testErrorRate_singlethread() {
@@ -278,7 +313,6 @@ public:
 			vector<double> pred2 = predictor.apply_model( vector<vector<double>> {raw_vector_} );
 			TS_ASSERT_EQUALS( pred1[0], pred2[0] );
 		}
-
 
 		options = ErrorXOptions( "test", "fastq" );
 		options.errorx_base( "../" );
@@ -359,7 +393,7 @@ public:
 	}
 
 
-	void testCalculateMetrics(void) {
+	void testCalculateMetrics() {
 		SequenceFeatures sf = SequenceFeatures( record_, 2 );
 		string one = "ACGTACGT";
 		string two = "ACGTCGGT";

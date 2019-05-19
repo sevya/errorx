@@ -40,7 +40,7 @@ public:
 		TS_ASSERT_THROWS( KerasModel( "model.nnet" ), invalid_argument );
 			
 		KerasModel model( "../model.nnet" );
-		return; 
+
 		TS_ASSERT_EQUALS( model.get_input_rows(), 1 );
 		TS_ASSERT_EQUALS( model.get_input_cols(), 228 );
 		TS_ASSERT_EQUALS( model.get_output_length(), 1);

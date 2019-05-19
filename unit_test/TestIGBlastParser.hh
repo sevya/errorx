@@ -77,7 +77,7 @@ public:
 
 		options.infasta( util::get_root_path().string()+"/testing/test.fasta" );
 		options.igblast_output( util::get_root_path().string()+"/testing/test.fasta.out" );
-		options.verbose( 1 );
+		options.verbose( 0 );
 		options.errorx_base( "../" );
 
 		records = run_protocol( options );

@@ -72,16 +72,16 @@ SequenceFeatures::SequenceFeatures( SequenceRecord* const record, int position )
 	pair<double,double> global_metrics =
 			calculate_metrics( full_nt_sequence, full_gl_nt_sequence );
 	global_GC_pct_ = global_metrics.first;
-	global_SHM_ = global_metrics.second;	
+	global_SHM_    = global_metrics.second;	
 
 	// Calculate SHM and GC pct over the local sequence window
 	pair<double,double> local_metrics =
 			calculate_metrics( sequence_window_, gl_sequence_window_ );
 
 	local_GC_pct_ = local_metrics.first;
-	
+	local_SHM_    = local_metrics.second;	
 
-	is_germline_ = full_nt_sequence[position] == full_gl_nt_sequence[position];
+	is_germline_ = ( full_nt_sequence[position] == full_gl_nt_sequence[position] );
 
 }
 

@@ -445,6 +445,8 @@ void SequenceRecords::track_progress( int & total_records, vector<int*> & progre
 
 void SequenceRecords::count_sequences() {
 
+	// Custom comparator for corrected sequences
+	// treats sequences the same if they differ only by N nucleotides
 	function< bool(string,string) > compareCorrectedSequences = 
 		std::bind( &util::compare, 
 				   placeholders::_1, 
@@ -452,6 +454,7 @@ void SequenceRecords::count_sequences() {
 				   options_->correction()
 		);
 
+	// Custom comparator for comparing clonotypes
 	function< bool(string,string) > compareClonotypes = &util::compare_clonotypes;
 
 
@@ -467,6 +470,7 @@ void SequenceRecords::count_sequences() {
 
 	for ( int ii = 0; ii < records_.size(); ++ii ) {
 		SequenceRecord* current_record = records_[ ii ];
+
 		if ( !current_record->isGood() ) continue;
 
 		key = current_record->full_nt_sequence();
@@ -510,6 +514,9 @@ void SequenceRecords::count_sequences() {
 		string clonotype_key = vkey + "_" + cdr3 + "_" + jkey;
 		string vj_key = vkey + "_" + jkey;
 
+		cout << "clonotype key: " << clonotype_key << endl; // TODO remove
+		cout << "vj key: " << vj_key << endl; // TODO remove
+
 		it = clonotype_map_.find( clonotype_key );
 		bool unique_clonotype = ( it == clonotype_map_.end() );
 
@@ -543,9 +550,6 @@ void SequenceRecords::count_sequences() {
 				it->second += 1;
 			}
 		}
-
-
-
 	}
 }
 

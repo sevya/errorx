@@ -29,7 +29,7 @@ public:
 		options_.outfile( "testing/test_out.tsv");
 
 		options_.species( "mouse" );
-		options_.verbose( 1 );
+		options_.verbose( 0 );
 		options_.nthreads( 1 );
 		string base = "../";
 		options_.errorx_base( base );
@@ -89,7 +89,7 @@ public:
 		options_.outfile( "testing/test_out.tsv");
 
 		options_.species( "mouse" );
-		options_.verbose( 1 );
+		options_.verbose( 0 );
 		options_.nthreads( 1 );
 		string base = "../";
 		options_.errorx_base( base );

@@ -28,7 +28,7 @@ INC=-I../include/ -Icxxtest/
 
 CXXGEN=cxxtest/bin/cxxtestgen
 
-all: TestSequenceFeatures TestIGBlastParser TestUtil TestErrorX TestErrorXOptions TestKerasModel TestLinking
+all: TestSequenceFeatures TestSequenceRecords TestIGBlastParser TestUtil TestErrorX TestErrorXOptions TestKerasModel TestLinking
 
 CopyLibrary: 
 	cp ../lib/liberrorx.$(DLLEXT) lib/

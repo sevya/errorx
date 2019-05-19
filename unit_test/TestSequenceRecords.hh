@@ -9,6 +9,7 @@
 #include "ErrorXOptions.hh"
 #include "SequenceRecord.hh"
 #include "SequenceRecords.hh"
+#include "AbSequence.hh"
 #include "util.hh"
 
 using namespace std;
@@ -22,7 +23,7 @@ public:
 
 	void tearDown() {}
 
-	void testSequenceGrouping(void) {
+	void testSequenceGrouping() {
 
 		ErrorXOptions options( "test.fastq", "fastq" );
 		options.errorx_base("../");
@@ -60,7 +61,7 @@ public:
 	}
 
 
-	void testClonotypeGrouping(void) {
+	void testClonotypeGrouping() {
 
 		ErrorXOptions options( "test.fastq", "fastq" );
 		options.errorx_base("../");

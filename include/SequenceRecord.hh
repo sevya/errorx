@@ -136,6 +136,12 @@ public:
 	int gl_start() const;
 	int translation_frame() const;
 
+	void v_gene( string const & vgene );
+	void j_gene( string const & jgene );
+	void cdr3_aa_sequence( string const & cdr3_aa_sequence );
+	void full_nt_sequence( string const & seq );
+	void full_nt_sequence_corrected( string const & seq );
+
 private:
 	
 	/**

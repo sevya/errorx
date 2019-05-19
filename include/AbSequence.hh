@@ -67,6 +67,10 @@ public:
 	int translation_frame() const;
 
 	///// Setters
+	void v_gene( string const & vgene );
+	void j_gene( string const & jgene );
+	void cdr3_aa_sequence( string const & cdr3_aa_sequence );
+
 	void sequenceID( string const & seqID );
 	void quality_string_trimmed( string const & phred );
 	void full_nt_sequence( string const & seq );
