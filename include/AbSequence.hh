@@ -26,7 +26,6 @@ public:
 	AbSequence();
 	AbSequence( AbSequence const & other );
 
-	void build();
 	void build( ErrorXOptions const & options );
 
 	void print() const;

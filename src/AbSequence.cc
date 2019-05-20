@@ -19,10 +19,13 @@ using namespace std;
 namespace errorx { 
 
 AbSequence::AbSequence() : 
-	sequenceID_( "" ),
-	v_gene_( "" ),
-	d_gene_( "" ),
-	j_gene_( "" ),
+	sequenceID_( "N/A" ),
+	v_gene_( "N/A" ),
+	d_gene_( "N/A" ),
+	j_gene_( "N/A" ),
+	hasV_( 0 ),
+	hasD_( 0 ),
+	hasJ_( 0 ),
 	v_nts_( "" ),
 	d_nts_( "" ),
 	j_nts_( "" ),
@@ -35,9 +38,9 @@ AbSequence::AbSequence() :
 	v_evalue_( -1 ),
 	d_evalue_( -1 ),
 	j_evalue_( -1 ),
-	chain_( "" ),
+	chain_( "N/A" ),
 	productive_( 0 ),
-	strand_( "" ),
+	strand_( "N/A" ),
 	query_start_( -1 ),
 	gl_start_( -1 ),
 	translation_frame_( -1 ),
@@ -59,6 +62,9 @@ AbSequence::AbSequence( AbSequence const & other ) :
 	v_gene_( other.v_gene_ ),
 	d_gene_( other.d_gene_ ),
 	j_gene_( other.j_gene_ ),
+	hasV_( other.hasV_ ),
+	hasD_( other.hasD_ ),
+	hasJ_( other.hasJ_ ),
 	v_nts_( other.v_nts_ ),
 	d_nts_( other.d_nts_ ),
 	j_nts_( other.j_nts_ ),
@@ -90,11 +96,6 @@ AbSequence::AbSequence( AbSequence const & other ) :
 	good_( other.good_ ),
 	failure_reason_( other.failure_reason_ )
 {}
-
-void AbSequence::build() {
-	ErrorXOptions options( "tmp.fastq","fastq" );
-	build( options );
-}
 
 void AbSequence::build( ErrorXOptions const & options ) {
 
@@ -267,13 +268,25 @@ double AbSequence::v_identity() const { return v_identity_; }
 double AbSequence::d_identity() const { return d_identity_; }
 double AbSequence::j_identity() const { return j_identity_; }
 
-string AbSequence::v_identity_fmt() const { return (hasV_) ? to_string( v_identity_ ) : "N/A"; }
-string AbSequence::d_identity_fmt() const { return (hasD_) ? to_string( d_identity_ ) : "N/A"; }
-string AbSequence::j_identity_fmt() const { return (hasJ_) ? to_string( j_identity_ ) : "N/A"; }
+string AbSequence::v_identity_fmt() const { 
+	return (hasV_) ? util::rounded_string( v_identity_ ) : "N/A"; 
+}
+string AbSequence::d_identity_fmt() const { 
+	return (hasD_) ? util::rounded_string( d_identity_ ) : "N/A";
+}
+string AbSequence::j_identity_fmt() const { 
+	return (hasJ_) ? util::rounded_string( j_identity_ ) : "N/A"; 
+}
 
-string AbSequence::v_evalue_fmt() const { return (hasV_) ? util::to_scientific( v_evalue_ ) : "N/A"; }
-string AbSequence::d_evalue_fmt() const { return (hasD_) ? util::to_scientific( d_evalue_ ) : "N/A"; }
-string AbSequence::j_evalue_fmt() const { return (hasJ_) ? util::to_scientific( j_evalue_ ) : "N/A"; }
+string AbSequence::v_evalue_fmt() const { 
+	return (hasV_) ? util::to_scientific( v_evalue_ ) : "N/A"; 
+}
+string AbSequence::d_evalue_fmt() const { 
+	return (hasD_) ? util::to_scientific( d_evalue_ ) : "N/A"; 
+}
+string AbSequence::j_evalue_fmt() const { 
+	return (hasJ_) ? util::to_scientific( j_evalue_ ) : "N/A"; 
+}
 
 string AbSequence::chain() const { return chain_; }
 bool AbSequence::productive() const { return productive_; }

@@ -175,6 +175,14 @@ double phred_avg_realspace( vector<int> const & phred_arr ) {
 	return 10*-log10(avg);
 }
 
+string rounded_string( double a ) {
+	// TODO potential overflow - fix this!
+	char buffer [256];
+	sprintf( buffer, "%.2f", a);
+	string a_str = buffer;
+	return a_str;
+}
+
 string to_scientific( double a ) {
 	// TODO potential overflow - fix this!
 	char buffer [256];
@@ -476,16 +484,24 @@ bool compare_clonotypes( const string & a, const string & b ) {
 	return a_noN < b_noN;
 }
 
+map<string,int> value_counts( vector<string> const & input ) {
+	map<string,int> cmap;
+	map<string,int>::iterator search_it;
+	vector<string>::const_iterator input_it;
 
-void add_if_not_present( map<string,int,function<bool(string,string)> > & cmap, string const & key ) {
-		
-	map<string,int>::iterator it;
-	it = cmap.find( key );
-	if ( it == cmap.end() ) {
-		cmap.insert( pair<string,int>( key, 1 ));
-	} else {
-		it->second += 1;
+	for ( input_it  = input.begin();
+		  input_it != input.end(); 
+		  ++input_it ) 
+	{
+		search_it = cmap.find( *input_it );
+		if ( search_it == cmap.end() ) {
+			cmap.insert( pair<string,int>( *input_it, 1 ));
+		} else {
+			search_it->second += 1;
+		}
 	}
+
+	return cmap;
 }
 
 vector<pair<string,int>> sort_map( map<string,int> const & cmap, bool ascending ) {

@@ -77,18 +77,41 @@ bool ClonotypeGroup::operator!=( ClonotypeGroup const & other ) {
 	return !((*this)==other);
 }
 
-int ClonotypeGroup::somatic_variants() const {
+int ClonotypeGroup::somatic_variants( bool corrected ) const {
 
-	map<string,int> cmap;
+	map<string,int,function<bool(string,string)>> cmap;
+
+	if ( corrected ) {
+		// Custom comparator for corrected sequences
+		// treats sequences the same if they differ only by N nucleotides
+		function< bool(string,string) > compareCorrectedSequences = 
+			std::bind( &util::compare, 
+					   placeholders::_1, 
+					   placeholders::_2, 
+					   options_.correction()
+			);
+
+		// instantiate map of corrected sequence with its comparator
+		cmap = map<string,int,function<bool(string,string)>>( compareCorrectedSequences );
+	} else {
+		auto compareLambda = [](string const & a, string const & b) { return a < b; };
+		cmap = map<string,int,function<bool(string,string)>>( compareLambda );
+	}
+
 	map<string,int>::iterator it;
-
 	string key;
+
 	for ( int ii = 0; ii < records_.size(); ++ii ) {
 		SequenceRecord* current_record = records_[ ii ];
 
 		if ( !current_record->isGood() ) continue;
 
-		key = current_record->full_nt_sequence();
+		if ( corrected ) {
+			key = current_record->full_nt_sequence_corrected();
+		} else {
+			key = current_record->full_nt_sequence();
+		}
+
 		it = cmap.find( key );
 		if ( it == cmap.end() ) {
 			cmap.insert( pair<string,int>( key, 1 ));
@@ -100,6 +123,53 @@ int ClonotypeGroup::somatic_variants() const {
 	return cmap.size();
 }
 
+int ClonotypeGroup::somatic_variants_aa( bool corrected ) const {
+	
+	map<string,int,function<bool(string,string)>> cmap;
+
+	if ( corrected ) {
+		// Custom comparator for corrected sequences
+		// treats sequences the same if they differ only by N nucleotides
+		function< bool(string,string) > compareCorrectedSequences = 
+			std::bind( &util::compare, 
+					   placeholders::_1, 
+					   placeholders::_2, 
+					   options_.correction()
+			);
+
+		// instantiate map of corrected sequence with its comparator
+		cmap = map<string,int,function<bool(string,string)>>( compareCorrectedSequences );
+	} else {
+		auto compareLambda = [](string const & a, string const & b) { return a < b; };
+		cmap = map<string,int,function<bool(string,string)>>( compareLambda );
+	}
+
+	map<string,int>::iterator it;
+	string key;
+
+	for ( int ii = 0; ii < records_.size(); ++ii ) {
+		SequenceRecord* current_record = records_[ ii ];
+
+		if ( !current_record->isGood() ) continue;
+
+		if ( corrected ) {
+			key = current_record->full_aa_sequence_corrected();
+		} else {
+			key = current_record->full_aa_sequence();
+		}
+
+		it = cmap.find( key );
+		if ( it == cmap.end() ) {
+			cmap.insert( pair<string,int>( key, 1 ));
+		} else {
+			it->second += 1;
+		}
+	}
+
+	return cmap.size();
+}
+
+/**
 int ClonotypeGroup::corrected_somatic_variants() const {
 	// Custom comparator for corrected sequences
 	// treats sequences the same if they differ only by N nucleotides
@@ -132,6 +202,7 @@ int ClonotypeGroup::corrected_somatic_variants() const {
 
 	return cmap.size();
 }
+*/
 
 void ClonotypeGroup::add_record( SequenceRecord* record ) {
 	records_.push_back( record );

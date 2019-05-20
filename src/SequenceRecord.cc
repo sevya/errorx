@@ -157,6 +157,7 @@ int SequenceRecord::n_errors() const { return n_errors_; }
 string SequenceRecord::sequenceID() const { return sequence_.sequenceID(); }
 string SequenceRecord::cdr3_aa_sequence() const { return sequence_.cdr3_aa_sequence(); }
 string SequenceRecord::full_aa_sequence() const { return sequence_.full_aa_sequence(); }
+string SequenceRecord::full_aa_sequence_corrected() const { return sequence_.full_aa_sequence_corrected(); }
 string SequenceRecord::v_gene() const { return sequence_.v_gene(); }
 string SequenceRecord::d_gene() const { return sequence_.d_gene(); }
 string SequenceRecord::j_gene() const { return sequence_.j_gene(); }

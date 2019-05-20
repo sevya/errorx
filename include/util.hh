@@ -143,14 +143,7 @@ string to_scientific( double a );
 
 	@return string of rounded number
 */
-template <typename T>
-string rounded_string( T a ) {
-	// TODO potential overflow - fix this!
-	char buffer [256];
-	sprintf( buffer, "%.2f", a);
-	string a_str = buffer;
-	return a_str;
-}
+string rounded_string( double a );
 
 /**
 	Writes a 2d vector to a file
@@ -373,15 +366,11 @@ bool compare( const string & a, const string & b, const char N );
 */
 bool compare_clonotypes( const string & a, const string & b );
 
-
 /**
-	Adds key to map if not present with a value of 1. If it is present
-	increments the value by one
-
-	@param cmap map to check
-	@param key key to insert
+	Takes a list of strings and returns a map, where each key is
+	matched with the # of occurrences in the input list
 */
-void add_if_not_present( map<string,int,function<bool(string,string)> > & cmap, string const & key );
+map<string,int> value_counts( vector<string> const & input );
 
 vector<pair<string,int>> sort_map( map<string,int> const & cmap, bool ascending=1 );
 vector<pair<string,int>> sort_map( map<string,int,function<bool(string,string)>> const & cmap, bool ascending );

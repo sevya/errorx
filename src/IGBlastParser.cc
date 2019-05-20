@@ -373,7 +373,7 @@ AbSequence IGBlastParser::parse_lines( vector<string> const & lines, ErrorXOptio
 
 	
 	// Step 8. Now I have all the information I need to build a sequence
-	sequence.build();
+	sequence.build( options );
 
 	return sequence;
 }

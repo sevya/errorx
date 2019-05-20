@@ -45,17 +45,21 @@ public:
 		Equality operator. Counts clonotypes as the same if
 		they differ only by X amino acids in the CDR3
 	*/
-	bool operator== ( ClonotypeGroup const & other );
-	bool operator!= ( ClonotypeGroup const & other );
+	bool operator==( ClonotypeGroup const & other );
+	bool operator!=( ClonotypeGroup const & other );
 
 	/**
-		Get number of somatic variants within the clonotype, either
+		Get number of somatic variants within the clonotype, on the 
+		nucleotide or amino acid level, either
 		using corrected sequences or uncorrected
 
-		@param Number of somatic variants
+		@param corrected Calculate variants after correction?
+
+		@return Number of somatic variants
 	*/
-	int somatic_variants() const;
-	int corrected_somatic_variants() const;
+	int somatic_variants( bool corrected ) const;
+	int somatic_variants_aa( bool corrected ) const;
+
 
 	/**
 		Adds a SequenceRecord to the records_ member variable.
@@ -80,8 +84,6 @@ public:
 		@return SequenceRecord at index i
 	*/
 	SequenceRecord* get( int i ) const;
-
-	// static bool compare( ClonotypeGroup const & a, ClonotypeGroup const & b );
 
 	/**
 		Getters and setters

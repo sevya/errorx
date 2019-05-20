@@ -208,20 +208,24 @@ public:
 		to figure out clonal lineages within clonotypes. Makes an
 		assignment of each child SequenceRecord, not a copy
 	*/
-	vector<ClonotypeGroup> get_clonotypes();
+	void count_clonotypes();
+	vector<ClonotypeGroup> clonotypes();
 
 	/**
 		Functions to return the count of unique sequences and clonotypes
 		of different types
+
+		@param corrected Should unique sequences be calculated after 
+		correction?
 	*/
-	int unique_nt_sequences() const;
-	int unique_corrected_nt_sequences() const;
-	int unique_aa_sequences() const;
-	int unique_clonotypes() const;
-	map<string,int> vgene_counts() const;
-	map<string,int> jgene_counts() const;
-	map<string,int> vjgene_counts() const;
-	map<string,int,function<bool(string,string)>> clonotype_counts() const;
+	int unique_nt_sequences( bool corrected );
+	int unique_aa_sequences( bool corrected );
+
+	int unique_clonotypes();
+	map<string,int> vgene_counts();
+	map<string,int> jgene_counts();
+	map<string,int> vjgene_counts();
+	// map<string,int,function<bool(string,string)>> clonotype_counts() const;
 	
 private:
 	/**
@@ -252,7 +256,11 @@ private:
 	*/
 	static void track_progress( int & total_records, vector<int*> & progress_vector );
 
-
+	/** 
+	============================= 
+		  Member variables
+	=============================
+	*/
 	vector<SequenceRecord*> records_;
 	ErrorXOptions* options_;
 	ErrorPredictor* predictor_;
@@ -261,14 +269,8 @@ private:
 		Std maps that hold the unique sequences and clonotypes contained in 
 		the dataset
 	*/
-	map<string,int> sequence_map_;
-	map<string,int,function<bool(string,string)> > corrected_sequence_map_;
-	map<string,int> aa_sequence_map_;
-	map<string,int,function<bool(string,string)> > clonotype_map_;
+	vector<ClonotypeGroup> clonotypes_;
 
-	map<string,int> vgene_map_;
-	map<string,int> jgene_map_;
-	map<string,int> vjgene_map_;
 };
 
 } // namespace errorx

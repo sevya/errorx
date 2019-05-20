@@ -122,6 +122,7 @@ public:
 	string full_nt_sequence_corrected() const;
 	string cdr3_aa_sequence() const;
 	string full_aa_sequence() const;
+	string full_aa_sequence_corrected() const;
 	string v_gene() const;
 	string d_gene() const;
 	string j_gene() const;

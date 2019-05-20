@@ -45,7 +45,7 @@ SequenceRecords::~SequenceRecords() {
 }
 
 
-SequenceRecords::SequenceRecords(SequenceRecords const & other) {
+SequenceRecords::SequenceRecords( SequenceRecords const & other ) {
 	// make deep copy of everything
 	for ( int ii = 0; ii < other.size(); ++ii ) {
 		records_.push_back( 
@@ -55,6 +55,8 @@ SequenceRecords::SequenceRecords(SequenceRecords const & other) {
 
 	options_ = new ErrorXOptions( *other.options_ );
 	predictor_ = new ErrorPredictor( *other.predictor_ );
+
+	clonotypes_ = other.clonotypes_;
 }
 
 SequenceRecords::SequenceRecords( vector<SequenceRecords*> const & others ) {
@@ -445,117 +447,10 @@ void SequenceRecords::track_progress( int & total_records, vector<int*> & progre
 	cout << endl;
 }
 
-void SequenceRecords::count_sequences() {
-
-	// Custom comparator for corrected sequences
-	// treats sequences the same if they differ only by N nucleotides
-	function< bool(string,string) > compareCorrectedSequences = 
-		std::bind( &util::compare, 
-				   placeholders::_1, 
-				   placeholders::_2, 
-				   options_->correction()
-		);
-
-	// Custom comparator for comparing clonotypes
-	function< bool(string,string) > compareClonotypes = &util::compare_clonotypes;
-
-
-	// instantiate these maps with their comparators
-	corrected_sequence_map_ = map<string,int,function<bool(string,string)> > ( compareCorrectedSequences );
-	clonotype_map_ = map<string,int,function<bool(string,string)> > ( compareClonotypes );
-
-	map<string,int>::iterator it;
-	string key;
-	string vkey;
-	string jkey;
-	vector<string> tokens;
-
-	for ( int ii = 0; ii < records_.size(); ++ii ) {
-		SequenceRecord* current_record = records_[ ii ];
-
-		if ( !current_record->isGood() ) continue;
-
-		key = current_record->full_nt_sequence();
-		it = sequence_map_.find( key );
-		if ( it == sequence_map_.end() ) {
-			sequence_map_.insert( pair<string,int>( key, 1 ));
-		} else {
-			it->second += 1;
-		}
-
-		key = current_record->full_nt_sequence_corrected();
-		it = corrected_sequence_map_.find( key );
-		if ( it == corrected_sequence_map_.end() ) {
-			corrected_sequence_map_.insert( pair<string,int>( key, 1 ));
-		} else {
-			it->second += 1;
-		}
-
-		key = current_record->full_aa_sequence();
-		it = aa_sequence_map_.find( key );
-		if ( it == aa_sequence_map_.end() ) {
-			aa_sequence_map_.insert( pair<string,int>( key, 1 ));
-		} else {
-			it->second += 1;
-		}
-
-	
-		// remove allele information
-		tokens = util::tokenize_string<string>( current_record->v_gene(), "*" );
-		vkey = tokens[0];
-		if ( vkey == "" ) continue;
-
-		// remove allele information
-		tokens = util::tokenize_string<string>( current_record->j_gene(), "*" );
-		jkey = tokens[0];
-		if ( jkey == "" ) continue;
-
-		string cdr3 = current_record->cdr3_aa_sequence();
-		if ( cdr3 == "" ) continue;
-
-		string clonotype_key = vkey + "_" + cdr3 + "_" + jkey;
-		string vj_key = vkey + "_" + jkey;
-
-		it = clonotype_map_.find( clonotype_key );
-		bool unique_clonotype = ( it == clonotype_map_.end() );
-
-		if ( unique_clonotype ) {
-			clonotype_map_.insert( pair<string,int>( clonotype_key, 1 ));
-		} else {
-			it->second += 1;
-		}
-
-
-		it = vjgene_map_.find( key );
-
-		if ( it == vjgene_map_.end() ) {
-			vjgene_map_.insert( pair<string,int>( key, 1 ));
-		} else {
-			it->second += 1;
-		}
-
-		if ( unique_clonotype ) {
-			it = vgene_map_.find( vkey );
-			if ( it == vgene_map_.end() ) {
-				vgene_map_.insert( pair<string,int>( vkey, 1 ));
-			} else {
-				it->second += 1;
-			}
-			
-			it = jgene_map_.find( jkey );
-			if ( it == jgene_map_.end() ) {
-				jgene_map_.insert( pair<string,int>( jkey, 1 ));
-			} else {
-				it->second += 1;
-			}
-		}
-	}
-}
-
-vector<ClonotypeGroup> SequenceRecords::get_clonotypes() {
-
-	vector<ClonotypeGroup> group_vector;
+void SequenceRecords::count_clonotypes() {
+	clonotypes_.clear();
 	vector<ClonotypeGroup>::iterator it;
+
 
 	for ( int ii = 0; ii < records_.size(); ++ii ) {
 
@@ -573,47 +468,98 @@ vector<ClonotypeGroup> SequenceRecords::get_clonotypes() {
 		group.cdr3( current_record->cdr3_aa_sequence() );
 		group.add_record( current_record );
 
-		it = find( group_vector.begin(), group_vector.end(), group );
+		it = find( clonotypes_.begin(), clonotypes_.end(), group );
 
-		if ( it == group_vector.end() ) {
-			group_vector.push_back( group );
+		if ( it == clonotypes_.end() ) {
+			clonotypes_.push_back( group );
 		} else {
 			it->add_record( current_record );
 		}
 	}
-
-	return group_vector;
 }
 
-int SequenceRecords::unique_nt_sequences() const { 
-	return sequence_map_.size(); 
+vector<ClonotypeGroup> SequenceRecords::clonotypes() {
+	if ( clonotypes_.empty() ) count_clonotypes();
+	return clonotypes_;
 }
 
-int SequenceRecords::unique_corrected_nt_sequences() const {
-	return corrected_sequence_map_.size(); 
-}
-int SequenceRecords::unique_aa_sequences() const {
-	return aa_sequence_map_.size();
-}
-
-int SequenceRecords::unique_clonotypes() const {
-	return clonotype_map_.size();
-}
-
-map<string,int> SequenceRecords::vgene_counts() const {
-	return vgene_map_;
-}
-
-map<string,int> SequenceRecords::jgene_counts() const {
-	return jgene_map_;
+int SequenceRecords::unique_nt_sequences( bool corrected) { 
+	if ( clonotypes_.empty() ) count_clonotypes();
+	
+	int N = 0;
+	vector<ClonotypeGroup>::iterator it;
+	for ( it  = clonotypes_.begin(); 
+		  it != clonotypes_.end(); 
+		  ++it ) 
+	{
+		N += it->somatic_variants( corrected );
+	}
+	return N;
 }
 
-map<string,int> SequenceRecords::vjgene_counts() const {
-	return vjgene_map_;
+int SequenceRecords::unique_aa_sequences( bool corrected ) {
+	if ( clonotypes_.empty() ) count_clonotypes();
+	
+	int N = 0;
+	vector<ClonotypeGroup>::iterator it;
+	for ( it  = clonotypes_.begin(); 
+		  it != clonotypes_.end(); 
+		  ++it ) 
+	{
+		N += it->somatic_variants_aa( corrected );
+	}
+	return N;
 }
 
-map<string,int,function<bool(string,string)>> SequenceRecords::clonotype_counts() const {
-	return clonotype_map_;
+int SequenceRecords::unique_clonotypes() {
+	if ( clonotypes_.empty() ) count_clonotypes();
+
+	return clonotypes_.size();
+}
+
+map<string,int> SequenceRecords::vgene_counts() {
+	if ( clonotypes_.empty() ) count_clonotypes();
+
+	vector<string> genes;
+	vector<ClonotypeGroup>::const_iterator it;
+
+	for ( it  = clonotypes_.begin();
+		  it != clonotypes_.end();
+		  ++it ) 
+	{
+		genes.push_back( it->v_gene() );
+	}
+	return util::value_counts( genes );
+}
+
+map<string,int> SequenceRecords::jgene_counts() {
+	if ( clonotypes_.empty() ) count_clonotypes();
+
+	vector<string> genes;
+	vector<ClonotypeGroup>::const_iterator it;
+	for ( it  = clonotypes_.begin();
+		  it != clonotypes_.end();
+		  ++it ) 
+	{
+		genes.push_back( it->j_gene() );
+	}
+	return util::value_counts( genes );
+}
+
+map<string,int> SequenceRecords::vjgene_counts() {
+	if ( clonotypes_.empty() ) count_clonotypes();
+
+	vector<string> genes;
+	vector<ClonotypeGroup>::const_iterator it;
+	string key;
+	for ( it  = clonotypes_.begin();
+		  it != clonotypes_.end();
+		  ++it ) 
+	{
+		key = it->v_gene() + "_" + it->j_gene();
+		genes.push_back( key );
+	}
+	return util::value_counts( genes );
 }
 
 ErrorXOptions* SequenceRecords::get_options() const { return options_; }
