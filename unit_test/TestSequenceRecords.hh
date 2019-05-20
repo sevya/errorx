@@ -10,6 +10,7 @@
 #include "SequenceRecord.hh"
 #include "SequenceRecords.hh"
 #include "AbSequence.hh"
+#include "ClonotypeGroup.hh"
 #include "util.hh"
 
 using namespace std;
@@ -61,6 +62,62 @@ public:
 	}
 
 
+	void testClonotypeEquality() {
+
+		ClonotypeGroup a;
+		a.v_gene( "IGHV3-23" ); 
+		a.cdr3( "ARCASTFDV" );
+		a.j_gene( "IGHJ6" );
+
+		ClonotypeGroup b;
+		b.v_gene( "IGHV3-23" ); 
+		b.cdr3( "ARCASTFDVR" );
+		b.j_gene( "IGHJ6" );
+
+		ClonotypeGroup c;
+		c.v_gene( "IGHV3-23" ); 
+		c.cdr3( "ARCASXFDV" );
+		c.j_gene( "IGHJ6" );
+
+		TS_ASSERT( a != b );
+		TS_ASSERT( a == c );
+		TS_ASSERT( b != c );
+
+		c.j_gene( "IGHJ2" );
+		TS_ASSERT( a != c );
+	}
+
+	void testVectorInsertion() {
+		ClonotypeGroup a;
+		a.v_gene( "IGHV3-23" ); 
+		a.cdr3( "ARCASTFDV" );
+		a.j_gene( "IGHJ6" );
+
+		ClonotypeGroup b;
+		b.v_gene( "IGHV3-23" ); 
+		b.cdr3( "ARCASTFDVR" );
+		b.j_gene( "IGHJ6" );
+
+		ClonotypeGroup c;
+		c.v_gene( "IGHV3-23" ); 
+		c.cdr3( "ARCASXFDV" );
+		c.j_gene( "IGHJ6" );
+
+		vector<ClonotypeGroup> vect;
+		vector<ClonotypeGroup>::iterator it;
+
+		it = find( vect.begin(), vect.end(), a );
+		TS_ASSERT( it == vect.end() );
+		vect.push_back( a );
+
+		it = find( vect.begin(), vect.end(), b );
+		TS_ASSERT( it == vect.end() );
+		vect.push_back( b );
+
+		it = find( vect.begin(), vect.end(), a );
+		TS_ASSERT( it != vect.end() );
+	}
+
 	void testClonotypeGrouping() {
 
 		ErrorXOptions options( "test.fastq", "fastq" );
@@ -91,9 +148,13 @@ public:
 		record->cdr3_aa_sequence( "ARCASTFDV" );
 		record->j_gene( "IGHJ6" );
 		records->add_record( record );
-	
-		records->count_sequences();
-		TS_ASSERT_EQUALS( records->unique_clonotypes(), 3 );
+
+		vector<ClonotypeGroup> groups = records->get_clonotypes();
+		for ( auto it = groups.begin();
+			  it != groups.end(); ++it ) {
+			cout << it->toString() << endl;
+		}
+		TS_ASSERT_EQUALS( groups.size(), 3 );
 	}
 
 };

@@ -160,6 +160,34 @@ string SequenceRecord::full_aa_sequence() const { return sequence_.full_aa_seque
 string SequenceRecord::v_gene() const { return sequence_.v_gene(); }
 string SequenceRecord::d_gene() const { return sequence_.d_gene(); }
 string SequenceRecord::j_gene() const { return sequence_.j_gene(); }
+
+string SequenceRecord::v_gene_noallele() const {
+	vector<string> tokens = util::tokenize_string<string>( v_gene(), "*" );
+	return tokens[0];
+}
+
+string SequenceRecord::d_gene_noallele() const {
+	vector<string> tokens = util::tokenize_string<string>( d_gene(), "*" );
+	return tokens[0];
+}
+
+string SequenceRecord::j_gene_noallele() const {
+	vector<string> tokens = util::tokenize_string<string>( j_gene(), "*" );
+	return tokens[0];
+}
+
+string SequenceRecord::clonotype() const {
+	return v_gene_noallele() + "_" + 
+		   cdr3_aa_sequence() + "_" + 
+		   j_gene_noallele();
+}
+
+bool SequenceRecord::valid_clonotype() const {
+	return sequence_.v_gene() != "N/A" && 
+		   sequence_.cdr3_aa_sequence() != "N/A" &&
+		   sequence_.j_gene() != "N/A";
+}
+
 double SequenceRecord::v_identity() const { return sequence_.v_identity(); }
 double SequenceRecord::d_identity() const { return sequence_.d_identity(); }
 double SequenceRecord::j_identity() const { return sequence_.j_identity(); }

@@ -54,7 +54,7 @@ INC=-Iinclude/
 SRCS=src/ProgressBar.cc src/SequenceRecords.cc src/SequenceRecord.cc src/IGBlastParser.cc \
 	 src/ErrorPredictor.cc src/SequenceFeatures.cc \
 	 src/ErrorXOptions.cc src/util.cc \
-	 src/SequenceQuery.cc src/errorx.cc src/AbSequence.cc
+	 src/SequenceQuery.cc src/errorx.cc src/AbSequence.cc src/ClonotypeGroup.cc
 
 KERAS_SRCS=src/keras/DataChunkFlat.cc src/keras/LayerDense.cc \
 		   src/keras/KerasModel.cc src/keras/LayerActivation.cc 

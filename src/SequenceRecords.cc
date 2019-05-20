@@ -18,6 +18,7 @@ settings for processing, and ErrorPredictor that does the error correction itsel
 #include <thread>
 #include <mutex>
 #include <functional>
+#include <algorithm>
 
 #include "SequenceRecords.hh"
 #include "SequenceQuery.hh"
@@ -26,6 +27,7 @@ settings for processing, and ErrorPredictor that does the error correction itsel
 #include "SequenceFeatures.hh"
 #include "util.hh"
 #include "constants.hh"
+#include "ClonotypeGroup.hh"
 
 using namespace std;
 
@@ -514,9 +516,6 @@ void SequenceRecords::count_sequences() {
 		string clonotype_key = vkey + "_" + cdr3 + "_" + jkey;
 		string vj_key = vkey + "_" + jkey;
 
-		cout << "clonotype key: " << clonotype_key << endl; // TODO remove
-		cout << "vj key: " << vj_key << endl; // TODO remove
-
 		it = clonotype_map_.find( clonotype_key );
 		bool unique_clonotype = ( it == clonotype_map_.end() );
 
@@ -551,6 +550,39 @@ void SequenceRecords::count_sequences() {
 			}
 		}
 	}
+}
+
+vector<ClonotypeGroup> SequenceRecords::get_clonotypes() {
+
+	vector<ClonotypeGroup> group_vector;
+	vector<ClonotypeGroup>::iterator it;
+
+	for ( int ii = 0; ii < records_.size(); ++ii ) {
+
+		SequenceRecord* current_record = records_[ ii ];
+
+		if ( !current_record->isGood() ) continue;
+
+		if ( !current_record->valid_clonotype() ) continue;
+
+		string clonotype_key = current_record->clonotype();
+
+		ClonotypeGroup group;
+		group.v_gene( current_record->v_gene_noallele() );
+		group.j_gene( current_record->j_gene_noallele() );
+		group.cdr3( current_record->cdr3_aa_sequence() );
+		group.add_record( current_record );
+
+		it = find( group_vector.begin(), group_vector.end(), group );
+
+		if ( it == group_vector.end() ) {
+			group_vector.push_back( group );
+		} else {
+			it->add_record( current_record );
+		}
+	}
+
+	return group_vector;
 }
 
 int SequenceRecords::unique_nt_sequences() const { 

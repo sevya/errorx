@@ -437,46 +437,6 @@ bool compare( const string & a, const string & b, const char N ) {
 	return a_noN < b_noN;
 }
 
-bool compare_clonotypes( const string & a, const string & b ) {
-	vector<string> tokens_a = tokenize_string<string>( a, "_" );
-	vector<string> tokens_b = tokenize_string<string>( b, "_" );
-
-	if ( tokens_a.size() != 3 ) {
-		throw invalid_argument( "invalid tokens: "+a );
-	}
-
-	if ( tokens_b.size() != 3 ) {
-		throw invalid_argument( "invalid tokens: "+b );
-	}
-
-	// compare v genes
-	if ( tokens_a[ 0 ] != tokens_b[ 0 ] ) return tokens_a[ 0 ] < tokens_b[ 0 ];
-
-	// compare j genes
-	if ( tokens_a[ 2 ] != tokens_b[ 2 ] ) return tokens_a[ 2 ] < tokens_b[ 2 ];
-
-	// compare CDR3s
-	string cdrA = tokens_a[ 1 ];
-	string cdrB = tokens_b[ 1 ];
-	if ( cdrA.size() != cdrB.size() ) return cdrA < cdrB;
-
-	string a_noN = "";
-	string b_noN = "";
-
-	for ( int ii = cdrA.length()-1; ii >= 0; --ii ) {
-		if ( cdrA[ii] != 'X' && cdrB[ii] != 'X' ) {
-			a_noN += cdrA[ii];
-			b_noN += cdrB[ii];
-		}
-	}
-
-	reverse( a_noN.begin(), a_noN.end() );
-	reverse( b_noN.begin(), b_noN.end() );
-
-	return a_noN < b_noN;
-}
-
-
 void add_if_not_present( map<string,int,function<bool(string,string)> > & cmap, string const & key ) {
 		
 	map<string,int>::iterator it;

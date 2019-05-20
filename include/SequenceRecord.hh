@@ -125,6 +125,12 @@ public:
 	string v_gene() const;
 	string d_gene() const;
 	string j_gene() const;
+	string v_gene_noallele() const;
+	string d_gene_noallele() const;
+	string j_gene_noallele() const;
+	string clonotype() const;
+	bool valid_clonotype() const;
+
 	double v_identity() const;
 	double d_identity() const;
 	double j_identity() const;

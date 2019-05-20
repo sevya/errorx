@@ -24,6 +24,7 @@ settings for processing, and ErrorPredictor that does the error correction itsel
 #include "SequenceRecord.hh"
 #include "ErrorXOptions.hh"
 #include "ErrorPredictor.hh"
+#include "ClonotypeGroup.hh"
 #include "util.hh"
 
 using namespace std;
@@ -201,7 +202,14 @@ public:
 	*/
 	void count_sequences();
 	
-	
+	/**
+		Group all SequenceRecord objects into clonotypes, where 
+		each SequenceRecords object is a clonotype. This allow you
+		to figure out clonal lineages within clonotypes. Makes an
+		assignment of each child SequenceRecord, not a copy
+	*/
+	vector<ClonotypeGroup> get_clonotypes();
+
 	/**
 		Functions to return the count of unique sequences and clonotypes
 		of different types
