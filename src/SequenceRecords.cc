@@ -39,7 +39,7 @@ SequenceRecords::SequenceRecords( ErrorXOptions const & options ) :
 {}
 
 SequenceRecords::~SequenceRecords() {
-	for ( int ii = 0; ii < size(); ++ii ) delete records_[ii];
+	// for ( int ii = 0; ii < size(); ++ii ) delete records_[ii];
 	delete predictor_;
 	delete options_;
 }
@@ -49,7 +49,7 @@ SequenceRecords::SequenceRecords( SequenceRecords const & other ) {
 	// make deep copy of everything
 	for ( int ii = 0; ii < other.size(); ++ii ) {
 		records_.push_back( 
-			new SequenceRecord( *other.get(ii) )
+			SequenceRecordPtr( new SequenceRecord( *other.get(ii) ))
 		);
 	}
 
@@ -69,7 +69,7 @@ SequenceRecords::SequenceRecords( vector<SequenceRecords*> const & others ) {
 		for ( int jj = 0; jj < others[ii]->size(); ++jj ) {
 
 			records_.push_back( 
-				new SequenceRecord( *(others[ii]->get(jj)) )
+				SequenceRecordPtr( new SequenceRecord( *(others[ii]->get(jj)) ))
 			);
 		}
 	}
@@ -81,13 +81,13 @@ SequenceRecords::SequenceRecords( vector<SequenceRecords*> const & others ) {
 	predictor_ = new ErrorPredictor( *(others[0]->predictor_ ) );
 }
 
-SequenceRecords::SequenceRecords( vector<SequenceRecord*> const & record_vector, 
+SequenceRecords::SequenceRecords( vector<SequenceRecordPtr> const & record_vector, 
 	ErrorXOptions const & options ) {
 
 	// make deep copy of everything
 	for ( int ii = 0; ii < record_vector.size(); ++ii ) {
 		records_.push_back( 
-			new SequenceRecord( *record_vector[ii] )
+			SequenceRecordPtr( new SequenceRecord( *record_vector[ii] ))
 		);
 	}
 	options_ = new ErrorXOptions( options );
@@ -112,26 +112,24 @@ void SequenceRecords::import_from_tsv() {
 		}
 
 		SequenceQuery query( tokens[0], tokens[1], tokens[2], tokens[3] );
-		SequenceRecord* record = new SequenceRecord( query );
-		add_record( record );
+		add_record( SequenceRecordPtr( new SequenceRecord( query )) );
 	}
 }
 
 void SequenceRecords::import_from_list( vector<SequenceQuery> & queries ) {
 
 	for ( int ii = 0; ii < queries.size(); ++ii ) {	
-		SequenceRecord* record = new SequenceRecord( queries[ii] );
-		add_record( record );
+		add_record( SequenceRecordPtr( new SequenceRecord( queries[ii] )) );
 	}
 }
 
-void SequenceRecords::add_record( SequenceRecord* record ) {
+void SequenceRecords::add_record( SequenceRecordPtr record ) {
 	records_.push_back( record );
 }
 
-vector<SequenceRecord*> SequenceRecords::get_records() const { return records_; }
+vector<SequenceRecordPtr> SequenceRecords::get_records() const { return records_; }
 
-SequenceRecord* SequenceRecords::get( int i ) const {
+SequenceRecordPtr SequenceRecords::get( int i ) const {
 	if ( i >= size() ) {
 		throw out_of_range(
 				"Error: index out of bounds. Requested position "+
@@ -264,7 +262,7 @@ void SequenceRecords::correct_sequences_threaded( SequenceRecords* & records,
 {
 	for ( int ii = 0; ii < records->size(); ++ii ) {
 		try {
-			SequenceRecord* current_record = records->get( ii );
+			SequenceRecordPtr current_record = records->get( ii );
 			current_record->correct_sequence( 
 				*(records->predictor_), 
 				*(records->options_) );
@@ -294,8 +292,8 @@ vector<SequenceRecords*> SequenceRecords::chunk_records() {
 	} else {
 		// Split records_ into chunks 
 		// Shallow copy of pointers
-		vector<vector<SequenceRecord*>> split_vectors = 
-			util::split_vector<SequenceRecord*>( records_, options_->nthreads() );
+		vector<vector<SequenceRecordPtr>> split_vectors = 
+			util::split_vector<SequenceRecordPtr>( records_, options_->nthreads() );
 
 		// Make an array to hold SequenceRecords
 		vector<SequenceRecords*> records_array( options_->nthreads() );
@@ -454,7 +452,8 @@ void SequenceRecords::count_clonotypes() {
 
 	for ( int ii = 0; ii < records_.size(); ++ii ) {
 
-		SequenceRecord* current_record = records_[ ii ];
+		// TODO adapt this for shared_ptr
+		SequenceRecord* current_record = records_[ ii ].get();
 
 		if ( !current_record->isGood() ) continue;
 

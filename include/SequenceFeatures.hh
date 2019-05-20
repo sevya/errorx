@@ -22,14 +22,18 @@ ErrorPredictor to do the actual transformation and prediction.
 #include <vector>
 #include <stdio.h>
 #include <stdlib.h>
+#include <memory>
+
+// #include "SequenceRecord.hh"
 // #include "keras_model.hh"
 
 namespace errorx {
 
+using namespace std;
+
 // forward declare to avoid circular dependencies
 class SequenceRecord;
-
-using namespace std;
+typedef shared_ptr<SequenceRecord> SequenceRecordPtr;
 
 class SequenceFeatures {
 
@@ -45,7 +49,7 @@ public:
 
 		@throws invalid_argument if position is out of bounds
 	*/
-	SequenceFeatures( SequenceRecord* const record, int position );
+	SequenceFeatures( SequenceRecordPtr const record, int position );
 
 	/**
 		Copy constructor

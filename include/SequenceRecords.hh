@@ -68,7 +68,7 @@ public:
 		into a single object. Deep copy of all member variables 
 		so they can be safely deleted after.
 	*/
-	SequenceRecords( vector<SequenceRecord*> const & record_vector, ErrorXOptions const & options );
+	SequenceRecords( vector<SequenceRecordPtr> const & record_vector, ErrorXOptions const & options );
 
 	/**
 		Populates SequenceRecords object with elements from
@@ -101,7 +101,7 @@ public:
 
 		@param record SequenceRecord to add to records_
 	*/
-	void add_record( SequenceRecord* record );
+	void add_record( SequenceRecordPtr record );
 
 	/**
 		Get the number of SequenceRecord objects held internally
@@ -115,7 +115,7 @@ public:
 
 		@return records_ member variable
 	*/
-	vector<SequenceRecord*> get_records() const;
+	vector<SequenceRecordPtr> get_records() const;
 
 	/**
 		Get a specific SequenceRecord
@@ -124,7 +124,7 @@ public:
 
 		@return SequenceRecord at index i
 	*/
-	SequenceRecord* get( int i ) const;
+	SequenceRecordPtr get( int i ) const;
 
 	/**
 		Get number of "good" SequenceRecord objects
@@ -261,7 +261,7 @@ private:
 		  Member variables
 	=============================
 	*/
-	vector<SequenceRecord*> records_;
+	vector<SequenceRecordPtr> records_;
 	ErrorXOptions* options_;
 	ErrorPredictor* predictor_;
 
@@ -272,6 +272,8 @@ private:
 	vector<ClonotypeGroup> clonotypes_;
 
 };
+
+typedef shared_ptr<SequenceRecords> SequenceRecordsPtr;
 
 } // namespace errorx
 

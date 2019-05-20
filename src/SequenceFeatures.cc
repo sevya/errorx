@@ -25,7 +25,7 @@ using namespace std;
 
 namespace errorx {
 
-SequenceFeatures::SequenceFeatures( SequenceRecord* const record, int position ) {
+SequenceFeatures::SequenceFeatures( SequenceRecordPtr const record, int position ) {
 
 	int window = constants::WINDOW;
 	

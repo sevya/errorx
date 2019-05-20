@@ -121,7 +121,7 @@ SequenceRecords* IGBlastParser::parse_output( ErrorXOptions & options  )
 			 !lines.empty() ) {
 			
 			AbSequence sequence = parse_lines( lines, options );
-			SequenceRecord* record = new SequenceRecord( sequence );
+			SequenceRecordPtr record( new SequenceRecord( sequence ));
 
 			records->add_record( record );
 
@@ -135,7 +135,7 @@ SequenceRecords* IGBlastParser::parse_output( ErrorXOptions & options  )
 			
 			AbSequence sequence = parse_lines( lines, options );
 
-			SequenceRecord* record = new SequenceRecord( sequence );
+			SequenceRecordPtr record( new SequenceRecord( sequence ));
 
 			records->add_record( record );
 			lines.clear();

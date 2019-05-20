@@ -40,7 +40,7 @@ public:
 			"###########################################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4,";
 
 		query_  = new SequenceQuery( sequenceID_, sequence_, gl_sequence_, quality_string_ );
-		record_ = new SequenceRecord( *query_ );
+		record_ = SequenceRecordPtr( new SequenceRecord( *query_ ));
 
 		
 
@@ -54,7 +54,7 @@ public:
 
 	void tearDown() {
 		delete query_;
-		delete record_;
+		// delete record_;
 	}
 
 	void testAbSequence() {
@@ -226,7 +226,7 @@ public:
 		string phred_str = "########################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4";
 
 		SequenceQuery query( "test",sequence, gl_sequence, phred_str );
-		SequenceRecord* record = new SequenceRecord( query );
+		SequenceRecordPtr record( new SequenceRecord( query ));
 		SequenceFeatures sf = SequenceFeatures( record, 122 );
 
 		vector<int> quals = {2,2,2,2,2,2,34,25,28,24,31,22,10,34,21,10,10};
@@ -234,7 +234,7 @@ public:
 			TS_ASSERT_EQUALS( quals[ii], sf.quality_window()[ ii ] );
 		}
 
-		delete record;
+		// delete record;
 	}
 
 	void testQuery() {
@@ -320,13 +320,13 @@ public:
 
 		SequenceRecords* records = new SequenceRecords( options );
 
-		records->add_record( new SequenceRecord( *record_ ));
+		records->add_record( SequenceRecordPtr( new SequenceRecord( *record_ )));
 
 		SequenceRecords::correct_sequences( records );
 
 		TS_ASSERT_DELTA( predicted_error_rate_, records->estimate_error_rate(), pow(10,-9) );
 
-		delete records;
+		// delete records;
 	}
 
 	void testErrorRate_multithread() {
@@ -349,13 +349,13 @@ public:
 
 		SequenceRecords* records = new SequenceRecords( options );
 
-		records->add_record( new SequenceRecord( *record_ ));
+		records->add_record( SequenceRecordPtr( new SequenceRecord( *record_ )));
 
 		SequenceRecords::correct_sequences( records );
 
 		TS_ASSERT_DELTA( predicted_error_rate_, records->estimate_error_rate(), pow(10,-9) );
 		
-		delete records;
+		// delete records;
 	}
 
 
@@ -371,7 +371,7 @@ public:
 		SequenceRecords::correct_sequences( records );
 
 		TS_ASSERT_DELTA( predicted_error_rate_, records->estimate_error_rate(), pow(10,-9) );
-		delete records;
+		// delete records;
 
 	}
 
@@ -388,7 +388,7 @@ public:
 		SequenceRecords::correct_sequences( records );
 
 		TS_ASSERT_DELTA( predicted_error_rate_, records->estimate_error_rate(), pow(10,-9) );
-		delete records;
+		// delete records;
 
 	}
 
@@ -410,7 +410,7 @@ public:
 	string gl_sequence_;
 	string quality_string_;
 	SequenceQuery* query_;
-	SequenceRecord* record_;
+	SequenceRecordPtr record_;
 
 	vector<double> raw_vector_;
 

@@ -17,6 +17,8 @@ or directly from a SequenceQuery.
 #include <iostream>
 #include <string>
 #include <vector>
+#include <memory>
+
 #include "AbSequence.hh"
 #include "SequenceQuery.hh"
 #include "ErrorXOptions.hh"
@@ -167,6 +169,8 @@ private:
 	vector<pair<int,double>> predicted_errors_all_;
 
 };
+
+typedef shared_ptr<SequenceRecord> SequenceRecordPtr;
 
 } // namespace errorx
 

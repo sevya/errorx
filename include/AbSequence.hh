@@ -23,7 +23,14 @@ namespace errorx {
 class AbSequence { 
 
 public:
+	/**
+		Empty constructor
+	*/
 	AbSequence();
+
+	/**
+		Copy constructor
+	*/
 	AbSequence( AbSequence const & other );
 
 	void build( ErrorXOptions const & options );
