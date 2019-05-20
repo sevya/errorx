@@ -567,7 +567,7 @@ vector<ClonotypeGroup> SequenceRecords::get_clonotypes() {
 
 		string clonotype_key = current_record->clonotype();
 
-		ClonotypeGroup group;
+		ClonotypeGroup group( *options_ );
 		group.v_gene( current_record->v_gene_noallele() );
 		group.j_gene( current_record->j_gene_noallele() );
 		group.cdr3( current_record->cdr3_aa_sequence() );

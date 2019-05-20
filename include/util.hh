@@ -363,6 +363,17 @@ bool valid_license();
 */
 bool compare( const string & a, const string & b, const char N );
 
+
+/**
+	Compares clonotypes in the following order: V gene, J gene, CDR3
+	Ignores the correction character (X for amino acids)
+
+	@param N correction character
+	@return boolean if strings are equal
+*/
+bool compare_clonotypes( const string & a, const string & b );
+
+
 /**
 	Adds key to map if not present with a value of 1. If it is present
 	increments the value by one

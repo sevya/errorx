@@ -63,18 +63,19 @@ public:
 
 
 	void testClonotypeEquality() {
+		ErrorXOptions options( "test.fastq", "fastq" );
 
-		ClonotypeGroup a;
+		ClonotypeGroup a( options );
 		a.v_gene( "IGHV3-23" ); 
 		a.cdr3( "ARCASTFDV" );
 		a.j_gene( "IGHJ6" );
 
-		ClonotypeGroup b;
+		ClonotypeGroup b( options );
 		b.v_gene( "IGHV3-23" ); 
 		b.cdr3( "ARCASTFDVR" );
 		b.j_gene( "IGHJ6" );
 
-		ClonotypeGroup c;
+		ClonotypeGroup c( options );
 		c.v_gene( "IGHV3-23" ); 
 		c.cdr3( "ARCASXFDV" );
 		c.j_gene( "IGHJ6" );
@@ -88,17 +89,19 @@ public:
 	}
 
 	void testVectorInsertion() {
-		ClonotypeGroup a;
+		ErrorXOptions options( "test.fastq", "fastq" );
+
+		ClonotypeGroup a( options );
 		a.v_gene( "IGHV3-23" ); 
 		a.cdr3( "ARCASTFDV" );
 		a.j_gene( "IGHJ6" );
 
-		ClonotypeGroup b;
+		ClonotypeGroup b( options );
 		b.v_gene( "IGHV3-23" ); 
 		b.cdr3( "ARCASTFDVR" );
 		b.j_gene( "IGHJ6" );
 
-		ClonotypeGroup c;
+		ClonotypeGroup c( options );
 		c.v_gene( "IGHV3-23" ); 
 		c.cdr3( "ARCASXFDV" );
 		c.j_gene( "IGHJ6" );
@@ -127,13 +130,13 @@ public:
 
 		record = new SequenceRecord();
 		record->v_gene( "IGHV3-23" ); 
-		record->cdr3_aa_sequence( "ARCASTFDV" );
+		record->cdr3_aa_sequence( "ARCAXTFDV" );
 		record->j_gene( "IGHJ6" );
 		records->add_record( record );
 
 		record = new SequenceRecord();
 		record->v_gene( "IGHV3-23" ); 
-		record->cdr3_aa_sequence( "ARCAXTFDV" );
+		record->cdr3_aa_sequence( "ARCASTFDV" );
 		record->j_gene( "IGHJ6" );
 		records->add_record( record );
 
@@ -150,11 +153,70 @@ public:
 		records->add_record( record );
 
 		vector<ClonotypeGroup> groups = records->get_clonotypes();
-		for ( auto it = groups.begin();
-			  it != groups.end(); ++it ) {
-			cout << it->toString() << endl;
-		}
 		TS_ASSERT_EQUALS( groups.size(), 3 );
+
+		// make sure CDR3 of first record with X AA is replaced
+		// after adding new record
+		TS_ASSERT_EQUALS( groups[0].cdr3(), "ARCASTFDV" );
+		TS_ASSERT_EQUALS( groups[1].cdr3(), "ARCAXTFDVR" );
+		TS_ASSERT_EQUALS( groups[2].cdr3(), "ARCASTFDV" );
+	}
+
+	void testSomaticVariants() {
+
+		ErrorXOptions options( "test.fastq", "fastq" );
+		options.errorx_base("../");
+		SequenceRecords* records = new SequenceRecords( options );
+		SequenceRecord* record;
+
+		record = new SequenceRecord();
+		record->v_gene( "IGHV3-23" ); 
+		record->cdr3_aa_sequence( "ARCAXTFDV" );
+		record->j_gene( "IGHJ6" );
+		record->full_nt_sequence( "CTCTAGACTC" );
+		record->full_nt_sequence_corrected( "CTCTAGACTC" );
+		records->add_record( record );
+
+		record = new SequenceRecord();
+		record->v_gene( "IGHV3-23" ); 
+		record->cdr3_aa_sequence( "ARCASTFDV" );
+		record->j_gene( "IGHJ6" );
+		record->full_nt_sequence( "CTCTAGACTC" );
+		record->full_nt_sequence_corrected( "CTCTANACTC" );
+		records->add_record( record );
+
+		vector<ClonotypeGroup> groups = records->get_clonotypes();
+		TS_ASSERT_EQUALS( groups.size(), 1 );
+		TS_ASSERT_EQUALS( groups[0].somatic_variants(), 1 );
+		TS_ASSERT_EQUALS( groups[0].corrected_somatic_variants(), 1 );
+
+		record = new SequenceRecord();
+		record->v_gene( "IGHV3-23" ); 
+		record->cdr3_aa_sequence( "ARCASTFDV" );
+		record->j_gene( "IGHJ6" );
+		record->full_nt_sequence( "CTCTAGACTC" );
+		record->full_nt_sequence_corrected( "CTCTAGACTC" );
+		records->add_record( record );
+
+		SequenceRecord* record2 = new SequenceRecord( *record );
+		record->full_nt_sequence( "CTCTAGANTC" );
+		record->full_nt_sequence_corrected( "CTCTAGANTC" );
+		records->add_record( record2 );
+
+		SequenceRecord* record3 = new SequenceRecord( *record );
+		record->full_nt_sequence( "CTCCAGATTC" );
+		record->full_nt_sequence_corrected( "CTCTAGATTC" );
+		records->add_record( record3 );
+
+		SequenceRecord* record4 = new SequenceRecord( *record );
+		record->full_nt_sequence( "CTCTAGACTC" );
+		record->full_nt_sequence_corrected( "CTCTAGACTC" );
+		records->add_record( record4 );
+
+		groups = records->get_clonotypes();
+		TS_ASSERT_EQUALS( groups.size(), 1 );
+		TS_ASSERT_EQUALS( groups[0].somatic_variants(), 3 );
+		TS_ASSERT_EQUALS( groups[0].corrected_somatic_variants(), 2 );
 	}
 
 };

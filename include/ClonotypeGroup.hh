@@ -15,6 +15,7 @@ Code contained herein is proprietary and confidential.
 #include <string>
 
 #include "SequenceRecord.hh"
+#include "ErrorXOptions.hh"
 
 using namespace std;
 
@@ -31,9 +32,9 @@ public:
 	~ClonotypeGroup();
 
 	/**
-		Empty constructor
+		Constructor with ErrorXOptions
 	*/
-	ClonotypeGroup();
+	ClonotypeGroup( ErrorXOptions const & options );
 
 	/**
 		Copy constructor. Deep copy of all member variables.
@@ -47,8 +48,14 @@ public:
 	bool operator== ( ClonotypeGroup const & other );
 	bool operator!= ( ClonotypeGroup const & other );
 
-	// friend bool operator== ( ClonotypeGroup const & a, ClonotypeGroup const & b );
-	// friend bool operator!= ( ClonotypeGroup const & a, ClonotypeGroup const & b );
+	/**
+		Get number of somatic variants within the clonotype, either
+		using corrected sequences or uncorrected
+
+		@param Number of somatic variants
+	*/
+	int somatic_variants() const;
+	int corrected_somatic_variants() const;
 
 	/**
 		Adds a SequenceRecord to the records_ member variable.
@@ -94,6 +101,7 @@ private:
 	string cdr3_;
 
 	vector<SequenceRecord*> records_;
+	ErrorXOptions options_;
 };
 
 } // namespace errorx
