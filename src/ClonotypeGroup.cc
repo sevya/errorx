@@ -102,7 +102,7 @@ int ClonotypeGroup::somatic_variants( bool corrected ) const {
 	string key;
 
 	for ( int ii = 0; ii < records_.size(); ++ii ) {
-		SequenceRecord* current_record = records_[ ii ];
+		SequenceRecordPtr current_record = records_[ ii ];
 
 		if ( !current_record->isGood() ) continue;
 
@@ -148,7 +148,7 @@ int ClonotypeGroup::somatic_variants_aa( bool corrected ) const {
 	string key;
 
 	for ( int ii = 0; ii < records_.size(); ++ii ) {
-		SequenceRecord* current_record = records_[ ii ];
+		SequenceRecordPtr current_record = records_[ ii ];
 
 		if ( !current_record->isGood() ) continue;
 
@@ -204,7 +204,7 @@ int ClonotypeGroup::corrected_somatic_variants() const {
 }
 */
 
-void ClonotypeGroup::add_record( SequenceRecord* record ) {
+void ClonotypeGroup::add_record( SequenceRecordPtr & record ) {
 	records_.push_back( record );
 	
 	// if the current CDR3 has an X and the new record doesn't
@@ -222,7 +222,7 @@ void ClonotypeGroup::add_record( SequenceRecord* record ) {
 int ClonotypeGroup::size() const { return records_.size(); }
 
 
-SequenceRecord* ClonotypeGroup::get( int i ) const {
+SequenceRecordPtr ClonotypeGroup::get( int i ) const {
 	return records_[ i ];
 }
 

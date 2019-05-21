@@ -33,7 +33,6 @@ using namespace std;
 
 // forward declare to avoid circular dependencies
 class SequenceRecord;
-typedef shared_ptr<SequenceRecord> SequenceRecordPtr;
 
 class SequenceFeatures {
 
@@ -49,7 +48,7 @@ public:
 
 		@throws invalid_argument if position is out of bounds
 	*/
-	SequenceFeatures( SequenceRecordPtr const record, int position );
+	SequenceFeatures( SequenceRecord const & record, int position );
 
 	/**
 		Copy constructor

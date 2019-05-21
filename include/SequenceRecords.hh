@@ -60,7 +60,7 @@ public:
 		deleted after. Uses the ErrorXOptions member variable from
 		the first item in the vector to get its options.
 	*/
-	SequenceRecords( vector<SequenceRecords*> const & others );
+	SequenceRecords( vector<unique_ptr<SequenceRecords>> const & others );
 
 	/**
 		Constructor from SequenceRecord vector. Useful for
@@ -101,7 +101,7 @@ public:
 
 		@param record SequenceRecord to add to records_
 	*/
-	void add_record( SequenceRecordPtr record );
+	void add_record( SequenceRecordPtr & record );
 
 	/**
 		Get the number of SequenceRecord objects held internally
@@ -183,7 +183,7 @@ public:
 		@param records Collection of SequenceRecord objects to be
 		error corrected
 	*/
-	static void correct_sequences( SequenceRecords* & records );
+	static void correct_sequences( unique_ptr<SequenceRecords> & records );
 	
 	/**
 		For debugging purposes. Gets features from each SequenceRecord 
@@ -194,7 +194,7 @@ public:
 	/**
 		Get the options file used for these records
 	*/
-	ErrorXOptions* get_options() const;
+	ErrorXOptionsPtr get_options() const;
 
 	/**
 		Count the number of unique sequences and unique clonotypes
@@ -234,7 +234,7 @@ private:
 		Deep copies of each member variable are made, so the 
 		parent object can be safely deleted after chunking.
 	*/
-	vector<SequenceRecords*> chunk_records();
+	vector<unique_ptr<SequenceRecords>> chunk_records();
 	
 	/**
 		Corrects a single SequenceRecords object in one thread.
@@ -245,7 +245,7 @@ private:
 		@param m mutex* to keep track of threads
 		@param total total number of records over all threads
 	*/
-	static void correct_sequences_threaded( SequenceRecords* & records, function<void(int,int,mutex*)>* update, mutex* m, int & total);
+	static void correct_sequences_threaded( unique_ptr<SequenceRecords> & records, function<void(int,int,mutex*)>* update, mutex* m, int & total);
 
 	/**
 		Tracks progress of error correction in multiple threads 
@@ -262,18 +262,18 @@ private:
 	=============================
 	*/
 	vector<SequenceRecordPtr> records_;
-	ErrorXOptions* options_;
-	ErrorPredictor* predictor_;
+	ErrorXOptionsPtr options_;
+	ErrorPredictorPtr predictor_;
 
 	/**
-		Std maps that hold the unique sequences and clonotypes contained in 
-		the dataset
+		Holds the different clonotypes contained in the dataset
 	*/
 	vector<ClonotypeGroup> clonotypes_;
 
 };
 
-typedef shared_ptr<SequenceRecords> SequenceRecordsPtr;
+typedef unique_ptr<SequenceRecords> SequenceRecordsPtr;
+
 
 } // namespace errorx
 

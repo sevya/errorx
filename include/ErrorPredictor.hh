@@ -71,6 +71,9 @@ private:
 	keras::KerasModel keras_model_;
 };
 
+typedef unique_ptr<ErrorPredictor> ErrorPredictorPtr;
+
+
 } // namespace errorx
 
 

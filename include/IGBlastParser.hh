@@ -48,7 +48,7 @@ public:
 
 		@return A SequenceRecords object constructed from the IGBlast output
 	*/
-	SequenceRecords* parse_output( ErrorXOptions & options );
+	SequenceRecordsPtr parse_output( ErrorXOptions & options );
 
 	/**
 		Parses a section of the IGBlast output file representing

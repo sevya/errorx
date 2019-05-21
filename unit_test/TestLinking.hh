@@ -31,7 +31,7 @@ public:
 		
 		run_protocol_write( options );
 
-		SequenceRecords* records = errorx::run_protocol( options );
+		SequenceRecordsPtr records = errorx::run_protocol( options );
 
 		TS_ASSERT_EQUALS(
 			records->get(0)->quality_string(),

@@ -70,7 +70,7 @@ public:
 	void testParser(void) {
 
 		IGBlastParser parser;
-		SequenceRecords* records;
+		SequenceRecordsPtr records;
 
 		ErrorXOptions options( (util::get_root_path() / "testing" / "test.fastq").string(),
 			"fastq" );
@@ -112,9 +112,6 @@ public:
 			records->get(0)->full_aa_sequence(),
 			"DGGTRSADKSSSAACLARSSLKAGDSAVCSGAGEEALSFVYYWGQGTTLTGSS"
 			);
-
-		delete records;
-
 	}
 
 
@@ -598,7 +595,7 @@ public:
 		ErrorXOptions options( "testing/TRA_test.fastq", "fastq" );
 		options.igtype( "TCR" );
 		options.errorx_base( "../" );
-		SequenceRecords* records = run_protocol( options );
+		SequenceRecordsPtr records = run_protocol( options );
 		SequenceRecord record = *(records->get( 0 ));
 
 		TS_ASSERT_EQUALS( record.full_nt_sequence(),"AAAAATGAAGTGGAGCAGAGTCCTCAGAACCTGACTGCCCAGGAAGGAGAATTTATCACAATCAACTGCAGTTACTCGGTAGGAATAAGTGCCTTACACTGGCTGCAACAGCATCCAGGAGGAGGCATTGTTTCCTTGTTTATGCTGAGCTCAGGGAAGAAGAAGCATGGAAGATTAATTGCCACAATAAACATACAGGAAAAGCACAGCTCCCTGCACATCACAGCCTCCCATCCCAGAGACTCTGCCGTCTACATCTGTGCTGTCCCTTACACCGACAAGCTCATCTTTGGGACTGGGACCAGATTACAAGTCTTTCCAA");
@@ -620,7 +617,6 @@ public:
 		TS_ASSERT_EQUALS( record.d_identity(), -1);
 		TS_ASSERT_EQUALS( record.j_identity(), 100);
 
-		delete records;
 	}
 
 	void testTCRB(void) {
@@ -628,7 +624,7 @@ public:
 		options.errorx_base( "../" );
 		options.igtype( "TCR" );
 
-		SequenceRecords* records = run_protocol( options );
+		SequenceRecordsPtr records = run_protocol( options );
 		SequenceRecord record = *(records->get( 0 ));
 		TS_ASSERT_EQUALS( record.full_nt_sequence(),"AAGGCTGGATTCACTCAAACTCCAAGATATCTGATCAAAACGAGAGGACAGCAAGTGACCCTGAGCTGCTCCCCTATCCCTGGGCATCGGAGGGTATCCTGGGACCAACAGACCCCAGGACAGGGCCTTCAGTTCCTCTTTGAATACTTCAGAGAGACACAGAGAAACAAAGGAAACTTCCCTGGTCGATTCTCAGGGCGCCAGTTCTCTAACTCTCGCTCTGAGATGAATGTGAGCACCTTGGAGCTGGGGGACTCGGCCCTTTATCTTTGCGCCAGCAGCGACGGGACCGGACAAAACTATGGCTACACCTTCGGTTCGGGGACCAGGTTAACCGTTGTAG");
 
@@ -649,7 +645,6 @@ public:
 		TS_ASSERT_EQUALS( record.d_identity(), 100);
 		TS_ASSERT_EQUALS( record.j_identity(), 100);
 
-		delete records;
 	}
 
 	void testBadSequenceID(void) {

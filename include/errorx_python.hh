@@ -67,7 +67,7 @@ static PyObject* get_predicted_errors( PyObject* self, PyObject* args, PyObject*
 
 static PyObject* run_protocol( PyObject* self, PyObject* args, PyObject* kwargs );
 
-SequenceRecords* submit_query( vector<string> & sequences, 
+SequenceRecordsPtr submit_query( vector<string> & sequences, 
 				   vector<string> & gl_sequences, 
 				   vector<string> & phred_scores, 
 				   ErrorXOptions & options );

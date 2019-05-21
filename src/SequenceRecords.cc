@@ -19,6 +19,7 @@ settings for processing, and ErrorPredictor that does the error correction itsel
 #include <mutex>
 #include <functional>
 #include <algorithm>
+#include <memory>
 
 #include "SequenceRecords.hh"
 #include "SequenceQuery.hh"
@@ -34,14 +35,14 @@ using namespace std;
 namespace errorx {
 
 SequenceRecords::SequenceRecords( ErrorXOptions const & options ) :
-	options_(new ErrorXOptions( options )),
-	predictor_ (new ErrorPredictor( options ))
+	options_( new ErrorXOptions( options )),
+	predictor_( new ErrorPredictor( options ))
 {}
 
 SequenceRecords::~SequenceRecords() {
 	// for ( int ii = 0; ii < size(); ++ii ) delete records_[ii];
-	delete predictor_;
-	delete options_;
+	// delete predictor_;
+	// delete options_;
 }
 
 
@@ -53,13 +54,19 @@ SequenceRecords::SequenceRecords( SequenceRecords const & other ) {
 		);
 	}
 
-	options_ = new ErrorXOptions( *other.options_ );
-	predictor_ = new ErrorPredictor( *other.predictor_ );
+	options_ = ErrorXOptionsPtr( new ErrorXOptions( *other.options_ ));
+	predictor_ = ErrorPredictorPtr( new ErrorPredictor( *other.predictor_ ));
 
-	clonotypes_ = other.clonotypes_;
+	// I purposely DO NOT copy the ClonotypeGroup clonotypes_ object.
+	// The reason is that all of the SequenceRecord objects contained here
+	// are deep copied. The records held in ClonotypeGroup simply point to 
+	// the objects held by SequenceRecords. If I were to copy ClonotypeGroup
+	// then its SequenceRecord objects would be decoupled from those of the 
+	// parent SequenceRecords object. So I just have to make my deep copy,
+	// then count clonotypes again after the fact.
 }
 
-SequenceRecords::SequenceRecords( vector<SequenceRecords*> const & others ) {
+SequenceRecords::SequenceRecords( vector<SequenceRecordsPtr> const & others ) {
 	if ( others.size() == 0 ) {
 		throw invalid_argument( "Error: trying to create a SequenceRecords object from an empty vector" );
 	}
@@ -77,8 +84,8 @@ SequenceRecords::SequenceRecords( vector<SequenceRecords*> const & others ) {
 
 	// note: this just uses the settings from the first item in the vector
 	// if they're not all uniform it will cause a bug
-	options_ = new ErrorXOptions( *(others[0]->options_ ));
-	predictor_ = new ErrorPredictor( *(others[0]->predictor_ ) );
+	options_ = ErrorXOptionsPtr( new ErrorXOptions( *(others[0]->options_ )));
+	predictor_ = ErrorPredictorPtr( new ErrorPredictor( *(others[0]->predictor_ )));
 }
 
 SequenceRecords::SequenceRecords( vector<SequenceRecordPtr> const & record_vector, 
@@ -90,8 +97,8 @@ SequenceRecords::SequenceRecords( vector<SequenceRecordPtr> const & record_vecto
 			SequenceRecordPtr( new SequenceRecord( *record_vector[ii] ))
 		);
 	}
-	options_ = new ErrorXOptions( options );
-	predictor_ = new ErrorPredictor( options );
+	options_ = ErrorXOptionsPtr( new ErrorXOptions( options ));
+	predictor_ = ErrorPredictorPtr( new ErrorPredictor( options ));
 }
 
 void SequenceRecords::import_from_tsv() {
@@ -112,18 +119,20 @@ void SequenceRecords::import_from_tsv() {
 		}
 
 		SequenceQuery query( tokens[0], tokens[1], tokens[2], tokens[3] );
-		add_record( SequenceRecordPtr( new SequenceRecord( query )) );
+		SequenceRecordPtr ptr( new SequenceRecord( query ));
+		add_record( ptr );
 	}
 }
 
 void SequenceRecords::import_from_list( vector<SequenceQuery> & queries ) {
 
 	for ( int ii = 0; ii < queries.size(); ++ii ) {	
-		add_record( SequenceRecordPtr( new SequenceRecord( queries[ii] )) );
+		SequenceRecordPtr ptr( new SequenceRecord( queries[ii] ));
+		add_record( ptr );
 	}
 }
 
-void SequenceRecords::add_record( SequenceRecordPtr record ) {
+void SequenceRecords::add_record( SequenceRecordPtr & record ) {
 	records_.push_back( record );
 }
 
@@ -256,7 +265,7 @@ void SequenceRecords::write_summary() const {
 	outfile.close();
 }
 
-void SequenceRecords::correct_sequences_threaded( SequenceRecords* & records, 
+void SequenceRecords::correct_sequences_threaded( SequenceRecordsPtr & records, 
 												  function<void(int,int,mutex*)>* increment,
 												  mutex* m, int & total ) 
 {
@@ -280,13 +289,13 @@ void SequenceRecords::correct_sequences_threaded( SequenceRecords* & records,
 	}
 }
 
-vector<SequenceRecords*> SequenceRecords::chunk_records() {
+vector<SequenceRecordsPtr> SequenceRecords::chunk_records() {
 	// If there is only one thread, I don't need to split into chunks
 	if ( options_->nthreads() == 1 ) {
 		// Make a deep copy of this and return it
-		vector<SequenceRecords*> records_array = { 
-			new SequenceRecords( records_, *options_ ) 
-		};
+		SequenceRecordsPtr ptr( new SequenceRecords( records_, *options_ ));
+		vector<SequenceRecordsPtr> records_array;
+		records_array.push_back( std::move(ptr) );
 
 		return records_array;
 	} else {
@@ -296,37 +305,38 @@ vector<SequenceRecords*> SequenceRecords::chunk_records() {
 			util::split_vector<SequenceRecordPtr>( records_, options_->nthreads() );
 
 		// Make an array to hold SequenceRecords
-		vector<SequenceRecords*> records_array( options_->nthreads() );
+		vector<SequenceRecordsPtr> records_array( options_->nthreads() );
 
 		for ( int ii = 0; ii < options_->nthreads(); ++ii ) {
 			// Make a new SequenceRecords object containing only its chunk
 			// this is a deep copy so the old records are no longer needed
-			records_array[ii] = new SequenceRecords( split_vectors[ii], *options_ );
+
+			records_array[ii] = SequenceRecordsPtr( new SequenceRecords( split_vectors[ii], *options_ ));
 		}
 
 		return records_array;
 	}
 }
 
-void SequenceRecords::correct_sequences( SequenceRecords* & records ) {
+void SequenceRecords::correct_sequences( SequenceRecordsPtr & records ) {
 
 	int nthreads = records->options_->nthreads();
 	int total_records = records->size();
 	int verbose = records->options_->verbose();
 
-	// get chunked SequenceRecords
-	// this will deep copy the original pointers in records_
-	vector<SequenceRecords*> chunked_records = records->chunk_records();
-
-	// delete the original record
-	delete records;
-	
-	vector<thread*> threads( nthreads );
-
 	// Set up a callback function for each thread to update its progress
 	function<void(int,int,mutex*)> increment = records->options_->increment();
 	function<void(void)> finish = records->options_->finish();
-		
+
+	// get chunked SequenceRecords
+	// this will deep copy the original pointers in records_
+	vector<SequenceRecordsPtr> chunked_records = records->chunk_records();
+
+	// delete the original record
+	records.release();
+	
+	vector<unique_ptr<thread>> threads( nthreads );
+
 	// Set up a mutex to coordinate between threads
 	mutex* m = new mutex;
 
@@ -335,13 +345,13 @@ void SequenceRecords::correct_sequences( SequenceRecords* & records ) {
 	}
 
 	for ( int ii = 0; ii < nthreads; ++ii ) {
-		threads[ii] = new std::thread(
+		threads[ii] = unique_ptr<thread>( new std::thread(
 				&SequenceRecords::correct_sequences_threaded,
 				ref(chunked_records[ii]),
 				&increment,
 				m,
 				ref(total_records)
-				);
+				));
 	}
 
 
@@ -357,14 +367,16 @@ void SequenceRecords::correct_sequences( SequenceRecords* & records ) {
   	// I'm done with mutex now
   	delete m;
 
-	// // Now I need to collect all the chunked SequenceRecords into the parent
-	records = new SequenceRecords( chunked_records );
+	// Now I need to collect all the chunked SequenceRecords into the parent
+	records = SequenceRecordsPtr( new SequenceRecords( chunked_records ));
 
 	// Delete the threads that I used, along with the chunked records
 	// All copies made were deep copies so this won't affect the merged records object
+	
+	// UPDATE: this may be unnecessary now that I use unique ptrs
 	for ( int ii = 0; ii < nthreads; ++ii ) {
-		delete threads[ii];
-		delete chunked_records[ii]; 
+		threads[ii].release();
+		chunked_records[ii].release(); 
 	} 
 }
 
@@ -452,8 +464,7 @@ void SequenceRecords::count_clonotypes() {
 
 	for ( int ii = 0; ii < records_.size(); ++ii ) {
 
-		// TODO adapt this for shared_ptr
-		SequenceRecord* current_record = records_[ ii ].get();
+		SequenceRecordPtr current_record = records_[ ii ];
 
 		if ( !current_record->isGood() ) continue;
 
@@ -561,6 +572,6 @@ map<string,int> SequenceRecords::vjgene_counts() {
 	return util::value_counts( genes );
 }
 
-ErrorXOptions* SequenceRecords::get_options() const { return options_; }
+ErrorXOptionsPtr SequenceRecords::get_options() const { return ErrorXOptionsPtr(new ErrorXOptions( *options_ )); }
 
 } // namespace errorx

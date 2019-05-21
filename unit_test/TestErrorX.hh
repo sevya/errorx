@@ -34,7 +34,7 @@ public:
 		string base = "../";
 		options_.errorx_base( base );
 
-		SequenceRecords* records = run_protocol( options_ );
+		SequenceRecordsPtr records = run_protocol( options_ );
 
 		TS_ASSERT_EQUALS(
 			records->get(0)->quality_string(),
@@ -97,7 +97,7 @@ public:
 		ErrorXOptions options( options_ );
 		options.correction( 'X' );
 
-		SequenceRecords* records = run_protocol( options );
+		SequenceRecordsPtr records = run_protocol( options );
 
 		TS_ASSERT_EQUALS(
 			records->get(0)->quality_string(),
@@ -155,7 +155,7 @@ public:
 		string base = "../";
 		options_.errorx_base( base );
 
-		SequenceRecords* records = run_protocol( options_ );
+		SequenceRecordsPtr records = run_protocol( options_ );
 
 		TS_ASSERT_EQUALS(
 			records->get(0)->quality_string(),
@@ -211,9 +211,9 @@ public:
 
 		ErrorXOptions options( "tmp", "tsv" );
 		options.errorx_base( "../" );
-		SequenceRecords* records = run_protocol( queries, options );
+		SequenceRecordsPtr records = run_protocol( queries, options );
 
-		SequenceRecord* record = records->get(0);
+		SequenceRecordPtr record = records->get(0);
 		TS_ASSERT_EQUALS(
 			record->quality_string(),
 			phred_scores[0]
@@ -273,9 +273,9 @@ public:
 		vector<SequenceQuery> queries;
 		SequenceQuery query( sequenceIDs[0], sequences[0], germline_sequences[0], phred_scores[0] );
 		queries.push_back( query );
-		SequenceRecords* records = run_protocol( queries, options_ );
+		SequenceRecordsPtr records = run_protocol( queries, options_ );
 
-		SequenceRecord* record = records->get(0);
+		SequenceRecordPtr record = records->get(0);
 		TS_ASSERT_EQUALS(
 			record->quality_string(),
 			phred_scores[0]

@@ -28,7 +28,7 @@ public:
 
 		ErrorXOptions options( "test.fastq", "fastq" );
 		options.errorx_base("../");
-		SequenceRecords* records = new SequenceRecords( options );
+		SequenceRecordsPtr records = SequenceRecordsPtr(new SequenceRecords( options ));
 		vector<string> corrected_sequences = {
 			"ACTGACTGACTGACTGACTGACTGACTGACTG",
 			"ACTGACTGACTGTCTGACTGACTGACTGACTG",
@@ -50,7 +50,7 @@ public:
 		};
 
 		for ( int ii = 0; ii < corrected_sequences.size(); ++ii ) {
-			SequenceRecord* record = new SequenceRecord();
+			SequenceRecordPtr record = SequenceRecordPtr( new SequenceRecord());
 			record->full_nt_sequence( uncorrected_sequences[ ii ] );
 			record->full_nt_sequence_corrected( corrected_sequences[ ii ] );
 
@@ -129,28 +129,28 @@ public:
 
 		ErrorXOptions options( "test.fastq", "fastq" );
 		options.errorx_base("../");
-		SequenceRecords* records = new SequenceRecords( options );
-		SequenceRecord* record;
+		SequenceRecordsPtr records = SequenceRecordsPtr( new SequenceRecords( options ));
+		SequenceRecordPtr record;
 
-		record = new SequenceRecord();
+		record = SequenceRecordPtr(new SequenceRecord());
 		record->v_gene( "IGHV3-23" ); 
 		record->cdr3_aa_sequence( "ARCAXTFDV" );
 		record->j_gene( "IGHJ6" );
 		records->add_record( record );
 
-		record = new SequenceRecord();
+		record = SequenceRecordPtr(new SequenceRecord());
 		record->v_gene( "IGHV3-23" ); 
 		record->cdr3_aa_sequence( "ARCASTFDV" );
 		record->j_gene( "IGHJ6" );
 		records->add_record( record );
 
-		record = new SequenceRecord();
+		record = SequenceRecordPtr(new SequenceRecord());
 		record->v_gene( "IGHV3-23" ); 
 		record->cdr3_aa_sequence( "ARCAXTFDVR" );
 		record->j_gene( "IGHJ6" );
 		records->add_record( record );
 
-		record = new SequenceRecord();
+		record = SequenceRecordPtr(new SequenceRecord());
 		record->v_gene( "IGHV3-21" ); 
 		record->cdr3_aa_sequence( "ARCASTFDV" );
 		record->j_gene( "IGHJ6" );
@@ -175,22 +175,22 @@ public:
 		a.cdr3( "ARCASTFDV" );
 		a.j_gene( "IGHJ6" );
 
-		SequenceRecord* record = new SequenceRecord();
+		SequenceRecordPtr record = SequenceRecordPtr(new SequenceRecord());
 		record->full_nt_sequence( "CTCTAGACTC" );
 		record->full_nt_sequence_corrected( "CTCTAGACTC" );
 		a.add_record( record );
 
-		SequenceRecord* record2 = new SequenceRecord();
+		SequenceRecordPtr record2 = SequenceRecordPtr(new SequenceRecord());
 		record2->full_nt_sequence( "CTCTAGANTC" );
 		record2->full_nt_sequence_corrected( "CTCTAGANTC" );
 		a.add_record( record2 );
 
-		SequenceRecord* record3 = new SequenceRecord();
+		SequenceRecordPtr record3 = SequenceRecordPtr(new SequenceRecord());
 		record3->full_nt_sequence( "CTCCAGATTC" );
 		record3->full_nt_sequence_corrected( "CTCTAGATTC" );
 		a.add_record( record3 );
 
-		SequenceRecord* record4 = new SequenceRecord( *record );
+		SequenceRecordPtr record4 = SequenceRecordPtr(new SequenceRecord(*record));
 		record4->full_nt_sequence( "CTCTAGACTC" );
 		record4->full_nt_sequence_corrected( "CTCTAGACTC" );
 		a.add_record( record4 );
@@ -210,22 +210,22 @@ public:
 		a.cdr3( "ARCASTFDV" );
 		a.j_gene( "IGHJ6" );
 
-		SequenceRecord* record = new SequenceRecord();
+		SequenceRecordPtr record = SequenceRecordPtr(new SequenceRecord());
 		record->full_nt_sequence( "CTCTAGACTC" );
 		record->full_nt_sequence_corrected( "CTCTAGACTC" );
 		a.add_record( record );
 
-		SequenceRecord* record2 = new SequenceRecord();
+		SequenceRecordPtr record2 = SequenceRecordPtr(new SequenceRecord());
 		record2->full_nt_sequence( "CTCTAGANTC" );
 		record2->full_nt_sequence_corrected( "CTCTAGANTC" );
 		a.add_record( record2 );
 
-		SequenceRecord* record3 = new SequenceRecord();
+		SequenceRecordPtr record3 = SequenceRecordPtr(new SequenceRecord());
 		record3->full_nt_sequence( "CTCCAGATTC" );
 		record3->full_nt_sequence_corrected( "CTCTAGATTC" );
 		a.add_record( record3 );
 
-		SequenceRecord* record4 = new SequenceRecord( *record );
+		SequenceRecordPtr record4 = SequenceRecordPtr(new SequenceRecord( *record ));
 		record4->full_nt_sequence( "CTCTAGACTC" );
 		record4->full_nt_sequence_corrected( "CTCTAGACTC" );
 		a.add_record( record4 );
@@ -239,9 +239,9 @@ public:
 
 		ErrorXOptions options( "test.fastq", "fastq" );
 		options.errorx_base("../");
-		SequenceRecords* records = new SequenceRecords( options );
+		SequenceRecordsPtr records = SequenceRecordsPtr( new SequenceRecords( options ));
 
-		SequenceRecord* record = new SequenceRecord();
+		SequenceRecordPtr record = SequenceRecordPtr(new SequenceRecord());
 		record->v_gene( "IGHV3-23" ); 
 		record->cdr3_aa_sequence( "ARCAXTFDV" );
 		record->j_gene( "IGHJ6" );
@@ -249,7 +249,7 @@ public:
 		record->full_nt_sequence_corrected( "CTCTAGACTC" );
 		records->add_record( record );
 
-		SequenceRecord* record2 = new SequenceRecord();
+		SequenceRecordPtr record2 = SequenceRecordPtr(new SequenceRecord());
 		record2->v_gene( "IGHV3-23" ); 
 		record2->cdr3_aa_sequence( "ARCASTFDV" );
 		record2->j_gene( "IGHJ6" );
@@ -263,8 +263,8 @@ public:
 		TS_ASSERT_EQUALS( groups[0].somatic_variants(1), 1 );
 
 
-		records = new SequenceRecords( options );
-		record = new SequenceRecord();
+		records = SequenceRecordsPtr( new SequenceRecords( options ));
+		record = SequenceRecordPtr(new SequenceRecord());
 		record->v_gene( "IGHV3-23" ); 
 		record->cdr3_aa_sequence( "ARCASTFDV" );
 		record->j_gene( "IGHJ6" );
@@ -272,17 +272,17 @@ public:
 		record->full_nt_sequence_corrected( "CTCTAGACTC" );
 		records->add_record( record );
 
-		record2 = new SequenceRecord( *record );
+		record2 = SequenceRecordPtr(new SequenceRecord( *record ));
 		record2->full_nt_sequence( "CTCTAGANTC" );
 		record2->full_nt_sequence_corrected( "CTCTAGANTC" );
 		records->add_record( record2 );
 
-		SequenceRecord* record3 = new SequenceRecord( *record );
+		SequenceRecordPtr record3 = SequenceRecordPtr(new SequenceRecord( *record ));
 		record3->full_nt_sequence( "CTCCAGATTC" );
 		record3->full_nt_sequence_corrected( "CTCTAGATTC" );
 		records->add_record( record3 );
 
-		SequenceRecord* record4 = new SequenceRecord( *record );
+		SequenceRecordPtr record4 = SequenceRecordPtr(new SequenceRecord( *record ));
 		record4->full_nt_sequence( "CTCTAGACTC" );
 		record4->full_nt_sequence_corrected( "CTCTAGACTC" );
 		records->add_record( record4 );
@@ -292,12 +292,6 @@ public:
 
 		TS_ASSERT_EQUALS( groups[0].somatic_variants(0), 3 );
 		TS_ASSERT_EQUALS( groups[0].somatic_variants(1), 2 );
-
-
-		delete record;
-		delete record2;
-		delete record3;
-		delete record4;
 	}
 
 
@@ -305,27 +299,27 @@ public:
 
 		ErrorXOptions options( "test.fastq", "fastq" );
 		options.errorx_base("../");
-		SequenceRecords* records = new SequenceRecords( options );
+		SequenceRecordsPtr records = SequenceRecordsPtr( new SequenceRecords( options ));
 
-		SequenceRecord* record = new SequenceRecord();
+		SequenceRecordPtr record = SequenceRecordPtr(new SequenceRecord());
 		record->v_gene( "IGHV3-23" ); 
 		record->cdr3_aa_sequence( "ARCASTFDV" );
 		record->j_gene( "IGHJ6" );
 		records->add_record( record );
 
-		SequenceRecord* record2 = new SequenceRecord( *record );
+		SequenceRecordPtr record2 = SequenceRecordPtr( new SequenceRecord( *record ));
 		record->cdr3_aa_sequence( "ARCASTFDW" );
 		records->add_record( record2 );
 
-		SequenceRecord* record3 = new SequenceRecord( *record );
+		SequenceRecordPtr record3 = SequenceRecordPtr(new SequenceRecord( *record ));
 		record3->v_gene( "IGHV3-21" ); 
 		records->add_record( record3 );
 
-		SequenceRecord* record4 = new SequenceRecord( *record );
+		SequenceRecordPtr record4 = SequenceRecordPtr(new SequenceRecord( *record ));
 		record4->j_gene( "IGHJ3" ); 
 		records->add_record( record4 );
 
-		SequenceRecord* record5 = new SequenceRecord( *record );
+		SequenceRecordPtr record5 = SequenceRecordPtr(new SequenceRecord( *record ));
 		record5->j_gene( "IGHJ1" ); 
 		records->add_record( record5 );
 
@@ -349,7 +343,6 @@ public:
 		TS_ASSERT_EQUALS( counts["IGHV3-23_IGHJ3"], 1 );
 		TS_ASSERT_EQUALS( counts["IGHV3-23_IGHJ1"], 1 );
 	}
-
 };
 
 #endif /* UNITTESTS_HH_ */

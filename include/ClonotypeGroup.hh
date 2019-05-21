@@ -67,7 +67,7 @@ public:
 
 		@param record SequenceRecord to add to records_
 	*/
-	void add_record( SequenceRecord* record );
+	void add_record( SequenceRecordPtr & record );
 
 	/**
 		Get the number of SequenceRecord objects held internally
@@ -83,7 +83,7 @@ public:
 
 		@return SequenceRecord at index i
 	*/
-	SequenceRecord* get( int i ) const;
+	SequenceRecordPtr get( int i ) const;
 
 	/**
 		Getters and setters
@@ -102,7 +102,7 @@ private:
 	string jgene_;
 	string cdr3_;
 
-	vector<SequenceRecord*> records_;
+	vector<SequenceRecordPtr> records_;
 	ErrorXOptions options_;
 };
 

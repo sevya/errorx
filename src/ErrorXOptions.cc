@@ -68,7 +68,6 @@ ErrorXOptions::ErrorXOptions( string input_file, string file_format ) :
 }
 
 ErrorXOptions::ErrorXOptions( ErrorXOptions const & other ) :
-	
 	infile_(other.infile_),
 	format_(other.format_),	
 	outfile_(other.outfile_),

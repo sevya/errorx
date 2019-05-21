@@ -127,7 +127,7 @@ void SequenceRecord::predict_errors( ErrorPredictor const & predictor,
 	predicted_errors_all_.clear();
 		
 	for ( int ii = 0; ii < sequence_.full_nt_sequence().length(); ++ii ) {
-		SequenceFeatures features( SequenceRecordPtr(this), ii );
+		SequenceFeatures features( *this, ii );
 
 		double error_probability = predictor.apply_model( features );
 		predicted_errors_all_.push_back( pair<int,double>( ii, error_probability ));
@@ -140,7 +140,7 @@ vector<vector<double>> SequenceRecord::get_features( ErrorPredictor const & pred
 	vector<vector<double>> features_2d;
 
 	for ( int ii = 0; ii < sequence_.full_nt_sequence().length(); ++ii ) {
-		SequenceFeatures features( SequenceRecordPtr(this), ii );
+		SequenceFeatures features( *this, ii );
 
 		features_2d.push_back( features.get_feature_vector() );
 	}

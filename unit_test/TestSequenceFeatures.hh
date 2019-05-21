@@ -69,7 +69,7 @@ public:
 	}
 
 	void testCharEncoding() {
-		SequenceFeatures sf = SequenceFeatures( record_, 2 );
+		SequenceFeatures sf = SequenceFeatures( *record_, 2 );
 
 		vector<int> test_vector;
 
@@ -99,7 +99,7 @@ public:
 	}
 
 	void testSequenceEncoding() {
-		SequenceFeatures sf = SequenceFeatures( record_, 2 );
+		SequenceFeatures sf = SequenceFeatures( *record_, 2 );
 
 		vector<int> test_vector = {
 				1,0,0,0,0,0, //A
@@ -120,7 +120,7 @@ public:
 	}
 
 	void testSequenceWindow() {
-		SequenceFeatures sf = SequenceFeatures( record_, 2 );
+		SequenceFeatures sf = SequenceFeatures( *record_, 2 );
 
 		string sequence = "ATCGCAGTCCTA";
 
@@ -165,7 +165,7 @@ public:
 	}
 
 	void testIntWindow() {
-		SequenceFeatures sf = SequenceFeatures( record_, 2 );
+		SequenceFeatures sf = SequenceFeatures( *record_, 2 );
 		vector<int> sequence = {	
 				39,37,40,40,32,35,36,31,30,29,25,34
 		};
@@ -212,7 +212,7 @@ public:
 	}
 
 	void testFeatureVectorSize() {
-		SequenceFeatures sf ( record_, 12 );
+		SequenceFeatures sf ( *record_, 12 );
 		vector<double> features = sf.get_feature_vector();
 		TS_ASSERT_EQUALS( features.size(), 228 );
 
@@ -227,7 +227,7 @@ public:
 
 		SequenceQuery query( "test",sequence, gl_sequence, phred_str );
 		SequenceRecordPtr record( new SequenceRecord( query ));
-		SequenceFeatures sf = SequenceFeatures( record, 122 );
+		SequenceFeatures sf = SequenceFeatures( *record, 122 );
 
 		vector<int> quals = {2,2,2,2,2,2,34,25,28,24,31,22,10,34,21,10,10};
 		for ( int ii = 0; ii < sf.quality_window().size(); ++ii ) {
@@ -270,7 +270,7 @@ public:
 			stringstream line_stream( line );
 			line_stream >> position >> probability;
 			
-			SequenceFeatures features( record_, position );
+			SequenceFeatures features( *record_, position );
 			pred = predictor.apply_model( features );
 
 			TS_ASSERT_DELTA( probability, pred, pow(10,-5));
@@ -278,7 +278,7 @@ public:
 	}
 
 	void testFeaturesProperlyCalculated() {
-		SequenceFeatures features ( record_, 136 );
+		SequenceFeatures features ( *record_, 136 );
 
 		vector<double> results_vector_test = features.get_feature_vector();
 
@@ -288,7 +288,7 @@ public:
 	}
 
 	void testProperPredictionsFromFeatures() {
-		SequenceFeatures features ( record_, 136 );
+		SequenceFeatures features ( *record_, 136 );
 
 		ErrorXOptions options( "tmp", "tsv" );
 		options.errorx_base("../");
@@ -318,9 +318,9 @@ public:
 		options.errorx_base( "../" );
 		options.nthreads( 1 );
 
-		SequenceRecords* records = new SequenceRecords( options );
-
-		records->add_record( SequenceRecordPtr( new SequenceRecord( *record_ )));
+		SequenceRecordsPtr records = SequenceRecordsPtr( new SequenceRecords( options ));
+		SequenceRecordPtr ptr( new SequenceRecord( *record_ ));
+		records->add_record( ptr );
 
 		SequenceRecords::correct_sequences( records );
 
@@ -347,9 +347,9 @@ public:
 		options.errorx_base("../");
 		options.nthreads( -1 );
 
-		SequenceRecords* records = new SequenceRecords( options );
-
-		records->add_record( SequenceRecordPtr( new SequenceRecord( *record_ )));
+		SequenceRecordsPtr records = SequenceRecordsPtr( new SequenceRecords( options ));
+		SequenceRecordPtr ptr( new SequenceRecord( *record_ ));
+		records->add_record( ptr );
 
 		SequenceRecords::correct_sequences( records );
 
@@ -365,7 +365,7 @@ public:
 		options.errorx_base("../");
 		options.nthreads( 1 );
 
-		SequenceRecords* records = new SequenceRecords( options );
+		SequenceRecordsPtr records = SequenceRecordsPtr( new SequenceRecords( options ));
 		records->import_from_tsv();
 	
 		SequenceRecords::correct_sequences( records );
@@ -382,7 +382,7 @@ public:
 		options.errorx_base("../");
 		options.nthreads( -1 );
 
-		SequenceRecords* records = new SequenceRecords( options );
+		SequenceRecordsPtr records = SequenceRecordsPtr( new SequenceRecords( options ));
 		records->import_from_tsv();
 	
 		SequenceRecords::correct_sequences( records );
@@ -394,7 +394,7 @@ public:
 
 
 	void testCalculateMetrics() {
-		SequenceFeatures sf = SequenceFeatures( record_, 2 );
+		SequenceFeatures sf = SequenceFeatures( *record_, 2 );
 		string one = "ACGTACGT";
 		string two = "ACGTCGGT";
 		pair<double,double> pair = sf.calculate_metrics( one, two );

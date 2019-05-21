@@ -25,12 +25,12 @@ using namespace std;
 
 namespace errorx {
 
-SequenceFeatures::SequenceFeatures( SequenceRecordPtr const record, int position ) {
+SequenceFeatures::SequenceFeatures( SequenceRecord const & record, int position ) {
 
 	int window = constants::WINDOW;
 	
-	string full_nt_sequence = record->full_nt_sequence();
-	string full_gl_nt_sequence = record->full_gl_nt_sequence();
+	string full_nt_sequence = record.full_nt_sequence();
+	string full_gl_nt_sequence = record.full_gl_nt_sequence();
 	if ( position >= full_nt_sequence.size() ) {
 		throw invalid_argument(
 			"Error: position "+to_string(position)+" is out of bounds."
@@ -39,13 +39,13 @@ SequenceFeatures::SequenceFeatures( SequenceRecordPtr const record, int position
 
 
 	// Get an array of PHRED scores as int, not char
-	string phred_string = record->sequence().quality_string_trimmed();
+	string phred_string = record.sequence().quality_string_trimmed();
 	vector<int> phred_array = vector<int>( phred_string.size() );
 
 	if ( full_nt_sequence.size() != phred_array.size() ) {
 		throw invalid_argument(
 			"Internal error: NT sequence is not the same length as phred array "
-			"for sequence ID " + record->sequenceID()
+			"for sequence ID " + record.sequenceID()
 			);
 	}
 

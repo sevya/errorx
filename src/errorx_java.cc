@@ -31,7 +31,7 @@ JNIEXPORT jobject JNICALL Java_errorx_ErrorX_correctSequences( JNIEnv *env, jobj
 					 jobject options
 					 )
 {
-	errorx::SequenceRecords* records = get_corrected_records( env, 
+	errorx::SequenceRecordsPtr records = get_corrected_records( env, 
 									 sequence_list, 
 									 germline_sequence_list, 
 									 phred_score_list,
@@ -44,8 +44,9 @@ JNIEXPORT jobject JNICALL Java_errorx_ErrorX_correctSequences( JNIEnv *env, jobj
 			records->get(ii)->full_nt_sequence_corrected() 
 			);
 	}
-
-	delete records;
+ 	
+ 	// Not sure I need this now that it's a smart pointer
+	records.release();
 	return vector_to_array( env, corrected_sequences );
 }
 
@@ -63,7 +64,7 @@ JNIEXPORT jdoubleArray JNICALL Java_errorx_ErrorX_getPredictedErrors( JNIEnv* en
 	vector<string> phred_score_list = { jstring_to_string( env, phred_score ) };
 
 	errorx::ErrorXOptions options_cpp = joptions_to_options( env, options );
-	errorx::SequenceRecords* records = get_corrected_records( env,
+	errorx::SequenceRecordsPtr records = get_corrected_records( env,
 									 sequence_list, 
 									 germline_sequence_list, 
 									 phred_score_list,
@@ -79,7 +80,8 @@ JNIEXPORT jdoubleArray JNICALL Java_errorx_ErrorX_getPredictedErrors( JNIEnv* en
 		predicted_errors.push_back( probability );
 	}
 
-	delete records;
+	// Not sure I need this now that it's a smart pointer
+	records.release();
 	
 	return vector_to_array( env, predicted_errors );
 
@@ -98,7 +100,7 @@ JNIEXPORT void JNICALL Java_errorx_ErrorX_runProtocol( JNIEnv *env, jobject this
 }	
 
 
-errorx::SequenceRecords* get_corrected_records( JNIEnv* env,
+errorx::SequenceRecordsPtr get_corrected_records( JNIEnv* env,
 					 jobjectArray & sequence_list, // String[] 
 					 jobjectArray & germline_sequence_list, // String[]
 					 jobjectArray & phred_score_list, // String[]
@@ -123,7 +125,7 @@ errorx::SequenceRecords* get_corrected_records( JNIEnv* env,
 }
 
 
-errorx::SequenceRecords* get_corrected_records( JNIEnv* env,
+errorx::SequenceRecordsPtr get_corrected_records( JNIEnv* env,
 					 vector<string> & sequence_list, // ArrayList 
 					 vector<string> & germline_sequence_list, // ArrayList
 					 vector<string> & phred_score_list, // ArrayList
@@ -151,7 +153,7 @@ errorx::SequenceRecords* get_corrected_records( JNIEnv* env,
 	errorx::ErrorPredictor predictor( options );
 
 	try {
-		errorx::SequenceRecords* records = run_protocol( queries, options );
+		errorx::SequenceRecordsPtr records = run_protocol( queries, options );
 		return records;	
 	} catch ( errorx::InvalidLicenseException & exc ) {
 		cout << exc.what() << endl;

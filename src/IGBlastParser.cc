@@ -95,7 +95,7 @@ void IGBlastParser::blast( ErrorXOptions & options ) {
 	worker_thread.join();
 }
 
-SequenceRecords* IGBlastParser::parse_output( ErrorXOptions & options  )
+SequenceRecordsPtr IGBlastParser::parse_output( ErrorXOptions & options  )
 {
 	ios_base::sync_with_stdio( false );
 	string line;
@@ -104,7 +104,7 @@ SequenceRecords* IGBlastParser::parse_output( ErrorXOptions & options  )
 
 	vector<string> lines;
 
-	SequenceRecords* records = new SequenceRecords( options );
+	SequenceRecordsPtr records = SequenceRecordsPtr( new SequenceRecords( options ));
 
 	if ( !file.good() ) {
 		throw invalid_argument( options.igblast_output()+" is not a valid file." );

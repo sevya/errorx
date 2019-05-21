@@ -184,6 +184,8 @@ private:
 	
 };
 
+typedef unique_ptr<ErrorXOptions> ErrorXOptionsPtr;
+
 } // namespace errorx
 
 #endif /* INCLUDE_ERRORXOPTIONS_HH_ */

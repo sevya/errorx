@@ -106,4 +106,5 @@ java: $(SRCS)
 
 clean: 
 	rm -rf bin/errorx* lib/* python*_bindings/errorx/errorx_lib.so java_bindings/errorx/liberrorx.$(DLLEXT)
-	
+	sudo $(PY_EXE) -m pip uninstall errorx
+	sudo $(PY3_EXE) -m pip uninstall errorx	
