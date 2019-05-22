@@ -433,30 +433,6 @@ void SequenceRecords::write_features() {
 	file.close();
 }
 
-void SequenceRecords::track_progress( int & total_records, vector<int*> & progress_vector ) {
-	float progress = 0.0;
-	float last_progress = -1;
-
-	while ( true ) {
-		int progress_sum = 0;
-		// add up progress over all threads
-		for ( int ii = 0; ii < progress_vector.size(); ++ii ) {
-			// cout << "checking value at address " << progress_vector[ii] << " : " << *(progress_vector[ii]) << endl; // TODO remove
-
-			progress_sum += (*progress_vector[ii]);
-		}
-		progress = (float)progress_sum/(float)total_records;
-
-		if ( progress != last_progress ) { // only write to screen if the value has changed
-			util::write_progress_bar( progress, progress_sum, total_records );
-		}
-		last_progress = progress;
-
-		if ( progress >= 1.0 ) break;
-	}
-	cout << endl;
-}
-
 void SequenceRecords::count_clonotypes() {
 	clonotypes_.clear();
 	vector<ClonotypeGroup>::iterator it;

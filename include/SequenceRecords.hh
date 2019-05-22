@@ -247,15 +247,6 @@ private:
 	*/
 	static void correct_sequences_threaded( unique_ptr<SequenceRecords> & records, function<void(int,int,mutex*)>* update, mutex* m, int & total);
 
-	/**
-		Tracks progress of error correction in multiple threads 
-
-		@param total_records Total num. of records to be corrected
-		@param progress vector of atomic ints to track progress, each one 
-		corresponding to a separate thread
-	*/
-	static void track_progress( int & total_records, vector<int*> & progress_vector );
-
 	/** 
 	============================= 
 		  Member variables

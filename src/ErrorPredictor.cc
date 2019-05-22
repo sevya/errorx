@@ -40,7 +40,7 @@ double ErrorPredictor::apply_model( SequenceFeatures const & features ) const {
 
 	const vector<double> feature_vector = features.get_feature_vector();
 
-	DataChunkFlat data = new DataChunkFlat();
+	DataChunkFlat* data = new DataChunkFlat();
 
 	data->set_data( feature_vector );
 
