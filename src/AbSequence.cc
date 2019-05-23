@@ -216,6 +216,18 @@ void AbSequence::build_phred() {
 		return;
 	}
 
+	// If there is a gap in the NT sequence compared to germline - 
+	// I need to fill in this gap in the PHRED sequence
+	// I add a ' ' character, which is a value of 32, and after 
+	// adjustment gets changed to -1
+	// this signals it to not be used in the local and global phred
+	// calculations
+	for ( int ii = 0; ii < full_nt_sequence_.size(); ++ii ) {
+		if ( full_nt_sequence_[ ii ] == '-' ) {
+			phred_trimmed_.insert( ii, " " );
+		}
+	}
+
 	if ( full_nt_sequence_.size() != phred_trimmed_.size() ) {
 		good_ = 0;
 		failure_reason_ = "NT sequence and quality strings are not the same length";

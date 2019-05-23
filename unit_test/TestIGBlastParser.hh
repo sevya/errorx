@@ -67,6 +67,37 @@ public:
 
 	}
 
+
+	void testAdditionalFastq(void) {
+
+		ErrorXOptions options( "testing/additional_test.fastq", "fastq" );
+		IGBlastParser parser;
+		SequenceRecordsPtr records;
+		options.verbose( 0 );
+		options.errorx_base( "../" );
+
+		records = run_protocol( options );
+
+		SequenceRecordPtr current = records->get(0);
+
+		TS_ASSERT_EQUALS( "GTGCAGCTGGTGGAGTCTGGGGGAGGCTTGGTGCAGCCTGGGGAGTCTCTGAGACTCTCCTGTGCAGCCTCTGGATTCACGTTCAGCCTGTACGACATGGCATGGGTCCGCCAGGCTCCAGGGAAGGGACTCGAGTGGGTCTCAGGTATGAGTG---GTGGTGGCCGTGAATACTATGTAGACTCCGTGAAGGGCCGATTCACCATCTCCAGAGACAACGCCAAGAACACGCTGTATCTGCAAATGAACAGCCTGAAAACTGAGGACACTGCCATTTATATCTGCGCCACAATGGTCTGGCACTATACCGACCCCGAGGTTTGGGGCCAGGGCACCCAGGTCACCGTCTCC", current->sequence().full_nt_sequence() );
+		TS_ASSERT_EQUALS(
+			current->sequence().quality_string_trimmed(),
+			"GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG-\")\"2,'''-,'\",''\"'-\"-\"))96)3\"0,\"3-'\"\"0-)\"''\"\"''\"\"\"3))-\"\"-''3''\";066,\"6>*A9236<BA>'25'693?-3*-*3*>89<*3*\"05   DAB95>BAAD9?B;*?DB9DD\"DD?B6BDDDDDDDDBBDBABDDDDDDDD?DDDDDDDDDDDDDDDB8BDBADBBBB?BDDDDDDDB69B>ABDDDBBBD9D366B?D?DDB3BD?D?DDDDDBDA36>>?>A0?>DGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGCCCCC" 
+			);
+
+		// Check that the PHRED is correctly calculated by ignoring those dashes
+		SequenceFeatures f( *current, 153 );
+		vector<int> quality_window = f.quality_window();
+
+		vector<int> empirical_quality_window = {23, 24, 27, 9, 18, 9, 1, 15, 20, -1, -1, -1, 35, 32, 33, 24, 20};
+		TS_ASSERT_EQUALS( quality_window, empirical_quality_window );
+		
+		TS_ASSERT_DELTA( util::phred_avg_realspace( empirical_quality_window ), 10.9304856, pow(10,-6));
+		vector<double> vect = f.get_feature_vector();
+		TS_ASSERT_DELTA( vect[ 3 ], 10.9304856/40, pow(10,-6) );
+	}
+
 	void testParser(void) {
 
 		IGBlastParser parser;
@@ -536,7 +567,7 @@ public:
 	void testMouse() {
 		vector<string> lines = {
 			"# IGBLASTN",
-			"# Query: test_mouse|?#55<???DDDBB?BBFFF@CCBFHH@EEFFEEHFDFFHHFFEFH7A=F@F,,>5+5C#######55+AC>CECGFGDFDE7)??CD=?BC?CBF77--7,,?:@8>8=B=,4=,=,,43=?BB?,*2)*3,?4=:*0**0*00*''00))*0*8*#00###..))000***#)###0)000'0'0*00*.#)).08A*0***0*0****0*00*''00))*0*8*#00###..))000***#)###0)000'0'0*00*.#)).08A*0***0*0****0*00*''00))*0*8*#00###..))000***#)###0)000'0'0*00*.#)).08A*0***0*0*****0*0*0******)0*******0*''''')***)''''''''0*00*''00))*0*8*#00###.",
+			"# Query: test_mouse|?#55<???DDDBB?BBFFF@CCBFHH@EEFFEEHFDFFHHFFEFH7A=F@F,,>5+5C#######55+AC>CECGFGDFDE7)??CD=?BC?CBF77--7,,?:@8>8=B=,4=,=,,43=?BB?,*2)*3,?4=:*0**0*00*\\'\\'00))*0*8*#00###..))000***#)###0)000\\'0\\'0*00*.#)).08A*0***0*0****0*00*\\'\\'00))*0*8*#00###..))000***#)###0)000\\'0\\'0*00*.#)).08A*0***0*0****0*00*\\'\\'00))*0*8*#00###..))000***#)###0)000\\'0\\'0*00*.#)).08A*0***0*0*****0*0*0******)0*******0*\\'\\'\\'\\'\\')***)\\'\\'\\'\\'\\'\\'\\'\\'0*00*\\'\\'00))*0*8*#00###.",
 			"# Database: /Volumes/MyPassport/ErrorX/database/mouse/mouse_gl_V /Volumes/MyPassport/ErrorX/database/mouse/mouse_gl_D /Volumes/MyPassport/ErrorX/database/mouse/mouse_gl_J",
 			"# Domain classification requested: imgt",
 			"",
