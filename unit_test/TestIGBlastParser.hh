@@ -75,6 +75,7 @@ public:
 		SequenceRecordsPtr records;
 		options.verbose( 0 );
 		options.errorx_base( "../" );
+		options.allow_nonproductive( 1 );
 
 		records = run_protocol( options );
 
@@ -96,6 +97,21 @@ public:
 		TS_ASSERT_DELTA( util::phred_avg_realspace( empirical_quality_window ), 10.9304856, pow(10,-6));
 		vector<double> vect = f.get_feature_vector();
 		TS_ASSERT_DELTA( vect[ 3 ], 10.9304856/40, pow(10,-6) );
+
+
+		current = records->get(1);
+
+		TS_ASSERT( current->isGood() );
+
+		TS_ASSERT_EQUALS(
+			current->sequence().full_nt_sequence(),
+			"CATGTGCAGCTGGTGGAGTCTGGCGGAGGCTCGGTGCAGGCTTGAGGGTCTCTGCGACTCACTTTTGTAGCCTCA-----CAGC----GTGCCCATTGCATGGGCTTGGTCCGCCCGTCTCCATTTGTGGGGCTCGGGTGGTTCTCAGGTATTTCGACTGGTGCTGGTCACACATTCTAAGCATACTCCGCGACCGGCCGATTCACCATCTCCAGAGACAACGCCCACAACACACTATATCTCCAACTTACCAGCCTTAACACTCAGGCCACTGCCCTTTATTACT"
+			);
+
+		TS_ASSERT_EQUALS(
+			current->sequence().quality_string_trimmed(),
+			"GGGGGFFDFGGC8FCDDD@FEE9-86:+@@CD++B7@8,,6@,6,,,,86CEG,,++8@BFCC<,9,:,66,CC,     C,,C    +8,,C,,CE9C,C,,+9?,++:B?+>=+++84:A,,,,,<:+++48B++=F7+8:>B@93=>,:@D@,+@>8,@,,@,,@,7@,6@FCB@,,,>,,,7<D7*>******4=<*4<><FFFCC9B@+5>**202;585***/*1/2*;;+3++2<+3+8+9+++0+0*/9+0+*:6>**0**/**966546)2*17*19"
+			);
 	}
 
 	void testParser(void) {

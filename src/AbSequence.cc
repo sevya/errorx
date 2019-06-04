@@ -208,24 +208,26 @@ void AbSequence::build_phred() {
 	// If the assignment was done on the reverse strand, flip the quality string
 	if ( strand_ == "-" ) phred_ = util::reverse( phred_ );
 
+	// I need to iterate through NT sequence and fill in the trimmed
+	// PHRED sequence. If there is a gap in the NT sequence I fill it 
+	// with a ' ' character for PHRED, which is a value of 32, and and
+	// adjustment gets offset to -1
+	// this signals it to not be used in the local and global phred
+	// calculations
+	int phred_idx = query_start_ - 1;
 	try {
-		phred_trimmed_ = phred_.substr( query_start_-1, full_nt_sequence_.size() );
+		for ( int ii = 0; ii < full_nt_sequence_.size(); ++ii ) {
+			if ( full_nt_sequence_[ ii ] == '-' ) {
+				phred_trimmed_ += " ";
+			} else {
+				phred_trimmed_ += phred_[ phred_idx ];
+				++phred_idx;
+			}
+		}
 	} catch ( out_of_range & ) {
 		good_ = 0;
 		failure_reason_ = "Phred scores do not match with input sequence";
 		return;
-	}
-
-	// If there is a gap in the NT sequence compared to germline - 
-	// I need to fill in this gap in the PHRED sequence
-	// I add a ' ' character, which is a value of 32, and after 
-	// adjustment gets changed to -1
-	// this signals it to not be used in the local and global phred
-	// calculations
-	for ( int ii = 0; ii < full_nt_sequence_.size(); ++ii ) {
-		if ( full_nt_sequence_[ ii ] == '-' ) {
-			phred_trimmed_.insert( ii, " " );
-		}
 	}
 
 	if ( full_nt_sequence_.size() != phred_trimmed_.size() ) {
