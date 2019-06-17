@@ -216,7 +216,7 @@ void ClonotypeGroup::add_record( SequenceRecordPtr & record ) {
 	bool new_cdr3_has_X = find( new_cdr3.begin(), new_cdr3.end(), 'X' ) 
 							!= new_cdr3.end();
 	
-	if ( old_cdr3_has_X and !new_cdr3_has_X ) cdr3_ = new_cdr3;
+	if ( old_cdr3_has_X && !new_cdr3_has_X ) cdr3_ = new_cdr3;
 }
 
 int ClonotypeGroup::size() const { return records_.size(); }

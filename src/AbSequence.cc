@@ -110,7 +110,7 @@ void AbSequence::build( ErrorXOptions const & options ) {
 	translate_sequence( options.allow_nonproductive() );
 
 	// if verbosity is turned on, explain why the sequence was bad
-	if ( options.verbose() > 1 and !good_ ) {
+	if ( options.verbose() > 1 && !good_ ) {
 		cout << "Sequence ID " << sequenceID_ << 
 		" failed for the following reason:\n" << 
 		failure_reason_ << endl;
@@ -252,7 +252,7 @@ void AbSequence::translate_sequence( bool allow_nonproductive ) {
 	// Make it a bad sequence if non-productive
 	// TODO I never double-check if it's productive at this point - 
 	// should be inferred from IGBlast output. Should I check again?
-	if ( !allow_nonproductive and !productive_ ) {
+	if ( !allow_nonproductive && !productive_ ) {
 		good_ = 0;
 		failure_reason_ = "Sequence is non-productive";
 	}
