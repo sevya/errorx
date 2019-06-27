@@ -264,6 +264,7 @@ private:
 };
 
 typedef unique_ptr<SequenceRecords> SequenceRecordsPtr;
+typedef shared_ptr<SequenceRecords> SequenceRecordsSP;
 
 
 } // namespace errorx

@@ -185,6 +185,7 @@ private:
 };
 
 typedef unique_ptr<ErrorXOptions> ErrorXOptionsPtr;
+typedef shared_ptr<ErrorXOptions> ErrorXOptionsSP;
 
 } // namespace errorx
 
