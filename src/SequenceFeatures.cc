@@ -85,6 +85,8 @@ SequenceFeatures::SequenceFeatures( SequenceRecord const & record, int position 
 
 }
 
+SequenceFeatures::~SequenceFeatures() {}
+
 SequenceFeatures::SequenceFeatures( SequenceFeatures const & other ) :
 		sequence_window_(other.sequence_window_),
 		gl_sequence_window_(other.gl_sequence_window_),

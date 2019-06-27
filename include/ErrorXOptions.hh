@@ -49,6 +49,16 @@ public:
 	ErrorXOptions( string infile, string format );
 
 	/**
+		Destructor - does nothing though
+	*/
+	~ErrorXOptions();
+
+	/**
+		Assignment operator
+	*/
+	ErrorXOptions & operator=( ErrorXOptions const & other);
+
+	/**
 		Copy constructor
 	*/	
 	ErrorXOptions( ErrorXOptions const & other );

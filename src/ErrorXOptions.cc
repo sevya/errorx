@@ -47,6 +47,30 @@ ErrorXOptions::ErrorXOptions() :
 	initialize_callback();
 }
 
+// No class members we need to delete
+ErrorXOptions::~ErrorXOptions() {}
+
+ErrorXOptions & ErrorXOptions::operator=( ErrorXOptions const & other ) {
+	infile_ = other.infile_;
+	format_ = other.format_;
+	outfile_ = other.outfile_;
+	species_ = other.species_;
+	igtype_ = other.igtype_;
+	verbose_ = other.verbose_;
+	nthreads_ = other.nthreads_;
+	error_threshold_ = other.error_threshold_;
+	allow_nonproductive_ = other.allow_nonproductive_;
+	correction_ = other.correction_;
+	infasta_ = other.infasta_;
+	igblast_output_ = other.igblast_output_;
+	errorx_base_ = other.errorx_base_;
+	trial_ = other.trial_;
+	increment_ = other.increment_;
+	reset_ = other.reset_;
+	finish_ = other.finish_;
+	return *this;
+}
+
 ErrorXOptions::ErrorXOptions( string input_file, string file_format ) :
 	outfile_("out.tsv"),
 	species_("human"),

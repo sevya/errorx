@@ -18,6 +18,8 @@ using namespace std;
 
 namespace errorx { 
 
+AbSequence::~AbSequence() {}
+
 AbSequence::AbSequence() : 
 	sequenceID_( "N/A" ),
 	v_gene_( "N/A" ),

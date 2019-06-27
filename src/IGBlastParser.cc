@@ -321,9 +321,9 @@ AbSequence IGBlastParser::parse_lines( vector<string> const & lines, ErrorXOptio
 
 			sequence.hasV_ = ( sequence.v_evalue_ < constants::V_EVALUE_CUTOFF );
 
-		} catch ( out_of_range & e ) {
+		} catch ( out_of_range & ) {
 			return sequence;
-		} catch ( boost::bad_lexical_cast & e ) {
+		} catch ( boost::bad_lexical_cast & ) {
 			return sequence;
 		}
 	}
@@ -342,9 +342,9 @@ AbSequence IGBlastParser::parse_lines( vector<string> const & lines, ErrorXOptio
 			
 			sequence.hasD_ = ( sequence.d_evalue_ < constants::D_EVALUE_CUTOFF );
 
-		} catch ( out_of_range & e ) {
+		} catch ( out_of_range & ) {
 			return sequence;
-		} catch ( boost::bad_lexical_cast & e ) {
+		} catch ( boost::bad_lexical_cast & ) {
 			return sequence;
 		}
 	}
@@ -364,9 +364,9 @@ AbSequence IGBlastParser::parse_lines( vector<string> const & lines, ErrorXOptio
 
 			sequence.hasJ_ = ( sequence.j_evalue_ < constants::J_EVALUE_CUTOFF );
 
-		} catch ( out_of_range & e ) {
+		} catch ( out_of_range & ) {
 			return sequence;
-		} catch ( boost::bad_lexical_cast & e ) {
+		} catch ( boost::bad_lexical_cast & ) {
 			return sequence;
 		}
 	}

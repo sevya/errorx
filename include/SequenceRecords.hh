@@ -14,6 +14,18 @@ settings for processing, and ErrorPredictor that does the error correction itsel
 #ifndef SEQUENCERECORDS_HH_
 #define SEQUENCERECORDS_HH_
 
+/// manages dllexport and import for windows
+/// does nothing on Mac/Linux
+#if defined(_WIN32) || defined(_WIN64)
+#ifdef ERRORX_EXPORTS
+#define ERRORX_API __declspec(dllexport)
+#else
+#define ERRORX_API __declspec(dllimport)
+#endif
+#else
+#define ERRORX_API 
+#endif
+
 #include <vector>
 #include <iostream>
 #include <memory>
@@ -31,7 +43,7 @@ using namespace std;
 
 namespace errorx {
 
-class SequenceRecords {
+class ERRORX_API SequenceRecords {
 
 public:
 	/**

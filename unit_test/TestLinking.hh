@@ -27,7 +27,7 @@ public:
 		ErrorXOptions options( "testing/test.tsv", "tsv" );
 		options.outfile( "testing/test_out.tsv" );
 		options.species( "mouse" );
-		options.errorx_base( "../" );
+		options.errorx_base( ".." );
 		
 		run_protocol_write( options );
 

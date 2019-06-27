@@ -19,6 +19,8 @@ using namespace std;
 
 namespace errorx {
 
+SequenceQuery::~SequenceQuery() {}
+
 SequenceQuery::SequenceQuery( string sequenceID, 
 				   string sequence, 
 				   string germline_sequence, 

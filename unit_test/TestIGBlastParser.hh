@@ -33,7 +33,7 @@ public:
 	void testFastq(void) {
 
 		ErrorXOptions options( "testing/test.fastq", "fastq" );
-		options.errorx_base( "../" );
+		options.errorx_base( ".." );
 		
 		options.fastq_to_fasta();
 
@@ -74,7 +74,7 @@ public:
 		IGBlastParser parser;
 		SequenceRecordsPtr records;
 		options.verbose( 0 );
-		options.errorx_base( "../" );
+		options.errorx_base( ".." );
 		options.allow_nonproductive( 1 );
 
 		records = run_protocol( options );
@@ -125,7 +125,7 @@ public:
 		options.infasta( util::get_root_path().string()+"/testing/test.fasta" );
 		options.igblast_output( util::get_root_path().string()+"/testing/test.fasta.out" );
 		options.verbose( 0 );
-		options.errorx_base( "../" );
+		options.errorx_base( ".." );
 
 		records = run_protocol( options );
 		// records = parser.parse_output( options );
@@ -641,7 +641,7 @@ public:
 	void testTCRA(void) {
 		ErrorXOptions options( "testing/TRA_test.fastq", "fastq" );
 		options.igtype( "TCR" );
-		options.errorx_base( "../" );
+		options.errorx_base( ".." );
 		SequenceRecordsPtr records = run_protocol( options );
 		SequenceRecord record = *(records->get( 0 ));
 
@@ -668,7 +668,7 @@ public:
 
 	void testTCRB(void) {
 		ErrorXOptions options( "testing/TRB_test.fastq", "fastq" );
-		options.errorx_base( "../" );
+		options.errorx_base( ".." );
 		options.igtype( "TCR" );
 
 		SequenceRecordsPtr records = run_protocol( options );

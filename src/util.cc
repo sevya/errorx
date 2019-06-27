@@ -39,7 +39,7 @@ bool isint( string const & str ) {
 	try {
 		boost::lexical_cast<int>( str );
 		return 1;
-	} catch ( boost::bad_lexical_cast & e ) {
+	} catch ( boost::bad_lexical_cast & ) {
 		return 0;
 	}
 }
@@ -48,7 +48,7 @@ bool isdouble( string const & str ) {
 	try {
 		boost::lexical_cast<double>( str );
 		return 1;
-	} catch ( boost::bad_lexical_cast & e ) {
+	} catch ( boost::bad_lexical_cast & ) {
 		return 0;
 	}
 }
@@ -134,7 +134,12 @@ string exec(const char* cmd) {
 
 bool set_env(string key, string value) {
 	#if defined(_WIN32) || defined(_WIN64)
-		return SetEnvironmentVariable(key.c_str(), value.c_str());
+		wstring key_str(key.begin(), key.end());
+		wstring value_str(value.begin(), value.end());
+		LPCWSTR key_lp   = key_str.c_str();
+		LPCWSTR value_lp = value_str.c_str();
+		return SetEnvironmentVariableW( key_lp, value_lp );
+		// return SetEnvironmentVariable(key_lp, value_lp);
 	#elif defined(__APPLE__) || defined(__MACH__) || defined(__linux__)
 		int result = setenv(key.c_str(), value.c_str(), 1);
 		return result == 0;
