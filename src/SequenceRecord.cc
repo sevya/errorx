@@ -32,6 +32,8 @@ SequenceRecord::SequenceRecord() :
 	n_errors_( 0 )
 {}
 
+SequenceRecord::~SequenceRecord() {}
+
 
 SequenceRecord::SequenceRecord(SequenceRecord const & other) :
 	sequence_( other.sequence_ ),

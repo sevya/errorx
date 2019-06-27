@@ -31,7 +31,7 @@ public:
 		options_.species( "mouse" );
 		options_.verbose( 0 );
 		options_.nthreads( 1 );
-		string base = "../";
+		string base = "..";
 		options_.errorx_base( base );
 
 		SequenceRecordsPtr records = run_protocol( options_ );
@@ -91,7 +91,7 @@ public:
 		options_.species( "mouse" );
 		options_.verbose( 0 );
 		options_.nthreads( 1 );
-		string base = "../";
+		string base = "..";
 		options_.errorx_base( base );
 
 		ErrorXOptions options( options_ );
@@ -152,7 +152,7 @@ public:
 		options_.outfile( "testing/test_out.tsv");
 		options_.species( "mouse" );
 		options_.nthreads( 1 );
-		string base = "../";
+		string base = "..";
 		options_.errorx_base( base );
 
 		SequenceRecordsPtr records = run_protocol( options_ );
@@ -210,7 +210,7 @@ public:
 		queries.push_back( query );
 
 		ErrorXOptions options( "tmp", "tsv" );
-		options.errorx_base( "../" );
+		options.errorx_base( ".." );
 		SequenceRecordsPtr records = run_protocol( queries, options );
 
 		SequenceRecordPtr record = records->get(0);
@@ -256,7 +256,7 @@ public:
 		options_.outfile( "");
 		options_.species( "mouse" );
 		options_.nthreads( 1 );
-		string base = "../";
+		string base = "..";
 		options_.errorx_base( base );
 
 		vector<string> sequenceIDs = { "SRR3175015.933" };

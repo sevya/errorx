@@ -11,6 +11,18 @@ Code contained herein is proprietary and confidential.
 #ifndef ABSEQUENCE_HH_
 #define ABSEQUENCE_HH_
 
+/// manages dllexport and import for windows
+/// does nothing on Mac/Linux
+#if defined(_WIN32) || defined(_WIN64)
+	#ifdef ERRORX_EXPORTS
+		#define ERRORX_API __declspec(dllexport)
+	#else
+		#define ERRORX_API __declspec(dllimport)
+	#endif
+#else
+	#define ERRORX_API 
+#endif
+
 #include <string>
 #include <vector>
 #include "ErrorXOptions.hh"
@@ -20,7 +32,7 @@ using namespace std;
 namespace errorx { 
 
 
-class AbSequence { 
+class ERRORX_API AbSequence { 
 
 public:
 	/**
@@ -33,6 +45,11 @@ public:
 	*/
 	AbSequence( AbSequence const & other );
 
+	/**
+		Destructor - does nothing
+	*/
+	~AbSequence();
+	
 	void build( ErrorXOptions const & options );
 
 	void print() const;

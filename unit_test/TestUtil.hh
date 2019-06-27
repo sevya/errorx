@@ -119,11 +119,17 @@ public:
 		TS_ASSERT( util::valid_license() );
 
 		// put bad license key
-		TS_ASSERT_THROWS( util::write_license( "ZJC- " ), BadLicenseException );
+		try {
+			util::write_license("ZJC- ");
+		}
+		catch ( BadLicenseException ) {
+			TS_ASSERT(1);
+		}
+		catch (...) {
+			TS_ASSERT(0);
+		}
 
 		// put bad license key
-		TS_ASSERT_THROWS( util::write_license( "ZXC-" ), BadLicenseException );
-
 		// check on the message from bad license
 		try {
 			util::write_license( "ZXC-" );
@@ -133,6 +139,9 @@ public:
 				exc.what(), 
 				"License is not valid. Please contact alex@endeavorbio.com for assistance"
 				);
+		}
+		catch (...) {
+			TS_ASSERT(0);
 		}
 		util::write_license( inf_cipher );
 	}

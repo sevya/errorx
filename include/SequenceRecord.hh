@@ -14,6 +14,18 @@ or directly from a SequenceQuery.
 #ifndef SEQUENCERECORD_HH_
 #define SEQUENCERECORD_HH_
 
+/// manages dllexport and import for windows
+/// does nothing on Mac/Linux
+#if defined(_WIN32) || defined(_WIN64)
+#ifdef ERRORX_EXPORTS
+#define ERRORX_API __declspec(dllexport)
+#else
+#define ERRORX_API __declspec(dllimport)
+#endif
+#else
+#define ERRORX_API 
+#endif
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -28,7 +40,7 @@ using namespace std;
 
 namespace errorx {
 
-class SequenceRecord {
+class ERRORX_API SequenceRecord {
 
 public:
 	
@@ -38,6 +50,11 @@ public:
 	*/	
 	SequenceRecord();
 
+	/**
+		Destructor - does nothing
+	*/
+	~SequenceRecord();
+	
 	/**
 		Copy constructor. Copies all member variables
 	*/	

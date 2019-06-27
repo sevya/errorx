@@ -15,6 +15,18 @@ ErrorPredictor to do the actual transformation and prediction.
 #ifndef SEQUENCEFEATURES_HH_
 #define SEQUENCEFEATURES_HH_
 
+/// manages dllexport and import for windows
+/// does nothing on Mac/Linux
+#if defined(_WIN32) || defined(_WIN64)
+#ifdef ERRORX_EXPORTS
+#define ERRORX_API __declspec(dllexport)
+#else
+#define ERRORX_API __declspec(dllimport)
+#endif
+#else
+#define ERRORX_API 
+#endif
+
 #include <iostream>
 #include <fstream>
 #include <assert.h>
@@ -34,7 +46,7 @@ using namespace std;
 // forward declare to avoid circular dependencies
 class SequenceRecord;
 
-class SequenceFeatures {
+class ERRORX_API SequenceFeatures {
 
 public:	
 
@@ -55,7 +67,11 @@ public:
 	*/
 	SequenceFeatures( SequenceFeatures const & other );
 
-	
+	/**
+		Destructor - does nothing
+	*/
+	~SequenceFeatures();
+
 	/**
 		Get the features from this sequence as a vector of length 229
 	
