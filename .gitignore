@@ -12,6 +12,11 @@ errorx.sublime-workspace
 .*.swp
 unit_test/hs_err*.log
 
+*.gcno
+*.gcda
+out/
+*.info
+
 *tar.gz 
 
 bin/errorx*
@@ -35,6 +40,7 @@ unit_test/cxxtest/build_tools/
 unit_test/cxxtest/doc/
 unit_test/cxxtest/sample/
 unit_test/cxxtest/python/cxxtest/*.pyc
+unit_test/v1/
 
 java_bindings/errorx/*.class
 java_bindings/ErrorX.jar

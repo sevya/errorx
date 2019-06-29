@@ -27,11 +27,11 @@ public:
 		ErrorXOptions options( "testing/test.tsv", "tsv" );
 		options.outfile( "testing/test_out.tsv" );
 		options.species( "mouse" );
-		options.errorx_base( "../" );
+		options.errorx_base( ".." );
 		
 		run_protocol_write( options );
 
-		SequenceRecords* records = errorx::run_protocol( options );
+		SequenceRecordsPtr records = errorx::run_protocol( options );
 
 		TS_ASSERT_EQUALS(
 			records->get(0)->quality_string(),

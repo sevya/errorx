@@ -23,8 +23,8 @@ using namespace std;
 
 namespace errorx {
 
-SequenceRecords* run_protocol( ErrorXOptions & options ) {
-	SequenceRecords* records;
+SequenceRecordsPtr run_protocol( ErrorXOptions & options ) {
+	SequenceRecordsPtr records;
 
 	options.validate();
 	options.trial( !util::valid_license() );	
@@ -65,7 +65,7 @@ SequenceRecords* run_protocol( ErrorXOptions & options ) {
 
 		// Parse the TSV file
 		// TSV files are in the following format: sequenceID,nt_sequence,gl_sequence,quality_string
-		records = new SequenceRecords( options );
+		records = SequenceRecordsPtr( new SequenceRecords( options ));
 		records->import_from_tsv();
 	}
 
@@ -75,7 +75,7 @@ SequenceRecords* run_protocol( ErrorXOptions & options ) {
 }
 
 
-SequenceRecords* run_protocol( vector<SequenceQuery> & queries, 
+SequenceRecordsPtr run_protocol( vector<SequenceQuery> & queries, 
 							   ErrorXOptions & options ) {
 
 	options.trial( !util::valid_license() );
@@ -87,11 +87,11 @@ SequenceRecords* run_protocol( vector<SequenceQuery> & queries,
 		} 
 	}
 
-	SequenceRecords* records;
+	SequenceRecordsPtr records;
 
 	options.validate();
 	
-	records = new SequenceRecords( options );
+	records = SequenceRecordsPtr( new SequenceRecords( options ));
 
 	records->import_from_list( queries );
 
@@ -102,20 +102,20 @@ SequenceRecords* run_protocol( vector<SequenceQuery> & queries,
 
 
 void run_protocol_write( ErrorXOptions & options ) {
-	SequenceRecords* records = run_protocol( options );
+	SequenceRecordsPtr records = run_protocol( options );
 	records->write_summary();
-	delete records;
+	records.release();
 }
 
 void run_protocol_write_features( ErrorXOptions & options ) {
-	SequenceRecords* records = run_protocol( options );
+	SequenceRecordsPtr records = run_protocol( options );
 
 	// Write summary
 	records->write_summary();
 	// Write features
 	records->write_features();
 
-	delete records;
+	records.release();
 }
 
 } // namespace errorx

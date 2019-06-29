@@ -90,7 +90,7 @@ static PyObject* correct_sequences( PyObject* self, PyObject* args, PyObject* kw
 	
 		// now I'm ready to run a query - use the function submit_query to 
 		// run error correction and get the resulting SequenceRecords
-		SequenceRecords* records = submit_query( 
+		SequenceRecordsPtr records = submit_query( 
 			sequences, gl_sequences, phred_scores, options 
 			);
 
@@ -101,8 +101,6 @@ static PyObject* correct_sequences( PyObject* self, PyObject* args, PyObject* kw
 			string correctedSeq = records->get( ii )->full_nt_sequence_corrected();
 			PyList_SetItem( output, ii, _PyString_FromString( correctedSeq.c_str() ));
 		}
-
-		delete records;
 
 		// return list of corrected sequences
 		return output;
@@ -148,7 +146,7 @@ static PyObject* get_predicted_errors( PyObject* self, PyObject* args, PyObject*
 
 		// now I'm ready to run a query - use the function submit_query to 
 		// run error correction and get the resulting SequenceRecords
-		SequenceRecords* records = submit_query( 
+		SequenceRecordsPtr records = submit_query( 
 			sequences, gl_sequences, phred_scores, options 
 			);
 
@@ -160,8 +158,6 @@ static PyObject* get_predicted_errors( PyObject* self, PyObject* args, PyObject*
 			double probability = predictions[ ii ].second;
 			PyList_SetItem( output, ii, PyFloat_FromDouble( probability ));
 		}
-
-		delete records;
 
 		// return list of corrected sequences
 		return output;
@@ -210,7 +206,7 @@ static PyObject* run_protocol( PyObject* self, PyObject* args, PyObject* kwargs 
 
 }
 
-SequenceRecords* submit_query( vector<string> & sequences, 
+SequenceRecordsPtr submit_query( vector<string> & sequences, 
 				   vector<string> & gl_sequences, 
 				   vector<string> & phred_scores, 
 				   ErrorXOptions & options ) 
@@ -228,7 +224,7 @@ SequenceRecords* submit_query( vector<string> & sequences,
 	ErrorPredictor predictor( options );
 
 	try {
-		SequenceRecords* records = run_protocol( queries, options );
+		SequenceRecordsPtr records = run_protocol( queries, options );
 		return records;
 	} catch ( InvalidLicenseException & exc ) {
 		cout << exc.what() << endl;

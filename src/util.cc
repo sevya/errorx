@@ -35,6 +35,24 @@ using namespace std;
 namespace errorx {
 namespace util {
 
+bool isint( string const & str ) {
+	try {
+		boost::lexical_cast<int>( str );
+		return 1;
+	} catch ( boost::bad_lexical_cast & ) {
+		return 0;
+	}
+}
+
+bool isdouble( string const & str ) {
+	try {
+		boost::lexical_cast<double>( str );
+		return 1;
+	} catch ( boost::bad_lexical_cast & ) {
+		return 0;
+	}
+}
+
 void write_vector( string & filename,
 		vector<vector<string>> & vector2d,
 		string & delimiter ) {
@@ -100,17 +118,6 @@ string reverse( string & sequence ) {
 	return string (sequence.rbegin(), sequence.rend());
 }
 
-// Returns pair consisting of (GC_count, SHM)
-pair<int,double> calculate_metrics( string & sequence, string & gl_sequence ) {
-	int mutations = 0;
-	int gc_count = 0;
-	for ( int ii = 0; ii < sequence.length(); ++ii ) {
-		if ( sequence[ii] != gl_sequence[ii] && gl_sequence[ii] != '-' ) mutations++;
-		if ( sequence[ii] == 'G' || sequence[ii] == 'C' ) gc_count++;
-	}
-	return pair<int,double> (gc_count, (double)mutations/(double)sequence.length());
-}
-
 /** Removed for windows compatibility
 string exec(const char* cmd) {
 	array<char, 128> buffer;
@@ -127,7 +134,12 @@ string exec(const char* cmd) {
 
 bool set_env(string key, string value) {
 	#if defined(_WIN32) || defined(_WIN64)
-		return SetEnvironmentVariable(key.c_str(), value.c_str());
+		wstring key_str(key.begin(), key.end());
+		wstring value_str(value.begin(), value.end());
+		LPCWSTR key_lp   = key_str.c_str();
+		LPCWSTR value_lp = value_str.c_str();
+		return SetEnvironmentVariableW( key_lp, value_lp );
+		// return SetEnvironmentVariable(key_lp, value_lp);
 	#elif defined(__APPLE__) || defined(__MACH__) || defined(__linux__)
 		int result = setenv(key.c_str(), value.c_str(), 1);
 		return result == 0;
@@ -166,6 +178,22 @@ double phred_avg_realspace( vector<int> const & phred_arr ) {
 	}
 	double avg = float(sum)/float(count);
 	return 10*-log10(avg);
+}
+
+string rounded_string( double a ) {
+	// TODO potential overflow - fix this!
+	char buffer [256];
+	sprintf( buffer, "%.2f", a);
+	string a_str = buffer;
+	return a_str;
+}
+
+string to_scientific( double a ) {
+	// TODO potential overflow - fix this!
+	char buffer [256];
+	sprintf( buffer, "%.2E", a);
+	string a_str = buffer;
+	return a_str;
 }
 
 int count_queries( string & file ) {
@@ -402,6 +430,130 @@ bool valid_license() {
 
 ///////////// END date/time modules /////////////
 
+
+//////////// aggregation functions ////////////////////
+
+bool compare( const string & a, const string & b, const char N ) {
+		
+	if ( a.length() != b.length() ) return a<b;
+
+	string a_noN = "";
+	string b_noN = "";
+
+	for ( int ii = a.size()-1; ii >= 0; --ii ) {
+		if ( a[ii] != N && b[ii] != N ) {
+			a_noN += a[ii];
+			b_noN += b[ii];
+		}
+	}
+
+	return a_noN < b_noN;
+}
+
+bool compare_clonotypes( const string & a, const string & b ) {
+	vector<string> tokens_a = tokenize_string<string>( a, "_" );
+	vector<string> tokens_b = tokenize_string<string>( b, "_" );
+
+	if ( tokens_a.size() != 3 ) {
+		throw invalid_argument( "invalid tokens: "+a );
+	}
+
+	if ( tokens_b.size() != 3 ) {
+		throw invalid_argument( "invalid tokens: "+b );
+	}
+
+	// compare v genes
+	if ( tokens_a[ 0 ] != tokens_b[ 0 ] ) return tokens_a[ 0 ] < tokens_b[ 0 ];
+
+	// compare j genes
+	if ( tokens_a[ 2 ] != tokens_b[ 2 ] ) return tokens_a[ 2 ] < tokens_b[ 2 ];
+
+	// compare CDR3s
+	string cdrA = tokens_a[ 1 ];
+	string cdrB = tokens_b[ 1 ];
+	if ( cdrA.size() != cdrB.size() ) return cdrA < cdrB;
+
+	string a_noN = "";
+	string b_noN = "";
+
+	for ( int ii = cdrA.length()-1; ii >= 0; --ii ) {
+		if ( cdrA[ii] != 'X' && cdrB[ii] != 'X' ) {
+			a_noN += cdrA[ii];
+			b_noN += cdrB[ii];
+		}
+	}
+
+	reverse( a_noN.begin(), a_noN.end() );
+	reverse( b_noN.begin(), b_noN.end() );
+
+	return a_noN < b_noN;
+}
+
+map<string,int> value_counts( vector<string> const & input ) {
+	map<string,int> cmap;
+	map<string,int>::iterator search_it;
+	vector<string>::const_iterator input_it;
+
+	for ( input_it  = input.begin();
+		  input_it != input.end(); 
+		  ++input_it ) 
+	{
+		search_it = cmap.find( *input_it );
+		if ( search_it == cmap.end() ) {
+			cmap.insert( pair<string,int>( *input_it, 1 ));
+		} else {
+			search_it->second += 1;
+		}
+	}
+
+	return cmap;
+}
+
+vector<pair<string,int>> sort_map( map<string,int> const & cmap, bool ascending ) {
+	// create a empty vector of pairs
+	vector<pair<string,int>> vec;
+
+	// copy key-value pairs from the map to the vector
+	std::copy( cmap.begin(), cmap.end(), std::back_inserter<vector<pair<string,int>>>(vec));
+
+	// sort the vector by increasing order of its pair's second value
+	// if second value are equal, order by the pair's first value
+	sort(vec.begin(), vec.end(),
+			[ascending]( const pair<string,int>& a, const pair<string,int>& b ) {
+				if ( ascending ) {
+					if ( a.second != b.second ) return a.second < b.second;
+					return a.first < b.first;
+				} else {
+					if ( a.second != b.second ) return a.second > b.second;
+					return a.first > b.first;
+				}
+			});
+	return vec;
+}
+
+vector<pair<string,int>> sort_map( map<string,int,function<bool(string,string)>> const & cmap, bool ascending ) {
+	// create a empty vector of pairs
+	vector<pair<string,int>> vec;
+
+	// copy key-value pairs from the map to the vector
+	std::copy( cmap.begin(), cmap.end(), std::back_inserter<vector<pair<string,int>>>(vec));
+
+	// sort the vector by increasing order of its pair's second value
+	// if second value are equal, order by the pair's first value
+	sort(vec.begin(), vec.end(),
+			[ascending]( const pair<string,int>& a, const pair<string,int>& b ) {
+				if ( ascending ) {
+					if ( a.second != b.second ) return a.second < b.second;
+					return a.first < b.first;
+				} else {
+					if ( a.second != b.second ) return a.second > b.second;
+					return a.first > b.first;
+				}
+			});
+	return vec;
+}
+
+//////////// END aggregation functions ////////////////////
 
 } // namespace util
 } // namespace errorx

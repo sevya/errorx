@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - TestErrorX.info - /Users/alexsevy/ErrorX/unit_test/cxxtest/cxxtest/ErrorPrinter.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../index.html">top level</a> - <a href="index.html">Users/alexsevy/ErrorX/unit_test/cxxtest/cxxtest</a> - ErrorPrinter.h<span style="font-size: 80%;"> (source / <a href="ErrorPrinter.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">TestErrorX.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntry">10</td>
+            <td class="headerCovTableEntryLo">70.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-03-02 13:18:32</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">12</td>
+            <td class="headerCovTableEntry">14</td>
+            <td class="headerCovTableEntryMed">85.7 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*</a>
+<span class="lineNum">       2 </span>            : -------------------------------------------------------------------------
+<span class="lineNum">       3 </span>            :  CxxTest: A lightweight C++ unit testing library.
+<span class="lineNum">       4 </span>            :  Copyright (c) 2008 Sandia Corporation.
+<span class="lineNum">       5 </span>            :  This software is distributed under the LGPL License v3
+<span class="lineNum">       6 </span>            :  For more information, see the COPYING file in the top CxxTest directory.
+<span class="lineNum">       7 </span>            :  Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
+<span class="lineNum">       8 </span>            :  the U.S. Government retains certain rights in this software.
+<span class="lineNum">       9 </span>            : -------------------------------------------------------------------------
+<span class="lineNum">      10 </span>            : */
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span>            : #ifndef __cxxtest__ErrorPrinter_h__
+<span class="lineNum">      13 </span>            : #define __cxxtest__ErrorPrinter_h__
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : //
+<span class="lineNum">      16 </span>            : // The ErrorPrinter is a simple TestListener that
+<span class="lineNum">      17 </span>            : // just prints &quot;OK&quot; if everything goes well, otherwise
+<span class="lineNum">      18 </span>            : // reports the error in the format of compiler messages.
+<span class="lineNum">      19 </span>            : // The ErrorPrinter uses std::cout
+<span class="lineNum">      20 </span>            : //
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : #include &lt;cxxtest/Flags.h&gt;
+<span class="lineNum">      23 </span>            : 
+<span class="lineNum">      24 </span>            : #ifndef _CXXTEST_HAVE_STD
+<span class="lineNum">      25 </span>            : #   define _CXXTEST_HAVE_STD
+<span class="lineNum">      26 </span>            : #endif // _CXXTEST_HAVE_STD
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : #include &lt;cxxtest/ErrorFormatter.h&gt;
+<span class="lineNum">      29 </span>            : #include &lt;cxxtest/StdValueTraits.h&gt;
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : #ifdef _CXXTEST_OLD_STD
+<span class="lineNum">      32 </span>            : #   include &lt;iostream.h&gt;
+<span class="lineNum">      33 </span>            : #else // !_CXXTEST_OLD_STD
+<span class="lineNum">      34 </span>            : #   include &lt;iostream&gt;
+<span class="lineNum">      35 </span>            : #endif // _CXXTEST_OLD_STD
+<span class="lineNum">      36 </span>            : 
+<span class="lineNum">      37 </span>            : namespace CxxTest
+<span class="lineNum">      38 </span>            : {
+<span class="lineNum">      39 </span>            : class ErrorPrinter : public ErrorFormatter
+<a name="40"><span class="lineNum">      40 </span>            : {</a>
+<span class="lineNum">      41 </span>            : public:
+<span class="lineNum">      42 </span>            :     ErrorPrinter(CXXTEST_STD(ostream) &amp;o = CXXTEST_STD(cout), const char *preLine = &quot;:&quot;, const char *postLine = &quot;&quot;,
+<span class="lineNum">      43 </span>            :                  const char *errorString = &quot;Error&quot;,
+<a name="44"><span class="lineNum">      44 </span>            :                  const char *warningString = &quot;Warning&quot;) :</a>
+<span class="lineNum">      45 </span><span class="lineCov">          3 :         ErrorFormatter(new Adapter(o), preLine, postLine, errorString, warningString) {}</span>
+<span class="lineNum">      46 </span><span class="lineCov">          5 :     virtual ~ErrorPrinter() { delete outputStream(); }</span>
+<a name="47"><span class="lineNum">      47 </span>            : </a>
+<span class="lineNum">      48 </span>            : private:
+<span class="lineNum">      49 </span><span class="lineCov">          3 :     class Adapter : public OutputStream</span>
+<span class="lineNum">      50 </span>            :     {
+<a name="51"><span class="lineNum">      51 </span>            :         CXXTEST_STD(ostream) &amp;_o;</a>
+<a name="52"><span class="lineNum">      52 </span>            :     public:</a>
+<a name="53"><span class="lineNum">      53 </span><span class="lineCov">          2 :         Adapter(CXXTEST_STD(ostream) &amp;o) : _o(o) {}</span></a>
+<a name="54"><span class="lineNum">      54 </span><span class="lineCov">          7 :         void flush() { _o.flush(); }</span></a>
+<a name="55"><span class="lineNum">      55 </span><span class="lineCov">         13 :         OutputStream &amp;operator&lt;&lt;(const char *s) { _o &lt;&lt; s; return *this; }</span></a>
+<span class="lineNum">      56 </span><span class="lineCov">          2 :         OutputStream &amp;operator&lt;&lt;(Manipulator m) { return OutputStream::operator&lt;&lt;(m); }</span>
+<span class="lineNum">      57 </span>            :         OutputStream &amp;operator&lt;&lt;(unsigned i)
+<span class="lineNum">      58 </span>            :         {
+<span class="lineNum">      59 </span>            :             char s[1 + 3 * sizeof(unsigned)];
+<span class="lineNum">      60 </span><span class="lineNoCov">          0 :             numberToString(i, s);</span>
+<span class="lineNum">      61 </span><span class="lineNoCov">          0 :             _o &lt;&lt; s;</span>
+<span class="lineNum">      62 </span><span class="lineNoCov">          0 :             return *this;</span>
+<span class="lineNum">      63 </span>            :         }
+<span class="lineNum">      64 </span>            :     };
+<span class="lineNum">      65 </span>            : };
+<span class="lineNum">      66 </span>            : }
+<span class="lineNum">      67 </span>            : 
+<span class="lineNum">      68 </span>            : #endif // __cxxtest__ErrorPrinter_h__
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

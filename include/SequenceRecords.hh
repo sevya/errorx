@@ -14,20 +14,36 @@ settings for processing, and ErrorPredictor that does the error correction itsel
 #ifndef SEQUENCERECORDS_HH_
 #define SEQUENCERECORDS_HH_
 
+/// manages dllexport and import for windows
+/// does nothing on Mac/Linux
+#if defined(_WIN32) || defined(_WIN64)
+#ifdef ERRORX_EXPORTS
+#define ERRORX_API __declspec(dllexport)
+#else
+#define ERRORX_API __declspec(dllimport)
+#endif
+#else
+#define ERRORX_API 
+#endif
+
 #include <vector>
 #include <iostream>
 #include <memory>
+#include <map>
+#include <functional>
 
 #include "SequenceQuery.hh"
 #include "SequenceRecord.hh"
 #include "ErrorXOptions.hh"
 #include "ErrorPredictor.hh"
+#include "ClonotypeGroup.hh"
+#include "util.hh"
 
 using namespace std;
 
 namespace errorx {
 
-class SequenceRecords {
+class ERRORX_API SequenceRecords {
 
 public:
 	/**
@@ -56,7 +72,7 @@ public:
 		deleted after. Uses the ErrorXOptions member variable from
 		the first item in the vector to get its options.
 	*/
-	SequenceRecords( vector<SequenceRecords*> const & others );
+	SequenceRecords( vector<unique_ptr<SequenceRecords>> const & others );
 
 	/**
 		Constructor from SequenceRecord vector. Useful for
@@ -64,7 +80,7 @@ public:
 		into a single object. Deep copy of all member variables 
 		so they can be safely deleted after.
 	*/
-	SequenceRecords( vector<SequenceRecord*> const & record_vector, ErrorXOptions const & options );
+	SequenceRecords( vector<SequenceRecordPtr> const & record_vector, ErrorXOptions const & options );
 
 	/**
 		Populates SequenceRecords object with elements from
@@ -87,9 +103,9 @@ public:
 		After correcting the member SequenceRecord objects, 
 		calculates the error rate over the whole set 
 
-		@return float value of estimated error rate
+		@return double value of estimated error rate
 	*/
-	float estimate_error_rate() const;
+	double estimate_error_rate() const;
 
 	/**
 		Adds a SequenceRecord to the records_ member variable.
@@ -97,7 +113,7 @@ public:
 
 		@param record SequenceRecord to add to records_
 	*/
-	void add_record( SequenceRecord* record );
+	void add_record( SequenceRecordPtr & record );
 
 	/**
 		Get the number of SequenceRecord objects held internally
@@ -111,7 +127,7 @@ public:
 
 		@return records_ member variable
 	*/
-	vector<SequenceRecord*> get_records() const;
+	vector<SequenceRecordPtr> get_records() const;
 
 	/**
 		Get a specific SequenceRecord
@@ -120,17 +136,27 @@ public:
 
 		@return SequenceRecord at index i
 	*/
-	SequenceRecord* get( int i ) const;
+	SequenceRecordPtr get( int i ) const;
 
 	/**
 		Get number of "good" SequenceRecord objects
 		SequenceRecords are defined as "good" by the
 		IGBlastParser if they fit certain criteria,
 		such as confident V assignment, productive, etc.
+		Whether a nonproductive record is considered 
+		"good" is determined by option allow_nonproductive
+		in ErrorXOptions
 
 		@return number of "good" records
 	*/
 	int good_records() const;
+
+	/** 
+		Get number of productive SequenceRecord objects
+
+		@return number of productive records
+	*/
+	int productive_records() const;
 
 	/**
 		Returns a vector of string vectors, where each
@@ -169,13 +195,49 @@ public:
 		@param records Collection of SequenceRecord objects to be
 		error corrected
 	*/
-	static void correct_sequences( SequenceRecords* & records );
+	static void correct_sequences( unique_ptr<SequenceRecords> & records );
 	
 	/**
 		For debugging purposes. Gets features from each SequenceRecord 
 		object and writes to a file.
 	*/
 	void write_features();
+
+	/**
+		Get the options file used for these records
+	*/
+	ErrorXOptionsPtr get_options() const;
+
+	/**
+		Count the number of unique sequences and unique clonotypes
+		after error correction
+	*/
+	void count_sequences();
+	
+	/**
+		Group all SequenceRecord objects into clonotypes, where 
+		each SequenceRecords object is a clonotype. This allow you
+		to figure out clonal lineages within clonotypes. Makes an
+		assignment of each child SequenceRecord, not a copy
+	*/
+	void count_clonotypes();
+	vector<ClonotypeGroup> clonotypes();
+
+	/**
+		Functions to return the count of unique sequences and clonotypes
+		of different types
+
+		@param corrected Should unique sequences be calculated after 
+		correction?
+	*/
+	int unique_nt_sequences( bool corrected );
+	int unique_aa_sequences( bool corrected );
+
+	int unique_clonotypes();
+	map<string,int> vgene_counts();
+	map<string,int> jgene_counts();
+	map<string,int> vjgene_counts();
+	// map<string,int,function<bool(string,string)>> clonotype_counts() const;
 	
 private:
 	/**
@@ -184,32 +246,38 @@ private:
 		Deep copies of each member variable are made, so the 
 		parent object can be safely deleted after chunking.
 	*/
-	vector<SequenceRecords*> chunk_records();
+	vector<unique_ptr<SequenceRecords>> chunk_records();
 	
 	/**
 		Corrects a single SequenceRecords object in one thread.
 
 		@param records SequenceRecords object to be corrected
-		@param correction_progress atomic int to track progress
+		@param update callback function to update progress that takes in
+		(done,total,mutex*)
+		@param m mutex* to keep track of threads
+		@param total total number of records over all threads
 	*/
-	static void correct_sequences_threaded( SequenceRecords* & records, int* & correction_progress );
+	static void correct_sequences_threaded( unique_ptr<SequenceRecords> & records, function<void(int,int,mutex*)>* update, mutex* m, int & total);
+
+	/** 
+	============================= 
+		  Member variables
+	=============================
+	*/
+	vector<SequenceRecordPtr> records_;
+	ErrorXOptionsPtr options_;
+	ErrorPredictorPtr predictor_;
 
 	/**
-		Tracks progress of error correction in multiple threads 
-
-		@param total_records Total num. of records to be corrected
-		@param progress vector of atomic ints to track progress, each one 
-		corresponding to a separate thread
+		Holds the different clonotypes contained in the dataset
 	*/
-	static void track_progress( int & total_records, vector<int*> & progress_vector );
-
-	vector<SequenceRecord*> records_;
-
-	ErrorXOptions* options_;
-	ErrorPredictor* predictor_;
-
+	vector<ClonotypeGroup> clonotypes_;
 
 };
+
+typedef unique_ptr<SequenceRecords> SequenceRecordsPtr;
+typedef shared_ptr<SequenceRecords> SequenceRecordsSP;
+
 
 } // namespace errorx
 

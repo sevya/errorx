@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import errorx.ErrorX;
 
 import org.junit.*;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import errorx.ErrorXOptions;
 
@@ -15,53 +15,63 @@ import java.io.*;
 public class TestErrorX {
 
 	@BeforeClass
-	public static void setUp() throws Exception {
-		sequence = "TACTCCCGTGGTACGCCCAAGGACGGAGGCACACGGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGCGCGCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCGGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG";
+	public static void setUp() {
+		try {
+			sequence = "TACTCCCGTGGTACGCCCAAGGACGGAGGCACACGGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGCGCGCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCGGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG";
 		
-		germline_sequence = "TACTACAATGAGAAGTTCAAGGGCAAGGCCACACTGACTGCAGAAAAATCCTCCAGCACTGCCTACATGCAGCTCAGCAGCCTGACATCTGAGGACTCTGCTGTCTATTTCTGTGC--------------------------ACTACTGGGGCCAAGGCACCACTCTCACAGTCTCCTCAG";
+			germline_sequence = "TACTACAATGAGAAGTTCAAGGGCAAGGCCACACTGACTGCAGAAAAATCCTCCAGCACTGCCTACATGCAGCTCAGCAGCCTGACATCTGAGGACTCTGCTGTCTATTTCTGTGC--------------------------ACTACTGGGGCCAAGGCACCACTCTCACAGTCTCCTCAG";
 		
-		phred_score = "###########################################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4,";
+			phred_score = "###########################################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4,";
 		
-		correctedSequence = "TACTCCNGTGGTACGCCCAAGGACGGAGGCACACNGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGNGCNCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTNCNGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG";
-    }
+			correctedSequence = "TACTCCNGTGGTACGCCCAAGGACGGAGGCACACNGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGNGCNCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTNCNGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG";
+		} catch ( Exception exc ) {
+			System.out.println(exc.getMessage());
+			fail();
+		}
+	}
 
 	@Test
-	public void testRunProtocol() throws IOException {
-		ErrorXOptions options = new ErrorXOptions( "testing/test.tsv", "tsv" );
-		options.outfile( "testing/out.tsv" );
-		options.species( "mouse" );
+	public void testRunProtocol() {
+		try {
+			ErrorXOptions options = new ErrorXOptions( "testing/test.tsv", "tsv" );
+			options.outfile( "testing/out.tsv" );
+			options.species( "mouse" );
 		
-		ErrorX ex = new ErrorX();
-		ex.runProtocol( options );
+			ErrorX ex = new ErrorX();
+			ex.runProtocol( options );
 
-		List<String> lines = Files.readAllLines( Paths.get("testing/out.tsv" ));
-		String strOne = lines.get(1);
-		String strTwo = "SRR3175015.933		N/A	N/A	N/A	N/A	N/A	N/A	VH	False	N/A	N/A	TACTCCCGTGGTACGCCCAAGGACGGAGGCACACGGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGCGCGCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCGGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG	TACTACAATGAGAAGTTCAAGGGCAAGGCCACACTGACTGCAGAAAAATCCTCCAGCACTGCCTACATGCAGCTCAGCAGCCTGACATCTGAGGACTCTGCTGTCTATTTCTGTGC--------------------------ACTACTGGGGCCAAGGCACCACTCTCACAGTCTCCTCAG	###########################################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4,	N/A	TACTCCNGTGGTACGCCCAAGGACGGAGGCACACNGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGNGCNCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTNCNGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG	N/A	6	";
+			List<String> lines = Files.readAllLines( Paths.get("testing/out.tsv" ));
+			String strOne = lines.get(1);
+			String strTwo = "SRR3175015.933	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	False	N/A	N/A	TACTCCCGTGGTACGCCCAAGGACGGAGGCACACGGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGCGCGCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCGGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG	TACTACAATGAGAAGTTCAAGGGCAAGGCCACACTGACTGCAGAAAAATCCTCCAGCACTGCCTACATGCAGCTCAGCAGCCTGACATCTGAGGACTCTGCTGTCTATTTCTGTGC--------------------------ACTACTGGGGCCAAGGCACCACTCTCACAGTCTCCTCAG	###########################################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4,	N/A	TACTCCNGTGGTACGCCCAAGGACGGAGGCACACNGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGNGCNCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTNCNGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG	N/A	6	";
 
-		String[] tokensOne = strOne.split("\\s+");
-		String[] tokensTwo = strTwo.split("\\s+");
+			String[] tokensOne = strOne.split("\\s+");
+			String[] tokensTwo = strTwo.split("\\s+");
 
-		for ( int ii = 0; ii < tokensOne.length; ++ii ) {
-			assertEquals( tokensOne[ii], tokensTwo[ii] );
+			for ( int ii = 0; ii < tokensOne.length; ++ii ) {
+				assertEquals( tokensOne[ii], tokensTwo[ii] );
 
-		}
+			}
 
-		options.infile( "testing/test.fastq" );
-		options.format( "fastq" );
-		options.species( "mouse" );
-		ex.runProtocol( options );
+			options.infile( "testing/test.fastq" );
+			options.format( "fastq" );
+			options.species( "mouse" );
+			ex.runProtocol( options );
 
-		lines = Files.readAllLines( Paths.get("testing/out.tsv" ));
+			lines = Files.readAllLines( Paths.get("testing/out.tsv" ));
 
-		strOne = lines.get(1);
-		strTwo = "SRR3175015.933	IGHV1-76*01	73.276000	1.12E-18	N/A	N/A	N/A	IGHJ2*01	94.872000	2.38E-14	-	VH	True	GCGGGAGAGGAGGCTTTGTCCTTCGTTTACTAC	AGEEALSFVYY	TACTCCCGTGGTACGCCCAAGGACGGAGGCACACGGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGCGCGCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCGGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG	TACTACAATGAGAAGTTCAAGGGCAAGGCCACACTGACTGCAGAAAAATCCTCCAGCACTGCCTACATGCAGCTCAGCAGCCTGACATCTGAGGACTCTGCTGTCTATTTCTGTGC--------------------------ACTACTGGGGCCAAGGCACCACTCTCACAGTCTCCTCAG	###########################################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4,	YSRGTPKDGGTRSADKSSSAACLARSSLKAGDSAVCSGAGEEALSFVYYWGQGTTLTGSS	TACTCCNGTGGTACGCCCAAGGACGGAGGCACACNGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGNGCNCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTNCNGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG	YSXGTPKDGGTXSADKSSSAACLXXSSLKAGDSAVCXXAGEEALSFVYYWGQGTTLTGSS	6	";
+			strOne = lines.get(1);
+			strTwo = "SRR3175015.933	IGHV1-76*01	73.28	1.12E-18	N/A	N/A	N/A	IGHJ2*01	94.87	2.38E-14	-	VH	True	GCGGGAGAGGAGGCTTTGTCCTTCGTTTACTAC	AGEEALSFVYY	TACTCCCGTGGTACGCCCAAGGACGGAGGCACACGGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGCGCGCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCGGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG	TACTACAATGAGAAGTTCAAGGGCAAGGCCACACTGACTGCAGAAAAATCCTCCAGCACTGCCTACATGCAGCTCAGCAGCCTGACATCTGAGGACTCTGCTGTCTATTTCTGTGC--------------------------ACTACTGGGGCCAAGGCACCACTCTCACAGTCTCCTCAG	###########################################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4,	YSRGTPKDGGTRSADKSSSAACLARSSLKAGDSAVCSGAGEEALSFVYYWGQGTTLTGSS	TACTCCNGTGGTACGCCCAAGGACGGAGGCACACNGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGNGCNCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTNCNGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG	YSXGTPKDGGTXSADKSSSAACLXXSSLKAGDSAVCXXAGEEALSFVYYWGQGTTLTGSS	6	";
 
-		tokensOne = strOne.split("\\s+");
-		tokensTwo = strTwo.split("\\s+");
+			tokensOne = strOne.split("\\s+");
+			tokensTwo = strTwo.split("\\s+");
 
-		for ( int ii = 0; ii < tokensOne.length; ++ii ) {
-			assertEquals( tokensOne[ii], tokensTwo[ii] );
+			for ( int ii = 0; ii < tokensOne.length; ++ii ) {
+				assertEquals( tokensOne[ii], tokensTwo[ii] );
 
+			}
+		} catch ( Exception exc ) {
+			System.out.println(exc.getMessage());
+			fail();
 		}
 	}
 
@@ -110,24 +120,27 @@ public class TestErrorX {
 
 
 	@Test
-	public void testPredictedError() throws FileNotFoundException, IOException {
-
-		double[] errorPredictions = new ErrorX().getPredictedErrors( 
-			sequence, 
-			germline_sequence, 
-			phred_score );
-		File file = new File("validation.txt"); 
+	public void testPredictedError() {
+		try {
+			double[] errorPredictions = new ErrorX().getPredictedErrors( 
+				sequence, 
+				germline_sequence, 
+				phred_score );
+			File file = new File("validation.txt"); 
   
-		BufferedReader br = new BufferedReader(new FileReader(file)); 
+			BufferedReader br = new BufferedReader(new FileReader(file)); 
 	
-		String st; 
-		while ((st = br.readLine()) != null) {
-			String[] tokens = st.split("\t");
-			Integer position = Integer.valueOf(tokens[0]);
-			Double value = Double.valueOf(tokens[1]);
-			assertEquals( errorPredictions[position], value, 0.001 );
-	  	} 
-
+			String st; 
+			while ((st = br.readLine()) != null) {
+				String[] tokens = st.split("\t");
+				Integer position = Integer.valueOf(tokens[0]);
+				Double value = Double.valueOf(tokens[1]);
+				assertEquals( errorPredictions[position], value, 0.001 );
+	  		} 
+		} catch ( Exception exc ) {
+			System.out.println(exc.getMessage());
+			fail();
+		}
 	}
 
 	static String sequence;

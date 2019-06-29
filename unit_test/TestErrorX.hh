@@ -29,12 +29,12 @@ public:
 		options_.outfile( "testing/test_out.tsv");
 
 		options_.species( "mouse" );
-		options_.verbose( 1 );
+		options_.verbose( 0 );
 		options_.nthreads( 1 );
-		string base = "../";
+		string base = "..";
 		options_.errorx_base( base );
 
-		SequenceRecords* records = run_protocol( options_ );
+		SequenceRecordsPtr records = run_protocol( options_ );
 
 		TS_ASSERT_EQUALS(
 			records->get(0)->quality_string(),
@@ -89,15 +89,15 @@ public:
 		options_.outfile( "testing/test_out.tsv");
 
 		options_.species( "mouse" );
-		options_.verbose( 1 );
+		options_.verbose( 0 );
 		options_.nthreads( 1 );
-		string base = "../";
+		string base = "..";
 		options_.errorx_base( base );
 
 		ErrorXOptions options( options_ );
 		options.correction( 'X' );
 
-		SequenceRecords* records = run_protocol( options );
+		SequenceRecordsPtr records = run_protocol( options );
 
 		TS_ASSERT_EQUALS(
 			records->get(0)->quality_string(),
@@ -152,10 +152,10 @@ public:
 		options_.outfile( "testing/test_out.tsv");
 		options_.species( "mouse" );
 		options_.nthreads( 1 );
-		string base = "../";
+		string base = "..";
 		options_.errorx_base( base );
 
-		SequenceRecords* records = run_protocol( options_ );
+		SequenceRecordsPtr records = run_protocol( options_ );
 
 		TS_ASSERT_EQUALS(
 			records->get(0)->quality_string(),
@@ -210,10 +210,10 @@ public:
 		queries.push_back( query );
 
 		ErrorXOptions options( "tmp", "tsv" );
-		options.errorx_base( "../" );
-		SequenceRecords* records = run_protocol( queries, options );
+		options.errorx_base( ".." );
+		SequenceRecordsPtr records = run_protocol( queries, options );
 
-		SequenceRecord* record = records->get(0);
+		SequenceRecordPtr record = records->get(0);
 		TS_ASSERT_EQUALS(
 			record->quality_string(),
 			phred_scores[0]
@@ -256,7 +256,7 @@ public:
 		options_.outfile( "");
 		options_.species( "mouse" );
 		options_.nthreads( 1 );
-		string base = "../";
+		string base = "..";
 		options_.errorx_base( base );
 
 		vector<string> sequenceIDs = { "SRR3175015.933" };
@@ -273,9 +273,9 @@ public:
 		vector<SequenceQuery> queries;
 		SequenceQuery query( sequenceIDs[0], sequences[0], germline_sequences[0], phred_scores[0] );
 		queries.push_back( query );
-		SequenceRecords* records = run_protocol( queries, options_ );
+		SequenceRecordsPtr records = run_protocol( queries, options_ );
 
-		SequenceRecord* record = records->get(0);
+		SequenceRecordPtr record = records->get(0);
 		TS_ASSERT_EQUALS(
 			record->quality_string(),
 			phred_scores[0]

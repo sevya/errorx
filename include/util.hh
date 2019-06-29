@@ -28,6 +28,17 @@ namespace errorx{
 namespace util {
 
 /**
+	Use boost::lexical_cast to test if a string is an integer or double
+	
+	@param str input string
+
+	@return bool if it is an int/double
+*/
+bool isint( string const & str );
+bool isdouble( string const & str );
+
+	
+/**
 	Break a string into tokens based on the provided delimiter. 
 	When multiple characters are present in the delimiter it 
 	will split by any of them (e.g. ", " will split on spaces
@@ -45,7 +56,7 @@ vector<T> tokenize_string( string str, string delim="\t " ) {
 	vector<T> float_array;
 
 	boost::split( array, str, boost::algorithm::is_any_of(delim), boost::token_compress_on );
-	for ( int ii = 0; ii < array.size(); ++ii ) {
+        for ( size_t ii = 0; ii < array.size(); ++ii ) {
 		float_array.push_back( boost::lexical_cast<T>( array[ii] ));
 	}
 	return float_array;
@@ -123,14 +134,16 @@ vector<vector<T>> split_vector( vector<T> const & vect, int nchunks ) {
 
 	@return string of number in scientific notation
 */	
-template <typename T>
-string to_scientific( T a ) {
-	// TODO potential overflow - fix this!
-	char buffer [256];
-	sprintf( buffer, "%.2E", a);
-	string a_str = buffer;
-	return a_str;
-}
+string to_scientific( double a );
+
+/**
+	Round a numeric type to a certain number of digits
+
+	@param a number to convert
+
+	@return string of rounded number
+*/
+string rounded_string( double a );
 
 /**
 	Writes a 2d vector to a file
@@ -160,17 +173,6 @@ string translate( string & nt_sequence, int frame );
 */	
 string reverse( string & sequence );
 
-/**
-	Calculates metrics related to a DNA sequence. Will compute the 
-	GC content and the level of SHM and return a std::pair of those 
-	values in that order.
-
-	@param sequence DNA sequence
-	@param gl_sequence Germline DNA sequence
-
-	@return pair of <GC_content,SHM>
-*/	
-pair<int,double> calculate_metrics( string & sequence, string & gl_sequence );
 
 /**
 	Execute a command in the shell and return its output
@@ -341,6 +343,39 @@ int julian( vector<int> & date );
 */
 bool valid_license();
 //////////// END licensing based on date modules ////////////////////
+
+
+
+//////////// aggregation functions ////////////////////
+
+/**
+	Compares sequences ignoring the correction character
+
+	@param N correction character
+	@return boolean if strings are equal
+*/
+bool compare( const string & a, const string & b, const char N );
+
+
+/**
+	Compares clonotypes in the following order: V gene, J gene, CDR3
+	Ignores the correction character (X for amino acids)
+
+	@param N correction character
+	@return boolean if strings are equal
+*/
+bool compare_clonotypes( const string & a, const string & b );
+
+/**
+	Takes a list of strings and returns a map, where each key is
+	matched with the # of occurrences in the input list
+*/
+map<string,int> value_counts( vector<string> const & input );
+
+vector<pair<string,int>> sort_map( map<string,int> const & cmap, bool ascending=1 );
+vector<pair<string,int>> sort_map( map<string,int,function<bool(string,string)>> const & cmap, bool ascending );
+
+//////////// END aggregation functions ////////////////////
 
 } // namespace util
 } // namespace errorx

@@ -19,6 +19,8 @@ using namespace std;
 
 namespace errorx {
 
+SequenceQuery::~SequenceQuery() {}
+
 SequenceQuery::SequenceQuery( string sequenceID, 
 				   string sequence, 
 				   string germline_sequence, 
@@ -45,10 +47,10 @@ SequenceQuery::SequenceQuery( SequenceQuery const & other ) :
 		germline_sequence_( other.germline_sequence_ ),
 		phred_string_( other.phred_string_ ) {}
 
-void SequenceQuery::sequenceID( string const sequenceID ) { sequenceID_ = sequenceID; }
-void SequenceQuery::sequence( string const sequence ) { sequence_ = sequence; }
-void SequenceQuery::germline_sequence( string const germline_sequence ) { germline_sequence_ = germline_sequence; }
-void SequenceQuery::phred_string( string const phred_string ) { phred_string_ = phred_string; }
+void SequenceQuery::sequenceID( string const & sequenceID ) { sequenceID_ = sequenceID; }
+void SequenceQuery::sequence( string const & sequence ) { sequence_ = sequence; }
+void SequenceQuery::germline_sequence( string const & germline_sequence ) { germline_sequence_ = germline_sequence; }
+void SequenceQuery::phred_string( string const & phred_string ) { phred_string_ = phred_string; }
 
 string SequenceQuery::sequenceID() const { return sequenceID_; }
 string SequenceQuery::sequence() const { return sequence_; }
