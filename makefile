@@ -1,5 +1,6 @@
 .DEFAULT_GOAL := binary
 
+version=1.1
 ifeq ($(OS),Windows_NT)
 	uname_S := Windows
 else
@@ -85,17 +86,19 @@ library: $(SRCS)
 	$(CXX) $(CPPFLAGS) $(WNO) $(INC) -Ofast $(LIBFLAGS) -o lib/liberrorx.$(DLLEXT) $(SRCS) $(BOOST) $(FINAL)
 
 package: binary library python python3 java
-	$(tar) cfz ErrorX-1.0_$(OS).tar.gz model.nnet bin/errorx bin/igblastn_* build_test/new/ build_test/test_binary.sh build_test/TestErrorX.java build_test/input_files/ build_test/old/ build_test/test_python_bindings.py build_test/TestLinking.cc build_test/makefile build_test/run_build_test.sh database/ documentation/ErrorX_out.tsv documentation/ErrorX_user_guide.docx documentation/ErrorX_user_guide.pdf documentation/ExampleApp.cc documentation/ExampleApp.java documentation/ExampleApp.py documentation/ExampleSequences.fastq documentation/ExampleSequences.tsv include/ internal_data/ lib/ optional_file/ python2_bindings/ python3_bindings/ java_bindings/ --transform "s/^/ErrorX\//"
+	$(tar) cfz ErrorX-$(version)_$(OS).tar.gz model.nnet bin/errorx bin/igblastn_* build_test/new/ build_test/test_binary.sh build_test/TestErrorX.java build_test/input_files/ build_test/old/ build_test/test_python_bindings.py build_test/TestLinking.cc build_test/makefile build_test/run_build_test.sh database/ documentation/ErrorX_out.tsv documentation/ErrorX_user_guide.docx documentation/ErrorX_user_guide.pdf documentation/ExampleApp.cc documentation/ExampleApp.java documentation/ExampleApp.py documentation/ExampleSequences.fastq documentation/ExampleSequences.tsv include/ internal_data/ lib/ optional_file/ python2_bindings/ python3_bindings/ java_bindings/ --transform "s/^/ErrorX\//"
 
 
 python: $(SRCS) src/errorx_python.cc
 	$(CXX) $(CPPFLAGS) $(WNO) $(INC) $(PY_INC) -Ofast $(LIBFLAGS) -o python2_bindings/errorx/errorx_lib.so $(SRCS) src/errorx_python.cc $(BOOST) $(FINAL)
+
 	
 python_install: python
 	sudo $(PY_EXE) -m pip install -I python2_bindings/
 
 python3: $(SRCS) src/errorx_python.cc
 	$(CXX) $(CPPFLAGS) $(WNO) $(INC) $(PY3_INC) -Ofast $(LIBFLAGS) -o python3_bindings/errorx/errorx_lib.so $(SRCS) src/errorx_python.cc $(BOOST) $(FINAL)
+
 	
 python3_install: python3
 	sudo $(PY3_EXE) -m pip install -I python3_bindings/
