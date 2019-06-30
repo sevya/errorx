@@ -19,6 +19,7 @@ out/
 
 obj/*
 !obj/.gitkeep
+!obj/keras/.gitkeep
 
 *tar.gz 
 
