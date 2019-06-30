@@ -1,5 +1,6 @@
-.DEFAULT_GOAL := binary
 
+
+version=1.1
 ifeq ($(OS),Windows_NT)
 	uname_S := Windows
 else
@@ -54,57 +55,86 @@ INC=-Iinclude/
 SRCS=src/ProgressBar.cc src/SequenceRecords.cc src/SequenceRecord.cc src/IGBlastParser.cc \
 	 src/ErrorPredictor.cc src/SequenceFeatures.cc \
 	 src/ErrorXOptions.cc src/util.cc \
-	 src/SequenceQuery.cc src/errorx.cc src/AbSequence.cc src/ClonotypeGroup.cc
+	 src/SequenceQuery.cc src/errorx.cc src/AbSequence.cc src/ClonotypeGroup.cc \
+	 src/main.cc src/testing.cc src/errorx_java.cc
 
-KERAS_SRCS=src/keras/DataChunkFlat.cc src/keras/LayerDense.cc \
+SRCS+=src/keras/DataChunkFlat.cc src/keras/LayerDense.cc \
 		   src/keras/KerasModel.cc src/keras/LayerActivation.cc 
-		   
 
-SRCS += $(KERAS_SRCS)
+
+OBJ=obj/ProgressBar.o obj/SequenceRecords.o obj/SequenceRecord.o obj/IGBlastParser.o \
+	 obj/ErrorPredictor.o obj/SequenceFeatures.o \
+	 obj/ErrorXOptions.o obj/util.o \
+	 obj/SequenceQuery.o obj/errorx.o obj/AbSequence.o obj/ClonotypeGroup.o
+
+OBJ+=obj/keras/DataChunkFlat.o obj/keras/LayerDense.o \
+		   obj/keras/KerasModel.o obj/keras/LayerActivation.o 
+
+
 
 BOOST=dependencies/boost_1_68_0/$(OS)/libboost_filesystem.a \
 	  dependencies/boost_1_68_0/$(OS)/libboost_program_options.a \
 	  dependencies/boost_1_68_0/$(OS)/libboost_system.a
 
 
-all: binary binary_testing library python_install python3_install java
+all: binary library python_install python3_install java
 
 libraries: library python java
 
+obj/%.o: src/%.cc
+	$(CXX) $(CPPFLAGS) $(WNO) $(INC) $(JAVA_INC) -c -Ofast -o "$@" "$^" $(FINAL)
+# $@ - refers to the obj/*.o name
+# $< - refers to the src name
 
-binary_testing: $(SRCS) src/testing.cc
-	$(CXX) $(CPPFLAGS) $(WNO) $(INC) -Ofast -o bin/errorx_testing $(SRCS) src/testing.cc $(BOOST) $(FINAL)
+# objects: $(SRCS)
+# 	$(CXX) $(CPPFLAGS) $(WNO) $(INC) $(PY_INC) $(PY3_INC) $(JAVA_INC) -c -Ofast $(SRCS) $(FINAL)
+# 	mv *o obj/
 
-binary: $(SRCS) src/main.cc
-	$(CXX) $(CPPFLAGS) $(WNO) $(INC) -Ofast -o bin/errorx $(SRCS) src/main.cc $(BOOST) $(FINAL)
-
-debug: $(SRCS) src/main.cc
-	$(CXX) $(CPPFLAGS) $(WNO) $(INC) -g -o bin/errorx_debug $(SRCS) src/main.cc $(BOOST) $(FINAL)
-
-library: $(SRCS)
-	$(CXX) $(CPPFLAGS) $(WNO) $(INC) -Ofast $(LIBFLAGS) -o lib/liberrorx.$(DLLEXT) $(SRCS) $(BOOST) $(FINAL)
-
-package: binary library python python3 java
-	$(tar) cfz ErrorX-1.0_$(OS).tar.gz model.nnet bin/errorx bin/igblastn_* build_test/new/ build_test/test_binary.sh build_test/TestErrorX.java build_test/input_files/ build_test/old/ build_test/test_python_bindings.py build_test/TestLinking.cc build_test/makefile build_test/run_build_test.sh database/ documentation/ErrorX_out.tsv documentation/ErrorX_user_guide.docx documentation/ErrorX_user_guide.pdf documentation/ExampleApp.cc documentation/ExampleApp.java documentation/ExampleApp.py documentation/ExampleSequences.fastq documentation/ExampleSequences.tsv include/ internal_data/ lib/ optional_file/ python2_bindings/ python3_bindings/ java_bindings/ --transform "s/^/ErrorX\//"
+obj/errorx_python2.o: src/errorx_python.cc
+	$(CXX) $(CPPFLAGS) $(WNO) $(INC) $(PY_INC)  -o obj/errorx_python2.o -c src/errorx_python.cc -Ofast $(FINAL)
 
 
-python: $(SRCS) src/errorx_python.cc
-	$(CXX) $(CPPFLAGS) $(WNO) $(INC) $(PY_INC) -Ofast $(LIBFLAGS) -o python2_bindings/errorx/errorx_lib.so $(SRCS) src/errorx_python.cc $(BOOST) $(FINAL)
-	
-python_install: python
-	sudo $(PY_EXE) -m pip install -I python2_bindings/
+obj/errorx_python3.o: src/errorx_python.cc
+	$(CXX) $(CPPFLAGS) $(WNO) $(INC) $(PY3_INC) -o obj/errorx_python3.o -c src/errorx_python.cc -Ofast $(FINAL)
 
-python3: $(SRCS) src/errorx_python.cc
-	$(CXX) $(CPPFLAGS) $(WNO) $(INC) $(PY3_INC) -Ofast $(LIBFLAGS) -o python3_bindings/errorx/errorx_lib.so $(SRCS) src/errorx_python.cc $(BOOST) $(FINAL)
-	
-python3_install: python3
-	sudo $(PY3_EXE) -m pip install -I python3_bindings/
+binary: $(OBJ) obj/main.o
+	$(CXX) obj/main.o $(OBJ) $(BOOST) -o bin/errorx $(FINAL)
 
-java: $(SRCS)
-	$(CXX) $(CPPFLAGS) $(WNO) $(INC) $(JAVA_INC) -Ofast $(LIBFLAGS) -o java_bindings/errorx/liberrorx.$(DLLEXT) $(SRCS) src/errorx_java.cc $(BOOST) $(FINAL)
+
+binary_testing: $(OBJ) obj/main.o
+	$(CXX) -o bin/errorx_testing $(OBJ) obj/testing.o $(BOOST) $(FINAL)
+
+
+library: $(OBJ)
+	$(CXX) $(LIBFLAGS) -o lib/liberrorx.$(DLLEXT) $(OBJ) $(BOOST) $(FINAL)
+
+
+python:  $(OBJ) obj/errorx_python2.o
+	$(CXX) $(LIBFLAGS) -o python2_bindings/errorx/errorx_lib.so $(OBJ) obj/errorx_python2.o $(BOOST) $(FINAL)
+
+
+python3: $(OBJ) obj/errorx_python3.o
+	$(CXX) $(LIBFLAGS) -o python3_bindings/errorx/errorx_lib.so $(OBJ) obj/errorx_python3.o $(BOOST) $(FINAL)
+
+
+java: $(OBJ) obj/errorx_java.o
+	$(CXX) $(LIBFLAGS) -o java_bindings/errorx/liberrorx.$(DLLEXT) $(OBJ) obj/errorx_java.o $(BOOST) $(FINAL)
 	cd java_bindings; make
 
+
+python_install: $(OBJ) obj/errorx_python2.o
+	sudo $(PY_EXE) -m pip install -I python2_bindings/
+
+	
+python3_install: $(OBJ) obj/errorx_python3.o
+	sudo $(PY3_EXE) -m pip install -I python3_bindings/
+
+
+
+package: binary library python python3 java
+	$(tar) cfz ErrorX-$(version)_$(OS).tar.gz model.nnet bin/errorx bin/igblastn_* build_test/new/ build_test/test_binary.sh build_test/TestErrorX.java build_test/input_files/ build_test/old/ build_test/test_python_bindings.py build_test/TestLinking.cc build_test/makefile build_test/run_build_test.sh database/ documentation/ErrorX_out.tsv documentation/ErrorX_user_guide.docx documentation/ErrorX_user_guide.pdf documentation/ExampleApp.cc documentation/ExampleApp.java documentation/ExampleApp.py documentation/ExampleSequences.fastq documentation/ExampleSequences.tsv include/ internal_data/ lib/ optional_file/ python2_bindings/ python3_bindings/ java_bindings/ --transform "s/^/ErrorX\//"
+
 clean: 
-	rm -rf bin/errorx* lib/* python*_bindings/errorx/errorx_lib.so java_bindings/errorx/liberrorx.$(DLLEXT)
+	rm -rf obj/*o obj/keras/*o bin/errorx* lib/* python*_bindings/errorx/errorx_lib.so java_bindings/errorx/liberrorx.$(DLLEXT)
 	sudo $(PY_EXE) -m pip uninstall errorx
 	sudo $(PY3_EXE) -m pip uninstall errorx	
