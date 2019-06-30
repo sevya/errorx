@@ -82,7 +82,7 @@ all: binary library python_install python3_install java
 libraries: library python java
 
 obj/%.o: src/%.cc
-	$(CXX) $(CPPFLAGS) $(WNO) $(INC) $(JAVA_INC) -c -Ofast -o "$@" "$^"
+	$(CXX) $(CPPFLAGS) $(WNO) $(INC) -c -Ofast -o "$@" "$^"
 # $@ - refers to the obj/*.o name
 # $< - refers to the src name
 
@@ -96,6 +96,9 @@ obj/errorx_python2.o: src/errorx_python.cc
 
 obj/errorx_python3.o: src/errorx_python.cc
 	$(CXX) $(CPPFLAGS) $(WNO) $(INC) $(PY3_INC) -o obj/errorx_python3.o -c src/errorx_python.cc -Ofast
+
+obj/errorx_java.o: src/errorx_java.cc
+	$(CXX) $(CPPFLAGS) $(WNO) $(INC) $(JAVA_INC) -o obj/errorx_java.o -c src/errorx_java.cc -Ofast
 
 binary: $(OBJ) obj/main.o
 	$(CXX) obj/main.o $(OBJ) $(BOOST) -o bin/errorx $(FINAL)
