@@ -298,26 +298,6 @@ public:
 		TS_ASSERT_DELTA( predicted_value_, predictor.apply_model( features ), pow(10,-9) );
 	}
 
-	void testPositionalPrediction() {
-		ErrorXOptions options( "testing/test.fastq", "tsv" );
-		options.errorx_base("../");
-		options.verbose(0);
-		ErrorPredictor predictor( options );
-
-		string line;
-		ifstream infile ( "validation.txt" );
-		int position;
-		double probability;
-		while (getline (infile, line)) {
-			stringstream line_stream( line );
-			line_stream >> position >> probability;
-			
-			SequenceFeatures features( record_, position );
-			double pred = predictor.apply_model( features );
-			TS_ASSERT_DELTA( probability, pred, pow(10,-5));
-		}
-	}
-
 	void testErrorRate_singlethread() {
 
 		ErrorXOptions options( "tmp", "tsv" );

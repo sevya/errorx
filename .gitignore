@@ -17,6 +17,10 @@ unit_test/hs_err*.log
 out/
 *.info
 
+obj/*
+!obj/.gitkeep
+!obj/keras/.gitkeep
+
 *tar.gz 
 
 bin/errorx*
