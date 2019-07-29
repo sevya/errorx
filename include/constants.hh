@@ -7,6 +7,9 @@ Code contained herein is proprietary and confidential.
 @author Alex Sevy (alex@endeavorbio.com)
 */
 
+#ifndef CONSTANTS_HH_
+#define CONSTANTS_HH_
+
 namespace errorx {
 namespace constants {
 
@@ -18,6 +21,13 @@ namespace constants {
 const double OPTIMIZED_THRESHOLD = 0.757264;
 const double OPTIMIZED_PRECISION =  0.660;
 const double OPTIMIZED_RECALL = 0.404;
+// TODO optimize these cutoff values
+const std::vector<double> OPTIMIZED_THRESHOLD_VECTOR = {
+		0.4, 
+		0.6, 
+		OPTIMIZED_THRESHOLD, 
+		0.9, 
+		0.95 };
 
 /**
 	Sequence window used for feature calculation
@@ -42,3 +52,5 @@ const int MAX_AB_LENGTH = 420;
 
 } // namespace constants
 } // namespace errorx
+
+#endif // CONSTANTS_HH_

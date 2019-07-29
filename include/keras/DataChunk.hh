@@ -40,8 +40,8 @@ public:
 		Functions to set data held by data chunk. Implementation
 		depends on shape of data
 	*/
-	virtual void set_data( vector<vector<vector<double>>> const & input_data ) {};
-	virtual void set_data( vector<double> const & input_data ) {};
+        virtual void set_data( vector<vector<vector<double>>> const & ) {};
+        virtual void set_data( vector<double> const & ) {};
 
 
 	/**
