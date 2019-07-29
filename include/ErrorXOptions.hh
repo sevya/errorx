@@ -27,6 +27,7 @@ Code contained herein is proprietary and confidential.
 #include <string>
 #include <functional>
 #include <mutex>
+#include <memory>
 
 #include "ProgressBar.hh"
 
