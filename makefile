@@ -125,11 +125,11 @@ java: $(OBJ) obj/errorx_java.o
 	cd java_bindings; make
 
 
-python_install: $(OBJ) obj/errorx_python2.o
+python_install: $(OBJ) obj/errorx_python2.o python
 	sudo $(PY_EXE) -m pip install -I python2_bindings/
 
 	
-python3_install: $(OBJ) obj/errorx_python3.o
+python3_install: $(OBJ) obj/errorx_python3.o python3
 	sudo $(PY3_EXE) -m pip install -I python3_bindings/
 
 
