@@ -90,8 +90,8 @@ void IGBlastParser::blast( ErrorXOptions & options ) {
 
 	if ( options.verbose() > 0 ) {
 		cout << "Running IGBlast..." << endl;
-		track_progress( options );
 	}
+	track_progress( options );	
 	worker_thread.join();
 }
 
