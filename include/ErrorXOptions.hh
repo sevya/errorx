@@ -77,6 +77,12 @@ public:
 		@throws invalid_argument if either infile or format are not specified
 	*/	
 	void validate();
+
+	/**
+		Counts the number of queries based on infile and saves
+		to a member variable
+	*/
+	void count_queries();
 	
 	/*
 		Getters
@@ -94,10 +100,12 @@ public:
 	double error_threshold() const;
 	char correction() const;
 	bool trial() const;
+	int num_queries() const;
 	bool allow_nonproductive() const;
 	function<void(int,int,mutex*)> increment() const;
-	function<void()> reset() const;
-	function<void()> finish() const;
+	function<void(void)> reset() const;
+	function<void(void)> finish() const;
+	function<void(string)> message() const;
 
 	/*
 		Setters
@@ -111,15 +119,17 @@ public:
 	void igblast_output( string const & igblast_output );
 	void errorx_base( string const & errorx_base );
 	// void errorx_base( boost::filesystem::path const & errorx_base );
-	void verbose( int const & verbose );
-	void nthreads( int const & nthreads );
+	void verbose( int const verbose );
+	void nthreads( int const nthreads );
 	void error_threshold( double const & error_threshold );
 	void correction( char const & correction );
-	void trial( bool const & trial );
-	void allow_nonproductive( bool const & allow_nonproductive );
+	void trial( bool const trial );
+	void num_queries( int const num_queries );
+	void allow_nonproductive( bool const allow_nonproductive );
 	void increment( function<void(int,int,mutex*)> const & increment ) ;
 	void reset( function<void(void)> const & reset ) ;
 	void finish( function<void(void)> const & finish ) ;
+	void message( function<void(string)> const & message ) ;
 
 private:
 
@@ -167,13 +177,14 @@ private:
 	string igblast_output_;
 	string errorx_base_;
 	bool trial_;
+	int num_queries_;
 
 	/**
 		Callback functions to update progress during error correction
 		By default, these will update a progress bar on the command 
 		line. Can also be used in a GUI to show a progress window.
 
-		Three callback functions are implemented:
+		Four callback functions are implemented:
 		
 		increment_: this increments the number of processed records. 
 			Takes in as arguments: (increment value, total records, mutex)
@@ -187,10 +198,13 @@ private:
 		finish_: finishes the progress bar. Frequently the thread finishes and
 			progress updating is killed before it hits 100%. To make it look
 			pretty this function manually updates the bar to 100%.
+
+		message_: sets the message for the currently running step
 	*/
 	function<void(int,int,mutex*)> increment_;
 	function<void(void)> reset_;
 	function<void(void)> finish_;
+	function<void(string)> message_;
 	ProgressBar _bar;
 	
 };

@@ -56,7 +56,7 @@ public:
 		@param value value to increment the progress bar
 		@param m pointer to mutex to synchronize progress
 	*/
-	void increment( unsigned int value, unsigned int total, std::mutex* m );
+	void increment( int value, int total, std::mutex* m );
 
 	/**
 		Set the value of the progress bar, either providing a mutex if a multithreaded
@@ -65,19 +65,10 @@ public:
 		@param value value to set the progress bar
 		@param m pointer to mutex to synchronize progress
 	*/
-	void update( unsigned int value, unsigned int total, std::mutex* m );
-
+	void update( int value, int total, std::mutex* m );
+	void message( string s );
 	void reset();
 	void finish();
-
-	/**
-		These functions don't do anything - they are used as 
-		callbacks when the user requests verbose=0, so they
-		get no output to the screen
-	*/
-	void blank( unsigned int value, unsigned int total, std::mutex* m );
-	void blank2();
-
 
 	/*
 		Getters

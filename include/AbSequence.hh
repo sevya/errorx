@@ -97,6 +97,7 @@ public:
 	void sequenceID( string const & seqID );
 	void quality_string_trimmed( string const & phred );
 	void full_nt_sequence( string const & seq );
+	void full_aa_sequence( string const & seq );
 	void full_gl_nt_sequence( string const & seq );
 	
 	void full_nt_sequence_corrected( string const & seq );
@@ -104,8 +105,9 @@ public:
 
 
 private:
-	// IGBlast parser can directly set these params
+	// IGBlastParser and SequenceRecord can directly set these params
 	friend class IGBlastParser;
+	friend class SequenceRecord;
 
 	// private subroutines that build sequence
 	void build_nt_sequence();

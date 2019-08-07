@@ -58,7 +58,7 @@ public:
 	/**
 		Copy constructor. Copies all member variables
 	*/	
-	SequenceRecord(SequenceRecord const & copy);
+	SequenceRecord( SequenceRecord const & copy );
 
 	/**
 		Constructs a SequenceRecord from an AbSequence object
@@ -66,6 +66,14 @@ public:
 		@param sequence AbSequence object
 	*/
 	SequenceRecord( AbSequence const & sequence );
+
+
+	/**
+		Constructor from vector<string> - this is used
+		when building a SequenceRecord from an output ErrorX tsv file
+		if the 
+	*/
+	SequenceRecord( vector<string> const & items );
 
 	/**
 		Constructs a SequenceRecord from a SequenceQuery.
@@ -167,6 +175,8 @@ public:
 	void cdr3_aa_sequence( string const & cdr3_aa_sequence );
 	void full_nt_sequence( string const & seq );
 	void full_nt_sequence_corrected( string const & seq );
+	void full_aa_sequence( string const & seq );
+	void full_aa_sequence_corrected( string const & seq );
 
 private:
 	

@@ -99,6 +99,7 @@ AbSequence::AbSequence( AbSequence const & other ) :
 	failure_reason_( other.failure_reason_ )
 {}
 
+
 void AbSequence::build( ErrorXOptions const & options ) {
 
 	// Consider the E value of gene matches and nullify data if need be
@@ -355,6 +356,8 @@ void AbSequence::sequenceID( string const & seqID ) { sequenceID_ = seqID; }
 void AbSequence::quality_string_trimmed( string const & phred ) { phred_trimmed_ = phred; }
 
 void AbSequence::full_nt_sequence( string const & seq ) { full_nt_sequence_ = seq; }
+void AbSequence::full_aa_sequence( string const & seq ) { full_aa_sequence_ = seq; }
+
 void AbSequence::full_gl_nt_sequence( string const & seq ) { full_gl_nt_sequence_ = seq; }
 
 void AbSequence::full_nt_sequence_corrected( string const & seq ) { 

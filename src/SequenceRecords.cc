@@ -29,6 +29,7 @@ settings for processing, and ErrorPredictor that does the error correction itsel
 #include "util.hh"
 #include "constants.hh"
 #include "ClonotypeGroup.hh"
+#include "exceptions.hh"
 
 using namespace std;
 
@@ -102,19 +103,30 @@ SequenceRecords::SequenceRecords( vector<SequenceRecordPtr> const & record_vecto
 }
 
 void SequenceRecords::import_from_tsv() {
-	ios_base::sync_with_stdio (false);
+	ios_base::sync_with_stdio( false );
 	string line;
 	ifstream file( options_->infile() );
 
 	if ( !file.good() ) {
-		throw invalid_argument( options_->infile()+" is not a valid file." );
+		throw BadFileException( options_->infile()+" is not a valid file." );
 		return;
 	}
 
-	while (getline (file, line)) {
+	while ( getline (file, line) ) {
+		// if empty line, just keep going
+		if ( util::trim(line) == "" ) {
+			continue;
+		}
+
 		vector<string> tokens = util::tokenize_string<string>( line, "\t " );
+
 		if ( tokens.size() != 4 ) {
-			throw invalid_argument( "Error: line is not properly formatted. Proper format is four fields (SequenceID Full_sequence Quality Germline_sequence) separated by tabs.\nOffending line:\n"+line );
+			throw BadFileException( 
+				"Error: file "+options_->infile()+" is not properly formatted. "
+				"Proper format is four fields: "
+				"(SequenceID Full_sequence Quality Germline_sequence) "
+				"separated by tabs with no header.\n\n"
+				"Offending line:\n"+line );
 			return;
 		}
 
@@ -267,8 +279,11 @@ void SequenceRecords::write_summary() const {
 
 void SequenceRecords::correct_sequences_threaded( SequenceRecordsPtr & records, 
 												  function<void(int,int,mutex*)>* increment,
-												  mutex* m, int & total ) 
+												  mutex* m, int total ) 
 {
+	// update in increments of 10
+	int incrementAmount = 10;
+	
 	for ( int ii = 0; ii < records->size(); ++ii ) {
 		try {
 			SequenceRecordPtr current_record = records->get( ii );
@@ -276,15 +291,13 @@ void SequenceRecords::correct_sequences_threaded( SequenceRecordsPtr & records,
 				*(records->predictor_), 
 				*(records->options_) );
 
-			// update in increments of 10
-			int incrementAmount = 10;
-			if ( ii%incrementAmount == 0 ) (*increment)( incrementAmount, total, m );
+			
+			if ( ii%incrementAmount == 0 ) {
+				(*increment)( incrementAmount, total, m );
+			}
 
 		} catch ( exception & e ) {
-			cout << "record could not be processed - exception caught : " 
-				<< records->get(ii)->sequenceID() << endl;
-			cout << e.what() << endl;
-			exit(1);
+			throw BadInputException( "record could not be processed - exception caught : "+records->get(ii)->sequenceID()+"\n\n"+e.what() );
 		}
 	}
 }
@@ -322,11 +335,11 @@ void SequenceRecords::correct_sequences( SequenceRecordsPtr & records ) {
 
 	int nthreads = records->options_->nthreads();
 	int total_records = records->size();
-	int verbose = records->options_->verbose();
 
 	// Set up a callback function for each thread to update its progress
 	function<void(int,int,mutex*)> increment = records->options_->increment();
 	function<void(void)> finish = records->options_->finish();
+	function<void(string)> message = records->options_->message();
 
 	// get chunked SequenceRecords
 	// this will deep copy the original pointers in records_
@@ -340,10 +353,7 @@ void SequenceRecords::correct_sequences( SequenceRecordsPtr & records ) {
 	// Set up a mutex to coordinate between threads
 	mutex* m = new mutex;
 
-	if ( verbose > 0 ) {
-		cout << "Correcting sequences..." << endl;
-	}
-
+	message( "Correcting sequences..." );
 	for ( int ii = 0; ii < nthreads; ++ii ) {
 		threads[ii] = unique_ptr<thread>( new std::thread(
 				&SequenceRecords::correct_sequences_threaded,
@@ -437,7 +447,6 @@ void SequenceRecords::count_clonotypes() {
 	clonotypes_.clear();
 	vector<ClonotypeGroup>::iterator it;
 
-
 	for ( int ii = 0; ii < records_.size(); ++ii ) {
 
 		SequenceRecordPtr current_record = records_[ ii ];
@@ -469,32 +478,91 @@ vector<ClonotypeGroup> SequenceRecords::clonotypes() {
 	return clonotypes_;
 }
 
-int SequenceRecords::unique_nt_sequences( bool corrected) { 
-	if ( clonotypes_.empty() ) count_clonotypes();
-	
-	int N = 0;
-	vector<ClonotypeGroup>::iterator it;
-	for ( it  = clonotypes_.begin(); 
-		  it != clonotypes_.end(); 
-		  ++it ) 
-	{
-		N += it->somatic_variants( corrected );
+int SequenceRecords::unique_nt_sequences( bool corrected ) { 
+	map<string,int,function<bool(string,string)>> cmap;
+
+	if ( corrected ) {
+		// Custom comparator for corrected sequences
+		// treats sequences the same if they differ only by N nucleotides
+		function< bool(string,string) > compareCorrectedSequences = 
+			std::bind( &util::compare, 
+					   placeholders::_1, 
+					   placeholders::_2, 
+					   options_->correction()
+			);
+
+		// instantiate map of corrected sequence with its comparator
+		cmap = map<string,int,function<bool(string,string)>>( compareCorrectedSequences );
+	} else {
+		auto compareLambda = [](string const & a, string const & b) { return a < b; };
+		cmap = map<string,int,function<bool(string,string)>>( compareLambda );
 	}
-	return N;
+
+	map<string,int>::iterator it;
+	string key;
+
+	for ( int ii = 0; ii < records_.size(); ++ii ) {
+		SequenceRecordPtr current_record = records_[ ii ];
+
+		if ( !current_record->isGood() ) continue;
+
+		key = ( corrected ) ?
+				current_record->full_nt_sequence_corrected() :
+				current_record->full_nt_sequence();
+
+		it = cmap.find( key );
+		if ( it == cmap.end() ) {
+			cmap.insert( pair<string,int>( key, 1 ));
+		} else {
+			it->second += 1;
+		}
+	}
+
+	return cmap.size();
 }
 
 int SequenceRecords::unique_aa_sequences( bool corrected ) {
-	if ( clonotypes_.empty() ) count_clonotypes();
-	
-	int N = 0;
-	vector<ClonotypeGroup>::iterator it;
-	for ( it  = clonotypes_.begin(); 
-		  it != clonotypes_.end(); 
-		  ++it ) 
-	{
-		N += it->somatic_variants_aa( corrected );
+	map<string,int,function<bool(string,string)>> cmap;
+
+	if ( corrected ) {
+		// Custom comparator for corrected sequences
+		// treats sequences the same if they differ only by X amino acids
+		function< bool(string,string) > compareCorrectedSequences = 
+			std::bind( &util::compare, 
+					   placeholders::_1, 
+					   placeholders::_2, 
+					   'X'
+			);
+
+		// instantiate map of corrected sequence with its comparator
+		cmap = map<string,int,function<bool(string,string)>>( compareCorrectedSequences );
+	} else {
+		auto compareLambda = [](string const & a, string const & b) { return a < b; };
+		cmap = map<string,int,function<bool(string,string)>>( compareLambda );
 	}
-	return N;
+
+	map<string,int>::iterator it;
+	string key;
+
+	for ( int ii = 0; ii < records_.size(); ++ii ) {
+		SequenceRecordPtr current_record = records_[ ii ];
+
+		if ( !current_record->isGood() ) continue;
+
+		key = ( corrected ) ?
+				current_record->full_aa_sequence_corrected() :
+				current_record->full_aa_sequence();
+
+
+		it = cmap.find( key );
+		if ( it == cmap.end() ) {
+			cmap.insert( pair<string,int>( key, 1 ));
+		} else {
+			it->second += 1;
+		}
+	}
+
+	return cmap.size();
 }
 
 int SequenceRecords::unique_clonotypes() {
@@ -507,13 +575,13 @@ map<string,int> SequenceRecords::vgene_counts() {
 	if ( clonotypes_.empty() ) count_clonotypes();
 
 	vector<string> genes;
-	vector<ClonotypeGroup>::const_iterator it;
+	vector<SequenceRecordPtr>::const_iterator it;
 
-	for ( it  = clonotypes_.begin();
-		  it != clonotypes_.end();
+	for ( it  = records_.begin();
+		  it != records_.end();
 		  ++it ) 
 	{
-		genes.push_back( it->v_gene() );
+		genes.push_back( (*it)->v_gene_noallele() );
 	}
 	return util::value_counts( genes );
 }
@@ -522,12 +590,13 @@ map<string,int> SequenceRecords::jgene_counts() {
 	if ( clonotypes_.empty() ) count_clonotypes();
 
 	vector<string> genes;
-	vector<ClonotypeGroup>::const_iterator it;
-	for ( it  = clonotypes_.begin();
-		  it != clonotypes_.end();
+	vector<SequenceRecordPtr>::const_iterator it;
+
+	for ( it  = records_.begin();
+		  it != records_.end();
 		  ++it ) 
 	{
-		genes.push_back( it->j_gene() );
+		genes.push_back( (*it)->j_gene_noallele() );
 	}
 	return util::value_counts( genes );
 }
@@ -536,13 +605,13 @@ map<string,int> SequenceRecords::vjgene_counts() {
 	if ( clonotypes_.empty() ) count_clonotypes();
 
 	vector<string> genes;
-	vector<ClonotypeGroup>::const_iterator it;
+	vector<SequenceRecordPtr>::const_iterator it;
 	string key;
-	for ( it  = clonotypes_.begin();
-		  it != clonotypes_.end();
+	for ( it  = records_.begin();
+		  it != records_.end();
 		  ++it ) 
 	{
-		key = it->v_gene() + "_" + it->j_gene();
+		key = (*it)->v_gene_noallele() + "_" + (*it)->j_gene_noallele();
 		genes.push_back( key );
 	}
 	return util::value_counts( genes );

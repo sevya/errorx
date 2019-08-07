@@ -80,8 +80,6 @@ vector<double> KerasModel::compute_output( DataChunk* dc ) const {
 			);
 	}
 
-	if ( verbose_ > 1 ) dc->show_name();
-
 	DataChunk* inp = dc;
 	DataChunk* out = 0;
 	for ( uint l = 0; l < layers_.size(); ++l ) {

@@ -50,6 +50,12 @@ const double J_EVALUE_CUTOFF = 0.01;
 */
 const int MAX_AB_LENGTH = 420;
 
+/**
+	The number of queries you can run for free without
+	a license
+*/
+const int FREE_QUERIES = 100;
+
 } // namespace constants
 } // namespace errorx
 

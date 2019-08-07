@@ -37,7 +37,14 @@ namespace util {
 bool isint( string const & str );
 bool isdouble( string const & str );
 
-	
+/** 
+	Functions for trimming whitespace out of a string
+*/
+string ltrim( string const & s );
+string rtrim( string const & s );
+string trim( string const & s );
+
+
 /**
 	Break a string into tokens based on the provided delimiter. 
 	When multiple characters are present in the delimiter it 
@@ -55,8 +62,9 @@ vector<T> tokenize_string( string str, string delim="\t " ) {
 	vector<string> array;
 	vector<T> float_array;
 
-	boost::split( array, str, boost::algorithm::is_any_of(delim), boost::token_compress_on );
-        for ( size_t ii = 0; ii < array.size(); ++ii ) {
+	string str_trim = trim( str );
+	boost::split( array, str_trim, boost::algorithm::is_any_of(delim), boost::token_compress_on );
+	for ( size_t ii = 0; ii < array.size(); ++ii ) {
 		float_array.push_back( boost::lexical_cast<T>( array[ii] ));
 	}
 	return float_array;
@@ -211,7 +219,7 @@ double phred_avg_realspace( vector<int> const & phred_arr );
 
 	@return # lines in that file
 */
-int count_lines( string & file );
+int count_lines( string const & file );
 
 /**
 	Counts the number of queries in an IGBlast output file
@@ -220,19 +228,7 @@ int count_lines( string & file );
 
 	@return # queries in that file
 */
-int count_queries( string & file );
-
-/**
-	Writes a progress bar to the screen while a process is 
-	happening in anothet thread
-
-	@param progress fraction finished the process is
-	@param done int # of items finished so far
-	@param total total # of items to process
-*/
-void write_progress_bar( float progress, int done, int total );
-
-
+int count_queries( string const & file );
 
 ///////////// Encryption and license checking modules /////////////
 
@@ -376,6 +372,15 @@ vector<pair<string,int>> sort_map( map<string,int> const & cmap, bool ascending=
 vector<pair<string,int>> sort_map( map<string,int,function<bool(string,string)>> const & cmap, bool ascending );
 
 //////////// END aggregation functions ////////////////////
+
+/**
+	Handles an interruption signal, for example control-C 
+*/
+void handle_signal( int s );
+/**
+	Registers the interruption signal to handle_signal
+*/
+void register_signal();
 
 } // namespace util
 } // namespace errorx

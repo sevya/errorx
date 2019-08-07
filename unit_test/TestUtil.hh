@@ -161,6 +161,12 @@ public:
 				util::tokenize_string<int>( one, ", " ),
 				output2
 		);
+
+		one = "1 2 3 4 \t5\t ";
+		TS_ASSERT_EQUALS(
+				util::tokenize_string<int>( one ),
+				output2
+		);
 	}
 
 	void testReverse() {

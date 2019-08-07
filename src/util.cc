@@ -17,6 +17,7 @@ Code contained herein is proprietary and confidential.
 #include <fstream>
 #include <map>
 #include <vector>
+#include <regex>
 
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
@@ -29,6 +30,8 @@ Code contained herein is proprietary and confidential.
 #include <ctime>
 
 #include "exceptions.hh"
+
+#include <signal.h> // sigaction
 
 using namespace std;
 
@@ -52,6 +55,21 @@ bool isdouble( string const & str ) {
 		return 0;
 	}
 }
+
+/////////// BEGIN Functions for trimming whitespace out of a string ////////////
+
+string ltrim( string const & s ) {
+	return std::regex_replace( s, regex("^\\s+"), string("") );
+}
+
+string rtrim( string const & s ) {
+	return std::regex_replace( s, regex("\\s+$"), string("") );
+}
+
+string trim( string const & s ) {
+	return ltrim(rtrim(s));
+}
+/////////// END Functions for trimming whitespace out of a string //////////////
 
 void write_vector( string & filename,
 		vector<vector<string>> & vector2d,
@@ -196,7 +214,9 @@ string to_scientific( double a ) {
 	return a_str;
 }
 
-int count_queries( string & file ) {
+int count_queries( string const & file ) {
+	ios_base::sync_with_stdio( false );
+
 	std::ifstream in(file);
 	if ( !in.good() ) return 0;
 	string line;
@@ -206,37 +226,21 @@ int count_queries( string & file ) {
 		if ( tokens.size() < 2 ) continue;
 		if ( tokens[1] == "Query:" ) ++ii;
 	}
+	in.close();
 	return ii;
 }
 
-int count_lines( string & file ) {
+int count_lines( string const & file ) {
+	ios_base::sync_with_stdio( false );
+
 	std::ifstream in(file);
 	if ( !in.good() ) return 0;
 	string line;
 	int ii = 0;
-	char c;
-	
-	while (in.get(c)) {
-		if (c == '\n') ++ii;
-	}
-	return ii+1;
+	while( getline(in,line) ) { ++ii; }
+	in.close();
+	return ii;
 }
-
-void write_progress_bar( float progress, int done, int total ) {
-	cout << "[";
-	int barWidth = 70;
-	int pos = barWidth * progress;
-
-	for (int ii = 0; ii < barWidth; ++ii) {
-		if (ii < pos) cout << "=";
-		else if (ii == pos) cout << ">";
-		else cout << " ";
-	}
-
-	cout << "] " << int(progress * 100.0) << "%: " << done << "/" << total << " records processed \r";
-	cout.flush();
-}
-
 
 ///////////// Encryption modules /////////////
 
@@ -554,6 +558,22 @@ vector<pair<string,int>> sort_map( map<string,int,function<bool(string,string)>>
 }
 
 //////////// END aggregation functions ////////////////////
+
+void handle_signal( int s ) {
+	cout << "Signal received - it is " << s << endl;
+	exit( 1 ); 
+}
+
+// TODO make this windows compliant
+void register_signal() {
+	struct sigaction sigIntHandler;
+
+	sigIntHandler.sa_handler = handle_signal;
+	sigemptyset( &sigIntHandler.sa_mask );
+	sigIntHandler.sa_flags = 0;
+
+	sigaction( SIGINT, &sigIntHandler, NULL );
+}
 
 } // namespace util
 } // namespace errorx

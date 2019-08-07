@@ -26,24 +26,22 @@ namespace errorx {
 SequenceRecordsPtr run_protocol( ErrorXOptions & options ) {
 	SequenceRecordsPtr records;
 
+	// Register control-C signal
+	util::register_signal();
+
 	options.validate();
 	options.trial( !util::valid_license() );	
+	options.count_queries();
+
+	// Trial version only allows querying a limited number of sequences
+	if ( options.trial() && 
+		 options.num_queries() > constants::FREE_QUERIES ) {
+		throw InvalidLicenseException();
+	}
+
 	if ( options.format() == "fastq" ) {
-		if ( options.trial() ) {
-			// Trial version only allows querying 100 sequences
-			// since each FASTQ query is 4 lines check and make
-			// sure there are < 400 lines
-			string infile = options.infile();
-			int num_lines = util::count_lines( infile );
-			if ( num_lines > 400 ) {
-				throw InvalidLicenseException();
-			} 
-		}
 
 		// Convert FASTQ to FASTA
-		if ( options.verbose() > 0 ) {
-			cout << "Converting fastq to fasta..." << endl;
-		}
 		options.fastq_to_fasta();
 
 		// Run IGBlast query on FASTA file
@@ -54,14 +52,6 @@ SequenceRecordsPtr run_protocol( ErrorXOptions & options ) {
 		records = parser.parse_output( options );
 
 	} else {
-		if ( options.trial() ) {
-			// Trial version only allows querying 100 sequences
-			string infile = options.infile();
-			int num_lines = util::count_lines( infile );
-			if ( num_lines > 100 ) {
-				throw InvalidLicenseException();
-			} 
-		}
 
 		// Parse the TSV file
 		// TSV files are in the following format: sequenceID,nt_sequence,gl_sequence,quality_string
@@ -78,18 +68,21 @@ SequenceRecordsPtr run_protocol( ErrorXOptions & options ) {
 SequenceRecordsPtr run_protocol( vector<SequenceQuery> & queries, 
 							   ErrorXOptions & options ) {
 
-	options.trial( !util::valid_license() );
+	// Register control-C signal
+	util::register_signal();
 
-	if ( options.trial() ) {
-		// Trial version only allows querying 100 sequences
-		if ( queries.size() > 100 ) {
-			throw InvalidLicenseException();
-		} 
+	options.validate();
+	options.trial( !util::valid_license() );
+	options.count_queries();
+
+	// Trial version only allows querying a limited number of sequences
+	if ( options.trial() && 
+		 options.num_queries() > constants::FREE_QUERIES ) {
+		throw InvalidLicenseException();
 	}
 
 	SequenceRecordsPtr records;
 
-	options.validate();
 	
 	records = SequenceRecordsPtr( new SequenceRecords( options ));
 

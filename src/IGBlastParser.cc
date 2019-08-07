@@ -87,11 +87,8 @@ void IGBlastParser::blast( ErrorXOptions & options ) {
 
 	thread worker_thread = thread( &IGBlastParser::exec_in_thread, this, command );
 	
-
-	if ( options.verbose() > 0 ) {
-		cout << "Running IGBlast..." << endl;
-		track_progress( options );
-	}
+	track_progress( options );
+	
 	worker_thread.join();
 }
 
@@ -158,11 +155,13 @@ void IGBlastParser::track_progress( ErrorXOptions & options ) {
 
 	string infile = options.infile();
 	string igblast_output = options.igblast_output();
-	int total_records = util::count_lines( infile )/4;
+	int total_records = options.num_queries();
 
 	function<void(int,int,mutex*)> increment = options.increment();
 	function<void(void)> reset = options.reset();
 	function<void(void)> finish = options.finish();
+	function<void(string)> message = options.message();
+	message( "Running IGBlast..." );
 
 	/// This mutex doesn't actually do anything - it's just 
 	/// there for compatibility

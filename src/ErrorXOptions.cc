@@ -20,6 +20,7 @@ Code contained herein is proprietary and confidential.
 #include "util.hh"
 #include "constants.hh"
 #include "ProgressBar.hh"
+#include "exceptions.hh"
 
 #include <boost/filesystem.hpp>
 
@@ -39,7 +40,8 @@ ErrorXOptions::ErrorXOptions() :
 	correction_('N'),
 	infasta_(""),
 	igblast_output_(""),
-	trial_(0)
+	trial_(0),
+	num_queries_(0)
 {
 	nthreads(-1);
 	errorx_base( util::get_root_path().string() );
@@ -65,9 +67,11 @@ ErrorXOptions & ErrorXOptions::operator=( ErrorXOptions const & other ) {
 	igblast_output_ = other.igblast_output_;
 	errorx_base_ = other.errorx_base_;
 	trial_ = other.trial_;
+	num_queries_ = other.num_queries_;
 	increment_ = other.increment_;
 	reset_ = other.reset_;
 	finish_ = other.finish_;
+	message_ = other.message_;
 	return *this;
 }
 
@@ -81,7 +85,8 @@ ErrorXOptions::ErrorXOptions( string input_file, string file_format ) :
 	correction_('N'),
 	infasta_(""),
 	igblast_output_(""),
-	trial_(0)
+	trial_(0),
+	num_queries_(0)
 {
 	nthreads(-1);
 	format( file_format );
@@ -106,9 +111,11 @@ ErrorXOptions::ErrorXOptions( ErrorXOptions const & other ) :
 	igblast_output_(other.igblast_output_),
 	errorx_base_(other.errorx_base_),
 	trial_(other.trial_),
+	num_queries_(other.num_queries_),
 	increment_(other.increment_),
 	reset_(other.reset_),
-	finish_(other.finish_)
+	finish_(other.finish_),
+	message_(other.message_)
 {}
 
 void ErrorXOptions::initialize_callback() {
@@ -136,40 +143,53 @@ void ErrorXOptions::initialize_callback() {
 								   &_bar
 								 );
 		finish( finish_callback );
-	} else { 
-		function<void(int,int,mutex*)> terminal_callback = std::bind( 
-								   &ProgressBar::blank,
+
+
+		function<void(string)> message_callback = std::bind( 
+								   &ProgressBar::message,
 								   &_bar,
-								    placeholders::_1,
-								    placeholders::_2,
-								    placeholders::_3
-								 );
+								   placeholders::_1
+								   );
+
+		message( message_callback );
+
+	} else { 
+
+		function<void(int,int,mutex*)> terminal_callback = 
+			[](int,int,mutex*) {};
 		increment( terminal_callback );
 
-		function<void(void)> reset_callback = std::bind( 
-								   &ProgressBar::blank2,
-								   &_bar
-								 );
-		reset( reset_callback );
+		function<void(void)> blank_callback = 
+			[](void) {};
 
+		reset( blank_callback );
+		finish( blank_callback );
 
-		function<void(void)> finish_callback = std::bind( 
-								   &ProgressBar::blank2,
-								   &_bar
-								 );
-		finish( finish_callback );
+		function<void(string)> message_callback = 
+			[](string) {};
+		message( message_callback );
 	}
 }
 
 void ErrorXOptions::fastq_to_fasta() {
-	ios_base::sync_with_stdio (false);
+	ios_base::sync_with_stdio( false );
 
 
 	ifstream infile ( infile_ );
 	if ( !infile.good() ) {
-		throw invalid_argument("Error: file " + infile_ + " does not exist." );
+		throw BadFileException("Error: file " + infile_ + " does not exist." );
 	}
 
+	// Set up for callback functions for updating progress
+	// This mutex doesn't actually do anything - it's just 
+	// there for compatibility
+	mutex* m = new mutex;
+	function<void(int,int,mutex*)> increment_cback = increment();
+	function<void(void)> reset_cback = reset();
+	function<void(void)> finish_cback = finish();
+	function<void(string)> message_cback = message();
+
+	message_cback( "Converting fastq to fasta..." );
 
 	// Get base of input file to make FASTA name
 	namespace fs = boost::filesystem;
@@ -183,26 +203,49 @@ void ErrorXOptions::fastq_to_fasta() {
 	// Line 2: nucleotide sequence
 	// Line 3: sequence ID again
 	// Line 4: quality string
+	// If this is not a valid fastq file - throw an exception
 	ofstream outfile( infasta_ );
 	string line;
 	int ii = 0;
-	string sequenceID, sequence, qualityStr;
+	string sequenceID, sequence, qualityStr, sequenceID2;
+	int query_no = 1;
 
-	while (getline (infile, line)) {
+	while ( getline (infile, line) ) {
 		if ( ii == 0 ) sequenceID = line;
 		else if ( ii == 1) sequence = line; 
-		// else if ( ii == 2) do nothing
+		else if ( ii == 2) sequenceID2 = line;
 		else if ( ii == 3) {
 			qualityStr = line;
+
+			// Sanity check to make sure FASTQ is valid
+			// first line should start with @ and third line should start with +
+			if ( sequenceID.substr( 0, 1 ) != "@" ||
+				 sequenceID2.substr( 0, 1 ) != "+" ) {
+				throw BadFileException( "File "+infile_+" could not be parsed as format "+format_+". Please check to make sure it's properly formed and try again" );
+			} 
 			vector<string> tokens = util::tokenize_string<string>( sequenceID, " \t" );
 			sequenceID = tokens[0].substr(1, tokens[0].length());
 
 			outfile << ">" << sequenceID << "|" << qualityStr<< "\n" << sequence << "\n";
 
 			ii = -1;
+
+			++query_no;
+
+			// if query_no is a multiple of 1000, increment
+			if ( query_no%1000 == 0 ) {
+				increment_cback( 1000, num_queries_, m );
+			}
 		}
 		++ii;
 	}
+
+	// finish up progress bar
+	finish_cback();
+	reset_cback();
+
+	// we're done with the mutex
+	delete m; 
 
 	outfile.close();
 }
@@ -214,6 +257,22 @@ void ErrorXOptions::validate() {
 
 	if ( format_ == "" ) {
 		throw invalid_argument("Error: file format not provided.");
+	}
+}
+
+void ErrorXOptions::count_queries() {
+	int no_lines = util::count_lines( infile_ );
+	if ( format_ == "fastq" ) {
+		// Sanity check to make sure FASTQ is valid
+		// needs to be a multiple of four
+		if ( no_lines%4 != 0 ) {
+			throw BadFileException( "File "+infile_+" could not be parsed as format "+format_+". \n\nNumber of lines must be a multiple of 4. \n\nThis can be caused by an empty line at the end of your file. Please check to make sure it's properly formed and try again" );
+		}
+
+		num_queries_ = no_lines/4;
+
+	} else if ( format_ == "tsv" ) {
+		num_queries_ = no_lines;
 	}
 }
 
@@ -264,7 +323,7 @@ void ErrorXOptions::igtype( string const & igtype ) {
 	igtype_ = igtype; 
 }
 
-void ErrorXOptions::nthreads( int const & nthreads ) { 
+void ErrorXOptions::nthreads( int const nthreads ) { 
 	if ( nthreads == -1 ) nthreads_ = thread::hardware_concurrency();
 	else if ( nthreads < 1) {
 		throw invalid_argument("Error: nthreads must either be -1 or a positive integer");
@@ -285,6 +344,10 @@ void ErrorXOptions::finish( function<void(void)> const & finish ) {
 	finish_ = finish;
 }
 
+void ErrorXOptions::message( function<void(string)> const & message ) {
+	message_ = message;
+}
+
 string ErrorXOptions::outfile() const { return outfile_; }
 string ErrorXOptions::format() const { return format_; }
 string ErrorXOptions::species() const { return species_; }
@@ -298,24 +361,28 @@ int ErrorXOptions::nthreads() const { return nthreads_; }
 double ErrorXOptions::error_threshold() const { return error_threshold_; }
 char ErrorXOptions::correction() const { return correction_; }
 bool ErrorXOptions::trial() const { return trial_; }
+int ErrorXOptions::num_queries() const { return num_queries_; }
 bool ErrorXOptions::allow_nonproductive() const { return allow_nonproductive_; }
 function<void(int,int,mutex*)> ErrorXOptions::increment() const { return increment_; }
 function<void(void)> ErrorXOptions::reset() const { return reset_; }
 function<void(void)> ErrorXOptions::finish() const { return finish_; }
+function<void(string)> ErrorXOptions::message() const { return message_; }
 
 void ErrorXOptions::outfile( string const & outfile ) { outfile_ = outfile; }
 void ErrorXOptions::infile( string const & infile ) { infile_ = infile; }
 void ErrorXOptions::infasta( string const & infasta ) { infasta_ = infasta; }
 void ErrorXOptions::igblast_output( string const & igblast_output ) { igblast_output_ = igblast_output; }
 void ErrorXOptions::errorx_base( string const & errorx_base ) { errorx_base_ = errorx_base; }
-void ErrorXOptions::verbose( int const & verbose ) { 
+void ErrorXOptions::verbose( int const verbose ) { 
 	verbose_ = verbose; 
 	initialize_callback();
 }
 void ErrorXOptions::error_threshold( double const & error_threshold ) { error_threshold_ = error_threshold; }
 void ErrorXOptions::correction( char const & correction ) { correction_ = correction; }
-void ErrorXOptions::trial( bool const & trial ) { trial_ = trial; }
-void ErrorXOptions::allow_nonproductive( bool const & allow_nonproductive ) { allow_nonproductive_ = allow_nonproductive; }
+void ErrorXOptions::trial( bool const trial ) { trial_ = trial; }
+void ErrorXOptions::num_queries( int const num_queries ) { num_queries_ = num_queries; }
+
+void ErrorXOptions::allow_nonproductive( bool const allow_nonproductive ) { allow_nonproductive_ = allow_nonproductive; }
 
 
 

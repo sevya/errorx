@@ -7,14 +7,15 @@ Code contained herein is proprietary and confidential.
 @author Alex Sevy (alex@endeavorbio.com)
 */
 
+#ifndef EXCEPTIONS_HH_
+#define EXCEPTIONS_HH_
+
 #include <iostream>
 #include <exception>
 #include <string>
+#include "constants.hh"
 
 using namespace std;
-
-#ifndef EXCEPTIONS_HH_
-#define EXCEPTIONS_HH_
 
 namespace errorx {
 
@@ -26,10 +27,14 @@ namespace errorx {
 class InvalidLicenseException : public exception {
 public:
 	const char* what () const throw () {
-		return "You are currently running the trial version of ErrorX, "
-				"which can only process 100 sequences at a time. "
+		string message = 
+		"You are currently running the trial version of ErrorX, "
+				"which can only process "+
+				to_string(constants::FREE_QUERIES)+
+				" sequences at a time. "
 				"Please limit your query size or contact alex@endeavorbio.com "
 				"to request access to the full version.";
+		return message.c_str();
 	}
 };
 
@@ -42,6 +47,37 @@ public:
 	const char* what () const throw () {
 		return "License is not valid. Please contact alex@endeavorbio.com for assistance";
 	}
+};
+
+/**
+	Exception is thrown when an invalid file is passed
+*/	
+class BadFileException : public exception {
+public:
+	BadFileException() : message_("Input file is invalid. Please check the format and run again") {}
+	BadFileException( string const & message ) : message_(message) {}
+	
+	const char* what () const throw () {
+		return message_.c_str();
+	}
+
+	string message_;
+};
+
+
+/**
+	Exception is thrown when an invalid input is present
+*/	
+class BadInputException : public exception {
+public:
+	BadInputException() : message_("Invalid input encountered. Please check your input data.") {}
+	BadInputException( string const & message ) : message_(message) {}
+	
+	const char* what () const throw () {
+		return message_.c_str();
+	}
+
+	string message_;
 };
 
 } // namespace errorx

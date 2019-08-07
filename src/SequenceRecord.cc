@@ -57,6 +57,44 @@ SequenceRecord::SequenceRecord( AbSequence const & sequence ) :
 	n_errors_( 0 )
 {}
 
+SequenceRecord::SequenceRecord( vector<string> const & items ) {
+	if ( items.size() != 21 ) {
+		throw invalid_argument( "AbSequence built from an incorrect items vector" );
+	}
+
+	sequence_.sequenceID_ = items[0];
+	sequence_.v_gene_     = items[1];
+	sequence_.v_identity_ = ( items[2]=="N/A" ) ? -1 : stod( items[2] );
+	sequence_.v_evalue_   = ( items[3]=="N/A" ) ? -1 : stod( items[3] );
+
+	sequence_.d_gene_     = items[4];
+	sequence_.d_identity_ = ( items[5]=="N/A" ) ? -1 : stod( items[5] );
+	sequence_.d_evalue_   = ( items[6]=="N/A" ) ? -1 : stod( items[6] );
+
+	sequence_.j_gene_     = items[7];
+	sequence_.j_identity_ = ( items[8]=="N/A" ) ? -1 : stod( items[8] );
+	sequence_.j_evalue_   = ( items[9]=="N/A" ) ? -1 : stod( items[9] );
+
+	sequence_.strand_     = items[10];
+	sequence_.chain_      = items[11];
+	sequence_.productive_ = (items[12]=="True");
+	
+	sequence_.cdr3_nt_sequence_ = items[13];
+	sequence_.cdr3_aa_sequence_ = items[14];
+	sequence_.full_nt_sequence_ = items[15];
+	sequence_.full_gl_nt_sequence_ = items[16];
+	sequence_.full_aa_sequence_ = items[17];
+
+	sequence_.full_nt_sequence_corrected_ = items[18];
+	sequence_.full_aa_sequence_corrected_ = items[19];
+
+	n_errors_ = ( items[20]=="N/A" ) ? -1 : stoi( items[20] );
+
+	sequence_.hasV_ = ( sequence_.v_gene_!="N/A" );
+	sequence_.hasD_ = ( sequence_.d_gene_!="N/A" );
+	sequence_.hasJ_ = ( sequence_.j_gene_!="N/A" );
+}
+
 
 void SequenceRecord::print() const {
 	sequence_.print();
@@ -202,6 +240,10 @@ int SequenceRecord::gl_start() const { return sequence_.gl_start(); }
 void SequenceRecord::full_nt_sequence( string const & seq ) { sequence_.full_nt_sequence(seq); }
 void SequenceRecord::full_nt_sequence_corrected( string const & seq ) 
 { sequence_.full_nt_sequence_corrected(seq); }
+
+void SequenceRecord::full_aa_sequence( string const & seq ) { sequence_.full_aa_sequence(seq); }
+void SequenceRecord::full_aa_sequence_corrected( string const & seq ) 
+{ sequence_.full_aa_sequence_corrected(seq); }
 
 void SequenceRecord::v_gene( string const & vgene ) { sequence_.v_gene( vgene ); }
 void SequenceRecord::j_gene( string const & jgene ) { sequence_.j_gene( jgene ); }

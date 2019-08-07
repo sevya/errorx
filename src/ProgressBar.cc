@@ -34,7 +34,7 @@ ProgressBar::ProgressBar( ProgressBar const & other ) :
 	processed_( other.processed_ )
 	{}
 
-void ProgressBar::increment( unsigned int value, unsigned int total, std::mutex* m ) {
+void ProgressBar::increment( int value, int total, std::mutex* m ) {
 	m->lock();
 	processed_ += value;
 	total_ = total;
@@ -42,13 +42,7 @@ void ProgressBar::increment( unsigned int value, unsigned int total, std::mutex*
 	m->unlock();
 }
 
-// void ProgressBar::increment( unsigned int value, unsigned int total ) { 
-// 	processed_ += value; 
-// 	total_ = total;
-// 	draw();
-// }
-
-void ProgressBar::update( unsigned int value, unsigned int total, std::mutex* m ) {
+void ProgressBar::update( int value, int total, std::mutex* m ) {
 	m->lock();
 	processed_ = value;
 	total_ = total;
@@ -56,18 +50,17 @@ void ProgressBar::update( unsigned int value, unsigned int total, std::mutex* m 
 	m->unlock();
 }
 
-// void ProgressBar::update( unsigned int value, unsigned int total ) { 
-// 	processed_ = value;
-// 	total_ = total;
-// 	draw();
-// }
-
 void ProgressBar::reset() { processed( 0 ); }
 
 void ProgressBar::finish() {
 	processed_ = total_;
 	draw();
+	cout << endl;
 } 
+
+void ProgressBar::message( string s ) {
+	cout << s << endl;
+}
 
 void ProgressBar::draw() {
 	float progress = (float)processed_/(float)total_;
@@ -93,8 +86,6 @@ int ProgressBar::processed() const { return processed_; }
 void ProgressBar::total( int const & total ) { total_ = total; }
 void ProgressBar::processed( int const & processed ) { processed_ = processed; }
 
-void ProgressBar::blank( unsigned int value, unsigned int total, std::mutex* m ) {};
-void ProgressBar::blank2() {};
 
 } // namespace errorx
 

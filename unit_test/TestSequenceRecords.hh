@@ -65,6 +65,47 @@ public:
 		TS_ASSERT_EQUALS( records->unique_nt_sequences(0), 5 );
 	}
 
+	void testSequenceGroupingNoClonotype() {
+
+		ErrorXOptions options( "test.fastq", "fastq" );
+		options.errorx_base("../");
+		SequenceRecordsPtr records = SequenceRecordsPtr(new SequenceRecords( options ));
+		vector<string> corrected_sequences = {
+			"ACTGACTGACTGACTGACTGACTGACTGACTG",
+			"ACTGACTGACTGTCTGACTGACTGACTGACTG",
+			"ACTGACTGACTGACTGACTGACTGACTTACTG",
+			"ACTGACTGACTGACTGACTGACTGACTGACTC",
+			"ACTGACTGACTGACTGACTGANTGACTGACTG", // not unique
+			"ACTGANTGACTGACTGACTGACTGACTGACTG", // not unique
+			"NCTGACTGACTGACTGACTGACTGACTGACTG"  // not unique
+		};
+
+		vector<string> uncorrected_sequences = {
+			"ACTGACTGACTGACTGACTGACTGACTGACTG",
+			"ACTGACTGACTGTCTGACTGACTGACTGACTG",
+			"ACTGACTGACTGACTGACTGACTGACTTACTG",
+			"ACTGACTGACTGACTGACTGACTGACTGACTC",
+			"ACTGACTGACTGACTGACTGATTGACTGACTG",
+			"ACTGACTGACTGACTGACTGACTGACTGACTC", // not unique
+			"ACTGACTGACTGACTGACTGACTGACTGACTG"  // not unique
+		};
+
+		for ( int ii = 0; ii < corrected_sequences.size(); ++ii ) {
+			SequenceRecordPtr record = SequenceRecordPtr( new SequenceRecord());
+			record->full_nt_sequence( uncorrected_sequences[ ii ] );
+			record->full_nt_sequence_corrected( corrected_sequences[ ii ] );
+
+			// record->v_gene( "IGHV3-23" ); 
+			// record->cdr3_aa_sequence( "ARCASTFDV" );
+			// record->j_gene( "IGHJ6" );
+
+			records->add_record( record );
+		}	
+
+		TS_ASSERT_EQUALS( records->unique_nt_sequences(1), 4 );
+		TS_ASSERT_EQUALS( records->unique_nt_sequences(0), 5 );
+	}
+
 
 	void testClonotypeEquality() {
 		ErrorXOptions options( "test.fastq", "fastq" );
@@ -200,8 +241,40 @@ public:
 		TS_ASSERT_EQUALS( a.somatic_variants(1), 2 );
 	}
 
+	void testUniqueSequences() {
+		ErrorXOptions options( "test.fastq", "fastq" );
+		options.errorx_base("../");
 
-		void testAASomaticVariants() {
+		AbSequence seq;
+		seq.v_gene( "IGHV3-23" ); 
+		seq.cdr3_aa_sequence( "ARCASTFDV" );
+		seq.j_gene( "IGHJ6" );
+		seq.sequenceID( "1" );
+		seq.quality_string_trimmed( "GHGHGHGHGHGHGHHGHGHGHGHGH" );
+		seq.full_nt_sequence( "CGGAGGACACTGCCATGTATTACTG" );
+		seq.full_gl_nt_sequence( "CGGAGGACACTGCCATGTATTACTG" );	
+		seq.full_nt_sequence_corrected( "CGGAGGACACTGCCATGTATTACTG" );
+		seq.full_aa_sequence( "MFATWIAC" );
+		seq.full_aa_sequence_corrected( "MFATWIAC" );
+
+		SequenceRecordsPtr records = SequenceRecordsPtr(new SequenceRecords(options));
+
+		for ( int ii = 0; ii < 8; ++ii ) {
+			AbSequence newseq( seq );
+			SequenceRecordPtr record = SequenceRecordPtr(new SequenceRecord(newseq));
+			records->add_record( record );
+		}
+
+		records->count_clonotypes();
+		TS_ASSERT_EQUALS( records->unique_nt_sequences( /*int corrected=*/0 ), 1 );
+		TS_ASSERT_EQUALS( records->unique_nt_sequences( /*int corrected=*/1 ), 1 );
+
+		TS_ASSERT_EQUALS( records->unique_aa_sequences( /*int corrected=*/0 ), 1 );
+		TS_ASSERT_EQUALS( records->unique_aa_sequences( /*int corrected=*/1 ), 1 );
+	}
+
+
+	void testAASomaticVariants() {
 
 		ErrorXOptions options( "test.fastq", "fastq" );
 
@@ -211,28 +284,28 @@ public:
 		a.j_gene( "IGHJ6" );
 
 		SequenceRecordPtr record = SequenceRecordPtr(new SequenceRecord());
-		record->full_nt_sequence( "CTCTAGACTC" );
-		record->full_nt_sequence_corrected( "CTCTAGACTC" );
+		record->full_aa_sequence( "CTCTAGACTC" );
+		record->full_aa_sequence_corrected( "CTCTAGACTC" );
 		a.add_record( record );
 
 		SequenceRecordPtr record2 = SequenceRecordPtr(new SequenceRecord());
-		record2->full_nt_sequence( "CTCTAGANTC" );
-		record2->full_nt_sequence_corrected( "CTCTAGANTC" );
+		record2->full_aa_sequence( "CTCTAGANTC" );
+		record2->full_aa_sequence_corrected( "CTCTAGANTC" );
 		a.add_record( record2 );
 
 		SequenceRecordPtr record3 = SequenceRecordPtr(new SequenceRecord());
-		record3->full_nt_sequence( "CTCCAGATTC" );
-		record3->full_nt_sequence_corrected( "CTCTAGATTC" );
+		record3->full_aa_sequence( "CTCCAGATTC" );
+		record3->full_aa_sequence_corrected( "CTCTAGATTC" );
 		a.add_record( record3 );
 
 		SequenceRecordPtr record4 = SequenceRecordPtr(new SequenceRecord( *record ));
-		record4->full_nt_sequence( "CTCTAGACTC" );
-		record4->full_nt_sequence_corrected( "CTCTAGACTC" );
+		record4->full_aa_sequence( "CTCTAGACTC" );
+		record4->full_aa_sequence_corrected( "CTCTAGACTC" );
 		a.add_record( record4 );
 
 		TS_ASSERT_EQUALS( a.size(), 4 );
-		TS_ASSERT_EQUALS( a.somatic_variants(0), 3 );
-		TS_ASSERT_EQUALS( a.somatic_variants(1), 2 );
+		TS_ASSERT_EQUALS( a.somatic_variants_aa(0), 3 );
+		TS_ASSERT_EQUALS( a.somatic_variants_aa(1), 2 );
 	}
 
 	void testSomaticVariantsRecords() {
