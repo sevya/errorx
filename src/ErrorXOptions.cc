@@ -240,9 +240,11 @@ void ErrorXOptions::fastq_to_fasta() {
 		++ii;
 	}
 
-	// finish up progress bar
-	finish_cback();
-	reset_cback();
+	// finish up progress bar if it was needed
+	if ( query_no >= 1000 ) {
+		finish_cback();
+		reset_cback();		
+	}
 
 	// we're done with the mutex
 	delete m; 

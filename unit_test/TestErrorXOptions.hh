@@ -8,6 +8,7 @@
 #include <cxxtest/TestSuite.h>
 
 #include "ErrorXOptions.hh"
+#include "exceptions.hh"
 
 using namespace std;
 using namespace errorx;
@@ -23,7 +24,7 @@ public:
 		
 		TS_ASSERT_THROWS( 
 			options.fastq_to_fasta(),
-			invalid_argument
+			BadFileException
 			);
 
 		options = ErrorXOptions();
