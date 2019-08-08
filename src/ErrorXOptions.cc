@@ -15,6 +15,7 @@ Code contained herein is proprietary and confidential.
 #include <thread>
 #include <functional>
 #include <mutex>
+#include <unordered_map>
 
 #include "ErrorXOptions.hh"
 #include "util.hh"
@@ -72,6 +73,7 @@ ErrorXOptions & ErrorXOptions::operator=( ErrorXOptions const & other ) {
 	reset_ = other.reset_;
 	finish_ = other.finish_;
 	message_ = other.message_;
+	quality_map_ = other.quality_map_;
 	return *this;
 }
 
@@ -115,8 +117,9 @@ ErrorXOptions::ErrorXOptions( ErrorXOptions const & other ) :
 	increment_(other.increment_),
 	reset_(other.reset_),
 	finish_(other.finish_),
-	message_(other.message_)
-{}
+	message_(other.message_),
+	quality_map_( other.quality_map_)
+	{}
 
 void ErrorXOptions::initialize_callback() {
 	_bar = ProgressBar();
@@ -226,7 +229,9 @@ void ErrorXOptions::fastq_to_fasta() {
 			vector<string> tokens = util::tokenize_string<string>( sequenceID, " \t" );
 			sequenceID = tokens[0].substr(1, tokens[0].length());
 
-			outfile << ">" << sequenceID << "|" << qualityStr<< "\n" << sequence << "\n";
+			outfile << ">" << sequenceID << "\n" << sequence << "\n";
+
+			quality_map_[ sequenceID ] = qualityStr;
 
 			ii = -1;
 
@@ -276,6 +281,10 @@ void ErrorXOptions::count_queries() {
 	} else if ( format_ == "tsv" ) {
 		num_queries_ = no_lines;
 	}
+}
+
+string ErrorXOptions::get_quality( string const & sequenceID ) const {
+	return quality_map_.at( sequenceID );
 }
 
 void ErrorXOptions::format( string const & format ) { 
@@ -385,6 +394,9 @@ void ErrorXOptions::trial( bool const trial ) { trial_ = trial; }
 void ErrorXOptions::num_queries( int const num_queries ) { num_queries_ = num_queries; }
 
 void ErrorXOptions::allow_nonproductive( bool const allow_nonproductive ) { allow_nonproductive_ = allow_nonproductive; }
+void ErrorXOptions::quality_map( unordered_map<string,string> const & quality_map ) {
+	quality_map_ = quality_map;
+}
 
 
 

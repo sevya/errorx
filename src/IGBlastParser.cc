@@ -92,8 +92,7 @@ void IGBlastParser::blast( ErrorXOptions & options ) {
 	worker_thread.join();
 }
 
-SequenceRecordsPtr IGBlastParser::parse_output( ErrorXOptions & options  )
-{
+SequenceRecordsPtr IGBlastParser::parse_output( ErrorXOptions & options  ) {
 	ios_base::sync_with_stdio( false );
 	string line;
 	ifstream file( options.igblast_output() );
@@ -251,18 +250,33 @@ AbSequence IGBlastParser::parse_lines( vector<string> const & lines, ErrorXOptio
 	vector<string> data;
 	// Step 1. Get the sequence ID and the quality string
 	data = data_map["query_string"];
-	string ID_plus_qualstring = data[2];
-	vector<string> id_tokens = util::tokenize_string<string>( ID_plus_qualstring, "|" );
+	// string ID_plus_qualstring = data[2];
+	// vector<string> id_tokens = util::tokenize_string<string>( ID_plus_qualstring, "|" );
 	
-	if ( id_tokens.size() > 2 ) {
-		throw invalid_argument( 
-			"Error: misformed sequence ID. You can't "
-			"have the character \"|\" in your sequence ID." 
-			);
+	// if ( id_tokens.size() > 2 ) {
+	// 	throw invalid_argument( 
+	// 		"Error: misformed sequence ID. You can't "
+	// 		"have the character \"|\" in your sequence ID." 
+	// 		);
+	// }
+	
+	sequence.sequenceID_ = data[2];
+	
+	// Get the PHRED string that we previously stored in an unordered_map
+	// if it's not present mark the sequence as bad and move on
+	try {
+		sequence.phred_ = options.get_quality( sequence.sequenceID_ );
+	} catch ( out_of_range & /*e*/ ) {
+		sequence.good_ = 0;
+		cout << "Warning: quality not found for sequence " << sequence.sequenceID_;
+		cout << " Make sure the sequence ID is less than 25 characters" << endl;
+		// TODO update the correct number of chars
+		
+		sequence.failure_reason_ = "Quality information was not found";
+
+		return sequence;
 	}
-	
-	sequence.sequenceID_ = id_tokens[0];
-	sequence.phred_      = id_tokens[1];
+	// sequence.phred_      = id_tokens[1];
 
 
 
