@@ -7,6 +7,9 @@ else
 	uname_S := $(shell uname -s)
 endif
 
+
+CPPFLAGS=-pthread -std=c++11 -Wall
+
 ifeq ($(uname_S), Windows)
 	# set Windows compiler, flags, and paths
 endif
@@ -15,6 +18,7 @@ ifeq ($(uname_S), Linux)
 	CXX=clang++
 	WNO=-Wno-sign-compare -Wno-deprecated-register
 	LIBFLAGS=-shared -fPIC
+	CPPFLAGS+=-fPIC
 	FINAL=-ldl
 
 	OS=linux
@@ -48,7 +52,6 @@ ifeq ($(uname_S), Darwin)
 	tar=/usr/local/bin/tar
 endif
 
-CPPFLAGS=-pthread -std=c++11 -Wall
 
 INC=-Iinclude/
 
@@ -104,27 +107,27 @@ obj/errorx_java.o: src/errorx_java.cc
 	$(CXX) $(CPPFLAGS) $(WNO) $(INC) $(JAVA_INC) -o obj/errorx_java.o -c src/errorx_java.cc -Ofast
 
 binary: $(OBJ) obj/main.o
-	$(CXX) obj/main.o $(OBJ) $(BOOST) -o bin/errorx $(FINAL)
+	$(CXX) $(CPPFLAGS) obj/main.o $(OBJ) $(BOOST) -o bin/errorx $(FINAL)
 
 
 binary_testing: $(OBJ) obj/main.o
-	$(CXX) -o bin/errorx_testing $(OBJ) obj/testing.o $(BOOST) $(FINAL)
+	$(CXX) $(CPPFLAGS) -o bin/errorx_testing $(OBJ) obj/testing.o $(BOOST) $(FINAL)
 
 
 library: $(OBJ)
-	$(CXX) $(LIBFLAGS) -o lib/liberrorx.$(DLLEXT) $(OBJ) $(BOOST) $(FINAL)
+	$(CXX) $(CPPFLAGS) $(LIBFLAGS) -o lib/liberrorx.$(DLLEXT) $(OBJ) $(BOOST) $(FINAL)
 
 
 python:  $(OBJ) obj/errorx_python2.o
-	$(CXX) $(LIBFLAGS) -o python2_bindings/errorx/errorx_lib.so $(OBJ) obj/errorx_python2.o $(BOOST) $(FINAL)
+	$(CXX) $(CPPFLAGS) $(LIBFLAGS) -o python2_bindings/errorx/errorx_lib.so $(OBJ) obj/errorx_python2.o $(BOOST) $(FINAL)
 
 
 python3: $(OBJ) obj/errorx_python3.o
-	$(CXX) $(LIBFLAGS) -o python3_bindings/errorx/errorx_lib.so $(OBJ) obj/errorx_python3.o $(BOOST) $(FINAL)
+	$(CXX) $(CPPFLAGS) $(LIBFLAGS) -o python3_bindings/errorx/errorx_lib.so $(OBJ) obj/errorx_python3.o $(BOOST) $(FINAL)
 
 
 java: $(OBJ) obj/errorx_java.o
-	$(CXX) $(LIBFLAGS) -o java_bindings/errorx/liberrorx.$(DLLEXT) $(OBJ) obj/errorx_java.o $(BOOST) $(FINAL)
+	$(CXX) $(CPPFLAGS) $(LIBFLAGS) -o java_bindings/errorx/liberrorx.$(DLLEXT) $(OBJ) obj/errorx_java.o $(BOOST) $(FINAL)
 	cd java_bindings; make
 
 
