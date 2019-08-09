@@ -50,7 +50,9 @@ void ProgressBar::update( int value, int total, std::mutex* m ) {
 	m->unlock();
 }
 
-void ProgressBar::reset() { processed( 0 ); }
+void ProgressBar::reset() { 
+	processed_ = 0;
+}
 
 void ProgressBar::finish() {
 	processed_ = total_;

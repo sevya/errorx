@@ -214,21 +214,6 @@ string to_scientific( double a ) {
 	return a_str;
 }
 
-int count_queries( string const & file ) {
-	ios_base::sync_with_stdio( false );
-
-	std::ifstream in(file);
-	if ( !in.good() ) return 0;
-	string line;
-	int ii = 0;
-	while( getline(in,line) ) {
-		vector<string> tokens = util::tokenize_string<string>(line);
-		if ( tokens.size() < 2 ) continue;
-		if ( tokens[1] == "Query:" ) ++ii;
-	}
-	in.close();
-	return ii;
-}
 
 int count_lines( string const & file ) {
 	ios_base::sync_with_stdio( false );

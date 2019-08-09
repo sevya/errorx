@@ -169,6 +169,84 @@ public:
 		);
 	}
 
+	void testTokenizeConsecutive() {
+
+		string one = "a\tb\tc";
+		vector<string> output = { "a","b","c" };
+
+		TS_ASSERT_EQUALS(
+				util::tokenize_string<string>( one, "\t", 0 ),
+				output
+		);
+
+		one = "a\tb\t\tc";
+		output = { "a","b","","c" };
+
+		TS_ASSERT_EQUALS(
+				util::tokenize_string<string>( one, "\t", 0 ),
+				output
+		);
+
+
+		one = "a\tb\t\tc\t";
+		output = { "a","b","","c","" };
+
+		TS_ASSERT_EQUALS(
+				util::tokenize_string<string>( one, "\t", 0 /*token_compress*/, 0 /*trim*/ ),
+				output
+		);
+
+		one = "a\tb\t \tc\t";
+		output = { "a","b"," ","c","" };
+
+		TS_ASSERT_EQUALS(
+				util::tokenize_string<string>( one, "\t", 0 /*token_compress*/, 0 /*trim*/ ),
+				output
+		);
+
+
+		one = "a\tb\t\tc\t";
+		output = { "a","b","c" };
+
+		TS_ASSERT_EQUALS(
+				util::tokenize_string<string>( one, "\t", 1 /*token_compress*/, 1 /*trim*/ ),
+				output
+		);
+
+		one = "a\tb\t\tc\t";
+		output = { "a","b","c","" };
+
+		TS_ASSERT_EQUALS(
+				util::tokenize_string<string>( one, "\t", 1 /*token_compress*/, 0 /*trim*/ ),
+				output
+		);
+
+		one = "a\tb\t\tc\t";
+		output = { "a","b","","c" };
+
+		TS_ASSERT_EQUALS(
+				util::tokenize_string<string>( one, "\t", 0 /*token_compress*/, 1 /*trim*/ ),
+				output
+		);
+
+
+		one = "a\tb\t \tc\t";
+		output = { "a","b"," ","c" };
+
+		TS_ASSERT_EQUALS(
+				util::tokenize_string<string>( one, "\t", 1, 1 ),
+				output
+		);
+
+		one = "a\tb\t \tc\t";
+		output = { "a","b"," ","c","" };
+
+		TS_ASSERT_EQUALS(
+				util::tokenize_string<string>( one, "\t", 1, 0 ),
+				output
+		);
+	}
+
 	void testReverse() {
 		string seq = "ABCDEFG";
 		TS_ASSERT_EQUALS( util::reverse(seq), "GFEDCBA" );

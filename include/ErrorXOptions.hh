@@ -107,7 +107,7 @@ public:
 	function<void(void)> reset() const;
 	function<void(void)> finish() const;
 	function<void(string)> message() const;
-
+	unordered_map<string,string> quality_map() const;
 	string get_quality( string const & sequenceID ) const;
 
 	/*

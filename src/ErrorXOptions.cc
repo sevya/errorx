@@ -213,6 +213,8 @@ void ErrorXOptions::fastq_to_fasta() {
 	string sequenceID, sequence, qualityStr, sequenceID2;
 	int query_no = 1;
 
+	increment_cback( 0, num_queries_, m );
+
 	while ( getline (infile, line) ) {
 		if ( ii == 0 ) sequenceID = line;
 		else if ( ii == 1) sequence = line; 
@@ -237,19 +239,20 @@ void ErrorXOptions::fastq_to_fasta() {
 
 			++query_no;
 
-			// if query_no is a multiple of 1000, increment
-			if ( query_no%1000 == 0 ) {
-				increment_cback( 1000, num_queries_, m );
+			// if query_no is a multiple of 100, increment
+			if ( query_no%100 == 0 ) {
+				increment_cback( 100, num_queries_, m );
 			}
+
 		}
 		++ii;
 	}
 
 	// finish up progress bar if it was needed
-	if ( query_no >= 1000 ) {
-		finish_cback();
-		reset_cback();		
-	}
+	// if ( query_no >= 1000 ) {
+	finish_cback();
+	// }
+	reset_cback();
 
 	// we're done with the mutex
 	delete m; 
@@ -282,6 +285,8 @@ void ErrorXOptions::count_queries() {
 		num_queries_ = no_lines;
 	}
 }
+
+unordered_map<string,string> ErrorXOptions::quality_map() const { return quality_map_; }
 
 string ErrorXOptions::get_quality( string const & sequenceID ) const {
 	return quality_map_.at( sequenceID );
