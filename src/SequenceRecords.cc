@@ -124,7 +124,7 @@ void SequenceRecords::import_from_tsv() {
 			throw BadFileException( 
 				"Error: file "+options_->infile()+" is not properly formatted. "
 				"Proper format is four fields: "
-				"(SequenceID Full_sequence Quality Germline_sequence) "
+				"(SequenceID Full_sequence Germline_sequence Quality) "
 				"separated by tabs with no header.\n\n"
 				"Offending line:\n"+line );
 			return;
