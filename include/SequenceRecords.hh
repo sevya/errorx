@@ -219,6 +219,14 @@ public:
 	vector<ClonotypeGroup> clonotypes();
 
 	/**
+		Get the lengths of CDR loops in the dataset. Returns a 
+		map in the format:
+		{"CDR1": vector<int>{ 11,11,10 }, "CDR2": {}, "CDR3": {} }
+	*/
+	map<string,vector<int>> cdr_lengths();
+
+
+	/**
 		Functions to return the count of unique sequences and clonotypes
 		of different types
 

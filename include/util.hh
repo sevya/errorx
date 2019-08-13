@@ -366,6 +366,16 @@ bool compare_clonotypes( const string & a, const string & b );
 */
 map<string,int> value_counts( vector<string> const & input );
 
+/**
+	Bins integer values to make a histogram. Currently only supports
+	bins of size 1
+
+	@param values vector of integer values
+	@param normalized normalize values
+	@return map of <int,float> where keys map to bin start and values map to counts
+*/
+map<int,float> bin_values( vector<int> const & input, bool normalized=0 );
+
 vector<pair<string,int>> sort_map( map<string,int> const & cmap, bool ascending=1 );
 vector<pair<string,int>> sort_map( map<string,int,function<bool(string,string)>> const & cmap, bool ascending );
 

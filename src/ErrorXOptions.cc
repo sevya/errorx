@@ -231,6 +231,17 @@ void ErrorXOptions::fastq_to_fasta() {
 			vector<string> tokens = util::tokenize_string<string>( sequenceID, " \t" );
 			sequenceID = tokens[0].substr(1, tokens[0].length());
 
+			// if the quality map already has this sequence ID then there must be 
+			// a duplicate ID. To address this I just append a "_n" to the end and
+			// carry on
+			string new_seq_id = sequenceID;
+			int counter = 1;
+			while ( quality_map_.find( new_seq_id ) != quality_map_.end() ) {
+				new_seq_id = sequenceID + "_" + to_string( counter );
+				counter++;
+			}
+			sequenceID = new_seq_id;
+
 			outfile << ">" << sequenceID << "\n" << sequence << "\n";
 
 			quality_map_[ sequenceID ] = qualityStr;

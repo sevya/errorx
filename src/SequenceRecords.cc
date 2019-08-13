@@ -443,6 +443,49 @@ void SequenceRecords::write_features() {
 	file.close();
 }
 
+map<string,vector<int>> SequenceRecords::cdr_lengths() {
+
+	map<string,vector<int>> cmap = { 
+		{"CDR1", {}},
+		{"CDR2", {}},
+		{"CDR3", {}} 
+		};
+							
+	vector<int> cdr1_lengths;
+	vector<int> cdr2_lengths;
+	vector<int> cdr3_lengths;
+
+	vector<SequenceRecordPtr>::const_iterator it;
+
+	for ( it = records_.begin(); it != records_.end(); ++it ) {
+		if ( !(*it)->isGood() ) continue;
+
+		if ( (*it)->sequence().cdr1_aa_sequence() != "N/A" ) {
+			cdr1_lengths.push_back( 
+				(*it)->sequence().cdr1_aa_sequence().size() 
+				);
+		}
+
+		if ( (*it)->sequence().cdr2_aa_sequence() != "N/A" ) {
+			cdr2_lengths.push_back( 
+				(*it)->sequence().cdr2_aa_sequence().size() 
+				);
+		}
+
+		if ( (*it)->sequence().cdr3_aa_sequence() != "N/A" ) {
+			cdr3_lengths.push_back( 
+				(*it)->sequence().cdr3_aa_sequence().size() 
+				);
+		}
+	}
+
+	cmap[ "CDR1" ] = cdr1_lengths;
+	cmap[ "CDR2" ] = cdr2_lengths;
+	cmap[ "CDR3" ] = cdr3_lengths;
+
+	return cmap;
+}
+
 void SequenceRecords::count_clonotypes() {
 	clonotypes_.clear();
 	vector<ClonotypeGroup>::iterator it;

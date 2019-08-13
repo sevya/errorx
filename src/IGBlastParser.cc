@@ -86,14 +86,17 @@ void IGBlastParser::blast( ErrorXOptions & options ) {
 	// TODO: FIGURE out a better way to capture output, since this doesn't work
 	thread_finished_ = false;
 
+	cout << "about to spawn thread" << endl; // TODO remove
 	thread worker_thread = thread( &IGBlastParser::exec_in_thread, this, command );
+	cout << "tracking progress" << endl; // TODO remove
 	
 	track_progress( options );
+	cout << "done tracking progress" << endl; // TODO remove
 	
 	worker_thread.join();
 }
 
-SequenceRecordsPtr IGBlastParser::parse_output( ErrorXOptions & options  ) {
+SequenceRecordsPtr IGBlastParser::parse_output( ErrorXOptions const & options  ) {
 	ios_base::sync_with_stdio( false );
 	string line;
 	ifstream file( options.igblast_output() );
@@ -126,7 +129,7 @@ SequenceRecordsPtr IGBlastParser::parse_output( ErrorXOptions & options  ) {
 	return records;
 }
 
-void IGBlastParser::track_progress( ErrorXOptions & options ) {
+void IGBlastParser::track_progress( ErrorXOptions const & options ) {
 	int done = 0;
 	int last_done = 0;
 
@@ -142,20 +145,33 @@ void IGBlastParser::track_progress( ErrorXOptions & options ) {
 
 	/// This mutex doesn't actually do anything - it's just 
 	/// there for compatibility
+	cout << "making mutex" << endl; // TODO remove
 	mutex* m = new mutex;
+	cout << "mutex made" << endl; // TODO remove
 
 	increment( 0, total_records, m );
+	cout << "increment done" << endl; // TODO remove
+
 
 	while ( !thread_finished_ ) {
+		cout << "about to count lines" << endl; // TODO remove
+
 		done = util::count_lines( igblast_output );
+		cout << "counted " << done << " lines" << endl; // TODO remove
 		// only write to screen if the value has changed
 		if ( last_done != done ) {
 			// increment with the amount that it's changed
+
 			increment( done-last_done, total_records, m );
+			cout << "increment done " << (done-last_done) << endl; // TODO remove
 
 			last_done = done;
 		}
+		cout << "going to sleep" << endl; // TODO remove
 		this_thread::sleep_for( chrono::milliseconds(500) );
+		cout << "woke up " << endl; // TODO remove 
+		cout << "thread is finished? " << thread_finished_ << endl; // TODO remove
+
 	}
 	// Finish the progress bar, since it's done now
 	finish();
@@ -177,7 +193,7 @@ AbSequence IGBlastParser::parse_line( vector<string> const & tokens, ErrorXOptio
 
 	AbSequence sequence;
 
-	if ( tokens.size() != 88 ) {
+	if ( tokens.size() != 88 ) { // there should be 88 lines in IGBlast output
 		sequence.good_ = false;
 		sequence.failure_reason_ = "Output line does not parse correctly";
 		return sequence;

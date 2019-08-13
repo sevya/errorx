@@ -657,6 +657,24 @@ public:
 			);
 	}
 
+	void testDuplicateTags() {
+
+		TS_ASSERT_EQUALS( 
+			records_->get( 17 )->sequence().sequenceID(), 
+			"forward_sequence_1" 
+			);
+
+		TS_ASSERT_EQUALS( 
+			records_->get( 18 )->sequence().sequenceID(), 
+			"forward_sequence_2" 
+			);
+
+		TS_ASSERT_EQUALS( 
+			records_->get( 19 )->sequence().sequenceID(), 
+			"forward_sequence_3" 
+			);
+	}
+
 	SequenceRecordsPtr records_;
 };
 
