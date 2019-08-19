@@ -25,7 +25,6 @@ Code contained herein is proprietary and confidential.
 #endif
 
 #include <functional>
-#include <mutex>
 
 using namespace std;
 
@@ -50,13 +49,12 @@ public:
 	ProgressBar( ProgressBar const & other );
 
 	/**
-		Increment the progress bar, either providing a mutex if a multithreaded
-		situation, or without
+		Increment the progress bar
 
 		@param value value to increment the progress bar
-		@param m pointer to mutex to synchronize progress
+		@param total total number of records
 	*/
-	void increment( int value, int total, std::mutex* m );
+	void increment( int value, int total );
 
 	/**
 		Set the value of the progress bar, either providing a mutex if a multithreaded
@@ -65,7 +63,6 @@ public:
 		@param value value to set the progress bar
 		@param m pointer to mutex to synchronize progress
 	*/
-	void update( int value, int total, std::mutex* m );
 	void message( string s );
 	void reset();
 	void finish();

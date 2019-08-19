@@ -260,7 +260,7 @@ private:
 		@param m mutex* to keep track of threads
 		@param total total number of records over all threads
 	*/
-	static void correct_sequences_threaded( unique_ptr<SequenceRecords> & records, function<void(int,int,mutex*)>* update, mutex* m, int total);
+	static void correct_sequences_threaded( unique_ptr<SequenceRecords> & records, function<void(int,int)>* update, mutex* m, int total);
 
 	/** 
 	============================= 

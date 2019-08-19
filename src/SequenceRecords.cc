@@ -277,10 +277,11 @@ void SequenceRecords::write_summary() const {
 	outfile.close();
 }
 
-void SequenceRecords::correct_sequences_threaded( SequenceRecordsPtr & records, 
-												  function<void(int,int,mutex*)>* increment,
-												  mutex* m, int total ) 
-{
+void SequenceRecords::correct_sequences_threaded( 
+	SequenceRecordsPtr & records, 
+	function<void(int,int)>* increment,
+	mutex* m, 
+	int total ) {
 	// update in increments of 10
 	int incrementAmount = 10;
 	
@@ -293,7 +294,11 @@ void SequenceRecords::correct_sequences_threaded( SequenceRecordsPtr & records,
 
 			
 			if ( ii%incrementAmount == 0 ) {
-				(*increment)( incrementAmount, total, m );
+				// lock mutex on this level so I don't have to
+				// lock it in my callback fxn
+				m->lock();
+				(*increment)( incrementAmount, total );
+				m->unlock();
 			}
 
 		} catch ( exception & e ) {
@@ -337,7 +342,7 @@ void SequenceRecords::correct_sequences( SequenceRecordsPtr & records ) {
 	int total_records = records->size();
 
 	// Set up a callback function for each thread to update its progress
-	function<void(int,int,mutex*)> increment = records->options_->increment();
+	function<void(int,int)> increment = records->options_->increment();
 	function<void(void)> finish = records->options_->finish();
 	function<void(string)> message = records->options_->message();
 

@@ -14,7 +14,6 @@ Code contained herein is proprietary and confidential.
 #include <vector>
 #include <thread>
 #include <functional>
-#include <mutex>
 #include <unordered_map>
 
 #include "ErrorXOptions.hh"
@@ -125,41 +124,44 @@ void ErrorXOptions::initialize_callback() {
 	_bar = ProgressBar();
 
 	if ( verbose_ > 0 ) {
-		function<void(int,int,mutex*)> terminal_callback = std::bind( 
-								   &ProgressBar::increment,
-								   &_bar,
-								    placeholders::_1,
-								    placeholders::_2,
-								    placeholders::_3
-								 );
+		// Set up callback functions with the ProgressBar class
+		// to show a progress bar to the terminal
+		function<void(int,int)> terminal_callback = std::bind( 
+			&ProgressBar::increment,
+			&_bar,
+			placeholders::_1,
+			placeholders::_2
+			);
+
 		increment( terminal_callback );
 
 		function<void(void)> reset_callback = std::bind( 
-								   &ProgressBar::reset,
-								   &_bar
-								 );
+			&ProgressBar::reset,
+			&_bar
+			);
 		reset( reset_callback );
 
 
 		function<void(void)> finish_callback = std::bind( 
-								   &ProgressBar::finish,
-								   &_bar
-								 );
+			&ProgressBar::finish,
+			&_bar
+			);
 		finish( finish_callback );
 
 
 		function<void(string)> message_callback = std::bind( 
-								   &ProgressBar::message,
-								   &_bar,
-								   placeholders::_1
-								   );
+			&ProgressBar::message,
+			&_bar,
+			placeholders::_1
+			);
 
 		message( message_callback );
 
 	} else { 
-
-		function<void(int,int,mutex*)> terminal_callback = 
-			[](int,int,mutex*) {};
+		// Set up blank callback functions if verbose==0
+		// these don't show anything
+		function<void(int,int)> terminal_callback = 
+			[](int,int) {};
 		increment( terminal_callback );
 
 		function<void(void)> blank_callback = 
@@ -183,16 +185,7 @@ void ErrorXOptions::fastq_to_fasta() {
 		throw BadFileException("Error: file " + infile_ + " does not exist." );
 	}
 
-	// Set up for callback functions for updating progress
-	// This mutex doesn't actually do anything - it's just 
-	// there for compatibility
-	mutex* m = new mutex;
-	function<void(int,int,mutex*)> increment_cback = increment();
-	function<void(void)> reset_cback = reset();
-	function<void(void)> finish_cback = finish();
-	function<void(string)> message_cback = message();
-
-	message_cback( "Converting fastq to fasta..." );
+	message_( "Converting fastq to fasta..." );
 
 	// Get base of input file to make FASTA name
 	namespace fs = boost::filesystem;
@@ -213,7 +206,7 @@ void ErrorXOptions::fastq_to_fasta() {
 	string sequenceID, sequence, qualityStr, sequenceID2;
 	int query_no = 1;
 
-	increment_cback( 0, num_queries_, m );
+	increment_( 0, num_queries_ );
 
 	while ( getline (infile, line) ) {
 		if ( ii == 0 ) sequenceID = line;
@@ -252,7 +245,7 @@ void ErrorXOptions::fastq_to_fasta() {
 
 			// if query_no is a multiple of 100, increment
 			if ( query_no%100 == 0 ) {
-				increment_cback( 100, num_queries_, m );
+				increment_( 100, num_queries_ );
 			}
 
 		}
@@ -261,12 +254,9 @@ void ErrorXOptions::fastq_to_fasta() {
 
 	// finish up progress bar if it was needed
 	// if ( query_no >= 1000 ) {
-	finish_cback();
+	finish_();
 	// }
-	reset_cback();
-
-	// we're done with the mutex
-	delete m; 
+	reset_();
 
 	outfile.close();
 }
@@ -359,7 +349,7 @@ void ErrorXOptions::nthreads( int const nthreads ) {
 
 }
 
-void ErrorXOptions::increment( function<void(int,int,mutex*)> const & increment ) {
+void ErrorXOptions::increment( function<void(int,int)> const & increment ) {
 	increment_ = increment;
 }
 
@@ -390,7 +380,7 @@ char ErrorXOptions::correction() const { return correction_; }
 bool ErrorXOptions::trial() const { return trial_; }
 int ErrorXOptions::num_queries() const { return num_queries_; }
 bool ErrorXOptions::allow_nonproductive() const { return allow_nonproductive_; }
-function<void(int,int,mutex*)> ErrorXOptions::increment() const { return increment_; }
+function<void(int,int)> ErrorXOptions::increment() const { return increment_; }
 function<void(void)> ErrorXOptions::reset() const { return reset_; }
 function<void(void)> ErrorXOptions::finish() const { return finish_; }
 function<void(string)> ErrorXOptions::message() const { return message_; }

@@ -15,7 +15,6 @@ heavy lifting in terms of turning that output into a SequenceRecord object
 #include <vector>
 #include <thread>
 #include <chrono>
-#include <mutex>
 
 #include "IGBlastParser.hh"
 #include "SequenceRecords.hh"
@@ -86,12 +85,12 @@ void IGBlastParser::blast( ErrorXOptions & options ) {
 	// TODO: FIGURE out a better way to capture output, since this doesn't work
 	thread_finished_ = false;
 
-	cout << "about to spawn thread" << endl; // TODO remove
+	// cout << "about to spawn thread" << endl; // TODO remove
 	thread worker_thread = thread( &IGBlastParser::exec_in_thread, this, command );
-	cout << "tracking progress" << endl; // TODO remove
+	// cout << "tracking progress" << endl; // TODO remove
 	
 	track_progress( options );
-	cout << "done tracking progress" << endl; // TODO remove
+	// cout << "done tracking progress" << endl; // TODO remove
 	
 	worker_thread.join();
 }
@@ -137,49 +136,32 @@ void IGBlastParser::track_progress( ErrorXOptions const & options ) {
 	string igblast_output = options.igblast_output();
 	int total_records = options.num_queries();
 
-	function<void(int,int,mutex*)> increment = options.increment();
+	function<void(int,int)> increment = options.increment();
 	function<void(void)> reset = options.reset();
 	function<void(void)> finish = options.finish();
 	function<void(string)> message = options.message();
 	message( "Running IGBlast..." );
 
-	/// This mutex doesn't actually do anything - it's just 
-	/// there for compatibility
-	cout << "making mutex" << endl; // TODO remove
-	mutex* m = new mutex;
-	cout << "mutex made" << endl; // TODO remove
-
-	increment( 0, total_records, m );
-	cout << "increment done" << endl; // TODO remove
-
+	increment( 0, total_records );
 
 	while ( !thread_finished_ ) {
-		cout << "about to count lines" << endl; // TODO remove
 
 		done = util::count_lines( igblast_output );
-		cout << "counted " << done << " lines" << endl; // TODO remove
+
 		// only write to screen if the value has changed
 		if ( last_done != done ) {
 			// increment with the amount that it's changed
-
-			increment( done-last_done, total_records, m );
-			cout << "increment done " << (done-last_done) << endl; // TODO remove
+			increment( done-last_done, total_records );
 
 			last_done = done;
 		}
-		cout << "going to sleep" << endl; // TODO remove
 		this_thread::sleep_for( chrono::milliseconds(500) );
-		cout << "woke up " << endl; // TODO remove 
-		cout << "thread is finished? " << thread_finished_ << endl; // TODO remove
-
 	}
 	// Finish the progress bar, since it's done now
 	finish();
 	reset();
 
-	// We're done with mutex
-	delete m;
-
+	// TODO find more robust way to capture this
 	cout << endl;
 }
 

@@ -26,7 +26,6 @@ Code contained herein is proprietary and confidential.
 
 #include <string>
 #include <functional>
-#include <mutex>
 #include <memory>
 #include <unordered_map>
 
@@ -103,7 +102,7 @@ public:
 	bool trial() const;
 	int num_queries() const;
 	bool allow_nonproductive() const;
-	function<void(int,int,mutex*)> increment() const;
+	function<void(int,int)> increment() const;
 	function<void(void)> reset() const;
 	function<void(void)> finish() const;
 	function<void(string)> message() const;
@@ -129,7 +128,7 @@ public:
 	void trial( bool const trial );
 	void num_queries( int const num_queries );
 	void allow_nonproductive( bool const allow_nonproductive );
-	void increment( function<void(int,int,mutex*)> const & increment ) ;
+	void increment( function<void(int,int)> const & increment ) ;
 	void reset( function<void(void)> const & reset ) ;
 	void finish( function<void(void)> const & finish ) ;
 	void message( function<void(string)> const & message ) ;
@@ -191,10 +190,7 @@ private:
 		Four callback functions are implemented:
 		
 		increment_: this increments the number of processed records. 
-			Takes in as arguments: (increment value, total records, mutex)
-			The mutex is needed whether or not it's a multithreaded context - 
-			if it's only one thread then it doesn't hurt, if it's multithreaded
-			it prevents them from talking over each other
+			Takes in as arguments: (increment value, total records)
 
 		reset_: resets the progress bar to 0. Used in the transition
 			from tracking progress on IGBlast to error correction
@@ -205,7 +201,7 @@ private:
 
 		message_: sets the message for the currently running step
 	*/
-	function<void(int,int,mutex*)> increment_;
+	function<void(int,int)> increment_;
 	function<void(void)> reset_;
 	function<void(void)> finish_;
 	function<void(string)> message_;
