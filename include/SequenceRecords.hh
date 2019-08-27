@@ -31,6 +31,7 @@ settings for processing, and ErrorPredictor that does the error correction itsel
 #include <memory>
 #include <map>
 #include <functional>
+#include <mutex>
 
 #include "SequenceQuery.hh"
 #include "SequenceRecord.hh"

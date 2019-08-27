@@ -12,6 +12,7 @@
 #include "AbSequence.hh"
 #include "ClonotypeGroup.hh"
 #include "util.hh"
+#include "errorx.hh"
 
 using namespace std;
 using namespace errorx;
@@ -415,6 +416,38 @@ public:
 		TS_ASSERT_EQUALS( counts["IGHV3-21_IGHJ6"], 1 );
 		TS_ASSERT_EQUALS( counts["IGHV3-23_IGHJ3"], 1 );
 		TS_ASSERT_EQUALS( counts["IGHV3-23_IGHJ1"], 1 );
+	}
+	
+	void testProductivityAssignment() {
+		ErrorXOptions options( "testing/productivity.fastq", "fastq" );
+                options.errorx_base( "../" );
+		options.verbose( 0 );
+		SequenceRecordsPtr records = run_protocol( options );
+		
+		// short sequence
+		TS_ASSERT( records->get( 0 )->productive() );
+		// no match - non Ig sequence
+		TS_ASSERT( !records->get( 1 )->productive() );
+		// stop codon present
+		TS_ASSERT( !records->get( 2 )->productive() );
+		// regular sequence
+		TS_ASSERT( records->get( 3 )->productive() );
+		// bad D assignment
+                TS_ASSERT( records->get( 4 )->productive() );
+		// bad J assignment
+                TS_ASSERT( records->get( 5 )->productive() );
+		// no J found
+                TS_ASSERT( records->get( 6 )->productive() );
+		// no D and no J assigned
+                TS_ASSERT( records->get( 7 )->productive() );
+		// late start to assignment
+                TS_ASSERT( records->get( 8 )->productive() );
+		// only V gene present
+                TS_ASSERT( records->get( 9 )->productive() );
+		// bad V assignment + stop codon
+                TS_ASSERT( !records->get( 10 )->productive() );
+		// irrelevant sequence
+                TS_ASSERT( !records->get( 11 )->productive() );
 	}
 };
 

@@ -208,6 +208,11 @@ AbSequence IGBlastParser::parse_line( vector<string> const & tokens, ErrorXOptio
 	}
 
 	sequence.chain_      = tokens[2];
+	// I make the decision to only count a sequence as non-productive if Productive==False in the IGBlast output
+	// IGBlast only marks Productive as True if the full V(D)J can be assigned well
+	// in cases where there's bad assignment or not the full recombined segment, it just leaves productive blank
+	// Productive will be false if there's actually a stop codon present, which is what I usually think of as productive
+	// so sometimes it will be marked as productive even though it's a crappy sequence
 	sequence.productive_ = tokens[5]!="F";
 	sequence.strand_     = ( tokens[6]=="F" ) ? "+" : "-";
 
