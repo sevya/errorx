@@ -85,12 +85,9 @@ void IGBlastParser::blast( ErrorXOptions & options ) {
 	// TODO: FIGURE out a better way to capture output, since this doesn't work
 	thread_finished_ = false;
 
-	// cout << "about to spawn thread" << endl; // TODO remove
 	thread worker_thread = thread( &IGBlastParser::exec_in_thread, this, command );
-	// cout << "tracking progress" << endl; // TODO remove
 	
 	track_progress( options );
-	// cout << "done tracking progress" << endl; // TODO remove
 	
 	worker_thread.join();
 }
@@ -211,7 +208,7 @@ AbSequence IGBlastParser::parse_line( vector<string> const & tokens, ErrorXOptio
 	}
 
 	sequence.chain_      = tokens[2];
-	sequence.productive_ = tokens[5]=="T";
+	sequence.productive_ = tokens[5]!="F";
 	sequence.strand_     = ( tokens[6]=="F" ) ? "+" : "-";
 
 	// bad chain ID - warn and keep going
