@@ -256,7 +256,7 @@ void ErrorXOptions::fastq_to_fasta() {
 	// if ( query_no >= 1000 ) {
 	finish_();
 	// }
-	reset_();
+	// reset_();
 
 	outfile.close();
 }

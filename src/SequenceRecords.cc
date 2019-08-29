@@ -345,6 +345,7 @@ void SequenceRecords::correct_sequences( SequenceRecordsPtr & records ) {
 	function<void(int,int)> increment = records->options_->increment();
 	function<void(void)> finish = records->options_->finish();
 	function<void(string)> message = records->options_->message();
+	function<void(void)> reset = records->options_->reset();
 
 	// get chunked SequenceRecords
 	// this will deep copy the original pointers in records_
@@ -358,7 +359,9 @@ void SequenceRecords::correct_sequences( SequenceRecordsPtr & records ) {
 	// Set up a mutex to coordinate between threads
 	mutex* m = new mutex;
 
+	reset();
 	message( "Correcting sequences..." );
+
 	for ( int ii = 0; ii < nthreads; ++ii ) {
 		threads[ii] = unique_ptr<thread>( new std::thread(
 				&SequenceRecords::correct_sequences_threaded,

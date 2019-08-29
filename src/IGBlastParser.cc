@@ -137,6 +137,8 @@ void IGBlastParser::track_progress( ErrorXOptions const & options ) {
 	function<void(void)> reset = options.reset();
 	function<void(void)> finish = options.finish();
 	function<void(string)> message = options.message();
+
+	reset();
 	message( "Running IGBlast..." );
 
 	increment( 0, total_records );
@@ -156,7 +158,6 @@ void IGBlastParser::track_progress( ErrorXOptions const & options ) {
 	}
 	// Finish the progress bar, since it's done now
 	finish();
-	reset();
 
 	// TODO find more robust way to capture this
 	cout << endl;
