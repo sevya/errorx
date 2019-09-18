@@ -95,6 +95,16 @@ SequenceRecord::SequenceRecord( vector<string> const & items ) {
 	sequence_.hasJ_ = ( sequence_.j_gene_!="N/A" );
 }
 
+bool SequenceRecord::operator==( SequenceRecord const & other ) const {
+	return sequence_==other.sequence_ && 
+			n_errors_==other.n_errors_ &&
+			predicted_errors_all_==other.predicted_errors_all_;
+}
+
+bool SequenceRecord::operator!=( SequenceRecord const & other ) const {
+	return !((*this)==other);
+}
+
 
 void SequenceRecord::print() const {
 	sequence_.print();

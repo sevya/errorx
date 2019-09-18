@@ -107,6 +107,49 @@ AbSequence::AbSequence( AbSequence const & other ) :
 	failure_reason_( other.failure_reason_ )
 {}
 
+bool AbSequence::operator==( AbSequence const & other ) const {
+
+	// I purposely don't include all class members here
+	// when I initialize a SequenceRecords object from an output file,
+	// it doesn't have all the information, only the necessary, processed
+	// data. Which is what I check here.
+	return sequenceID_==other.sequenceID_ &&
+			v_gene_==other.v_gene_ &&
+			d_gene_==other.d_gene_ &&
+			j_gene_==other.j_gene_ &&
+			hasV_==other.hasV_ &&
+			hasD_==other.hasD_ &&
+			hasJ_==other.hasJ_ &&
+			v_gl_nts_==other.v_gl_nts_ &&
+			d_gl_nts_==other.d_gl_nts_ &&
+			j_gl_nts_==other.j_gl_nts_ &&
+			v_identity_==other.v_identity_ &&
+			d_identity_==other.d_identity_ &&
+			j_identity_==other.j_identity_ &&
+			v_evalue_==other.v_evalue_ &&
+			d_evalue_==other.d_evalue_ &&
+			j_evalue_==other.j_evalue_ &&
+			chain_==other.chain_ &&
+			productive_==other.productive_ &&
+			strand_==other.strand_ &&
+			phred_trimmed_==other.phred_trimmed_ &&
+			full_nt_sequence_==other.full_nt_sequence_ &&
+			full_gl_nt_sequence_==other.full_gl_nt_sequence_ &&
+			full_aa_sequence_==other.full_aa_sequence_ &&
+			cdr1_nt_sequence_==other.cdr1_nt_sequence_ &&
+			cdr1_aa_sequence_==other.cdr1_aa_sequence_ &&
+			cdr2_nt_sequence_==other.cdr2_nt_sequence_ &&
+			cdr2_aa_sequence_==other.cdr2_aa_sequence_ &&
+			cdr3_nt_sequence_==other.cdr3_nt_sequence_ &&
+			cdr3_aa_sequence_==other.cdr3_aa_sequence_ &&
+			full_nt_sequence_corrected_==other.full_nt_sequence_corrected_ &&
+			full_aa_sequence_corrected_==other.full_aa_sequence_corrected_ &&
+			good_==other.good_;
+}
+
+bool AbSequence::operator!=( AbSequence const & other ) const {
+	return !((*this)==other);
+}
 
 void AbSequence::build( ErrorXOptions const & options ) {
 

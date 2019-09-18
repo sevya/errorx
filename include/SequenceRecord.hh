@@ -86,6 +86,12 @@ public:
 	SequenceRecord( SequenceQuery & query );
 
 	/**
+		Comparison operator
+	*/
+	bool operator==( SequenceRecord const & other ) const;
+	bool operator!=( SequenceRecord const & other ) const;
+
+	/**
 		Get all the information summarizing a SequenceRecord
 
 		@return vector of strings summarizing the record

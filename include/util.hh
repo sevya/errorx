@@ -368,7 +368,8 @@ map<string,int> value_counts( vector<string> const & input );
 
 /**
 	Bins integer values to make a histogram. Currently only supports
-	bins of size 1
+	bins of size 1. This works as a map bc maps are intrinsically
+	sorted by the key, which keeps this in the correct order
 
 	@param values vector of integer values
 	@param normalized normalize values

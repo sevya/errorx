@@ -134,6 +134,29 @@ public:
 		TS_ASSERT( a != c );
 	}
 
+	void testEquality() {
+
+		ErrorXOptions options( "testing/test_sequences.fastq", "fastq" );
+		options.errorx_base("../");
+		SequenceRecordsPtr records_one = run_protocol( options );
+		SequenceRecordsPtr records_two( new SequenceRecords( *records_one ));
+
+		// check that objects are equal after copying, but not pointers
+		TS_ASSERT( records_one != records_two );
+		TS_ASSERT( (*records_one)==(*records_two) );
+
+		SequenceRecordsPtr records_three = run_protocol( options );
+		TS_ASSERT( records_one != records_three );
+		TS_ASSERT( (*records_one)==(*records_three) );
+
+		SequenceQuery query( "SRR3175015.933", "TACTCCCGTGGTACGCCCAAGGACGGAGGCACACGGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGCGCGCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCGGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG", "TACTACAATGAGAAGTTCAAGGGCAAGGCCACACTGACTGCAGAAAAATCCTCCAGCACTGCCTACATGCAGCTCAGCAGCCTGACATCTGAGGACTCTGCTGTCTATTTCTGTGC--------------------------ACTACTGGGGCCAAGGCACCACTCTCACAGTCTCCTCAG", "###########################################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4," );
+
+		SequenceRecordPtr new_record( new SequenceRecord( query ));
+		records_three->add_record( new_record );
+
+		TS_ASSERT( (*records_one)!=(*records_three) );
+	}
+
 	void testVectorInsertion() {
 		ErrorXOptions options( "test.fastq", "fastq" );
 
@@ -420,7 +443,7 @@ public:
 	
 	void testProductivityAssignment() {
 		ErrorXOptions options( "testing/productivity.fastq", "fastq" );
-                options.errorx_base( "../" );
+		options.errorx_base( "../" );
 		options.verbose( 0 );
 		SequenceRecordsPtr records = run_protocol( options );
 		
@@ -433,21 +456,21 @@ public:
 		// regular sequence
 		TS_ASSERT( records->get( 3 )->productive() );
 		// bad D assignment
-                TS_ASSERT( records->get( 4 )->productive() );
+		TS_ASSERT( records->get( 4 )->productive() );
 		// bad J assignment
-                TS_ASSERT( records->get( 5 )->productive() );
+		TS_ASSERT( records->get( 5 )->productive() );
 		// no J found
-                TS_ASSERT( records->get( 6 )->productive() );
+		TS_ASSERT( records->get( 6 )->productive() );
 		// no D and no J assigned
-                TS_ASSERT( records->get( 7 )->productive() );
+		TS_ASSERT( records->get( 7 )->productive() );
 		// late start to assignment
-                TS_ASSERT( records->get( 8 )->productive() );
+		TS_ASSERT( records->get( 8 )->productive() );
 		// only V gene present
-                TS_ASSERT( records->get( 9 )->productive() );
+		TS_ASSERT( records->get( 9 )->productive() );
 		// bad V assignment + stop codon
-                TS_ASSERT( !records->get( 10 )->productive() );
+		TS_ASSERT( !records->get( 10 )->productive() );
 		// irrelevant sequence
-                TS_ASSERT( !records->get( 11 )->productive() );
+		TS_ASSERT( !records->get( 11 )->productive() );
 	}
 };
 

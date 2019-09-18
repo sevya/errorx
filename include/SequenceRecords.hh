@@ -84,6 +84,12 @@ public:
 	SequenceRecords( vector<SequenceRecordPtr> const & record_vector, ErrorXOptions const & options );
 
 	/**
+		Comparison operators
+	*/
+	bool operator==( SequenceRecords const & other ) const;
+	bool operator!=( SequenceRecords const & other ) const;
+
+	/**
 		Populates SequenceRecords object with elements from
 		a TSV file. TSV file should contain the following 
 		columns, in order: 

@@ -102,6 +102,20 @@ SequenceRecords::SequenceRecords( vector<SequenceRecordPtr> const & record_vecto
 	predictor_ = ErrorPredictorPtr( new ErrorPredictor( options ));
 }
 
+bool SequenceRecords::operator==( SequenceRecords const & other ) const {
+	if ( this->size() != other.size() ) return 0;
+
+	for ( int ii = 0; ii < size(); ++ii ) {
+		if ( this->get( ii ) != other.get( ii ) ) return 0;
+	}
+
+	return 1;
+}
+
+bool SequenceRecords::operator!=( SequenceRecords const & other ) const {
+	return !((*this)==other);
+}
+
 void SequenceRecords::import_from_tsv() {
 	ios_base::sync_with_stdio( false );
 	string line;
