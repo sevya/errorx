@@ -105,6 +105,9 @@ bool SequenceRecord::operator!=( SequenceRecord const & other ) const {
 	return !((*this)==other);
 }
 
+bool SequenceRecord::equals( shared_ptr<SequenceRecord> const & other ) const {
+	return (*this)==(*other);
+}
 
 void SequenceRecord::print() const {
 	sequence_.print();

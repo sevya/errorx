@@ -90,6 +90,7 @@ public:
 	*/
 	bool operator==( SequenceRecord const & other ) const;
 	bool operator!=( SequenceRecord const & other ) const;
+	bool equals( shared_ptr<SequenceRecord> const & other ) const;
 
 	/**
 		Get all the information summarizing a SequenceRecord

@@ -88,6 +88,8 @@ public:
 	*/
 	bool operator==( SequenceRecords const & other ) const;
 	bool operator!=( SequenceRecords const & other ) const;
+	bool equals( unique_ptr<SequenceRecords> const & other ) const;
+	bool equals( shared_ptr<SequenceRecords> const & other ) const;
 
 	/**
 		Populates SequenceRecords object with elements from

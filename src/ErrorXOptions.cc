@@ -208,6 +208,9 @@ void ErrorXOptions::fastq_to_fasta() {
 
 	increment_( 0, num_queries_ );
 
+	// Reset quality map if this is not the first time running
+	quality_map_.clear();
+
 	while ( getline (infile, line) ) {
 		if ( ii == 0 ) sequenceID = line;
 		else if ( ii == 1) sequence = line; 

@@ -108,7 +108,6 @@ AbSequence::AbSequence( AbSequence const & other ) :
 {}
 
 bool AbSequence::operator==( AbSequence const & other ) const {
-
 	// I purposely don't include all class members here
 	// when I initialize a SequenceRecords object from an output file,
 	// it doesn't have all the information, only the necessary, processed

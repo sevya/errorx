@@ -140,14 +140,17 @@ public:
 		options.errorx_base("../");
 		SequenceRecordsPtr records_one = run_protocol( options );
 		SequenceRecordsPtr records_two( new SequenceRecords( *records_one ));
-
+		
 		// check that objects are equal after copying, but not pointers
 		TS_ASSERT( records_one != records_two );
 		TS_ASSERT( (*records_one)==(*records_two) );
+		TS_ASSERT( records_one->equals( records_two ));
 
 		SequenceRecordsPtr records_three = run_protocol( options );
+
 		TS_ASSERT( records_one != records_three );
 		TS_ASSERT( (*records_one)==(*records_three) );
+		TS_ASSERT( records_one->equals( records_three ));
 
 		SequenceQuery query( "SRR3175015.933", "TACTCCCGTGGTACGCCCAAGGACGGAGGCACACGGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGCGCGCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCGGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG", "TACTACAATGAGAAGTTCAAGGGCAAGGCCACACTGACTGCAGAAAAATCCTCCAGCACTGCCTACATGCAGCTCAGCAGCCTGACATCTGAGGACTCTGCTGTCTATTTCTGTGC--------------------------ACTACTGGGGCCAAGGCACCACTCTCACAGTCTCCTCAG", "###########################################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4," );
 
