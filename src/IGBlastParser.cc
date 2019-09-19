@@ -202,7 +202,9 @@ AbSequence IGBlastParser::parse_line( vector<string> const & tokens, ErrorXOptio
 		sequence.phred_ = options.get_quality( sequence.sequenceID_ );
 	} catch ( out_of_range & ) {
 		sequence.good_ = 0;
-		cout << "Warning: quality not found for sequence " << sequence.sequenceID_ << endl;
+		if ( options.verbose() > 0 ) {
+			cout << "Warning: quality not found for sequence " << sequence.sequenceID_ << endl;
+		}
 		sequence.failure_reason_ = "Quality information was not found";
 
 		return sequence;
@@ -222,7 +224,9 @@ AbSequence IGBlastParser::parse_line( vector<string> const & tokens, ErrorXOptio
 	if ( find( valid_chains.begin(), valid_chains.end(), sequence.chain() )
 			== valid_chains.end() ) {
 		// TODO: implement TCRG and D
-		cout << "Warning: invalid chain type "+sequence.chain_+" detected" << endl;
+		if ( options.verbose() > 0 ) {
+			cout << "Warning: invalid chain type "+sequence.chain_+" detected" << endl;
+		}
 	}
 
 	sequence.cdr1_nt_sequence_ = tokens[34];
