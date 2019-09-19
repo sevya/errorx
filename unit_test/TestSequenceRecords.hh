@@ -475,6 +475,45 @@ public:
 		// irrelevant sequence
 		TS_ASSERT( !records->get( 11 )->productive() );
 	}
+
+	void testVJCounts100() {
+		ErrorXOptions options( "testing/100.fastq", "fastq" );
+		options.allow_nonproductive( 1 );
+		options.verbose( 0 );
+		options.errorx_base( "../" );
+		SequenceRecordsPtr records = run_protocol( options );
+	
+		int good_records = records->good_records();
+		
+		map<string,int> v = records->vgene_counts();
+		map<string,int>::const_iterator it;
+		int sum = 0;	
+		for ( it = v.begin(); it != v.end(); ++it ) sum += it->second;
+		
+		TS_ASSERT_EQUALS( good_records, sum );
+
+		sum = 0;
+		map<string,int> j = records->jgene_counts();
+		for ( it = j.begin(); it != j.end(); ++it ) sum += it->second;
+		
+		TS_ASSERT_EQUALS( good_records, sum );
+
+		options.allow_nonproductive( 0 );
+		records = run_protocol( options );
+		good_records = records->good_records();
+		
+		v = records->vgene_counts();
+		sum = 0;
+		for ( it = v.begin(); it != v.end(); ++it ) sum += it->second;
+
+		TS_ASSERT_EQUALS( good_records, sum );
+
+		sum = 0;
+		j = records->jgene_counts();
+		for ( it = j.begin(); it != j.end(); ++it ) sum += it->second;
+
+		TS_ASSERT_EQUALS( good_records, sum );
+	}
 };
 
 #endif /* UNITTESTS_HH_ */

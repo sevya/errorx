@@ -645,33 +645,53 @@ int SequenceRecords::unique_clonotypes() {
 }
 
 map<string,int> SequenceRecords::vgene_counts() {
-	if ( clonotypes_.empty() ) count_clonotypes();
 
-	vector<string> genes;
-	vector<SequenceRecordPtr>::const_iterator it;
+	vector<SequenceRecordPtr>::const_iterator record_it;
+	map<string,int> counts;
+	map<string,int>::iterator map_it;
+	string key;
 
-	for ( it  = records_.begin();
-		  it != records_.end();
-		  ++it ) 
+	for ( record_it = records_.begin();
+		record_it != records_.end();
+		++record_it ) 
 	{
-		genes.push_back( (*it)->v_gene_noallele() );
+		// Only count genes from "good" records
+		if ( !(*record_it)->isGood() ) continue;
+
+		key = (*record_it)->v_gene_noallele();
+		map_it = counts.find( key );
+		if ( map_it == counts.end() ) {
+			counts.insert( pair<string,int>( key, 1));
+		} else {
+			map_it->second++;
+		}
 	}
-	return util::value_counts( genes );
+	return counts;
 }
 
 map<string,int> SequenceRecords::jgene_counts() {
-	if ( clonotypes_.empty() ) count_clonotypes();
 
-	vector<string> genes;
-	vector<SequenceRecordPtr>::const_iterator it;
+	vector<SequenceRecordPtr>::const_iterator record_it;
+	map<string,int> counts;
+	map<string,int>::iterator map_it;
+	string key;
 
-	for ( it  = records_.begin();
-		  it != records_.end();
-		  ++it ) 
+	for ( record_it = records_.begin();
+		record_it != records_.end();
+		++record_it )
 	{
-		genes.push_back( (*it)->j_gene_noallele() );
+		// Only count genes from "good" records
+		if ( !(*record_it)->isGood() ) continue;
+
+		key = (*record_it)->j_gene_noallele();
+		map_it = counts.find( key );
+		if ( map_it == counts.end() ) {
+			counts.insert( pair<string,int>( key, 1));
+		} else {
+			map_it->second++;
+		}
 	}
-	return util::value_counts( genes );
+	return counts;
 }
 
 map<string,int> SequenceRecords::vjgene_counts() {
