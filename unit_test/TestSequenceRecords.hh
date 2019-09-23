@@ -514,6 +514,204 @@ public:
 
 		TS_ASSERT_EQUALS( good_records, sum );
 	}
+
+	 void testCDRLengths() {
+		ErrorXOptions options( "testing/100.fastq", "fastq" );
+		options.allow_nonproductive( 1 );
+		options.verbose( 0 );
+		options.errorx_base( "../" );
+		SequenceRecordsPtr records = run_protocol( options );
+
+
+		// Set up the correct values for each of these loops
+		map<string,vector<int>> correct_lengths;
+		
+		correct_lengths[ "CDR1" ] = 
+vector<int>({8,8,8,8,8,7,8,8,8,8,9,8,8,8,8,8,8,8,8,8,8,6,8,8,5,8,8,8,8,8,8,8,8,8,7,7,8,8,8,8,8,5,8,8,5,8,8,8,8,1,8,8,8,8,8,5,8,8,8,8,8,8,8,8,8,8,8,8,8,1,8,5,8} );
+		
+		correct_lengths[ "CDR2" ] = 
+vector<int>({5,7,8,7,5,8,11,8,8,8,7,8,8,8,8,7,8,8,7,7,7,7,8,7,8,8,7,8,2,8,8,8,8,7,8,7,7,7,7,7,7,8,8,8,7,8,8,8,7,7,8,8,7,8,8,10,8,6,7,9,8,8,8,8,8,8,8,7,6,8,8,7,7} );
+
+		correct_lengths[ "CDR3" ] =
+vector<int>({19,17,8,36,23,8,17,6,13,12,11,31,44,9,15,24,31,13,9,48,2,19,11,10,52,35,38,12,9,32,9,47,40,3,37,36,9,14,46,42,5,53});
+
+
+		map<string,vector<int>> lengths = records->cdr_lengths();
+		
+		for ( string cdr : vector<string>( { "CDR1", "CDR2", "CDR3" })) {
+			TS_ASSERT_EQUALS( lengths[ cdr ], correct_lengths[ cdr ] );
+		}
+
+
+		map<string,map<int,float>> bins_raw;
+		map<string,map<int,float>> bins_norm;
+
+		bins_raw[ "CDR1" ] = { make_pair(1,2),
+			make_pair(2,0),
+			make_pair(3,0),
+			make_pair(4,0),
+			make_pair(5,5),
+			make_pair(6,1),
+			make_pair(7,3),
+			make_pair(8,61),
+			make_pair(9,1) };
+
+		bins_norm[ "CDR1" ] = { make_pair(1,0.02739726),
+			make_pair(2,0),
+			make_pair(3,0),
+			make_pair(4,0),
+			make_pair(5,0.068493151),
+			make_pair(6,0.01369863),
+			make_pair(7,0.04109589),
+			make_pair(8,0.835616438),
+			make_pair(9,0.01369863) };
+
+		bins_raw[ "CDR2" ] = { make_pair(2,1),
+			make_pair(3,0),
+			make_pair(4,0),
+			make_pair(5,2),
+			make_pair(6,2),
+			make_pair(7,25),
+			make_pair(8,40),
+			make_pair(9,1),
+			make_pair(10,1),
+			make_pair(11,1)
+		};
+
+		bins_norm[ "CDR2" ] = { 
+			make_pair(2,0.0136986301369863),
+			make_pair(3,0),
+			make_pair(4,0),
+			make_pair(5,0.0273972602739726),
+			make_pair(6,0.0273972602739726),
+			make_pair(7,0.342465753424658),
+			make_pair(8,0.547945205479452),
+			make_pair(9,0.0136986301369863),
+			make_pair(10,0.0136986301369863),
+			make_pair(11,0.0136986301369863)	
+		};
+
+		bins_raw[ "CDR3" ] = { make_pair(2,1),
+			make_pair(3,1),
+			make_pair(4,0),
+			make_pair(5,1),
+			make_pair(6,1),
+			make_pair(7,0),
+			make_pair(8,2),
+			make_pair(9,5),
+			make_pair(10,1),
+			make_pair(11,2),
+			make_pair(12,2),
+			make_pair(13,2),
+			make_pair(14,1),
+			make_pair(15,1),
+			make_pair(16,0),
+			make_pair(17,2),
+			make_pair(18,0),
+			make_pair(19,2),
+			make_pair(20,0),
+			make_pair(21,0),
+			make_pair(22,0),
+			make_pair(23,1),
+			make_pair(24,1),
+			make_pair(25,0),
+			make_pair(26,0),
+			make_pair(27,0),
+			make_pair(28,0),
+			make_pair(29,0),
+			make_pair(30,0),
+			make_pair(31,2),
+			make_pair(32,1),
+			make_pair(33,0),
+			make_pair(34,0),
+			make_pair(35,1),
+			make_pair(36,2),
+			make_pair(37,1),
+			make_pair(38,1),
+			make_pair(39,0),
+			make_pair(40,1),
+			make_pair(41,0),
+			make_pair(42,1),
+			make_pair(43,0),
+			make_pair(44,1),
+			make_pair(45,0),
+			make_pair(46,1),
+			make_pair(47,1),
+			make_pair(48,1),
+			make_pair(49,0),
+			make_pair(50,0),
+			make_pair(51,0),
+			make_pair(52,1),
+			make_pair(53,1)
+		};
+
+		bins_norm[ "CDR3" ] = {
+			make_pair(2,0.0238095238095238),
+			make_pair(3,0.0238095238095238),
+			make_pair(4,0),
+			make_pair(5,0.0238095238095238),
+			make_pair(6,0.0238095238095238),
+			make_pair(7,0),
+			make_pair(8,0.0476190476190476),
+			make_pair(9,0.119047619047619),
+			make_pair(10,0.0238095238095238),
+			make_pair(11,0.0476190476190476),
+			make_pair(12,0.0476190476190476),
+			make_pair(13,0.0476190476190476),
+			make_pair(14,0.0238095238095238),
+			make_pair(15,0.0238095238095238),
+			make_pair(16,0),
+			make_pair(17,0.0476190476190476),
+			make_pair(18,0),
+			make_pair(19,0.0476190476190476),
+			make_pair(20,0),
+			make_pair(21,0),
+			make_pair(22,0),
+			make_pair(23,0.0238095238095238),
+			make_pair(24,0.0238095238095238),
+			make_pair(25,0),
+			make_pair(26,0),
+			make_pair(27,0),
+			make_pair(28,0),
+			make_pair(29,0),
+			make_pair(30,0),
+			make_pair(31,0.0476190476190476),
+			make_pair(32,0.0238095238095238),
+			make_pair(33,0),
+			make_pair(34,0),
+			make_pair(35,0.0238095238095238),
+			make_pair(36,0.0476190476190476),
+			make_pair(37,0.0238095238095238),
+			make_pair(38,0.0238095238095238),
+			make_pair(39,0),
+			make_pair(40,0.0238095238095238),
+			make_pair(41,0),
+			make_pair(42,0.0238095238095238),
+			make_pair(43,0),
+			make_pair(44,0.0238095238095238),
+			make_pair(45,0),
+			make_pair(46,0.0238095238095238),
+			make_pair(47,0.0238095238095238),
+			make_pair(48,0.0238095238095238),
+			make_pair(49,0),
+			make_pair(50,0),
+			make_pair(51,0),
+			make_pair(52,0.0238095238095238),
+			make_pair(53,0.0238095238095238)
+		};	
+
+		for ( string cdr : vector<string>({ "CDR1", "CDR2", "CDR3" })) {
+			TS_ASSERT_EQUALS( 
+				util::bin_values( lengths[ cdr ], /*normalize=*/0 ),
+				bins_raw[ cdr ] 
+				);
+
+			TS_ASSERT_EQUALS(
+				util::bin_values( lengths[ cdr ], /*normalize=*/1 ),
+				bins_norm[ cdr ]
+				);
+		}
+	 }
 };
 
 #endif /* UNITTESTS_HH_ */
