@@ -228,6 +228,16 @@ double phred_avg_realspace( vector<int> const & phred_arr );
 */
 int count_lines( string const & file );
 
+/**
+        Counts the number of lines in a fasta file
+	determined by # of lines beginning with '>' character
+
+        @param file file to count
+
+        @return # lines in that file
+*/
+int count_lines_fasta( string const & file );
+
 ///////////// Encryption and license checking modules /////////////
 
 /**

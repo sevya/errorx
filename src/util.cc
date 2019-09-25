@@ -228,6 +228,22 @@ int count_lines( string const & file ) {
 	return ii;
 }
 
+int count_lines_fasta( string const & file ) {
+        ios_base::sync_with_stdio( false );
+
+        std::ifstream in(file);
+        if ( !in.good() ) return 0;
+        string line;
+        int ii = 0;
+        while ( getline(in,line) ) {
+		// don't want to get tripped up by empty lines
+		if ( line.size() == 0 ) continue;
+		if ( line[0]=='>' ) ++ii; 
+	}
+
+        return ii;
+}
+
 ///////////// Encryption modules /////////////
 
 char decrypt( char const c, char const key ) {

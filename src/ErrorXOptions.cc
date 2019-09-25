@@ -275,6 +275,12 @@ void ErrorXOptions::validate() {
 }
 
 void ErrorXOptions::count_queries() {
+
+	if ( format_ == "fasta" ) {
+		num_queries_ = util::count_lines_fasta( infile_ );
+		return; // return early to keep from double counting lines
+	}
+
 	int no_lines = util::count_lines( infile_ );
 	if ( format_ == "fastq" ) {
 		// Sanity check to make sure FASTQ is valid
@@ -297,7 +303,7 @@ string ErrorXOptions::get_quality( string const & sequenceID ) const {
 }
 
 void ErrorXOptions::format( string const & format ) { 
-	vector<string> valid_formats = {"tsv", "fastq"};
+	vector<string> valid_formats = {"tsv", "fastq", "fasta"};
 
 	if ( find( valid_formats.begin(), valid_formats.end(), format )
 			== valid_formats.end() ) {
