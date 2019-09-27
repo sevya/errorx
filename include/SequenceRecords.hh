@@ -170,19 +170,20 @@ public:
 	/**
 		Returns a vector of string vectors, where each
 		string vector is a summary of a SequenceRecord
-
+		
+		@param bool fulldata return all fields?
 		@return vector of summaries of each SequenceRecord
 	*/
-	vector<vector<string>> get_summary() const;
+	vector<vector<string>> get_summary( bool fulldata=1 ) const;
 
 	/**
 		Returns a vector of labels, where the labels describe
 		the entries from get_summary()
 
-
+		@param bool fulldata return all fields?
 		@return vector of labels
 	*/
-	vector<string> get_summary_labels() const;
+	static vector<string> get_summary_labels( bool fulldata=1 );
 
 	/**
 		Wraps the get_summary() function and writes to 

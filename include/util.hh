@@ -28,6 +28,16 @@ namespace errorx{
 namespace util {
 
 /**
+	Returns the labels for output TSV values
+
+	@param fulldata output all fields? Or a shortened list
+	used in the gui
+
+	@return vector of string labels
+*/
+vector<string> get_labels( bool fulldata=1 );
+
+/**
 	Use boost::lexical_cast to test if a string is an integer or double
 	
 	@param str input string
