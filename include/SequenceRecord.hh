@@ -95,9 +95,11 @@ public:
 	/**
 		Get all the information summarizing a SequenceRecord
 
+		@param fulldata include all fields?
+		
 		@return vector of strings summarizing the record
 	*/
-	vector<string> get_summary() const;
+	vector<string> get_summary( bool fulldata=1 ) const;
 
 	/**
 		Print key information related to this record

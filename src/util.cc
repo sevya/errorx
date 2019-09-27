@@ -39,6 +39,43 @@ using namespace std;
 namespace errorx {
 namespace util {
 
+vector<string> get_labels( bool fulldata/*=1*/ ) {
+	if ( fulldata ) {
+		return vector<string> {
+			"SequenceID",
+			"V_gene",
+			"V_identity",
+			"V_Evalue",
+			"D_gene",
+			"D_identity",
+			"D_Evalue",
+			"J_gene",
+			"J_identity",
+			"J_Evalue",
+			"Strand",
+			"Chain",
+			"Productive",
+			"CDR1_NT_sequence",
+			"CDR1_AA_sequence",
+			"CDR2_NT_sequence",
+			"CDR2_AA_sequence",
+			"CDR3_NT_sequence",
+			"CDR3_AA_sequence",
+			"Full_NT_sequence",
+			"Full_GL_NT_sequence",
+			"PHRED_scores",
+			"Full_AA_sequence",
+			"Full_NT_sequence_corrected",
+			"Full_AA_sequence_corrected",
+			"N_errors"
+		};
+	} else {
+			return vector<string> { "SequenceID", "V_gene", "D_gene", 
+			"J_gene", "Full_NT_sequence", "Full_NT_sequence_corrected", 
+			"N_errors" };
+
+	}
+}
 bool isint( string const & str ) {
 	try {
 		boost::lexical_cast<int>( str );
