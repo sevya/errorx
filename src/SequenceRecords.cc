@@ -205,12 +205,12 @@ double SequenceRecords::estimate_error_rate() const {
  	return (total_errors*precision/recall)/total_bases;
  }
 
-vector<vector<string>> SequenceRecords::get_summary() const {
+vector<vector<string>> SequenceRecords::get_summary( bool fulldata/*=1*/) const {
 	vector<vector<string>> summary_data;
 
 	for ( int ii = 0; ii < records_.size(); ++ii ) {
  		if ( records_[ ii ]->isGood() ) {
-			summary_data.push_back( records_[ ii ]->get_summary() );
+			summary_data.push_back( records_[ ii ]->get_summary( fulldata ));
 		}
  	}
 
@@ -228,45 +228,13 @@ int SequenceRecords::good_records() const {
  int SequenceRecords::productive_records() const {
 	int productive_records = 0;
 	for ( int ii = 0; ii < records_.size(); ++ii ) {
-		if ( records_[ii]->productive() ) productive_records++;
+		if ( records_[ii]->isGood() && records_[ii]->productive() ) productive_records++;
 	}
 	return productive_records;
  }
 
-vector<string> SequenceRecords::get_summary_labels() const {
-
-	return vector<string> {
-			"SequenceID",
-			"V_gene",
-			"V_identity",
-			"V_Evalue",
-			"D_gene",
-			"D_identity",
-			"D_Evalue",
-			"J_gene",
-			"J_identity",
-			"J_Evalue",
-			"Strand",
-			"Chain",
-			"Productive",
-			"CDR1_NT_sequence",
-			"CDR1_AA_sequence",
-			"CDR2_NT_sequence",
-			"CDR2_AA_sequence",
-			"CDR3_NT_sequence",
-			"CDR3_AA_sequence",
-			"Full_NT_sequence",
-			"Full_GL_NT_sequence",
-			"PHRED_scores",
-			"Full_AA_sequence",
-			"Full_NT_sequence_corrected",
-			"Full_AA_sequence_corrected",
-			"N_errors"
-	};
-}
-
 void SequenceRecords::print_summary() const {
-	vector<string> summary_labels = get_summary_labels();
+	vector<string> summary_labels = util::get_labels();
 	vector<vector<string>> summary_data = get_summary();
 
 	for ( int ii = 0; ii < summary_labels.size(); ++ii ) {
@@ -287,7 +255,7 @@ void SequenceRecords::write_summary() const {
 		throw invalid_argument( options_->outfile()+" is not a valid file." );
 		return;
 	}
-	vector<string> summary_labels = get_summary_labels();
+	vector<string> summary_labels = util::get_labels();
 	vector<vector<string>> summary_data = get_summary();
 
 	for ( int ii = 0; ii < summary_labels.size(); ++ii ) {
