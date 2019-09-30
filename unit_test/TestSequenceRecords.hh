@@ -268,6 +268,57 @@ public:
 		TS_ASSERT_EQUALS( a.somatic_variants(1), 2 );
 	}
 
+	void testSomaticVariants2() {
+
+		ErrorXOptions options( "testing/variant_test.fasta", "fasta" );
+		options.errorx_base( "../" );
+		options.allow_nonproductive( 1 );
+
+		SequenceRecordsPtr records = run_protocol( options );
+
+		vector<ClonotypeGroup> clonotypes = records->clonotypes();
+
+		TS_ASSERT_EQUALS( clonotypes.size(), 5 );
+
+		// Sort clonotypes by # members
+		sort( clonotypes.begin(), clonotypes.end(),
+			[]( ClonotypeGroup const & a, ClonotypeGroup const & b ) -> bool
+		{
+			return a.size() > b.size();
+		});
+
+		vector<ClonotypeGroup>::const_iterator it = clonotypes.begin();
+		SequenceRecordPtr current;
+		for ( int ii = 0; ii < it->size(); ++ii ) {
+			current = it->get( ii );
+			cout << current->full_nt_sequence() << endl;
+		}
+		TS_ASSERT_EQUALS( it->size(), 7 );
+		TS_ASSERT_EQUALS( it->somatic_variants( /*corrected=*/0 ), 5 );
+		TS_ASSERT_EQUALS( it->somatic_variants( /*corrected=*/1 ), 5 );
+
+		it++;
+		TS_ASSERT_EQUALS( it->size(), 1 );
+		TS_ASSERT_EQUALS( it->somatic_variants( /*corrected=*/0 ), 1 );
+		TS_ASSERT_EQUALS( it->somatic_variants( /*corrected=*/1 ), 1 );
+
+		it++;
+		TS_ASSERT_EQUALS( it->size(), 1 );
+		TS_ASSERT_EQUALS( it->somatic_variants( /*corrected=*/0 ), 1 );
+		TS_ASSERT_EQUALS( it->somatic_variants( /*corrected=*/1 ), 1 );
+
+		it++;
+		TS_ASSERT_EQUALS( it->size(), 1 );
+		TS_ASSERT_EQUALS( it->somatic_variants( /*corrected=*/0 ), 1 );
+		TS_ASSERT_EQUALS( it->somatic_variants( /*corrected=*/1 ), 1 );
+
+		it++;
+		TS_ASSERT_EQUALS( it->size(), 1 );
+		TS_ASSERT_EQUALS( it->somatic_variants( /*corrected=*/0 ), 1 );
+		TS_ASSERT_EQUALS( it->somatic_variants( /*corrected=*/1 ), 1 );
+	}
+
+
 	void testUniqueSequences() {
 		ErrorXOptions options( "test.fastq", "fastq" );
 		options.errorx_base("../");
