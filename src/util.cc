@@ -467,12 +467,19 @@ bool compare( const string & a, const string & b, const char N ) {
 	string a_noN = "";
 	string b_noN = "";
 
-	for ( int ii = a.size()-1; ii >= 0; --ii ) {
+	for ( int ii = 0; ii < a.size(); ++ii ) {
 		if ( a[ii] != N && b[ii] != N ) {
 			a_noN += a[ii];
 			b_noN += b[ii];
 		}
 	}
+
+	// for ( int ii = a.size()-1; ii >= 0; --ii ) {
+	// 	if ( a[ii] != N && b[ii] != N ) {
+	// 		a_noN += a[ii];
+	// 		b_noN += b[ii];
+	// 	}
+	// }
 
 	return a_noN < b_noN;
 }
