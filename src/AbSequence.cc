@@ -261,6 +261,9 @@ void AbSequence::build_nt_sequence() {
 
 void AbSequence::build_phred() {
 	if ( !good_ ) return;
+	// If I was given a FASTA file, the phred score will be marked as N/A
+	// in this case, no need to assemble anything
+	if ( phred_trimmed_ == "N/A" ) return;
 
 	// Find the portion of the quality string that corresponds to the query
 	// If the assignment was done on the reverse strand, flip the quality string

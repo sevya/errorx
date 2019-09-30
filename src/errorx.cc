@@ -51,6 +51,18 @@ SequenceRecordsPtr run_protocol( ErrorXOptions & options ) {
 		// Parse the IGBlast output
 		records = parser.parse_output( options );
 
+	} else if ( options.format() == "fasta" ) {
+		// Run with FASTA file
+		// Set infasta here - normally it would be set by fastq_to_fasta
+		options.infasta( options.infile() );
+		IGBlastParser parser;
+		parser.blast( options );
+
+		// Parse the IGBlast output
+		records = parser.parse_output( options );
+
+		// Return here so that the records won't be error corrected
+		return records;
 	} else {
 
 		// Parse the TSV file
@@ -59,7 +71,7 @@ SequenceRecordsPtr run_protocol( ErrorXOptions & options ) {
 		records->import_from_tsv();
 	}
 
-	// Predict errors from SequenceRecords
+	// Predict errors from SequenceRecords as long as it's not a FASTA file
 	SequenceRecords::correct_sequences( records );
 	return records;
 }

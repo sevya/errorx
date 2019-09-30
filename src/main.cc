@@ -37,7 +37,7 @@ int main( int argc, char* argv[] ) {
 
 	desc.add_options()
 	    ("help,h", "produce help message")
-		("format,f", program_options::value<string>(), "input file format. Valid entries are fastq or tsv.")
+		("format,f", program_options::value<string>(), "input file format. Valid entries are fastq, fasta, or tsv.")
 		("out,o", program_options::value<string>()->default_value("out.tsv"), "output file (Default=out.tsv)")
 		("species,s", program_options::value<string>()->default_value("human"), "Species for IGBLAST search. Valid entries are human or mouse. (Default=human)")
 		("igtype", program_options::value<string>()->default_value("Ig"), "Receptor type for IGBLAST search. Valid entries are Ig or TCR. (Default=Ig)")

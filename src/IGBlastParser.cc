@@ -197,17 +197,22 @@ AbSequence IGBlastParser::parse_line( vector<string> const & tokens, ErrorXOptio
 
 	// Get the PHRED string that we previously stored in an unordered_map
 	// if it's not present mark the sequence as bad and move on
-	try {
-		unordered_map<string,string> qmap = options.quality_map();
-		sequence.phred_ = options.get_quality( sequence.sequenceID_ );
-	} catch ( out_of_range & ) {
-		sequence.good_ = 0;
-		if ( options.verbose() > 0 ) {
-			cout << "Warning: quality not found for sequence " << sequence.sequenceID_ << endl;
-		}
-		sequence.failure_reason_ = "Quality information was not found";
+	if ( options.format() == "fastq" ) {
+		try {
+			unordered_map<string,string> qmap = options.quality_map();
+			sequence.phred_ = options.get_quality( sequence.sequenceID_ );
+		} catch ( out_of_range & ) {
+			sequence.good_ = 0;
+			if ( options.verbose() > 0 ) {
+				cout << "Warning: quality not found for sequence " << sequence.sequenceID_ << endl;
+			}
+			sequence.failure_reason_ = "Quality information was not found";
 
-		return sequence;
+			return sequence;
+		}
+	} else {
+		sequence.phred_ = "N/A";
+		sequence.phred_trimmed_ = "N/A";
 	}
 
 	sequence.chain_      = tokens[2];
