@@ -198,6 +198,13 @@ public:
 	void write_summary() const;
 
 	/**
+		Runs "mock" error correction protocol. When given a FASTA file
+		I can't actually do error correction. So I just put the NT sequence
+		in the "corrected" column
+	*/
+	void mock_correct_sequences();
+
+	/**
 		Runs error correction protocol on each SequenceRecord
 		object. Modifies "records" in-place. Static qualifier
 		allows it to be used easily in multi-threading.

@@ -29,6 +29,7 @@ lib/*
 !lib/.gitkeep
 
 unit_test/testing/*.fasta*
+!unit_test/testing/variant_test.fasta
 unit_test/bin/*
 !unit_test/bin/.gitkeep
 unit_test/*.cc

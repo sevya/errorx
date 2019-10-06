@@ -330,6 +330,14 @@ vector<SequenceRecordsPtr> SequenceRecords::chunk_records() {
 	}
 }
 
+void SequenceRecords::mock_correct_sequences() {
+	vector<SequenceRecordPtr>::const_iterator it;
+	for ( it = records_.begin(); it != records_.end(); ++it ) {
+		(*it)->full_nt_sequence_corrected( (*it)->full_nt_sequence() );
+		(*it)->full_aa_sequence_corrected( (*it)->full_aa_sequence() );
+	}
+}
+
 void SequenceRecords::correct_sequences( SequenceRecordsPtr & records ) {
 
 	int nthreads = records->options_->nthreads();

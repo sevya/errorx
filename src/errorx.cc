@@ -61,6 +61,10 @@ SequenceRecordsPtr run_protocol( ErrorXOptions & options ) {
 		// Parse the IGBlast output
 		records = parser.parse_output( options );
 
+		// Do a "mock" error correction
+		// just put the regular sequence in place of the corrected sequence
+		records->mock_correct_sequences();
+
 		// Return here so that the records won't be error corrected
 		return records;
 	} else {

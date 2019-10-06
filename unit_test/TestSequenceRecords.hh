@@ -289,10 +289,12 @@ public:
 
 		vector<ClonotypeGroup>::const_iterator it = clonotypes.begin();
 		SequenceRecordPtr current;
+
 		for ( int ii = 0; ii < it->size(); ++ii ) {
 			current = it->get( ii );
-			cout << current->full_nt_sequence() << endl;
+			current->full_nt_sequence_corrected( current->full_nt_sequence() );
 		}
+
 		TS_ASSERT_EQUALS( it->size(), 7 );
 		TS_ASSERT_EQUALS( it->somatic_variants( /*corrected=*/0 ), 5 );
 		TS_ASSERT_EQUALS( it->somatic_variants( /*corrected=*/1 ), 5 );

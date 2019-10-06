@@ -419,7 +419,40 @@ public:
 		bins = util::bin_values( input, /*normalized=*/0 );
 		TS_ASSERT( bins.empty() );
 	}
-		
+
+
+	void testCompare() {
+		string a = "TCGTAAT";
+		string b = "TCGTNAT";
+		string c = "TCGTAAT";
+		string d = "TCGTCAT";
+
+		function< bool(string,string) > compareCorrectedSequences;
+
+		compareCorrectedSequences = 
+			std::bind( &util::compare, 
+					   placeholders::_1, 
+					   placeholders::_2, 
+					   'N'
+			);
+
+		map<string,int,function<bool(string,string)>> cmap;
+		cmap = map<string,int,function<bool(string,string)>>( compareCorrectedSequences );
+
+		cmap.insert( pair<string,int>( a, 1 ));
+		auto it = cmap.find( b );
+		// check that B maps to A
+		TS_ASSERT_DIFFERS( it, cmap.end() );
+
+		it = cmap.find( c );
+		// check that C maps to A
+		TS_ASSERT_DIFFERS( it, cmap.end() );
+
+
+		it = cmap.find( d );
+		// check that D does not map to A
+		TS_ASSERT_EQUALS( it, cmap.end() );
+	}
 };
 
 
