@@ -51,6 +51,10 @@ AbSequence::AbSequence() :
 	full_nt_sequence_( "" ),
 	full_gl_nt_sequence_( "" ),
 	full_aa_sequence_( "" ),
+	cdr1_nt_sequence_( "" ),
+	cdr1_aa_sequence_( "" ),
+	cdr2_nt_sequence_( "" ),
+	cdr2_aa_sequence_( "" ),
 	cdr3_nt_sequence_( "" ),
 	cdr3_aa_sequence_( "" ),
 	full_nt_sequence_corrected_( "" ),
@@ -91,6 +95,10 @@ AbSequence::AbSequence( AbSequence const & other ) :
 	full_nt_sequence_( other.full_nt_sequence_ ),
 	full_gl_nt_sequence_( other.full_gl_nt_sequence_ ),
 	full_aa_sequence_( other.full_aa_sequence_ ),
+	cdr1_nt_sequence_( other.cdr1_nt_sequence_ ),
+	cdr1_aa_sequence_( other.cdr1_aa_sequence_ ),
+	cdr2_nt_sequence_( other.cdr2_nt_sequence_ ),
+	cdr2_aa_sequence_( other.cdr2_aa_sequence_ ),
 	cdr3_nt_sequence_( other.cdr3_nt_sequence_ ),
 	cdr3_aa_sequence_( other.cdr3_aa_sequence_ ),
 	full_nt_sequence_corrected_( other.full_nt_sequence_corrected_ ),
@@ -134,12 +142,15 @@ void AbSequence::build_nt_sequence() {
 	}
 
 	// assemble junction based on whether it's a VDJ or VJ junction
-	if ( chain_ == "VH" || chain_ == "VB" ) {
-		assert( jxn_nts_.size()==3 );
+	
+	// VDJ junction
+	if ( jxn_nts_.size() == 3 ) {
 
 		// if D is a bad match, fill it with dashes
 		string dregion    = jxn_nts_[1];
-		string dregion_gl = ( hasD_ ) ? d_gl_nts_   : string(d_gl_nts_.size(), '-');
+		string dregion_gl = ( hasD_ ) ? 
+							  d_gl_nts_ : 
+							  string(d_gl_nts_.size(), '-');
 		
 		full_junction = jxn_nts_[0] + dregion + jxn_nts_[2]; 
 
@@ -149,8 +160,10 @@ void AbSequence::build_nt_sequence() {
 		full_gl_junction = string(jxn_nts_[0].size(), '-') +
 							dregion_gl +
 							string(jxn_nts_[2].size(), '-');
-	} else { 
-		assert( jxn_nts_.size()==1 );
+	} 
+	// Either VJ junction, or a case where V+J are assigned 
+	// or a case where only V is assigned
+	else { 
 
 		full_junction = jxn_nts_[0];
 		// if there are N nucleotides, these are undefined in the germline,
@@ -217,7 +230,9 @@ void AbSequence::build_phred() {
 	// adjustment gets offset to -1
 	// this signals it to not be used in the local and global phred
 	// calculations
-	int phred_idx = query_start_ - 1;
+	// int phred_idx = query_start_ - 1;
+	int phred_idx = query_start_;
+
 	try {
 		for ( int ii = 0; ii < full_nt_sequence_.size(); ++ii ) {
 			if ( full_nt_sequence_[ ii ] == '-' ) {
@@ -315,6 +330,11 @@ string AbSequence::quality_string_trimmed() const {
 	else return phred_trimmed_; 
 }
 
+string AbSequence::quality_string_untrimmed() const {
+	if ( phred_=="" ) return "N/A";
+	else return phred_; 
+}
+
 string AbSequence::full_nt_sequence() const { 
 	if ( full_nt_sequence_=="" ) return "N/A";
 	else return full_nt_sequence_; 
@@ -329,6 +349,24 @@ string AbSequence::full_aa_sequence() const {
 	if ( full_aa_sequence_=="" ) return "N/A";
 	else return full_aa_sequence_; 
 }
+
+string AbSequence::cdr1_nt_sequence() const { 
+	if ( cdr1_nt_sequence_=="" ) return "N/A";
+	else return cdr1_nt_sequence_; 
+}
+string AbSequence::cdr1_aa_sequence() const { 
+	if ( cdr1_aa_sequence_=="" ) return "N/A";
+	else return cdr1_aa_sequence_; 
+}
+string AbSequence::cdr2_nt_sequence() const { 
+	if ( cdr2_nt_sequence_=="" ) return "N/A";
+	else return cdr2_nt_sequence_; 
+}
+string AbSequence::cdr2_aa_sequence() const { 
+	if ( cdr2_aa_sequence_=="" ) return "N/A";
+	else return cdr2_aa_sequence_; 
+}
+
 string AbSequence::cdr3_nt_sequence() const { 
 	if ( cdr3_nt_sequence_=="" ) return "N/A";
 	else return cdr3_nt_sequence_; 
@@ -354,6 +392,7 @@ int AbSequence::translation_frame() const { return translation_frame_; }
 
 void AbSequence::sequenceID( string const & seqID ) { sequenceID_ = seqID; }
 void AbSequence::quality_string_trimmed( string const & phred ) { phred_trimmed_ = phred; }
+
 
 void AbSequence::full_nt_sequence( string const & seq ) { full_nt_sequence_ = seq; }
 void AbSequence::full_aa_sequence( string const & seq ) { full_aa_sequence_ = seq; }

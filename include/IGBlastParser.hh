@@ -73,6 +73,17 @@ public:
 	*/
 	AbSequence parse_lines( vector<string> const & lines, ErrorXOptions const & options );
 
+	/**
+		Parses a IGBlast output line representing
+		one sequence. Turns it into an AbSequence that can then be
+		used to make a SequenceRecord
+
+		@param options ErrorXOptions to control processing
+
+		@return AbSequence object constructed from the IGBlast output
+	*/
+	AbSequence parse_line( vector<string> const & tokens, ErrorXOptions const & options );
+
 
 private:
 	/**

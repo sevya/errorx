@@ -28,6 +28,7 @@ Code contained herein is proprietary and confidential.
 #include <functional>
 #include <mutex>
 #include <memory>
+#include <unordered_map>
 
 #include "ProgressBar.hh"
 
@@ -106,6 +107,8 @@ public:
 	function<void(void)> reset() const;
 	function<void(void)> finish() const;
 	function<void(string)> message() const;
+	unordered_map<string,string> quality_map() const;
+	string get_quality( string const & sequenceID ) const;
 
 	/*
 		Setters
@@ -130,6 +133,7 @@ public:
 	void reset( function<void(void)> const & reset ) ;
 	void finish( function<void(void)> const & finish ) ;
 	void message( function<void(string)> const & message ) ;
+	void quality_map( unordered_map<string,string> const & quality_map );
 
 private:
 
@@ -206,6 +210,12 @@ private:
 	function<void(void)> finish_;
 	function<void(string)> message_;
 	ProgressBar _bar;
+
+	/**
+		This maps a sequence ID to the corresponding quality string
+		this enables us to find the quality based on the IGBlast output later
+	*/
+	unordered_map<string,string> quality_map_;
 	
 };
 

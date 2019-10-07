@@ -87,6 +87,9 @@ libraries: library python java
 debug: CPPFLAGS += -g
 debug: library
 
+debug_bin: CPPFLAGS += -g
+debug_bin: binary
+
 obj/%.o: src/%.cc
 	$(CXX) $(CPPFLAGS) $(WNO) $(INC) -c -Ofast -o "$@" "$^"
 # $@ - refers to the obj/*.o name

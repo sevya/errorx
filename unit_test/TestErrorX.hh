@@ -311,6 +311,46 @@ public:
 		}
 	}
 
+	void testMalformedTSV() {
+		string file = "bad.tsv";
+		ofstream out( file );
+
+		out << "one" << "," << "TACTCCNGTGGTACGCCCAAG" << "," << "TACTCCNGT---ACGCCCAAG" << "," << "###################";
+		out.close();
+
+		ErrorXOptions options( file, "tsv" );
+		options.outfile( "bad.out");
+		options.verbose( 0 );
+		options.errorx_base( ".." );
+
+		TS_ASSERT_THROWS( run_protocol( options ), BadFileException );
+
+		remove( file.c_str() );
+
+		out = ofstream( file );
+		out << "ID" << "\t" << "Sequence" << "\t" << "Germline" << "\t" << "Phred" << "\n";
+		out << "one" << "\t" << "TACTCCNGTGGTACGCCCAAG" << "\t" << "TACTCCNGT---ACGCCCAAG" << "\t" << "###################";
+		out.close();
+
+
+		TS_ASSERT_THROWS( run_protocol( options ), invalid_argument );
+
+		remove( file.c_str() );
+
+
+		file = "valid.tsv";
+		out = ofstream( file );
+		out << "one" << "\t" << "TACTCCNGTGGTACGCCCAAG" << "\t" << "TACTCCNGT---ACGCCCAAG" << "\t" << "#####################" << "\t" << "\n";
+		out.close();
+
+		options.infile( file );
+		TS_ASSERT_THROWS_NOTHING( run_protocol( options ) );
+
+		remove( file.c_str() );
+		remove( "bad.out" );
+		
+	}
+
 private:
 	ErrorXOptions options_;
 

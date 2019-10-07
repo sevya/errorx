@@ -53,17 +53,24 @@ string trim( string const & s );
 
 	@param str string to split
 	@param delim characters to use as a delimiter
+	@param token_compress treat consecutive delimiters as one?
+	@param trim_first trim the leading/trailing whitespace?
 
 	@return vector of elements of type T
 */	
 template<typename T>
-vector<T> tokenize_string( string str, string delim="\t " ) {
+vector<T> tokenize_string( string str, string delim="\t ", bool token_compress=1, bool trim_first=1 ) {
 
 	vector<string> array;
 	vector<T> float_array;
 
-	string str_trim = trim( str );
-	boost::split( array, str_trim, boost::algorithm::is_any_of(delim), boost::token_compress_on );
+	if ( trim_first ) str = trim(str);
+
+	if ( token_compress ) {
+		boost::split( array, str, boost::algorithm::is_any_of(delim), boost::token_compress_on );
+	} else {
+		boost::split( array, str, boost::algorithm::is_any_of(delim) );
+	}
 	for ( size_t ii = 0; ii < array.size(); ++ii ) {
 		float_array.push_back( boost::lexical_cast<T>( array[ii] ));
 	}
@@ -220,15 +227,6 @@ double phred_avg_realspace( vector<int> const & phred_arr );
 	@return # lines in that file
 */
 int count_lines( string const & file );
-
-/**
-	Counts the number of queries in an IGBlast output file
-
-	@param file file to count 
-
-	@return # queries in that file
-*/
-int count_queries( string const & file );
 
 ///////////// Encryption and license checking modules /////////////
 
