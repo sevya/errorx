@@ -23,8 +23,11 @@ ifeq ($(uname_S), Linux)
 
 	OS=linux
 	DLLEXT=so
-	PY_INC=-I/usr/include/python2.7
-	PY3_INC=-I/usr/include/python3.6
+#	PY_INC=-I/usr/include/python2.7
+#	PY3_INC=-I/usr/include/python3.6m
+
+	PY_INC=-Idependencies/python2.7
+	PY3_INC=-Idependencies/python3.6
 
 	PY_EXE=/usr/bin/python
 	PY3_EXE=/usr/bin/python3
@@ -137,6 +140,7 @@ java: $(OBJ) obj/errorx_java.o
 python_install: $(OBJ) obj/errorx_python2.o python
 	$(PY_EXE) -m pip install --user -I python2_bindings/
 
+python2_install: python_install
 	
 python3_install: $(OBJ) obj/errorx_python3.o python3
 	$(PY3_EXE) -m pip install --user -I python3_bindings/
