@@ -1,6 +1,6 @@
 
 
-version=1.1
+version=1.1.0
 ifeq ($(OS),Windows_NT)
 	uname_S := Windows
 else
@@ -135,11 +135,11 @@ java: $(OBJ) obj/errorx_java.o
 
 
 python_install: $(OBJ) obj/errorx_python2.o python
-	sudo $(PY_EXE) -m pip install -I python2_bindings/
+	$(PY_EXE) -m pip install --user -I python2_bindings/
 
 	
 python3_install: $(OBJ) obj/errorx_python3.o python3
-	sudo $(PY3_EXE) -m pip install -I python3_bindings/
+	$(PY3_EXE) -m pip install --user -I python3_bindings/
 
 
 
@@ -150,5 +150,5 @@ clean:
 	rm -rf obj/*o obj/keras/*o bin/errorx* lib/* python*_bindings/errorx/errorx_lib.so java_bindings/errorx/liberrorx.$(DLLEXT)
 
 uninstall: clean
-	sudo $(PY_EXE) -m pip uninstall errorx
-	sudo $(PY3_EXE) -m pip uninstall errorx	
+	$(PY_EXE) -m pip uninstall errorx
+	$(PY3_EXE) -m pip uninstall errorx	
