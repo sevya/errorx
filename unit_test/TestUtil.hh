@@ -370,7 +370,89 @@ public:
 		TS_ASSERT_EQUALS( cmap[ "four" ], 1 );
 
 	}
-		
+
+	void testHistogram() {
+		vector<int> input = { 1, 2, 5, 5, 7, 7, 1, 7 };
+
+		map<int,float> bins = util::bin_values( input, /*normalized=*/0 );
+
+		TS_ASSERT_EQUALS( bins.size(), 7 );
+		TS_ASSERT_EQUALS( bins[1], 2 );
+		TS_ASSERT_EQUALS( bins[2], 1 );
+		TS_ASSERT_EQUALS( bins[5], 2 );
+		TS_ASSERT_EQUALS( bins[7], 3 );
+
+		TS_ASSERT_EQUALS( bins[3], 0 );
+		TS_ASSERT_EQUALS( bins[4], 0 );
+		TS_ASSERT_EQUALS( bins[6], 0 );
+
+
+		bins = util::bin_values( input, /*normalized=*/1 );
+
+		TS_ASSERT_EQUALS( bins.size(), 7 );
+		TS_ASSERT_DELTA( bins[1], 0.25, 0.0001 );
+		TS_ASSERT_DELTA( bins[2], 0.125, 0.0001 );
+		TS_ASSERT_DELTA( bins[5], 0.25, 0.0001 );
+		TS_ASSERT_DELTA( bins[7], 0.375, 0.0001 );
+
+		TS_ASSERT_EQUALS( bins[3], 0 );
+		TS_ASSERT_EQUALS( bins[4], 0 );
+		TS_ASSERT_EQUALS( bins[6], 0 );
+
+		input = { -1, 2, 5, 5, 7, 7, -1, -1 };
+
+		bins = util::bin_values( input, /*normalized=*/0 );
+
+		TS_ASSERT_EQUALS( bins.size(), 9 );
+		TS_ASSERT_EQUALS( bins[-1], 3 );
+		TS_ASSERT_EQUALS( bins[2], 1 );
+		TS_ASSERT_EQUALS( bins[5], 2 );
+		TS_ASSERT_EQUALS( bins[7], 2 );
+
+		TS_ASSERT_EQUALS( bins[0], 0 );
+		TS_ASSERT_EQUALS( bins[1], 0 );		
+		TS_ASSERT_EQUALS( bins[3], 0 );
+		TS_ASSERT_EQUALS( bins[4], 0 );
+		TS_ASSERT_EQUALS( bins[6], 0 );
+
+		input = {};
+		bins = util::bin_values( input, /*normalized=*/0 );
+		TS_ASSERT( bins.empty() );
+	}
+
+
+	void testCompare() {
+		string a = "TCGTAAT";
+		string b = "TCGTNAT";
+		string c = "TCGTAAT";
+		string d = "TCGTCAT";
+
+		function< bool(string,string) > compareCorrectedSequences;
+
+		compareCorrectedSequences = 
+			std::bind( &util::compare, 
+					   placeholders::_1, 
+					   placeholders::_2, 
+					   'N'
+			);
+
+		map<string,int,function<bool(string,string)>> cmap;
+		cmap = map<string,int,function<bool(string,string)>>( compareCorrectedSequences );
+
+		cmap.insert( pair<string,int>( a, 1 ));
+		auto it = cmap.find( b );
+		// check that B maps to A
+		TS_ASSERT_DIFFERS( it, cmap.end() );
+
+		it = cmap.find( c );
+		// check that C maps to A
+		TS_ASSERT_DIFFERS( it, cmap.end() );
+
+
+		it = cmap.find( d );
+		// check that D does not map to A
+		TS_ASSERT_EQUALS( it, cmap.end() );
+	}
 };
 
 

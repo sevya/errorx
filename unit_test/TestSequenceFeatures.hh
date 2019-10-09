@@ -291,7 +291,7 @@ public:
 		SequenceFeatures features ( *record_, 136 );
 
 		ErrorXOptions options( "tmp", "tsv" );
-		options.errorx_base("../");
+		options.errorx_base("..");
 		options.verbose(0);
 		ErrorPredictor predictor( options );
 
@@ -301,7 +301,7 @@ public:
 	void testErrorRate_singlethread() {
 
 		ErrorXOptions options( "tmp", "tsv" );
-		options.errorx_base("../");
+		options.errorx_base("..");
 		options.verbose(0);
 		ErrorPredictor predictor( options );
 
@@ -315,7 +315,7 @@ public:
 		}
 
 		options = ErrorXOptions( "test", "fastq" );
-		options.errorx_base( "../" );
+		options.errorx_base( ".." );
 		options.nthreads( 1 );
 
 		SequenceRecordsPtr records = SequenceRecordsPtr( new SequenceRecords( options ));
@@ -332,7 +332,7 @@ public:
 	void testErrorRate_multithread() {
 
 		ErrorXOptions options( "tmp", "tsv" );
-		options.errorx_base("../");
+		options.errorx_base("..");
 		options.verbose(0);
 		ErrorPredictor predictor( options );
 
@@ -344,7 +344,7 @@ public:
 		}
 
 		options = ErrorXOptions( "test", "fastq" );
-		options.errorx_base("../");
+		options.errorx_base("..");
 		options.nthreads( -1 );
 
 		SequenceRecordsPtr records = SequenceRecordsPtr( new SequenceRecords( options ));
@@ -362,7 +362,7 @@ public:
 	void testTSVInput_singlethread() {
 		// sequenceID,nt_sequence,gl_sequence,quality_string
 		ErrorXOptions options( util::get_root_path().string()+"/testing/test.tsv", "tsv" );
-		options.errorx_base("../");
+		options.errorx_base("..");
 		options.nthreads( 1 );
 
 		SequenceRecordsPtr records = SequenceRecordsPtr( new SequenceRecords( options ));
@@ -379,7 +379,7 @@ public:
 	void testTSVInput_multithread() {
 		// sequenceID,nt_sequence,gl_sequence,quality_string
 		ErrorXOptions options( util::get_root_path().string()+"/testing/test.tsv", "tsv" );
-		options.errorx_base("../");
+		options.errorx_base("..");
 		options.nthreads( -1 );
 
 		SequenceRecordsPtr records = SequenceRecordsPtr( new SequenceRecords( options ));

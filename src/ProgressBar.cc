@@ -9,8 +9,7 @@ Code contained herein is proprietary and confidential.
 
 #include <functional>
 #include <iostream>
-#include <mutex>
-
+#include <string>
 
 #include "ProgressBar.hh"
 
@@ -34,20 +33,10 @@ ProgressBar::ProgressBar( ProgressBar const & other ) :
 	processed_( other.processed_ )
 	{}
 
-void ProgressBar::increment( int value, int total, std::mutex* m ) {
-	m->lock();
+void ProgressBar::increment( int value, int total ) {
 	processed_ += value;
 	total_ = total;
 	draw();
-	m->unlock();
-}
-
-void ProgressBar::update( int value, int total, std::mutex* m ) {
-	m->lock();
-	processed_ = value;
-	total_ = total;
-	draw();
-	m->unlock();
 }
 
 void ProgressBar::reset() { 

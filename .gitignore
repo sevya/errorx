@@ -29,12 +29,13 @@ lib/*
 !lib/.gitkeep
 
 unit_test/testing/*.fasta*
+!unit_test/testing/variant_test.fasta
 unit_test/bin/*
 !unit_test/bin/.gitkeep
 unit_test/*.cc
 unit_test/*.class
 unit_test/testing/out.tsv
-unit_test/lib/liberrorx.dylib
+unit_test/lib/liberrorx.*
 unit_test/cxxtest/COPYING
 unit_test/cxxtest/Versions
 unit_test/cxxtest/test/

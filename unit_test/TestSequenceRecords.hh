@@ -12,6 +12,7 @@
 #include "AbSequence.hh"
 #include "ClonotypeGroup.hh"
 #include "util.hh"
+#include "errorx.hh"
 
 using namespace std;
 using namespace errorx;
@@ -27,7 +28,7 @@ public:
 	void testSequenceGrouping() {
 
 		ErrorXOptions options( "test.fastq", "fastq" );
-		options.errorx_base("../");
+		options.errorx_base("..");
 		SequenceRecordsPtr records = SequenceRecordsPtr(new SequenceRecords( options ));
 		vector<string> corrected_sequences = {
 			"ACTGACTGACTGACTGACTGACTGACTGACTG",
@@ -68,7 +69,7 @@ public:
 	void testSequenceGroupingNoClonotype() {
 
 		ErrorXOptions options( "test.fastq", "fastq" );
-		options.errorx_base("../");
+		options.errorx_base("..");
 		SequenceRecordsPtr records = SequenceRecordsPtr(new SequenceRecords( options ));
 		vector<string> corrected_sequences = {
 			"ACTGACTGACTGACTGACTGACTGACTGACTG",
@@ -133,6 +134,32 @@ public:
 		TS_ASSERT( a != c );
 	}
 
+	void testEquality() {
+
+		ErrorXOptions options( "testing/test_sequences.fastq", "fastq" );
+		options.errorx_base("..");
+		SequenceRecordsPtr records_one = run_protocol( options );
+		SequenceRecordsPtr records_two( new SequenceRecords( *records_one ));
+		
+		// check that objects are equal after copying, but not pointers
+		TS_ASSERT( records_one != records_two );
+		TS_ASSERT( (*records_one)==(*records_two) );
+		TS_ASSERT( records_one->equals( records_two ));
+
+		SequenceRecordsPtr records_three = run_protocol( options );
+
+		TS_ASSERT( records_one != records_three );
+		TS_ASSERT( (*records_one)==(*records_three) );
+		TS_ASSERT( records_one->equals( records_three ));
+
+		SequenceQuery query( "SRR3175015.933", "TACTCCCGTGGTACGCCCAAGGACGGAGGCACACGGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGCGCGCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCGGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG", "TACTACAATGAGAAGTTCAAGGGCAAGGCCACACTGACTGCAGAAAAATCCTCCAGCACTGCCTACATGCAGCTCAGCAGCCTGACATCTGAGGACTCTGCTGTCTATTTCTGTGC--------------------------ACTACTGGGGCCAAGGCACCACTCTCACAGTCTCCTCAG", "###########################################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4," );
+
+		SequenceRecordPtr new_record( new SequenceRecord( query ));
+		records_three->add_record( new_record );
+
+		TS_ASSERT( (*records_one)!=(*records_three) );
+	}
+
 	void testVectorInsertion() {
 		ErrorXOptions options( "test.fastq", "fastq" );
 
@@ -169,7 +196,7 @@ public:
 	void testClonotypeGrouping() {
 
 		ErrorXOptions options( "test.fastq", "fastq" );
-		options.errorx_base("../");
+		options.errorx_base("..");
 		SequenceRecordsPtr records = SequenceRecordsPtr( new SequenceRecords( options ));
 		SequenceRecordPtr record;
 
@@ -241,9 +268,62 @@ public:
 		TS_ASSERT_EQUALS( a.somatic_variants(1), 2 );
 	}
 
+	void testSomaticVariants2() {
+
+		ErrorXOptions options( "testing/variant_test.fasta", "fasta" );
+		options.errorx_base( ".." );
+		options.allow_nonproductive( 1 );
+
+		SequenceRecordsPtr records = run_protocol( options );
+
+		vector<ClonotypeGroup> clonotypes = records->clonotypes();
+
+		TS_ASSERT_EQUALS( clonotypes.size(), 5 );
+
+		// Sort clonotypes by # members
+		sort( clonotypes.begin(), clonotypes.end(),
+			[]( ClonotypeGroup const & a, ClonotypeGroup const & b ) -> bool
+		{
+			return a.size() > b.size();
+		});
+
+		vector<ClonotypeGroup>::const_iterator it = clonotypes.begin();
+		SequenceRecordPtr current;
+
+		for ( int ii = 0; ii < it->size(); ++ii ) {
+			current = it->get( ii );
+			current->full_nt_sequence_corrected( current->full_nt_sequence() );
+		}
+
+		TS_ASSERT_EQUALS( it->size(), 7 );
+		TS_ASSERT_EQUALS( it->somatic_variants( /*corrected=*/0 ), 5 );
+		TS_ASSERT_EQUALS( it->somatic_variants( /*corrected=*/1 ), 5 );
+
+		it++;
+		TS_ASSERT_EQUALS( it->size(), 1 );
+		TS_ASSERT_EQUALS( it->somatic_variants( /*corrected=*/0 ), 1 );
+		TS_ASSERT_EQUALS( it->somatic_variants( /*corrected=*/1 ), 1 );
+
+		it++;
+		TS_ASSERT_EQUALS( it->size(), 1 );
+		TS_ASSERT_EQUALS( it->somatic_variants( /*corrected=*/0 ), 1 );
+		TS_ASSERT_EQUALS( it->somatic_variants( /*corrected=*/1 ), 1 );
+
+		it++;
+		TS_ASSERT_EQUALS( it->size(), 1 );
+		TS_ASSERT_EQUALS( it->somatic_variants( /*corrected=*/0 ), 1 );
+		TS_ASSERT_EQUALS( it->somatic_variants( /*corrected=*/1 ), 1 );
+
+		it++;
+		TS_ASSERT_EQUALS( it->size(), 1 );
+		TS_ASSERT_EQUALS( it->somatic_variants( /*corrected=*/0 ), 1 );
+		TS_ASSERT_EQUALS( it->somatic_variants( /*corrected=*/1 ), 1 );
+	}
+
+
 	void testUniqueSequences() {
 		ErrorXOptions options( "test.fastq", "fastq" );
-		options.errorx_base("../");
+		options.errorx_base("..");
 
 		AbSequence seq;
 		seq.v_gene( "IGHV3-23" ); 
@@ -311,7 +391,7 @@ public:
 	void testSomaticVariantsRecords() {
 
 		ErrorXOptions options( "test.fastq", "fastq" );
-		options.errorx_base("../");
+		options.errorx_base("..");
 		SequenceRecordsPtr records = SequenceRecordsPtr( new SequenceRecords( options ));
 
 		SequenceRecordPtr record = SequenceRecordPtr(new SequenceRecord());
@@ -371,7 +451,7 @@ public:
 	void testVJCounts() {
 
 		ErrorXOptions options( "test.fastq", "fastq" );
-		options.errorx_base("../");
+		options.errorx_base("..");
 		SequenceRecordsPtr records = SequenceRecordsPtr( new SequenceRecords( options ));
 
 		SequenceRecordPtr record = SequenceRecordPtr(new SequenceRecord());
@@ -416,6 +496,243 @@ public:
 		TS_ASSERT_EQUALS( counts["IGHV3-23_IGHJ3"], 1 );
 		TS_ASSERT_EQUALS( counts["IGHV3-23_IGHJ1"], 1 );
 	}
+	
+	void testProductivityAssignment() {
+		ErrorXOptions options( "testing/productivity.fastq", "fastq" );
+		options.errorx_base( ".." );
+		options.verbose( 0 );
+		SequenceRecordsPtr records = run_protocol( options );
+		
+		// short sequence
+		TS_ASSERT( records->get( 0 )->productive() );
+		// no match - non Ig sequence
+		TS_ASSERT( !records->get( 1 )->productive() );
+		// stop codon present
+		TS_ASSERT( !records->get( 2 )->productive() );
+		// regular sequence
+		TS_ASSERT( records->get( 3 )->productive() );
+		// bad D assignment
+		TS_ASSERT( records->get( 4 )->productive() );
+		// bad J assignment
+		TS_ASSERT( records->get( 5 )->productive() );
+		// no J found
+		TS_ASSERT( records->get( 6 )->productive() );
+		// no D and no J assigned
+		TS_ASSERT( records->get( 7 )->productive() );
+		// late start to assignment
+		TS_ASSERT( records->get( 8 )->productive() );
+		// only V gene present
+		TS_ASSERT( records->get( 9 )->productive() );
+		// bad V assignment + stop codon
+		TS_ASSERT( !records->get( 10 )->productive() );
+		// irrelevant sequence
+		TS_ASSERT( !records->get( 11 )->productive() );
+	}
+
+	void testVJCounts100() {
+		ErrorXOptions options( "testing/100.fastq", "fastq" );
+		options.allow_nonproductive( 1 );
+		options.verbose( 0 );
+		options.errorx_base( ".." );
+		SequenceRecordsPtr records = run_protocol( options );
+	
+		int good_records = records->good_records();
+		
+		map<string,int> v = records->vgene_counts();
+		map<string,int>::const_iterator it;
+		int sum = 0;	
+		for ( it = v.begin(); it != v.end(); ++it ) sum += it->second;
+		
+		TS_ASSERT_EQUALS( good_records, sum );
+
+		sum = 0;
+		map<string,int> j = records->jgene_counts();
+		for ( it = j.begin(); it != j.end(); ++it ) sum += it->second;
+		
+		TS_ASSERT_EQUALS( good_records, sum );
+
+		options.allow_nonproductive( 0 );
+		records = run_protocol( options );
+		good_records = records->good_records();
+		
+		v = records->vgene_counts();
+		sum = 0;
+		for ( it = v.begin(); it != v.end(); ++it ) sum += it->second;
+
+		TS_ASSERT_EQUALS( good_records, sum );
+
+		sum = 0;
+		j = records->jgene_counts();
+		for ( it = j.begin(); it != j.end(); ++it ) sum += it->second;
+
+		TS_ASSERT_EQUALS( good_records, sum );
+	}
+
+	 void testCDRLengths() {
+		ErrorXOptions options( "testing/100.fastq", "fastq" );
+		options.allow_nonproductive( 1 );
+		options.verbose( 0 );
+		options.errorx_base( ".." );
+		SequenceRecordsPtr records = run_protocol( options );
+
+
+		// Set up the correct values for each of these loops
+		map<string,vector<int>> correct_lengths;
+		
+		correct_lengths[ "CDR1" ] = 
+vector<int>({8,8,8,8,8,7,8,8,8,8,9,8,8,8,8,8,8,8,8,8,8,6,8,8,5,8,8,8,8,8,8,8,8,8,7,7,8,8,8,8,8,5,8,8,5,8,8,8,8,1,8,8,8,8,8,5,8,8,8,8,8,8,8,8,8,8,8,8,8,1,8,5,8} );
+		
+		correct_lengths[ "CDR2" ] = 
+vector<int>({5,7,8,7,5,8,11,8,8,8,7,8,8,8,8,7,8,8,7,7,7,7,8,7,8,8,7,8,2,8,8,8,8,7,8,7,7,7,7,7,7,8,8,8,7,8,8,8,7,7,8,8,7,8,8,10,8,6,7,9,8,8,8,8,8,8,8,7,6,8,8,7,7} );
+
+		correct_lengths[ "CDR3" ] =
+vector<int>({19,17,8,9,23,8,8,17,10,6,13,12,11,31,8,9,15,24,31,13,9,2,19,11,10,30,10,35,29,6,12,9,32,9,9,29,3,9,9,14,9,28,26,5});
+
+
+		map<string,vector<int>> lengths = records->cdr_lengths();
+		
+		for ( string cdr : vector<string>( { "CDR1", "CDR2", "CDR3" })) {
+			TS_ASSERT_EQUALS( lengths[ cdr ], correct_lengths[ cdr ] );
+		}
+
+
+		map<string,map<int,float>> bins_raw;
+		map<string,map<int,float>> bins_norm;
+
+		bins_raw[ "CDR1" ] = { make_pair(1,2),
+			make_pair(2,0),
+			make_pair(3,0),
+			make_pair(4,0),
+			make_pair(5,5),
+			make_pair(6,1),
+			make_pair(7,3),
+			make_pair(8,61),
+			make_pair(9,1) };
+
+		bins_norm[ "CDR1" ] = { make_pair(1,0.02739726),
+			make_pair(2,0),
+			make_pair(3,0),
+			make_pair(4,0),
+			make_pair(5,0.068493151),
+			make_pair(6,0.01369863),
+			make_pair(7,0.04109589),
+			make_pair(8,0.835616438),
+			make_pair(9,0.01369863) };
+
+		bins_raw[ "CDR2" ] = { make_pair(2,1),
+			make_pair(3,0),
+			make_pair(4,0),
+			make_pair(5,2),
+			make_pair(6,2),
+			make_pair(7,25),
+			make_pair(8,40),
+			make_pair(9,1),
+			make_pair(10,1),
+			make_pair(11,1)
+		};
+
+		bins_norm[ "CDR2" ] = { 
+			make_pair(2,0.0136986301369863),
+			make_pair(3,0),
+			make_pair(4,0),
+			make_pair(5,0.0273972602739726),
+			make_pair(6,0.0273972602739726),
+			make_pair(7,0.342465753424658),
+			make_pair(8,0.547945205479452),
+			make_pair(9,0.0136986301369863),
+			make_pair(10,0.0136986301369863),
+			make_pair(11,0.0136986301369863)	
+		};
+
+		bins_raw[ "CDR3" ] = {
+			make_pair(2,1),
+			make_pair(3,1),
+			make_pair(4,0),
+			make_pair(5,1),
+			make_pair(6,2),
+			make_pair(7,0),
+			make_pair(8,4),
+			make_pair(9,9),
+			make_pair(10,3),
+			make_pair(11,2),
+			make_pair(12,2),
+			make_pair(13,2),
+			make_pair(14,1),
+			make_pair(15,1),
+			make_pair(16,0),
+			make_pair(17,2),
+			make_pair(18,0),
+			make_pair(19,2),
+			make_pair(20,0),
+			make_pair(21,0),
+			make_pair(22,0),
+			make_pair(23,1),
+			make_pair(24,1),
+			make_pair(25,0),
+			make_pair(26,1),
+			make_pair(27,0),
+			make_pair(28,1),
+			make_pair(29,2),
+			make_pair(30,1),
+			make_pair(31,2),
+			make_pair(32,1),
+			make_pair(33,0),
+			make_pair(34,0),
+			make_pair(35,1)	
+		};
+
+		bins_norm[ "CDR3" ] = {
+			make_pair(2,0.0227272727272727),
+			make_pair(3,0.0227272727272727),
+			make_pair(4,0),
+			make_pair(5,0.0227272727272727),
+			make_pair(6,0.0454545454545455),
+			make_pair(7,0),
+			make_pair(8,0.0909090909090909),
+			make_pair(9,0.204545454545455),
+			make_pair(10,0.0681818181818182),
+			make_pair(11,0.0454545454545455),
+			make_pair(12,0.0454545454545455),
+			make_pair(13,0.0454545454545455),
+			make_pair(14,0.0227272727272727),
+			make_pair(15,0.0227272727272727),
+			make_pair(16,0),
+			make_pair(17,0.0454545454545455),
+			make_pair(18,0),
+			make_pair(19,0.0454545454545455),
+			make_pair(20,0),
+			make_pair(21,0),
+			make_pair(22,0),
+			make_pair(23,0.0227272727272727),
+			make_pair(24,0.0227272727272727),
+			make_pair(25,0),
+			make_pair(26,0.0227272727272727),
+			make_pair(27,0),
+			make_pair(28,0.0227272727272727),
+			make_pair(29,0.0454545454545455),
+			make_pair(30,0.0227272727272727),
+			make_pair(31,0.0454545454545455),
+			make_pair(32,0.0227272727272727),
+			make_pair(33,0),
+			make_pair(34,0),
+			make_pair(35,0.0227272727272727)
+		};	
+
+		for ( string cdr : vector<string>({ "CDR1", "CDR2", "CDR3" })) {
+			TS_ASSERT_EQUALS( 
+				util::bin_values( lengths[ cdr ], /*normalize=*/0 ),
+				bins_raw[ cdr ] 
+				);
+			
+			map<int,float> binned = util::bin_values( lengths[ cdr ], /*normalize=*/1 );
+			
+			for ( int ii = 0; ii < binned.size(); ++ii ) {
+				TS_ASSERT_DELTA( 
+					binned[ ii ], bins_norm[ cdr ][ ii ], 0.0001
+					);
+			}
+		}
+	 }
 };
 
 #endif /* UNITTESTS_HH_ */

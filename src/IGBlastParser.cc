@@ -15,7 +15,6 @@ heavy lifting in terms of turning that output into a SequenceRecord object
 #include <vector>
 #include <thread>
 #include <chrono>
-#include <mutex>
 
 #include "IGBlastParser.hh"
 #include "SequenceRecords.hh"
@@ -93,7 +92,7 @@ void IGBlastParser::blast( ErrorXOptions & options ) {
 	worker_thread.join();
 }
 
-SequenceRecordsPtr IGBlastParser::parse_output( ErrorXOptions & options  ) {
+SequenceRecordsPtr IGBlastParser::parse_output( ErrorXOptions const & options  ) {
 	ios_base::sync_with_stdio( false );
 	string line;
 	ifstream file( options.igblast_output() );
@@ -102,12 +101,11 @@ SequenceRecordsPtr IGBlastParser::parse_output( ErrorXOptions & options  ) {
 	vector<string> lines;
 
 	SequenceRecordsPtr records = SequenceRecordsPtr( new SequenceRecords( options ));
-
 	if ( !file.good() ) {
 		throw BadFileException( options.igblast_output()+" is not a valid file." );
 		return records;
 	}
-
+	
 	// Throw out the first header line
 	getline( file, line );
 
@@ -126,7 +124,7 @@ SequenceRecordsPtr IGBlastParser::parse_output( ErrorXOptions & options  ) {
 	return records;
 }
 
-void IGBlastParser::track_progress( ErrorXOptions & options ) {
+void IGBlastParser::track_progress( ErrorXOptions const & options ) {
 	int done = 0;
 	int last_done = 0;
 
@@ -134,24 +132,24 @@ void IGBlastParser::track_progress( ErrorXOptions & options ) {
 	string igblast_output = options.igblast_output();
 	int total_records = options.num_queries();
 
-	function<void(int,int,mutex*)> increment = options.increment();
+	function<void(int,int)> increment = options.increment();
 	function<void(void)> reset = options.reset();
 	function<void(void)> finish = options.finish();
 	function<void(string)> message = options.message();
+
+	reset();
 	message( "Running IGBlast..." );
 
-	/// This mutex doesn't actually do anything - it's just 
-	/// there for compatibility
-	mutex* m = new mutex;
-
-	increment( 0, total_records, m );
+	increment( 0, total_records );
 
 	while ( !thread_finished_ ) {
+
 		done = util::count_lines( igblast_output );
+
 		// only write to screen if the value has changed
 		if ( last_done != done ) {
 			// increment with the amount that it's changed
-			increment( done-last_done, total_records, m );
+			increment( done-last_done, total_records );
 
 			last_done = done;
 		}
@@ -159,11 +157,8 @@ void IGBlastParser::track_progress( ErrorXOptions & options ) {
 	}
 	// Finish the progress bar, since it's done now
 	finish();
-	reset();
 
-	// We're done with mutex
-	delete m;
-
+	// TODO find more robust way to capture this
 	cout << endl;
 }
 
@@ -177,7 +172,7 @@ AbSequence IGBlastParser::parse_line( vector<string> const & tokens, ErrorXOptio
 
 	AbSequence sequence;
 
-	if ( tokens.size() != 88 ) {
+	if ( tokens.size() != 88 ) { // there should be 88 lines in IGBlast output
 		sequence.good_ = false;
 		sequence.failure_reason_ = "Output line does not parse correctly";
 		return sequence;
@@ -201,19 +196,31 @@ AbSequence IGBlastParser::parse_line( vector<string> const & tokens, ErrorXOptio
 
 	// Get the PHRED string that we previously stored in an unordered_map
 	// if it's not present mark the sequence as bad and move on
-	try {
-		unordered_map<string,string> qmap = options.quality_map();
-		sequence.phred_ = options.get_quality( sequence.sequenceID_ );
-	} catch ( out_of_range & ) {
-		sequence.good_ = 0;
-		cout << "Warning: quality not found for sequence " << sequence.sequenceID_ << endl;
-		sequence.failure_reason_ = "Quality information was not found";
+	if ( options.format() == "fastq" ) {
+		try {
+			unordered_map<string,string> qmap = options.quality_map();
+			sequence.phred_ = options.get_quality( sequence.sequenceID_ );
+		} catch ( out_of_range & ) {
+			sequence.good_ = 0;
+			if ( options.verbose() > 0 ) {
+				cout << "Warning: quality not found for sequence " << sequence.sequenceID_ << endl;
+			}
+			sequence.failure_reason_ = "Quality information was not found";
 
-		return sequence;
+			return sequence;
+		}
+	} else {
+		sequence.phred_ = "N/A";
+		sequence.phred_trimmed_ = "N/A";
 	}
 
 	sequence.chain_      = tokens[2];
-	sequence.productive_ = tokens[5]=="T";
+	// I make the decision to only count a sequence as non-productive if Productive==False in the IGBlast output
+	// IGBlast only marks Productive as True if the full V(D)J can be assigned well
+	// in cases where there's bad assignment or not the full recombined segment, it just leaves productive blank
+	// Productive will be false if there's actually a stop codon present, which is what I usually think of as productive
+	// so sometimes it will be marked as productive even though it's a crappy sequence
+	sequence.productive_ = tokens[5]!="F";
 	sequence.strand_     = ( tokens[6]=="F" ) ? "+" : "-";
 
 	// bad chain ID - warn and keep going
@@ -221,7 +228,9 @@ AbSequence IGBlastParser::parse_line( vector<string> const & tokens, ErrorXOptio
 	if ( find( valid_chains.begin(), valid_chains.end(), sequence.chain() )
 			== valid_chains.end() ) {
 		// TODO: implement TCRG and D
-		cout << "Warning: invalid chain type "+sequence.chain_+" detected" << endl;
+		if ( options.verbose() > 0 ) {
+			cout << "Warning: invalid chain type "+sequence.chain_+" detected" << endl;
+		}
 	}
 
 	sequence.cdr1_nt_sequence_ = tokens[34];

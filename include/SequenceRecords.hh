@@ -31,6 +31,7 @@ settings for processing, and ErrorPredictor that does the error correction itsel
 #include <memory>
 #include <map>
 #include <functional>
+#include <mutex>
 
 #include "SequenceQuery.hh"
 #include "SequenceRecord.hh"
@@ -81,6 +82,14 @@ public:
 		so they can be safely deleted after.
 	*/
 	SequenceRecords( vector<SequenceRecordPtr> const & record_vector, ErrorXOptions const & options );
+
+	/**
+		Comparison operators
+	*/
+	bool operator==( SequenceRecords const & other ) const;
+	bool operator!=( SequenceRecords const & other ) const;
+	bool equals( unique_ptr<SequenceRecords> const & other ) const;
+	bool equals( shared_ptr<SequenceRecords> const & other ) const;
 
 	/**
 		Populates SequenceRecords object with elements from
@@ -161,19 +170,20 @@ public:
 	/**
 		Returns a vector of string vectors, where each
 		string vector is a summary of a SequenceRecord
-
+		
+		@param bool fulldata return all fields?
 		@return vector of summaries of each SequenceRecord
 	*/
-	vector<vector<string>> get_summary() const;
+	vector<vector<string>> get_summary( bool fulldata=1 ) const;
 
 	/**
 		Returns a vector of labels, where the labels describe
 		the entries from get_summary()
 
-
+		@param bool fulldata return all fields?
 		@return vector of labels
 	*/
-	vector<string> get_summary_labels() const;
+	static vector<string> get_summary_labels( bool fulldata=1 );
 
 	/**
 		Wraps the get_summary() function and writes to 
@@ -186,6 +196,13 @@ public:
 		the outfile_ variable of ErrorXOptions.
 	*/
 	void write_summary() const;
+
+	/**
+		Runs "mock" error correction protocol. When given a FASTA file
+		I can't actually do error correction. So I just put the NT sequence
+		in the "corrected" column
+	*/
+	void mock_correct_sequences();
 
 	/**
 		Runs error correction protocol on each SequenceRecord
@@ -217,6 +234,14 @@ public:
 	*/
 	void count_clonotypes();
 	vector<ClonotypeGroup> clonotypes();
+
+	/**
+		Get the lengths of CDR loops in the dataset. Returns a 
+		map in the format:
+		{"CDR1": vector<int>{ 11,11,10 }, "CDR2": {}, "CDR3": {} }
+	*/
+	map<string,vector<int>> cdr_lengths();
+
 
 	/**
 		Functions to return the count of unique sequences and clonotypes
@@ -252,7 +277,7 @@ private:
 		@param m mutex* to keep track of threads
 		@param total total number of records over all threads
 	*/
-	static void correct_sequences_threaded( unique_ptr<SequenceRecords> & records, function<void(int,int,mutex*)>* update, mutex* m, int total);
+	static void correct_sequences_threaded( unique_ptr<SequenceRecords> & records, function<void(int,int)>* update, mutex* m, int total);
 
 	/** 
 	============================= 

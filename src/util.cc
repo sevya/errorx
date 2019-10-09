@@ -18,6 +18,7 @@ Code contained herein is proprietary and confidential.
 #include <map>
 #include <vector>
 #include <regex>
+#include <algorithm>
 
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
@@ -38,6 +39,43 @@ using namespace std;
 namespace errorx {
 namespace util {
 
+vector<string> get_labels( bool fulldata/*=1*/ ) {
+	if ( fulldata ) {
+		return vector<string> {
+			"SequenceID",
+			"V_gene",
+			"V_identity",
+			"V_Evalue",
+			"D_gene",
+			"D_identity",
+			"D_Evalue",
+			"J_gene",
+			"J_identity",
+			"J_Evalue",
+			"Strand",
+			"Chain",
+			"Productive",
+			"CDR1_NT_sequence",
+			"CDR1_AA_sequence",
+			"CDR2_NT_sequence",
+			"CDR2_AA_sequence",
+			"CDR3_NT_sequence",
+			"CDR3_AA_sequence",
+			"Full_NT_sequence",
+			"Full_GL_NT_sequence",
+			"PHRED_scores",
+			"Full_AA_sequence",
+			"Full_NT_sequence_corrected",
+			"Full_AA_sequence_corrected",
+			"N_errors"
+		};
+	} else {
+			return vector<string> { "SequenceID", "V_gene", "D_gene", 
+			"J_gene", "Full_NT_sequence", "Full_NT_sequence_corrected", 
+			"N_errors" };
+
+	}
+}
 bool isint( string const & str ) {
 	try {
 		boost::lexical_cast<int>( str );
@@ -222,9 +260,25 @@ int count_lines( string const & file ) {
 	if ( !in.good() ) return 0;
 	string line;
 	int ii = 0;
-	while( getline(in,line) ) { ++ii; }
-	in.close();
+	while ( getline(in,line) ) { ++ii; }
+
 	return ii;
+}
+
+int count_lines_fasta( string const & file ) {
+        ios_base::sync_with_stdio( false );
+
+        std::ifstream in(file);
+        if ( !in.good() ) return 0;
+        string line;
+        int ii = 0;
+        while ( getline(in,line) ) {
+		// don't want to get tripped up by empty lines
+		if ( line.size() == 0 ) continue;
+		if ( line[0]=='>' ) ++ii; 
+	}
+
+        return ii;
 }
 
 ///////////// Encryption modules /////////////
@@ -429,12 +483,19 @@ bool compare( const string & a, const string & b, const char N ) {
 	string a_noN = "";
 	string b_noN = "";
 
-	for ( int ii = a.size()-1; ii >= 0; --ii ) {
+	for ( int ii = 0; ii < a.size(); ++ii ) {
 		if ( a[ii] != N && b[ii] != N ) {
 			a_noN += a[ii];
 			b_noN += b[ii];
 		}
 	}
+
+	// for ( int ii = a.size()-1; ii >= 0; --ii ) {
+	// 	if ( a[ii] != N && b[ii] != N ) {
+	// 		a_noN += a[ii];
+	// 		b_noN += b[ii];
+	// 	}
+	// }
 
 	return a_noN < b_noN;
 }
@@ -542,6 +603,35 @@ vector<pair<string,int>> sort_map( map<string,int,function<bool(string,string)>>
 	return vec;
 }
 
+map<int,float> bin_values( vector<int> const & input, bool normalized ) {
+	map<int,float> cmap;
+	if ( input.empty() ) return cmap;
+
+	auto bounds = minmax_element( begin(input), end(input) );
+
+	// initialize map with empty values
+	for ( int ii = (*bounds.first); ii < (*bounds.second); ++ii ) {
+		cmap[ ii ] = 0;
+	}
+
+	vector<int>::const_iterator vector_it;
+	for ( vector_it = input.begin(); vector_it != input.end(); ++vector_it ) {
+		cmap[ *vector_it ]++;
+	}
+
+	if ( normalized ) {
+		map<int,float>::iterator map_it;
+		int total = input.size();
+		for ( map_it = cmap.begin(); map_it != cmap.end(); ++map_it ) {
+			map_it->second /= total;
+		}
+	}
+
+	return cmap;
+
+}
+
+
 //////////// END aggregation functions ////////////////////
 
 void handle_signal( int s ) {
@@ -549,8 +639,11 @@ void handle_signal( int s ) {
 	exit( 1 ); 
 }
 
-// TODO make this windows compliant
 void register_signal() {
+#if defined(_WIN32) || defined(_WIN64)
+	// Windows automatically registers control-C signal
+	// I don't need to do anything here
+#else
 	struct sigaction sigIntHandler;
 
 	sigIntHandler.sa_handler = handle_signal;
@@ -558,6 +651,7 @@ void register_signal() {
 	sigIntHandler.sa_flags = 0;
 
 	sigaction( SIGINT, &sigIntHandler, NULL );
+#endif
 }
 
 } // namespace util

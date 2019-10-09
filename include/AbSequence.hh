@@ -50,6 +50,12 @@ public:
 	*/
 	~AbSequence();
 	
+	/**
+		Comparison operator
+	*/
+	bool operator==( AbSequence const & other ) const;
+	bool operator!=( AbSequence const & other ) const;
+
 	void build( ErrorXOptions const & options );
 
 	void print() const;

@@ -60,7 +60,7 @@ public:
 
 		@return A SequenceRecords object constructed from the IGBlast output
 	*/
-	SequenceRecordsPtr parse_output( ErrorXOptions & options );
+	SequenceRecordsPtr parse_output( ErrorXOptions const & options );
 
 	/**
 		Parses a section of the IGBlast output file representing
@@ -91,7 +91,7 @@ private:
 
 		@param options ErrorXOptions to control processing
 	*/
-	void track_progress( ErrorXOptions & options );
+	void track_progress( ErrorXOptions const & options );
 
 	/**
 		Execute the query in another thread to allow progress bar
@@ -107,4 +107,4 @@ private:
 
 } // namespace errorx
 
-#endif /* IGBLASTPARSER_HH_ */
+#endif // IGBLASTPARSER_HH_
