@@ -101,12 +101,11 @@ SequenceRecordsPtr IGBlastParser::parse_output( ErrorXOptions const & options  )
 	vector<string> lines;
 
 	SequenceRecordsPtr records = SequenceRecordsPtr( new SequenceRecords( options ));
-
 	if ( !file.good() ) {
 		throw BadFileException( options.igblast_output()+" is not a valid file." );
 		return records;
 	}
-
+	
 	// Throw out the first header line
 	getline( file, line );
 

@@ -47,10 +47,8 @@ SequenceRecordsPtr run_protocol( ErrorXOptions & options ) {
 		// Run IGBlast query on FASTA file
 		IGBlastParser parser;
 		parser.blast( options );
-
 		// Parse the IGBlast output
 		records = parser.parse_output( options );
-
 	} else if ( options.format() == "fasta" ) {
 		// Run with FASTA file
 		// Set infasta here - normally it would be set by fastq_to_fasta

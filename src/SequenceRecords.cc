@@ -339,7 +339,6 @@ void SequenceRecords::mock_correct_sequences() {
 }
 
 void SequenceRecords::correct_sequences( SequenceRecordsPtr & records ) {
-
 	int nthreads = records->options_->nthreads();
 	int total_records = records->size();
 

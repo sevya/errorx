@@ -36,7 +36,8 @@ public:
 		util::register_signal();
 
 		ErrorXOptions options( "testing/test_sequences.fastq", "fastq" );
-		options.errorx_base( "../" );
+		options.errorx_base( ".." );
+
 		options.verbose( 0 );
 		options.allow_nonproductive( 1 );
 
@@ -439,7 +440,7 @@ public:
 
 	void testMouse() {
 		ErrorXOptions options( "testing/test_sequences.fastq", "fastq" );
-		options.errorx_base( "../" );
+		options.errorx_base( ".." );
 		options.verbose( 0 );
 		options.allow_nonproductive( 1 );
 		options.species( "mouse" );
@@ -488,7 +489,7 @@ public:
 
 	void testTCRA() {
 		ErrorXOptions options( "testing/test_sequences.fastq", "fastq" );
-		options.errorx_base( "../" );
+		options.errorx_base( ".." );
 		options.verbose( 0 );
 		options.allow_nonproductive( 1 );
 		options.species( "human" );
@@ -537,7 +538,7 @@ public:
 
 	void testTCRB() {
 		ErrorXOptions options( "testing/test_sequences.fastq", "fastq" );
-		options.errorx_base( "../" );
+		options.errorx_base( ".." );
 		options.verbose( 0 );
 		options.allow_nonproductive( 1 );
 		options.species( "human" );
@@ -678,7 +679,7 @@ public:
 
 	void testFASTASequences() {
 		ErrorXOptions options( "testing/test_sequences.fasta", "fasta" );
-		options.errorx_base( "../" );
+		options.errorx_base( ".." );
 		options.verbose( 0 );
 		options.allow_nonproductive( 1 );
 

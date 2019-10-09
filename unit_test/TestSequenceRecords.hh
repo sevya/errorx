@@ -28,7 +28,7 @@ public:
 	void testSequenceGrouping() {
 
 		ErrorXOptions options( "test.fastq", "fastq" );
-		options.errorx_base("../");
+		options.errorx_base("..");
 		SequenceRecordsPtr records = SequenceRecordsPtr(new SequenceRecords( options ));
 		vector<string> corrected_sequences = {
 			"ACTGACTGACTGACTGACTGACTGACTGACTG",
@@ -69,7 +69,7 @@ public:
 	void testSequenceGroupingNoClonotype() {
 
 		ErrorXOptions options( "test.fastq", "fastq" );
-		options.errorx_base("../");
+		options.errorx_base("..");
 		SequenceRecordsPtr records = SequenceRecordsPtr(new SequenceRecords( options ));
 		vector<string> corrected_sequences = {
 			"ACTGACTGACTGACTGACTGACTGACTGACTG",
@@ -137,7 +137,7 @@ public:
 	void testEquality() {
 
 		ErrorXOptions options( "testing/test_sequences.fastq", "fastq" );
-		options.errorx_base("../");
+		options.errorx_base("..");
 		SequenceRecordsPtr records_one = run_protocol( options );
 		SequenceRecordsPtr records_two( new SequenceRecords( *records_one ));
 		
@@ -196,7 +196,7 @@ public:
 	void testClonotypeGrouping() {
 
 		ErrorXOptions options( "test.fastq", "fastq" );
-		options.errorx_base("../");
+		options.errorx_base("..");
 		SequenceRecordsPtr records = SequenceRecordsPtr( new SequenceRecords( options ));
 		SequenceRecordPtr record;
 
@@ -271,7 +271,7 @@ public:
 	void testSomaticVariants2() {
 
 		ErrorXOptions options( "testing/variant_test.fasta", "fasta" );
-		options.errorx_base( "../" );
+		options.errorx_base( ".." );
 		options.allow_nonproductive( 1 );
 
 		SequenceRecordsPtr records = run_protocol( options );
@@ -323,7 +323,7 @@ public:
 
 	void testUniqueSequences() {
 		ErrorXOptions options( "test.fastq", "fastq" );
-		options.errorx_base("../");
+		options.errorx_base("..");
 
 		AbSequence seq;
 		seq.v_gene( "IGHV3-23" ); 
@@ -391,7 +391,7 @@ public:
 	void testSomaticVariantsRecords() {
 
 		ErrorXOptions options( "test.fastq", "fastq" );
-		options.errorx_base("../");
+		options.errorx_base("..");
 		SequenceRecordsPtr records = SequenceRecordsPtr( new SequenceRecords( options ));
 
 		SequenceRecordPtr record = SequenceRecordPtr(new SequenceRecord());
@@ -451,7 +451,7 @@ public:
 	void testVJCounts() {
 
 		ErrorXOptions options( "test.fastq", "fastq" );
-		options.errorx_base("../");
+		options.errorx_base("..");
 		SequenceRecordsPtr records = SequenceRecordsPtr( new SequenceRecords( options ));
 
 		SequenceRecordPtr record = SequenceRecordPtr(new SequenceRecord());
@@ -499,7 +499,7 @@ public:
 	
 	void testProductivityAssignment() {
 		ErrorXOptions options( "testing/productivity.fastq", "fastq" );
-		options.errorx_base( "../" );
+		options.errorx_base( ".." );
 		options.verbose( 0 );
 		SequenceRecordsPtr records = run_protocol( options );
 		
@@ -533,7 +533,7 @@ public:
 		ErrorXOptions options( "testing/100.fastq", "fastq" );
 		options.allow_nonproductive( 1 );
 		options.verbose( 0 );
-		options.errorx_base( "../" );
+		options.errorx_base( ".." );
 		SequenceRecordsPtr records = run_protocol( options );
 	
 		int good_records = records->good_records();
@@ -572,7 +572,7 @@ public:
 		ErrorXOptions options( "testing/100.fastq", "fastq" );
 		options.allow_nonproductive( 1 );
 		options.verbose( 0 );
-		options.errorx_base( "../" );
+		options.errorx_base( ".." );
 		SequenceRecordsPtr records = run_protocol( options );
 
 

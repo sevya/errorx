@@ -423,7 +423,7 @@ void handle_signal( int s );
 /**
 	Registers the interruption signal to handle_signal
 */
-void register_signal();
+ERRORX_API void register_signal();
 
 } // namespace util
 } // namespace errorx
