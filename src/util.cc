@@ -639,8 +639,11 @@ void handle_signal( int s ) {
 	exit( 1 ); 
 }
 
-// TODO make this windows compliant
 void register_signal() {
+#if defined(_WIN32) || defined(_WIN64)
+	// Windows automatically registers control-C signal
+	// I don't need to do anything here
+#else
 	struct sigaction sigIntHandler;
 
 	sigIntHandler.sa_handler = handle_signal;
@@ -648,6 +651,7 @@ void register_signal() {
 	sigIntHandler.sa_flags = 0;
 
 	sigaction( SIGINT, &sigIntHandler, NULL );
+#endif
 }
 
 } // namespace util

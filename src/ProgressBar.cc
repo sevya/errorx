@@ -9,6 +9,7 @@ Code contained herein is proprietary and confidential.
 
 #include <functional>
 #include <iostream>
+#include <string>
 
 #include "ProgressBar.hh"
 
