@@ -19,7 +19,7 @@ typedef unsigned int uint;
 
 namespace keras {
 
-class KerasModel {
+class ERRORX_API KerasModel {
 
 public:
 	/**
