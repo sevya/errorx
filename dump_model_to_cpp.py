@@ -21,8 +21,8 @@ parser.add_argument('-o', '--out', help="Output file name", default='model.nnet'
 
 args = parser.parse_args()
 
-print 'Read architecture from', args.architecture
-print 'Read weights from', args.weights
+print( 'Read architecture from', args.architecture)
+print( 'Read weights from', args.weights)
 
 model_string = mf.get_model_as_string( args.architecture, args.weights )
 
