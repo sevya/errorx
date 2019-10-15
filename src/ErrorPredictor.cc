@@ -45,7 +45,7 @@ double ErrorPredictor::apply_model( SequenceFeatures const & features ) const {
 	data->set_data( feature_vector );
 
 	vector<double> output = keras_model_.compute_output( data );
-
+	
 	return output[0];
 	
 }

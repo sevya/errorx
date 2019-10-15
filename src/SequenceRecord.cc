@@ -168,7 +168,6 @@ void SequenceRecord::predict_errors( ErrorPredictor const & predictor,
 		
 	for ( int ii = 0; ii < sequence_.full_nt_sequence().length(); ++ii ) {
 		SequenceFeatures features( *this, ii );
-
 		double error_probability = predictor.apply_model( features );
 		predicted_errors_all_.push_back( pair<int,double>( ii, error_probability ));
 	}

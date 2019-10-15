@@ -206,7 +206,6 @@ vector<double> SequenceFeatures::get_feature_vector() const {
 	feature_vector.push_back( is_germline_ );
 	feature_vector.push_back( local_SHM_ );
 	feature_vector.push_back( global_SHM_ );
-	cout << "feature vector is " << feature_vector.size() << " elements long" << endl; // TODO remove
 	return feature_vector;
 }
 
