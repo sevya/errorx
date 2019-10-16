@@ -24,31 +24,33 @@
 using namespace std;
 using namespace errorx;
 
-class TestSequenceFeatures : public CxxTest::TestSuite
-{
+class TestSequenceFeatures : public CxxTest::TestSuite {
 public:
 
 	void setUp() {
 		sequenceID_ = "SRR3175015.933";
-		sequence_ =
-			"TACTCCCGTGGTACGCCCAAGGACGGAGGCACACGGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGCGCGCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCGGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG";
+		sequence_ = "CAGATCCAGTTGGTGCAGTCTGGACCTGAGCTGAAGAAGCCTGGAGAGACAGTCAGGATCTCCTGCAAGGCTTCTGGGTATACCTTCACAACTGCTGGAATGCAGTGGGTGCAAAAGATGCCAGGAAAGGGTTTGAAGTGGATTGGCTGGATAAACACCCACTCTGGAGTGCCAAAATATGCAGAAGACTTCAAGGGACGGTTTGTCTTCTCTTTGGAAACCTCTGCCAGCACTGCATATTTACAGATAACGAACCTCAAAAATGAGGACACGGCTACATATTTCGTTGCGAGAGGAGGGGCCGCCTTCTATAGAAACGACGGGGGTGCTATGGACTCCTGGGGTCAAGGAACCTCAGTCACCGTCTCCTCAG";
 
-		gl_sequence_ =
-			"TACTACAATGAGAAGTTCAAGGGCAAGGCCACACTGACTGCAGAAAAATCCTCCAGCACTGCCTACATGCAGCTCAGCAGCCTGACATCTGAGGACTCTGCTGTCTATTTCTGTGC--------------------------ACTACTGGGGCCAAGGCACCACTCTCACAGTCTCCTCAG";
+		gl_sequence_ = "CAGATCCAGTTGGTGCAGTCTGGACCTGAGCTGAAGAAGCCTGGAGAGACAGTCAGGATCTCCTGCAAGGCTTCTGGGTATACCTTCACAACTGCTGGAATGCAGTGGGTGCAAAAGATGCCAGGAAAGGGTTTGAAGTGGATTGGCTGGATAAACACCCACTCTGGAGTGCCAAAATATGCAGAAGACTTCAAGGGACGGTTTGCCTTCTCTTTGGAAACCTCTGCCAGCACTGCATATTTACAGATAAGCAACCTCAAAAATGAGGACACGGCTACGTATTTCTGTGCGAGA--------------------------------TGCTATGGACTACTGGGGTCAAGGAACCTCAGTCACCGTCTCCTCAG";
 
-		quality_string_ =
-			"###########################################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4,";
+		quality_string_ = ";=,,=;EE,<C,,8,CC,;;C-CEFGGGGGGGDFGGGGGGGGGGEGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG@FGGGGGGGGFFFFGDFFGGFCEGGGGGGGGGGGGGEEGGGGDFGGGEEFCFCFGGCFFFGGGGGGGGGGGGGGF66DGGGGGCFGGGDG5DGFGFDCDBF9BA8@FFFFFFDAFGFF@?B@33>8;@B4C?CCFFEECE27;;@;@@E333:@CFFF6;DF>(4:1<A#######@@@6C:A;4)7/)CEEFGFFCFGGC7?:9ECDEDGD6GGCFA,DDFF=8EGECC8FF=9,GGGFDGE@E;GGGGGGGGGGGFGGGG";
 
 		query_  = new SequenceQuery( sequenceID_, sequence_, gl_sequence_, quality_string_ );
 		record_ = SequenceRecordPtr( new SequenceRecord( *query_ ));
+	
+		// These are the features at position 205
+		raw_vector_position_ = 205;
+		raw_vector_ = { 0.509383,0.411765,0.44577,0.743568,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0.5,0.875,0.95,0.925,0.95,0.925,0.875,0.85,0.875,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0.0588235,0.0187668 };
 
-		
+		predicted_value_ = 0.16386315;
+		// Should be 2 predicted errors in the whole sequence in 373 total bases
+		// (errors/length) * (precision / recall)
+		// precision = 0.660
+		// recall = 0.404
+		predicted_error_rate_ = 0.008759589095639;
 
-		raw_vector_ = { 0.63535911602209949, 0.35294117647058826, 0.077207137977055973, 0.097010460385836522, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0.050000000000000003, 0.050000000000000003, 0.050000000000000003, 0.050000000000000003, 0.050000000000000003, 0.050000000000000003, 0.050000000000000003, 0.050000000000000003, 0.050000000000000003, 0.050000000000000003, 0.050000000000000003, 0.85000000000000009, 0.625, 0.70000000000000007, 0.60000000000000009, 0.77500000000000002, 0.55000000000000004, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0.18232044198895028 };
-
-		predicted_value_ = 0.027573684313656657;
-		predicted_error_rate_ = 0.054154586729391;
-
+		// precision to use in TS_ASSERT_DELTA
+		precision_ = pow( 10, -4 );
 		cout.precision( 9 );
 	}
 
@@ -59,13 +61,16 @@ public:
 
 	void testAbSequence() {
 		TS_ASSERT_EQUALS( record_->full_nt_sequence(), 
-		"TACTCCCGTGGTACGCCCAAGGACGGAGGCACACGGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGCGCGCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCGGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG" );
+		"CAGATCCAGTTGGTGCAGTCTGGACCTGAGCTGAAGAAGCCTGGAGAGACAGTCAGGATCTCCTGCAAGGCTTCTGGGTATACCTTCACAACTGCTGGAATGCAGTGGGTGCAAAAGATGCCAGGAAAGGGTTTGAAGTGGATTGGCTGGATAAACACCCACTCTGGAGTGCCAAAATATGCAGAAGACTTCAAGGGACGGTTTGTCTTCTCTTTGGAAACCTCTGCCAGCACTGCATATTTACAGATAACGAACCTCAAAAATGAGGACACGGCTACATATTTCGTTGCGAGAGGAGGGGCCGCCTTCTATAGAAACGACGGGGGTGCTATGGACTCCTGGGGTCAAGGAACCTCAGTCACCGTCTCCTCAG"
+		);
 
 		TS_ASSERT_EQUALS( record_->full_gl_nt_sequence(), 
-		"TACTACAATGAGAAGTTCAAGGGCAAGGCCACACTGACTGCAGAAAAATCCTCCAGCACTGCCTACATGCAGCTCAGCAGCCTGACATCTGAGGACTCTGCTGTCTATTTCTGTGC--------------------------ACTACTGGGGCCAAGGCACCACTCTCACAGTCTCCTCAG" );
-		
+		"CAGATCCAGTTGGTGCAGTCTGGACCTGAGCTGAAGAAGCCTGGAGAGACAGTCAGGATCTCCTGCAAGGCTTCTGGGTATACCTTCACAACTGCTGGAATGCAGTGGGTGCAAAAGATGCCAGGAAAGGGTTTGAAGTGGATTGGCTGGATAAACACCCACTCTGGAGTGCCAAAATATGCAGAAGACTTCAAGGGACGGTTTGCCTTCTCTTTGGAAACCTCTGCCAGCACTGCATATTTACAGATAAGCAACCTCAAAAATGAGGACACGGCTACGTATTTCTGTGCGAGA--------------------------------TGCTATGGACTACTGGGGTCAAGGAACCTCAGTCACCGTCTCCTCAG"
+		);
+
 		TS_ASSERT_EQUALS( record_->quality_string(),
-		"###########################################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4," );
+		";=,,=;EE,<C,,8,CC,;;C-CEFGGGGGGGDFGGGGGGGGGGEGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG@FGGGGGGGGFFFFGDFFGGFCEGGGGGGGGGGGGGEEGGGGDFGGGEEFCFCFGGCFFFGGGGGGGGGGGGGGF66DGGGGGCFGGGDG5DGFGFDCDBF9BA8@FFFFFFDAFGFF@?B@33>8;@B4C?CCFFEECE27;;@;@@E333:@CFFF6;DF>(4:1<A#######@@@6C:A;4)7/)CEEFGFFCFGGC7?:9ECDEDGD6GGCFA,DDFF=8EGECC8FF=9,GGGFDGE@E;GGGGGGGGGGGFGGGG"
+		);
 	}
 
 	void testCharEncoding() {
@@ -214,7 +219,7 @@ public:
 	void testFeatureVectorSize() {
 		SequenceFeatures sf ( *record_, 12 );
 		vector<double> features = sf.get_feature_vector();
-		TS_ASSERT_EQUALS( features.size(), 228 );
+		TS_ASSERT_EQUALS( features.size(), 124 );
 
 	}
 
@@ -256,8 +261,8 @@ public:
 
 	void testPositionalPrediction() {
 		ErrorXOptions options( "testing/test.fastq", "tsv" );
-		options.errorx_base("../");
-		options.verbose(0);
+		options.errorx_base( ".." );
+		options.verbose( 0 );
 		ErrorPredictor predictor( options );
 
 		string line;
@@ -273,36 +278,36 @@ public:
 			SequenceFeatures features( *record_, position );
 			pred = predictor.apply_model( features );
 
-			TS_ASSERT_DELTA( probability, pred, pow(10,-5));
+			TS_ASSERT_DELTA( probability, pred, precision_ );
 		}
 	}
 
 	void testFeaturesProperlyCalculated() {
-		SequenceFeatures features ( *record_, 136 );
+		SequenceFeatures features ( *record_, raw_vector_position_ );
 
 		vector<double> results_vector_test = features.get_feature_vector();
 
 		for ( int ii = 0; ii < raw_vector_.size(); ++ii ) {
-			TS_ASSERT_DELTA( raw_vector_[ii], results_vector_test[ii], pow(10,-9) )
+			TS_ASSERT_DELTA( raw_vector_[ii], results_vector_test[ii], precision_ )
 		}
 	}
 
 	void testProperPredictionsFromFeatures() {
-		SequenceFeatures features ( *record_, 136 );
+		SequenceFeatures features ( *record_, raw_vector_position_ );
 
 		ErrorXOptions options( "tmp", "tsv" );
-		options.errorx_base("..");
-		options.verbose(0);
+		options.errorx_base( ".." );
+		options.verbose( 0 );
 		ErrorPredictor predictor( options );
 
-		TS_ASSERT_DELTA( predicted_value_, predictor.apply_model( features ), pow(10,-9) );
+		TS_ASSERT_DELTA( predicted_value_, predictor.apply_model( features ), precision_ );
 	}
 
 	void testErrorRate_singlethread() {
 
 		ErrorXOptions options( "tmp", "tsv" );
-		options.errorx_base("..");
-		options.verbose(0);
+		options.errorx_base( ".." );
+		options.verbose( 0 );
 		ErrorPredictor predictor( options );
 
 
@@ -324,7 +329,7 @@ public:
 
 		SequenceRecords::correct_sequences( records );
 
-		TS_ASSERT_DELTA( predicted_error_rate_, records->estimate_error_rate(), pow(10,-9) );
+		TS_ASSERT_DELTA( predicted_error_rate_, records->estimate_error_rate(), precision_ );
 
 		// delete records;
 	}
@@ -332,8 +337,8 @@ public:
 	void testErrorRate_multithread() {
 
 		ErrorXOptions options( "tmp", "tsv" );
-		options.errorx_base("..");
-		options.verbose(0);
+		options.errorx_base( ".." );
+		options.verbose( 0 );
 		ErrorPredictor predictor( options );
 
 		vector<double> pred1 = predictor.apply_model( vector<vector<double>> {raw_vector_} );
@@ -353,7 +358,7 @@ public:
 
 		SequenceRecords::correct_sequences( records );
 
-		TS_ASSERT_DELTA( predicted_error_rate_, records->estimate_error_rate(), pow(10,-9) );
+		TS_ASSERT_DELTA( predicted_error_rate_, records->estimate_error_rate(), precision_ );
 		
 		// delete records;
 	}
@@ -361,7 +366,7 @@ public:
 
 	void testTSVInput_singlethread() {
 		// sequenceID,nt_sequence,gl_sequence,quality_string
-		ErrorXOptions options( util::get_root_path().string()+"/testing/test.tsv", "tsv" );
+		ErrorXOptions options( "testing/test.tsv", "tsv" );
 		options.errorx_base("..");
 		options.nthreads( 1 );
 
@@ -370,7 +375,7 @@ public:
 	
 		SequenceRecords::correct_sequences( records );
 
-		TS_ASSERT_DELTA( predicted_error_rate_, records->estimate_error_rate(), pow(10,-9) );
+		TS_ASSERT_DELTA( predicted_error_rate_, records->estimate_error_rate(), precision_ );
 		// delete records;
 
 	}
@@ -378,7 +383,7 @@ public:
 
 	void testTSVInput_multithread() {
 		// sequenceID,nt_sequence,gl_sequence,quality_string
-		ErrorXOptions options( util::get_root_path().string()+"/testing/test.tsv", "tsv" );
+		ErrorXOptions options( "testing/test.tsv", "tsv" );
 		options.errorx_base("..");
 		options.nthreads( -1 );
 
@@ -387,9 +392,8 @@ public:
 	
 		SequenceRecords::correct_sequences( records );
 
-		TS_ASSERT_DELTA( predicted_error_rate_, records->estimate_error_rate(), pow(10,-9) );
+		TS_ASSERT_DELTA( predicted_error_rate_, records->estimate_error_rate(), precision_ );
 		// delete records;
-
 	}
 
 
@@ -413,10 +417,12 @@ public:
 	SequenceRecordPtr record_;
 
 	vector<double> raw_vector_;
+	int raw_vector_position_;
 
 	double predicted_value_;
 	double predicted_error_rate_;
-
+	
+	double precision_;
 };
 
 #endif /* UNITTESTS_HH_ */
