@@ -102,6 +102,28 @@ SequenceRecords::SequenceRecords( vector<SequenceRecordPtr> const & record_vecto
 	predictor_ = ErrorPredictorPtr( new ErrorPredictor( options ));
 }
 
+bool SequenceRecords::operator==( SequenceRecords const & other ) const {
+	if ( this->size() != other.size() ) return 0;
+
+	for ( int ii = 0; ii < size(); ++ii ) {
+		if ( !this->get( ii )->equals( other.get( ii )) ) return 0;
+	}
+
+	return 1;
+}
+
+bool SequenceRecords::operator!=( SequenceRecords const & other ) const {
+	return !((*this)==other);
+}
+
+bool SequenceRecords::equals( shared_ptr<SequenceRecords> const & other ) const {
+	return (*this)==(*other);
+}
+
+bool SequenceRecords::equals( unique_ptr<SequenceRecords> const & other ) const {
+        return (*this)==(*other);
+}
+
 void SequenceRecords::import_from_tsv() {
 	ios_base::sync_with_stdio( false );
 	string line;
@@ -124,7 +146,7 @@ void SequenceRecords::import_from_tsv() {
 			throw BadFileException( 
 				"Error: file "+options_->infile()+" is not properly formatted. "
 				"Proper format is four fields: "
-				"(SequenceID Full_sequence Quality Germline_sequence) "
+				"(SequenceID Full_sequence Germline_sequence Quality) "
 				"separated by tabs with no header.\n\n"
 				"Offending line:\n"+line );
 			return;
@@ -183,12 +205,12 @@ double SequenceRecords::estimate_error_rate() const {
  	return (total_errors*precision/recall)/total_bases;
  }
 
-vector<vector<string>> SequenceRecords::get_summary() const {
+vector<vector<string>> SequenceRecords::get_summary( bool fulldata/*=1*/) const {
 	vector<vector<string>> summary_data;
 
 	for ( int ii = 0; ii < records_.size(); ++ii ) {
  		if ( records_[ ii ]->isGood() ) {
-			summary_data.push_back( records_[ ii ]->get_summary() );
+			summary_data.push_back( records_[ ii ]->get_summary( fulldata ));
 		}
  	}
 
@@ -206,41 +228,13 @@ int SequenceRecords::good_records() const {
  int SequenceRecords::productive_records() const {
 	int productive_records = 0;
 	for ( int ii = 0; ii < records_.size(); ++ii ) {
-		if ( records_[ii]->productive() ) productive_records++;
+		if ( records_[ii]->isGood() && records_[ii]->productive() ) productive_records++;
 	}
 	return productive_records;
  }
 
-vector<string> SequenceRecords::get_summary_labels() const {
-
-	return vector<string> {
-			"SequenceID",
-			"V_gene",
-			"V_identity",
-			"V_Evalue",
-			"D_gene",
-			"D_identity",
-			"D_Evalue",
-			"J_gene",
-			"J_identity",
-			"J_Evalue",
-			"Strand",
-			"Chain",
-			"Productive",
-			"CDR3_NT_sequence",
-			"CDR3_AA_sequence",
-			"Full_NT_sequence",
-			"Full_GL_NT_sequence",
-			"PHRED_scores",
-			"Full_AA_sequence",
-			"Full_NT_sequence_corrected",
-			"Full_AA_sequence_corrected",
-			"N_errors"
-	};
-}
-
 void SequenceRecords::print_summary() const {
-	vector<string> summary_labels = get_summary_labels();
+	vector<string> summary_labels = util::get_labels();
 	vector<vector<string>> summary_data = get_summary();
 
 	for ( int ii = 0; ii < summary_labels.size(); ++ii ) {
@@ -261,7 +255,7 @@ void SequenceRecords::write_summary() const {
 		throw invalid_argument( options_->outfile()+" is not a valid file." );
 		return;
 	}
-	vector<string> summary_labels = get_summary_labels();
+	vector<string> summary_labels = util::get_labels();
 	vector<vector<string>> summary_data = get_summary();
 
 	for ( int ii = 0; ii < summary_labels.size(); ++ii ) {
@@ -277,10 +271,11 @@ void SequenceRecords::write_summary() const {
 	outfile.close();
 }
 
-void SequenceRecords::correct_sequences_threaded( SequenceRecordsPtr & records, 
-												  function<void(int,int,mutex*)>* increment,
-												  mutex* m, int total ) 
-{
+void SequenceRecords::correct_sequences_threaded( 
+	SequenceRecordsPtr & records, 
+	function<void(int,int)>* increment,
+	mutex* m, 
+	int total ) {
 	// update in increments of 10
 	int incrementAmount = 10;
 	
@@ -293,7 +288,11 @@ void SequenceRecords::correct_sequences_threaded( SequenceRecordsPtr & records,
 
 			
 			if ( ii%incrementAmount == 0 ) {
-				(*increment)( incrementAmount, total, m );
+				// lock mutex on this level so I don't have to
+				// lock it in my callback fxn
+				m->lock();
+				(*increment)( incrementAmount, total );
+				m->unlock();
 			}
 
 		} catch ( exception & e ) {
@@ -331,15 +330,23 @@ vector<SequenceRecordsPtr> SequenceRecords::chunk_records() {
 	}
 }
 
-void SequenceRecords::correct_sequences( SequenceRecordsPtr & records ) {
+void SequenceRecords::mock_correct_sequences() {
+	vector<SequenceRecordPtr>::const_iterator it;
+	for ( it = records_.begin(); it != records_.end(); ++it ) {
+		(*it)->full_nt_sequence_corrected( (*it)->full_nt_sequence() );
+		(*it)->full_aa_sequence_corrected( (*it)->full_aa_sequence() );
+	}
+}
 
+void SequenceRecords::correct_sequences( SequenceRecordsPtr & records ) {
 	int nthreads = records->options_->nthreads();
 	int total_records = records->size();
 
 	// Set up a callback function for each thread to update its progress
-	function<void(int,int,mutex*)> increment = records->options_->increment();
+	function<void(int,int)> increment = records->options_->increment();
 	function<void(void)> finish = records->options_->finish();
 	function<void(string)> message = records->options_->message();
+	function<void(void)> reset = records->options_->reset();
 
 	// get chunked SequenceRecords
 	// this will deep copy the original pointers in records_
@@ -353,7 +360,9 @@ void SequenceRecords::correct_sequences( SequenceRecordsPtr & records ) {
 	// Set up a mutex to coordinate between threads
 	mutex* m = new mutex;
 
+	reset();
 	message( "Correcting sequences..." );
+
 	for ( int ii = 0; ii < nthreads; ++ii ) {
 		threads[ii] = unique_ptr<thread>( new std::thread(
 				&SequenceRecords::correct_sequences_threaded,
@@ -441,6 +450,49 @@ void SequenceRecords::write_features() {
 		file << "\n";
 	}
 	file.close();
+}
+
+map<string,vector<int>> SequenceRecords::cdr_lengths() {
+
+	map<string,vector<int>> cmap = { 
+		{"CDR1", {}},
+		{"CDR2", {}},
+		{"CDR3", {}} 
+		};
+							
+	vector<int> cdr1_lengths;
+	vector<int> cdr2_lengths;
+	vector<int> cdr3_lengths;
+
+	vector<SequenceRecordPtr>::const_iterator it;
+
+	for ( it = records_.begin(); it != records_.end(); ++it ) {
+		if ( !(*it)->isGood() ) continue;
+
+		if ( (*it)->sequence().cdr1_aa_sequence() != "N/A" ) {
+			cdr1_lengths.push_back( 
+				(*it)->sequence().cdr1_aa_sequence().size() 
+				);
+		}
+
+		if ( (*it)->sequence().cdr2_aa_sequence() != "N/A" ) {
+			cdr2_lengths.push_back( 
+				(*it)->sequence().cdr2_aa_sequence().size() 
+				);
+		}
+
+		if ( (*it)->sequence().cdr3_aa_sequence() != "N/A" ) {
+			cdr3_lengths.push_back( 
+				(*it)->sequence().cdr3_aa_sequence().size() 
+				);
+		}
+	}
+
+	cmap[ "CDR1" ] = cdr1_lengths;
+	cmap[ "CDR2" ] = cdr2_lengths;
+	cmap[ "CDR3" ] = cdr3_lengths;
+
+	return cmap;
 }
 
 void SequenceRecords::count_clonotypes() {
@@ -572,33 +624,53 @@ int SequenceRecords::unique_clonotypes() {
 }
 
 map<string,int> SequenceRecords::vgene_counts() {
-	if ( clonotypes_.empty() ) count_clonotypes();
 
-	vector<string> genes;
-	vector<SequenceRecordPtr>::const_iterator it;
+	vector<SequenceRecordPtr>::const_iterator record_it;
+	map<string,int> counts;
+	map<string,int>::iterator map_it;
+	string key;
 
-	for ( it  = records_.begin();
-		  it != records_.end();
-		  ++it ) 
+	for ( record_it = records_.begin();
+		record_it != records_.end();
+		++record_it ) 
 	{
-		genes.push_back( (*it)->v_gene_noallele() );
+		// Only count genes from "good" records
+		if ( !(*record_it)->isGood() ) continue;
+
+		key = (*record_it)->v_gene_noallele();
+		map_it = counts.find( key );
+		if ( map_it == counts.end() ) {
+			counts.insert( pair<string,int>( key, 1));
+		} else {
+			map_it->second++;
+		}
 	}
-	return util::value_counts( genes );
+	return counts;
 }
 
 map<string,int> SequenceRecords::jgene_counts() {
-	if ( clonotypes_.empty() ) count_clonotypes();
 
-	vector<string> genes;
-	vector<SequenceRecordPtr>::const_iterator it;
+	vector<SequenceRecordPtr>::const_iterator record_it;
+	map<string,int> counts;
+	map<string,int>::iterator map_it;
+	string key;
 
-	for ( it  = records_.begin();
-		  it != records_.end();
-		  ++it ) 
+	for ( record_it = records_.begin();
+		record_it != records_.end();
+		++record_it )
 	{
-		genes.push_back( (*it)->j_gene_noallele() );
+		// Only count genes from "good" records
+		if ( !(*record_it)->isGood() ) continue;
+
+		key = (*record_it)->j_gene_noallele();
+		map_it = counts.find( key );
+		if ( map_it == counts.end() ) {
+			counts.insert( pair<string,int>( key, 1));
+		} else {
+			map_it->second++;
+		}
 	}
-	return util::value_counts( genes );
+	return counts;
 }
 
 map<string,int> SequenceRecords::vjgene_counts() {

@@ -51,6 +51,10 @@ AbSequence::AbSequence() :
 	full_nt_sequence_( "" ),
 	full_gl_nt_sequence_( "" ),
 	full_aa_sequence_( "" ),
+	cdr1_nt_sequence_( "" ),
+	cdr1_aa_sequence_( "" ),
+	cdr2_nt_sequence_( "" ),
+	cdr2_aa_sequence_( "" ),
 	cdr3_nt_sequence_( "" ),
 	cdr3_aa_sequence_( "" ),
 	full_nt_sequence_corrected_( "" ),
@@ -91,6 +95,10 @@ AbSequence::AbSequence( AbSequence const & other ) :
 	full_nt_sequence_( other.full_nt_sequence_ ),
 	full_gl_nt_sequence_( other.full_gl_nt_sequence_ ),
 	full_aa_sequence_( other.full_aa_sequence_ ),
+	cdr1_nt_sequence_( other.cdr1_nt_sequence_ ),
+	cdr1_aa_sequence_( other.cdr1_aa_sequence_ ),
+	cdr2_nt_sequence_( other.cdr2_nt_sequence_ ),
+	cdr2_aa_sequence_( other.cdr2_aa_sequence_ ),
 	cdr3_nt_sequence_( other.cdr3_nt_sequence_ ),
 	cdr3_aa_sequence_( other.cdr3_aa_sequence_ ),
 	full_nt_sequence_corrected_( other.full_nt_sequence_corrected_ ),
@@ -99,6 +107,48 @@ AbSequence::AbSequence( AbSequence const & other ) :
 	failure_reason_( other.failure_reason_ )
 {}
 
+bool AbSequence::operator==( AbSequence const & other ) const {
+	// I purposely don't include all class members here
+	// when I initialize a SequenceRecords object from an output file,
+	// it doesn't have all the information, only the necessary, processed
+	// data. Which is what I check here.
+	return sequenceID_==other.sequenceID_ &&
+			v_gene_==other.v_gene_ &&
+			d_gene_==other.d_gene_ &&
+			j_gene_==other.j_gene_ &&
+			hasV_==other.hasV_ &&
+			hasD_==other.hasD_ &&
+			hasJ_==other.hasJ_ &&
+			v_gl_nts_==other.v_gl_nts_ &&
+			d_gl_nts_==other.d_gl_nts_ &&
+			j_gl_nts_==other.j_gl_nts_ &&
+			v_identity_==other.v_identity_ &&
+			d_identity_==other.d_identity_ &&
+			j_identity_==other.j_identity_ &&
+			v_evalue_==other.v_evalue_ &&
+			d_evalue_==other.d_evalue_ &&
+			j_evalue_==other.j_evalue_ &&
+			chain_==other.chain_ &&
+			productive_==other.productive_ &&
+			strand_==other.strand_ &&
+			phred_trimmed_==other.phred_trimmed_ &&
+			full_nt_sequence_==other.full_nt_sequence_ &&
+			full_gl_nt_sequence_==other.full_gl_nt_sequence_ &&
+			full_aa_sequence_==other.full_aa_sequence_ &&
+			cdr1_nt_sequence_==other.cdr1_nt_sequence_ &&
+			cdr1_aa_sequence_==other.cdr1_aa_sequence_ &&
+			cdr2_nt_sequence_==other.cdr2_nt_sequence_ &&
+			cdr2_aa_sequence_==other.cdr2_aa_sequence_ &&
+			cdr3_nt_sequence_==other.cdr3_nt_sequence_ &&
+			cdr3_aa_sequence_==other.cdr3_aa_sequence_ &&
+			full_nt_sequence_corrected_==other.full_nt_sequence_corrected_ &&
+			full_aa_sequence_corrected_==other.full_aa_sequence_corrected_ &&
+			good_==other.good_;
+}
+
+bool AbSequence::operator!=( AbSequence const & other ) const {
+	return !((*this)==other);
+}
 
 void AbSequence::build( ErrorXOptions const & options ) {
 
@@ -134,12 +184,15 @@ void AbSequence::build_nt_sequence() {
 	}
 
 	// assemble junction based on whether it's a VDJ or VJ junction
-	if ( chain_ == "VH" || chain_ == "VB" ) {
-		assert( jxn_nts_.size()==3 );
+	
+	// VDJ junction
+	if ( jxn_nts_.size() == 3 ) {
 
 		// if D is a bad match, fill it with dashes
 		string dregion    = jxn_nts_[1];
-		string dregion_gl = ( hasD_ ) ? d_gl_nts_   : string(d_gl_nts_.size(), '-');
+		string dregion_gl = ( hasD_ ) ? 
+							  d_gl_nts_ : 
+							  string(d_gl_nts_.size(), '-');
 		
 		full_junction = jxn_nts_[0] + dregion + jxn_nts_[2]; 
 
@@ -149,8 +202,10 @@ void AbSequence::build_nt_sequence() {
 		full_gl_junction = string(jxn_nts_[0].size(), '-') +
 							dregion_gl +
 							string(jxn_nts_[2].size(), '-');
-	} else { 
-		assert( jxn_nts_.size()==1 );
+	} 
+	// Either VJ junction, or a case where V+J are assigned 
+	// or a case where only V is assigned
+	else { 
 
 		full_junction = jxn_nts_[0];
 		// if there are N nucleotides, these are undefined in the germline,
@@ -206,6 +261,9 @@ void AbSequence::build_nt_sequence() {
 
 void AbSequence::build_phred() {
 	if ( !good_ ) return;
+	// If I was given a FASTA file, the phred score will be marked as N/A
+	// in this case, no need to assemble anything
+	if ( phred_trimmed_ == "N/A" ) return;
 
 	// Find the portion of the quality string that corresponds to the query
 	// If the assignment was done on the reverse strand, flip the quality string
@@ -217,7 +275,9 @@ void AbSequence::build_phred() {
 	// adjustment gets offset to -1
 	// this signals it to not be used in the local and global phred
 	// calculations
-	int phred_idx = query_start_ - 1;
+	// int phred_idx = query_start_ - 1;
+	int phred_idx = query_start_;
+
 	try {
 		for ( int ii = 0; ii < full_nt_sequence_.size(); ++ii ) {
 			if ( full_nt_sequence_[ ii ] == '-' ) {
@@ -315,6 +375,11 @@ string AbSequence::quality_string_trimmed() const {
 	else return phred_trimmed_; 
 }
 
+string AbSequence::quality_string_untrimmed() const {
+	if ( phred_=="" ) return "N/A";
+	else return phred_; 
+}
+
 string AbSequence::full_nt_sequence() const { 
 	if ( full_nt_sequence_=="" ) return "N/A";
 	else return full_nt_sequence_; 
@@ -329,6 +394,24 @@ string AbSequence::full_aa_sequence() const {
 	if ( full_aa_sequence_=="" ) return "N/A";
 	else return full_aa_sequence_; 
 }
+
+string AbSequence::cdr1_nt_sequence() const { 
+	if ( cdr1_nt_sequence_=="" ) return "N/A";
+	else return cdr1_nt_sequence_; 
+}
+string AbSequence::cdr1_aa_sequence() const { 
+	if ( cdr1_aa_sequence_=="" ) return "N/A";
+	else return cdr1_aa_sequence_; 
+}
+string AbSequence::cdr2_nt_sequence() const { 
+	if ( cdr2_nt_sequence_=="" ) return "N/A";
+	else return cdr2_nt_sequence_; 
+}
+string AbSequence::cdr2_aa_sequence() const { 
+	if ( cdr2_aa_sequence_=="" ) return "N/A";
+	else return cdr2_aa_sequence_; 
+}
+
 string AbSequence::cdr3_nt_sequence() const { 
 	if ( cdr3_nt_sequence_=="" ) return "N/A";
 	else return cdr3_nt_sequence_; 
@@ -354,6 +437,7 @@ int AbSequence::translation_frame() const { return translation_frame_; }
 
 void AbSequence::sequenceID( string const & seqID ) { sequenceID_ = seqID; }
 void AbSequence::quality_string_trimmed( string const & phred ) { phred_trimmed_ = phred; }
+
 
 void AbSequence::full_nt_sequence( string const & seq ) { full_nt_sequence_ = seq; }
 void AbSequence::full_aa_sequence( string const & seq ) { full_aa_sequence_ = seq; }

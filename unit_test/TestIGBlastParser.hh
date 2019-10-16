@@ -15,6 +15,7 @@
 #include "util.hh"
 #include "errorx.hh"
 #include <string>
+#include <map>
 
 #include "AbSequence.hh"
 
@@ -26,64 +27,601 @@
 using namespace std;
 using namespace errorx;
 
-class TestIGBlastParser : public CxxTest::TestSuite
-{
+class TestIGBlastParser : public CxxTest::TestSuite {
+
 public:
 
-	void testFastq(void) {
+	void setUp() {
+		// Register control-C signal
+		util::register_signal();
 
-		ErrorXOptions options( "testing/test.fastq", "fastq" );
+		ErrorXOptions options( "testing/test_sequences.fastq", "fastq" );
 		options.errorx_base( ".." );
-		
+
+		options.verbose( 0 );
+		options.allow_nonproductive( 1 );
+
+		options.validate();
+		options.count_queries();
 		options.fastq_to_fasta();
 
-		ifstream infile( options.infasta() );
-		string line;
+		IGBlastParser parser;
+		parser.blast( options );
+		records_ = parser.parse_output( options );
+	}
 
-		int ii = 0;
-		string id, qual, seq;
-		while ( getline(infile, line) ) {
-			if ( ii == 0 ) {
-				vector<string> tokens = util::tokenize_string<string>( line, "|" );
-				id = tokens[0];
-				qual = tokens[1];
-				TS_ASSERT_EQUALS( qual,
-					"C<B@CGG9EFGG9F,,00=,;=,,=,;C,CF,CC,C6,,;,-6C,B,66CF##########################################################################################################################################################################################################################################################8A--,=,<CEFGC-,BFGEGF+C6FFGGGGGF,;;EF,,9B,,;,CFF>F8D@CD<FA,A,,;,,<6C6+,+,6,,?,@:E<F@@+4=F,B=A,:<?<,49,CE,,:@++,8+8+@FF,4@,@88>8+46@C++,8>B7,@>8,7>E,8++6C+7@9=:C#############################################################################################################################################"
-				);
+	void tearDown() {}
 
-				TS_ASSERT_EQUALS( id,
-					">SRR3175015.933"
-				);
-			} else if ( ii == 1 ) {
-				seq = line;
-				TS_ASSERT_EQUALS( seq,
-					"TAACACTTATACACTAGCAGCAGGTCCAGCTGCAGCAGCCACCAACCTTGCCCCCAGGCCCCCGGCCCTTACCGCACACCGGCGCTACGGGTCCACCTACCGTCCTCGGTATAGACGGGACTCAAGCCGCAATAGCCACTGCCCCTCCGGGCAGTGAGGCCACTCCAGGGAGTTAGGGCCGTACTGAACAGATTTGGCACAAAGGGAAAACCAAGGAGAAACACCAACCGACACCAGACAGGACATCCAACACTGCGTAAGTCCAGCCACGCAGCCAGCAAACGGACCACACGGCGGCCANCTGTATCCACAACCCCACACCCTCATTCCCTTGACCAGGCATCCCAGGGTCACCATGGAGTGAGTTGGGGCAGCAGAGCCAGGGGCCAGTGGATAGACAGATGGGGGTGGCGATATGGCTGAGGAGCCCGTGAGAGTGGTGCCTTGGCCCCAGTAGTAAACGAAGGACAAAGCCTCCTCTCCCGCACCGGAACAGACAGCAGAGTCTCCAGCTTTCAGGCTGCTGCGCGCCAGGCAGGCCGCGCTGGAGGACTTGTCTGCACTCCGTGTGCCTCCGTCCTTGGGCGTACCACGGGAGTACG"
-				);
-			}
-			++ii;
-		}
+	void testReversedSequence() {
 
-		TS_ASSERT_EQUALS( qual.length(), seq.length() );
+		AbSequence sequence = records_->get( 0 )->sequence();
+
+		TS_ASSERT_EQUALS( sequence.full_nt_sequence(),"TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGGCGTCATGGTGTATGCTATAAGCTGCTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG");
+		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG----ATGGTGTATGCTATA-----CTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG");
+		
+		TS_ASSERT_EQUALS( sequence.cdr1_nt_sequence(), "TCAGTGGTTACTAC" );
+		TS_ASSERT_EQUALS( sequence.cdr1_aa_sequence(), "SGYY" );
+
+		TS_ASSERT_EQUALS( sequence.cdr2_nt_sequence(), "ATCAATCATAGTGGAAGCACC" );
+		TS_ASSERT_EQUALS( sequence.cdr2_aa_sequence(), "INHSGST" );
+
+		TS_ASSERT_EQUALS( sequence.cdr3_nt_sequence(), 
+			"GCGAGAGGCGTCATGGTGTATGCTATAAGCTGCTTTGACTAC" );
+		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(),"ARGVMVYAISCFDY");
+
+		TS_ASSERT_EQUALS( sequence.translation_frame(), 3 );
+		TS_ASSERT_EQUALS( sequence.full_aa_sequence(),"SGYYWSWIRQPPGKGLEWIGEINHSGSTNYNPSLKSRVTISVDTSKNQFSLKLSSVTAADTAVYYCARGVMVYAISCFDYWGQGTLVTVSS");
+
+		TS_ASSERT_EQUALS( sequence.isGood(), 1 );
+		TS_ASSERT_EQUALS( sequence.chain(), "VH" );
+		TS_ASSERT_EQUALS( sequence.v_gene(), "IGHV4-34*01");
+		TS_ASSERT_EQUALS( sequence.d_gene(), "IGHD2-8*01");
+		TS_ASSERT_EQUALS( sequence.j_gene(), "IGHJ4*02");
+
+		TS_ASSERT_DELTA( sequence.v_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.d_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.j_identity(), 100, 0.001 );
+
+		TS_ASSERT_EQUALS( sequence.v_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.d_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.j_identity_fmt(), "100.00" );
+	}
+
+	void testForwardSequence() {
+
+		AbSequence sequence = records_->get( 1 )->sequence();
+
+		TS_ASSERT_EQUALS( sequence.full_nt_sequence(),"TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGGCGTCATGGTGTATGCTATAAGCTGCTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG");
+		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG----ATGGTGTATGCTATA-----CTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG");
+		
+		TS_ASSERT_EQUALS( sequence.cdr1_nt_sequence(), "TCAGTGGTTACTAC" );
+		TS_ASSERT_EQUALS( sequence.cdr1_aa_sequence(), "SGYY" );
+
+		TS_ASSERT_EQUALS( sequence.cdr2_nt_sequence(), "ATCAATCATAGTGGAAGCACC" );
+		TS_ASSERT_EQUALS( sequence.cdr2_aa_sequence(), "INHSGST" );
+
+		TS_ASSERT_EQUALS( sequence.cdr3_nt_sequence(), 
+			"GCGAGAGGCGTCATGGTGTATGCTATAAGCTGCTTTGACTAC" );
+		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(),"ARGVMVYAISCFDY");
+
+		TS_ASSERT_EQUALS( sequence.translation_frame(), 3 );
+		TS_ASSERT_EQUALS( sequence.full_aa_sequence(),"SGYYWSWIRQPPGKGLEWIGEINHSGSTNYNPSLKSRVTISVDTSKNQFSLKLSSVTAADTAVYYCARGVMVYAISCFDYWGQGTLVTVSS");
+
+		TS_ASSERT_EQUALS( sequence.isGood(), 1 );
+		TS_ASSERT_EQUALS( sequence.chain(), "VH" );
+		TS_ASSERT_EQUALS( sequence.v_gene(), "IGHV4-34*01");
+		TS_ASSERT_EQUALS( sequence.d_gene(), "IGHD2-8*01");
+		TS_ASSERT_EQUALS( sequence.j_gene(), "IGHJ4*02");
+
+		TS_ASSERT_DELTA( sequence.v_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.d_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.j_identity(), 100, 0.001 );
+
+		TS_ASSERT_EQUALS( sequence.v_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.d_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.j_identity_fmt(), "100.00" );
+	}
+
+	void testBadD() {
+
+		AbSequence sequence = records_->get( 2 )->sequence();
+
+		TS_ASSERT_EQUALS( sequence.full_nt_sequence(),"TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGGCGTCATGGTAAAAAATATAAGCTGCTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG");
+		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG------------------------CTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG");
+
+		TS_ASSERT_EQUALS( sequence.cdr1_nt_sequence(), "TCAGTGGTTACTAC" );
+		TS_ASSERT_EQUALS( sequence.cdr1_aa_sequence(), "SGYY" );
+
+		TS_ASSERT_EQUALS( sequence.cdr2_nt_sequence(), "ATCAATCATAGTGGAAGCACC" );
+		TS_ASSERT_EQUALS( sequence.cdr2_aa_sequence(), "INHSGST" );
+
+		TS_ASSERT_EQUALS( sequence.cdr3_nt_sequence(), 
+			"GCGAGAGGCGTCATGGTAAAAAATATAAGCTGCTTTGACTAC" );
+		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(),"ARGVMVKNISCFDY");
+
+		TS_ASSERT_EQUALS( sequence.translation_frame(), 3 );
+		TS_ASSERT_EQUALS( sequence.full_aa_sequence(),"SGYYWSWIRQPPGKGLEWIGEINHSGSTNYNPSLKSRVTISVDTSKNQFSLKLSSVTAADTAVYYCARGVMVKNISCFDYWGQGTLVTVSS");
+
+		TS_ASSERT_EQUALS( sequence.isGood(), 1 );
+		TS_ASSERT_EQUALS( sequence.chain(), "VH" );
+		TS_ASSERT_EQUALS( sequence.v_gene(), "IGHV4-34*01");
+		TS_ASSERT_EQUALS( sequence.d_gene(), "N/A");
+		TS_ASSERT_EQUALS( sequence.j_gene(), "IGHJ4*02");
+
+		TS_ASSERT_DELTA( sequence.v_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.d_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.j_identity(), 100, 0.001 );
+
+		TS_ASSERT_EQUALS( sequence.v_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.d_identity_fmt(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.j_identity_fmt(), "100.00" );
+	}
+
+	void testBadJ() {
+
+		AbSequence sequence = records_->get( 3 )->sequence();
+
+		TS_ASSERT_EQUALS( sequence.full_nt_sequence(), "TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGGCGTCATGGTGTATGCTATAAGCTGCTTTGACTA");
+
+		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG----ATGGTGTATGCTATA--------------");
+
+		TS_ASSERT_EQUALS( sequence.cdr1_nt_sequence(), "TCAGTGGTTACTAC" );
+		TS_ASSERT_EQUALS( sequence.cdr1_aa_sequence(), "SGYY" );
+
+		TS_ASSERT_EQUALS( sequence.cdr2_nt_sequence(), "ATCAATCATAGTGGAAGCACC" );
+		TS_ASSERT_EQUALS( sequence.cdr2_aa_sequence(), "INHSGST" );
+
+		TS_ASSERT_EQUALS( sequence.cdr3_nt_sequence(), 
+			"GCGAGAGGCGTCATGGTGTATGCTATAAGCTGCTTTGACTA" );
+		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(),"ARGVMVYAISCFD");
+
+		TS_ASSERT_EQUALS( sequence.translation_frame(), 3 );
+		TS_ASSERT_EQUALS( sequence.full_aa_sequence(),"SGYYWSWIRQPPGKGLEWIGEINHSGSTNYNPSLKSRVTISVDTSKNQFSLKLSSVTAADTAVYYCARGVMVYAISCFD");
+
+		TS_ASSERT_EQUALS( sequence.isGood(), 1 );
+		TS_ASSERT_EQUALS( sequence.chain(), "VH" );
+		TS_ASSERT_EQUALS( sequence.v_gene(), "IGHV4-34*01");
+		TS_ASSERT_EQUALS( sequence.d_gene(), "IGHD2-8*01");
+		TS_ASSERT_EQUALS( sequence.j_gene(), "N/A");
+
+		TS_ASSERT_DELTA( sequence.v_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.d_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.j_identity(), 92.308, 0.001 );
+
+		TS_ASSERT_EQUALS( sequence.v_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.d_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.j_identity_fmt(), "N/A" );
+	}
+
+	void testNoJFound() {
+
+		AbSequence sequence = records_->get( 4 )->sequence();
+
+		TS_ASSERT_EQUALS( sequence.full_nt_sequence(), "TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGGCGTCATGGTGTATGCTATA" );
+
+		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG----ATGGTGTATGCTATA");
+
+		TS_ASSERT_EQUALS( sequence.cdr1_nt_sequence(), "TCAGTGGTTACTAC" );
+		TS_ASSERT_EQUALS( sequence.cdr1_aa_sequence(), "SGYY" );
+
+		TS_ASSERT_EQUALS( sequence.cdr2_nt_sequence(), "ATCAATCATAGTGGAAGCACC" );
+		TS_ASSERT_EQUALS( sequence.cdr2_aa_sequence(), "INHSGST" );
+
+		TS_ASSERT_EQUALS( sequence.cdr3_nt_sequence(), 
+			"N/A" );
+		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(),"N/A");
+
+		TS_ASSERT_EQUALS( sequence.translation_frame(), 3 );
+		TS_ASSERT_EQUALS( sequence.full_aa_sequence(),"SGYYWSWIRQPPGKGLEWIGEINHSGSTNYNPSLKSRVTISVDTSKNQFSLKLSSVTAADTAVYYCARGVMVYAI");
+
+		TS_ASSERT_EQUALS( sequence.isGood(), 1 );
+		TS_ASSERT_EQUALS( sequence.chain(), "VH" );
+		TS_ASSERT_EQUALS( sequence.v_gene(), "IGHV4-34*01");
+		TS_ASSERT_EQUALS( sequence.d_gene(), "IGHD2-8*01");
+		TS_ASSERT_EQUALS( sequence.j_gene(), "N/A");
+
+		TS_ASSERT_DELTA( sequence.v_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.d_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.j_identity(), -1, 0.001 );
+
+		TS_ASSERT_EQUALS( sequence.v_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.d_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.j_identity_fmt(), "N/A" );
+	}
+
+	void testNoDNoJ() {
+		AbSequence sequence = records_->get( 5 )->sequence();
+
+		TS_ASSERT_EQUALS( sequence.full_nt_sequence(), "TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG" );
+
+		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG");
+
+		TS_ASSERT_EQUALS( sequence.cdr1_nt_sequence(), "TCAGTGGTTACTAC" );
+		TS_ASSERT_EQUALS( sequence.cdr1_aa_sequence(), "SGYY" );
+
+		TS_ASSERT_EQUALS( sequence.cdr2_nt_sequence(), "ATCAATCATAGTGGAAGCACC" );
+		TS_ASSERT_EQUALS( sequence.cdr2_aa_sequence(), "INHSGST" );
+
+		TS_ASSERT_EQUALS( sequence.cdr3_nt_sequence(), 
+			"N/A" );
+		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(),"N/A");
+
+		TS_ASSERT_EQUALS( sequence.translation_frame(), 3 );
+		TS_ASSERT_EQUALS( sequence.full_aa_sequence(),"SGYYWSWIRQPPGKGLEWIGEINHSGSTNYNPSLKSRVTISVDTSKNQFSLKLSSVTAADTAVYYCAR");
+
+		TS_ASSERT_EQUALS( sequence.isGood(), 1 );
+		TS_ASSERT_EQUALS( sequence.chain(), "VH" );
+		TS_ASSERT_EQUALS( sequence.v_gene(), "IGHV4-34*01");
+		TS_ASSERT_EQUALS( sequence.d_gene(), "N/A");
+		TS_ASSERT_EQUALS( sequence.j_gene(), "N/A");
+
+		TS_ASSERT_DELTA( sequence.v_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.d_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.j_identity(), -1, 0.001 );
+
+		TS_ASSERT_EQUALS( sequence.v_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.d_identity_fmt(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.j_identity_fmt(), "N/A" );
 
 	}
 
+	void testLateStart() {
 
-	void testAdditionalFastq(void) {
+		AbSequence sequence = records_->get( 6 )->sequence();
 
-		ErrorXOptions options( "testing/additional_test.fastq", "fastq" );
-		IGBlastParser parser;
-		SequenceRecordsPtr records;
-		options.verbose( 0 );
+		TS_ASSERT_EQUALS( sequence.full_nt_sequence(),"TCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGGCGTCATGGTGTATGCTATAAGCTGCTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG");
+		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "TCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG----ATGGTGTATGCTATA-----CTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG");
+		
+		TS_ASSERT_EQUALS( sequence.cdr1_nt_sequence(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.cdr1_aa_sequence(), "N/A" );
+
+		TS_ASSERT_EQUALS( sequence.cdr2_nt_sequence(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.cdr2_aa_sequence(), "N/A" );
+
+		TS_ASSERT_EQUALS( sequence.cdr3_nt_sequence(), 
+			"GCGAGAGGCGTCATGGTGTATGCTATAAGCTGCTTTGACTAC" );
+		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(),"ARGVMVYAISCFDY");
+
+		TS_ASSERT_EQUALS( sequence.translation_frame(), 3 );
+		TS_ASSERT_EQUALS( sequence.full_aa_sequence(),"SLKLSSVTAADTAVYYCARGVMVYAISCFDYWGQGTLVTVSS");
+
+		TS_ASSERT_EQUALS( sequence.isGood(), 1 );
+		TS_ASSERT_EQUALS( sequence.chain(), "VH" );
+		TS_ASSERT_EQUALS( sequence.v_gene(), "IGHV4-34*01");
+		TS_ASSERT_EQUALS( sequence.d_gene(), "IGHD2-8*01");
+		TS_ASSERT_EQUALS( sequence.j_gene(), "IGHJ4*02");
+
+		TS_ASSERT_DELTA( sequence.v_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.d_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.j_identity(), 100, 0.001 );
+
+		TS_ASSERT_EQUALS( sequence.v_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.d_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.j_identity_fmt(), "100.00" );
+	}
+
+	void testVOnly() {
+
+		AbSequence sequence = records_->get( 7 )->sequence();
+
+		TS_ASSERT_EQUALS( sequence.full_nt_sequence(),"TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTA");
+		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTA");
+		
+		TS_ASSERT_EQUALS( sequence.cdr1_nt_sequence(), "TCAGTGGTTACTAC" );
+		TS_ASSERT_EQUALS( sequence.cdr1_aa_sequence(), "SGYY" );
+
+		TS_ASSERT_EQUALS( sequence.cdr2_nt_sequence(), "ATCAATCATAGTGGAAGCACC" );
+		TS_ASSERT_EQUALS( sequence.cdr2_aa_sequence(), "INHSGST" );
+
+		TS_ASSERT_EQUALS( sequence.cdr3_nt_sequence(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(),"N/A");
+
+		TS_ASSERT_EQUALS( sequence.translation_frame(), 3 );
+		TS_ASSERT_EQUALS( sequence.full_aa_sequence(),"SGYYWSWIRQPPGKGLEWIGEINHSGSTNYNPSLKSRVTISVDTSKNQFSLKLSSVTAADTAVY");
+
+		TS_ASSERT_EQUALS( sequence.isGood(), 1 );
+		TS_ASSERT_EQUALS( sequence.chain(), "VH" );
+		TS_ASSERT_EQUALS( sequence.v_gene(), "IGHV4-34*01");
+		TS_ASSERT_EQUALS( sequence.d_gene(), "N/A");
+		TS_ASSERT_EQUALS( sequence.j_gene(), "N/A");
+
+		TS_ASSERT_DELTA( sequence.v_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.d_identity(), -1, 0.001 );
+		TS_ASSERT_DELTA( sequence.j_identity(), -1, 0.001 );
+
+		TS_ASSERT_EQUALS( sequence.v_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.d_identity_fmt(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.j_identity_fmt(), "N/A" );
+	}
+
+	void testBadV() {
+
+		AbSequence sequence = records_->get( 8 )->sequence();
+
+		TS_ASSERT_EQUALS( sequence.full_nt_sequence(),"N/A");
+		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "N/A");
+		
+		TS_ASSERT_EQUALS( sequence.cdr1_nt_sequence(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.cdr1_aa_sequence(), "N/A" );
+
+		TS_ASSERT_EQUALS( sequence.cdr2_nt_sequence(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.cdr2_aa_sequence(), "N/A" );
+
+		TS_ASSERT_EQUALS( sequence.cdr3_nt_sequence(), "GCGAGAGGCGTCATGGTGTATGCTATAAGCTGCTTTGACTAC" );
+		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(),"ARGVMVYAISCFDY");
+
+		TS_ASSERT_EQUALS( sequence.translation_frame(), -1 );
+		TS_ASSERT_EQUALS( sequence.full_aa_sequence(), "N/A");
+
+		TS_ASSERT_EQUALS( sequence.isGood(), 0 );
+		TS_ASSERT_EQUALS( sequence.chain(), "VH" );
+		TS_ASSERT_EQUALS( sequence.v_gene(), "N/A");
+		TS_ASSERT_EQUALS( sequence.d_gene(), "IGHD2-8*01");
+		TS_ASSERT_EQUALS( sequence.j_gene(), "IGHJ4*02");
+
+		TS_ASSERT_DELTA( sequence.v_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.d_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.j_identity(), 100, 0.001 );
+
+		TS_ASSERT_EQUALS( sequence.v_identity_fmt(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.d_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.j_identity_fmt(), "100.00" );
+	}
+
+	void testIrrelevantSequence() {
+		AbSequence sequence = records_->get( 9 )->sequence();
+
+		TS_ASSERT_EQUALS( sequence.full_nt_sequence(),"N/A");
+		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "N/A");
+		
+		TS_ASSERT_EQUALS( sequence.cdr1_nt_sequence(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.cdr1_aa_sequence(), "N/A" );
+
+		TS_ASSERT_EQUALS( sequence.cdr2_nt_sequence(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.cdr2_aa_sequence(), "N/A" );
+
+		TS_ASSERT_EQUALS( sequence.cdr3_nt_sequence(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(),"N/A");
+
+		TS_ASSERT_EQUALS( sequence.translation_frame(), -1 );
+		TS_ASSERT_EQUALS( sequence.full_aa_sequence(), "N/A");
+
+		TS_ASSERT_EQUALS( sequence.isGood(), 0 );
+		TS_ASSERT_EQUALS( sequence.chain(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.v_gene(), "N/A");
+		TS_ASSERT_EQUALS( sequence.d_gene(), "N/A");
+		TS_ASSERT_EQUALS( sequence.j_gene(), "N/A");
+
+		TS_ASSERT_DELTA( sequence.v_identity(), -1, 0.001 );
+		TS_ASSERT_DELTA( sequence.d_identity(), -1, 0.001 );
+		TS_ASSERT_DELTA( sequence.j_identity(), -1, 0.001 );
+
+		TS_ASSERT_EQUALS( sequence.v_identity_fmt(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.d_identity_fmt(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.j_identity_fmt(), "N/A" );
+	}
+
+
+	void testLightChain() {
+
+		AbSequence sequence = records_->get( 10 )->sequence();
+
+		
+		TS_ASSERT_EQUALS( sequence.full_nt_sequence(),"GATATTGTGATGACCCAGACTCCACTCTCTCTGTCCGTCACCCCTGGACAGCCGGCCTCCATCTCCTGCAAGTCTAGTCAGAGCCTCCTGCATGATGATGGAAAGACCTATTTGTATTGGTATTTGCAGAAGCCAGGCCAGTCTCCACAGCTCCTGATCTATGAGGTTTCCAACCGGTTCTCTGGAGTGCCAGATAGGTTCAGTGGCAGCGGGTCAGGGACAGATTTCACACTGAAAATCAGCCGGGTGGAGGCTGAGGATGTTGGGGTTTATTACTGCATGCGAAGTATACAGTTCGCGACTTTTGGCCAGGGGACCAAGCTGGAGATCAAAC");
+		
+		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "GATATTGTGATGACCCAGACTCCACTCTCTCTGTCCGTCACCCCTGGACAGCCGGCCTCCATCTCCTGCAAGTCTAGTCAGAGCCTCCTGCATAGTGATGGAAAGACCTATTTGTATTGGTACCTGCAGAAGCCAGGCCAGTCTCCACAGCTCCTGATCTATGAAGTTTCCAACCGGTTCTCTGGAGTGCCAGATAGGTTCAGTGGCAGCGGGTCAGGGACAGATTTCACACTGAAAATCAGCCGGGTGGAGGCTGAGGATGTTGGGGTTTATTACTGCATGCAAAGTATACAG------ACTTTTGGCCAGGGGACCAAGCTGGAGATCAAAC");
+		
+		TS_ASSERT_EQUALS( sequence.cdr1_nt_sequence(), "CAGAGCCTCCTGCATGATGATGGAAAGACCTAT" );
+		TS_ASSERT_EQUALS( sequence.cdr1_aa_sequence(), "QSLLHDDGKTY" );
+
+		TS_ASSERT_EQUALS( sequence.cdr2_nt_sequence(), "GAGGTTTCC" );
+		TS_ASSERT_EQUALS( sequence.cdr2_aa_sequence(), "EVS" );
+
+		TS_ASSERT_EQUALS( sequence.cdr3_nt_sequence(), "ATGCGAAGTATACAGTTCGCGACT" );
+		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(), "MRSIQFAT");
+
+		TS_ASSERT_EQUALS( sequence.translation_frame(), 1 );
+		TS_ASSERT_EQUALS( sequence.full_aa_sequence(),"DIVMTQTPLSLSVTPGQPASISCKSSQSLLHDDGKTYLYWYLQKPGQSPQLLIYEVSNRFSGVPDRFSGSGSGTDFTLKISRVEAEDVGVYYCMRSIQFATFGQGTKLEIK");
+
+		TS_ASSERT_EQUALS( sequence.isGood(), 1 );
+		TS_ASSERT_EQUALS( sequence.chain(), "VK" );
+		TS_ASSERT_EQUALS( sequence.v_gene(), "IGKV2D-29*02");
+		TS_ASSERT_EQUALS( sequence.d_gene(), "N/A");
+		TS_ASSERT_EQUALS( sequence.j_gene(), "IGKJ2*01");
+
+		TS_ASSERT_DELTA( sequence.v_identity(), 97.959, 0.001 );
+		TS_ASSERT_DELTA( sequence.d_identity(), -1, 0.001 );
+		TS_ASSERT_DELTA( sequence.j_identity(), 100, 0.001 );
+
+		TS_ASSERT_EQUALS( sequence.v_identity_fmt(), "97.96" );
+		TS_ASSERT_EQUALS( sequence.d_identity_fmt(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.j_identity_fmt(), "100.00" );
+	}
+
+	void testMouse() {
+		ErrorXOptions options( "testing/test_sequences.fastq", "fastq" );
 		options.errorx_base( ".." );
+		options.verbose( 0 );
 		options.allow_nonproductive( 1 );
+		options.species( "mouse" );
 
-		records = run_protocol( options );
+		options.validate();
+		options.count_queries();
+		options.fastq_to_fasta();
 
-		SequenceRecordPtr current = records->get(0);
+		IGBlastParser parser;
+		parser.blast( options );
+		SequenceRecordsPtr records = parser.parse_output( options );
 
-		TS_ASSERT_EQUALS( "GTGCAGCTGGTGGAGTCTGGGGGAGGCTTGGTGCAGCCTGGGGAGTCTCTGAGACTCTCCTGTGCAGCCTCTGGATTCACGTTCAGCCTGTACGACATGGCATGGGTCCGCCAGGCTCCAGGGAAGGGACTCGAGTGGGTCTCAGGTATGAGTG---GTGGTGGCCGTGAATACTATGTAGACTCCGTGAAGGGCCGATTCACCATCTCCAGAGACAACGCCAAGAACACGCTGTATCTGCAAATGAACAGCCTGAAAACTGAGGACACTGCCATTTATATCTGCGCCACAATGGTCTGGCACTATACCGACCCCGAGGTTTGGGGCCAGGGCACCCAGGTCACCGTCTCC", current->sequence().full_nt_sequence() );
+		AbSequence sequence = records->get( 11 )->sequence();
+		
+		TS_ASSERT_EQUALS( sequence.full_nt_sequence(),"GAGGTTCAGCTGCAGCAATCTGGGGCAGAGCTTGTGAAGCCAGGGGCCTCAGTCAAGTTGTCCTGTACAGCTTCTGGCTTCAACATTAAAGACACCTATATACACTGGGTGAAGCAGAGGCCTGAACAGGGCCTGGAGTGGATTGGAAGGATTGATCCTGCGATTGGTAATACTAAATATGACCCGAAGTTCCAGGGCAAGGCCACTATAACAGCAGACACATCCTCCAACACAGCCTACCTGCAGCTCAGCAGCCTGACATCTGAGGACACTGCCGTCTATTACTGTTCTAGGGGGATTACCCCCTACTATGCTATAGACTACTGGGGTCAAGGAACCTCAGTCACCGTCTCCTCA");
+
+		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "GAGGTTCAGCTGCAGCAGTCTGGGGCAGAGCTTGTGAAGCCAGGGGCCTCAGTCAAGTTGTCCTGCACAGCTTCTGGCTTCAACATTAAAGACACCTATATGCACTGGGTGAAGCAGAGGCCTGAACAGGGCCTGGAGTGGATTGGAAGGATTGATCCTGCGAATGGTAATACTAAATATGACCCGAAGTTCCAGGGCAAGGCCACTATAACAGCAGACACATCCTCCAACACAGCCTACCTGCAGCTCAGCAGCCTGACATCTGAGGACACTGCCGTCTATTACTGTGCTAG-------------TACTATGCTATGGACTACTGGGGTCAAGGAACCTCAGTCACCGTCTCCTCA");
+
+		TS_ASSERT_EQUALS( sequence.cdr1_nt_sequence(), "GGCTTCAACATTAAAGACACCTAT" );
+		TS_ASSERT_EQUALS( sequence.cdr1_aa_sequence(), "GFNIKDTY" );
+
+		TS_ASSERT_EQUALS( sequence.cdr2_nt_sequence(), "ATTGATCCTGCGATTGGTAATACT" );
+		TS_ASSERT_EQUALS( sequence.cdr2_aa_sequence(), "IDPAIGNT" );
+
+		TS_ASSERT_EQUALS( sequence.cdr3_nt_sequence(), "TCTAGGGGGATTACCCCCTACTATGCTATAGACTAC" );
+		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(), "SRGITPYYAIDY");
+
+		TS_ASSERT_EQUALS( sequence.translation_frame(), 1 );
+		TS_ASSERT_EQUALS( sequence.full_aa_sequence(),"EVQLQQSGAELVKPGASVKLSCTASGFNIKDTYIHWVKQRPEQGLEWIGRIDPAIGNTKYDPKFQGKATITADTSSNTAYLQLSSLTSEDTAVYYCSRGITPYYAIDYWGQGTSVTVSS");
+
+		TS_ASSERT_EQUALS( sequence.isGood(), 1 );
+		TS_ASSERT_EQUALS( sequence.chain(), "VH" );
+		TS_ASSERT_EQUALS( sequence.v_gene(), "IGHV14-3*02");
+		TS_ASSERT_EQUALS( sequence.d_gene(), "N/A");
+		TS_ASSERT_EQUALS( sequence.j_gene(), "IGHJ4*01");
+
+		TS_ASSERT_DELTA( sequence.v_identity(), 98.294, 0.001 );
+		TS_ASSERT_DELTA( sequence.d_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.j_identity(), 98.039, 0.001 );
+
+		TS_ASSERT_EQUALS( sequence.v_identity_fmt(), "98.29" );
+		TS_ASSERT_EQUALS( sequence.d_identity_fmt(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.j_identity_fmt(), "98.04" );
+	}
+
+
+	void testTCRA() {
+		ErrorXOptions options( "testing/test_sequences.fastq", "fastq" );
+		options.errorx_base( ".." );
+		options.verbose( 0 );
+		options.allow_nonproductive( 1 );
+		options.species( "human" );
+		options.igtype( "TCR" );
+
+		options.validate();
+		options.count_queries();
+		options.fastq_to_fasta();
+
+		IGBlastParser parser;
+		parser.blast( options );
+		SequenceRecordsPtr records = parser.parse_output( options );
+
+		AbSequence sequence = records->get( 12 )->sequence();
+
+		TS_ASSERT_EQUALS( sequence.full_nt_sequence(),"AAAAATGAAGTGGAGCAGAGTCCTCAGAACCTGACTGCCCAGGAAGGAGAATTTATCACAATCAACTGCAGTTACTCGGTAGGAATAAGTGCCTTACACTGGCTGCAACAGCATCCAGGAGGAGGCATTGTTTCCTTGTTTATGCTGAGCTCAGGGAAGAAGAAGCATGGAAGATTAATTGCCACAATAAACATACAGGAAAAGCACAGCTCCCTGCACATCACAGCCTCCCATCCCAGAGACTCTGCCGTCTACATCTGTGCTGTCCCTTACACCGACAAGCTCATCTTTGGGACTGGGACCAGATTACAAGTCTTTCCAA");
+
+		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "AAAAATGAAGTGGAGCAGAGTCCTCAGAACCTGACTGCCCAGGAAGGAGAATTTATCACAATCAACTGCAGTTACTCGGTAGGAATAAGTGCCTTACACTGGCTGCAACAGCATCCAGGAGGAGGCATTGTTTCCTTGTTTATGCTGAGCTCAGGGAAGAAGAAGCATGGAAGATTAATTGCCACAATAAACATACAGGAAAAGCACAGCTCCCTGCACATCACAGCCTCCCATCCCAGAGACTCTGCCGTCTACATCTGTGCTGTC----ACACCGACAAGCTCATCTTTGGGACTGGGACCAGATTACAAGTCTTTCCAA");
+
+		TS_ASSERT_EQUALS( sequence.cdr1_nt_sequence(), "GTAGGAATAAGTGCC" );
+		TS_ASSERT_EQUALS( sequence.cdr1_aa_sequence(), "VGISA" );
+
+		TS_ASSERT_EQUALS( sequence.cdr2_nt_sequence(), "CTGAGCTCAGGGAAG" );
+		TS_ASSERT_EQUALS( sequence.cdr2_aa_sequence(), "LSSGK" );
+
+		TS_ASSERT_EQUALS( sequence.cdr3_nt_sequence(), "GCTGTCCCTTACACCGACAAGCTCATC" );
+		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(), "AVPYTDKLI");
+
+		TS_ASSERT_EQUALS( sequence.translation_frame(), 1 );
+		TS_ASSERT_EQUALS( sequence.full_aa_sequence(),"KNEVEQSPQNLTAQEGEFITINCSYSVGISALHWLQQHPGGGIVSLFMLSSGKKKHGRLIATINIQEKHSSLHITASHPRDSAVYICAVPYTDKLIFGTGTRLQVFP");
+
+		TS_ASSERT_EQUALS( sequence.isGood(), 1 );
+		TS_ASSERT_EQUALS( sequence.chain(), "VA" );
+		TS_ASSERT_EQUALS( sequence.v_gene(), "TRAV41*01");
+		TS_ASSERT_EQUALS( sequence.d_gene(), "N/A");
+		TS_ASSERT_EQUALS( sequence.j_gene(), "TRAJ34*01");
+
+		TS_ASSERT_EQUALS( sequence.v_identity(), 100);
+		TS_ASSERT_EQUALS( sequence.d_identity(), -1);
+		TS_ASSERT_EQUALS( sequence.j_identity(), 100);
+
+		TS_ASSERT_EQUALS( sequence.v_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.d_identity_fmt(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.j_identity_fmt(), "100.00" );
+	}
+
+	void testTCRB() {
+		ErrorXOptions options( "testing/test_sequences.fastq", "fastq" );
+		options.errorx_base( ".." );
+		options.verbose( 0 );
+		options.allow_nonproductive( 1 );
+		options.species( "human" );
+		options.igtype( "TCR" );
+
+		options.validate();
+		options.count_queries();
+		options.fastq_to_fasta();
+
+		IGBlastParser parser;
+		parser.blast( options );
+		SequenceRecordsPtr records = parser.parse_output( options );
+
+		AbSequence sequence = records->get( 13 )->sequence();
+
+
+		TS_ASSERT_EQUALS( sequence.full_nt_sequence(),"AAGGCTGGATTCACTCAAACTCCAAGATATCTGATCAAAACGAGAGGACAGCAAGTGACCCTGAGCTGCTCCCCTATCCCTGGGCATCGGAGGGTATCCTGGGACCAACAGACCCCAGGACAGGGCCTTCAGTTCCTCTTTGAATACTTCAGAGAGACACAGAGAAACAAAGGAAACTTCCCTGGTCGATTCTCAGGGCGCCAGTTCTCTAACTCTCGCTCTGAGATGAATGTGAGCACCTTGGAGCTGGGGGACTCGGCCCTTTATCTTTGCGCCAGCAGCGACGGGACCGGACAAAACTATGGCTACACCTTCGGTTCGGGGACCAGGTTAACCGTTGTAG");
+
+		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "AAGGCTGGAGTCACTCAAACTCCAAGATATCTGATCAAAACGAGAGGACAGCAAGTGACACTGAGCTGCTCCCCTATCTCTGGGCATAGGAGTGTATCCTGGTACCAACAGACCCCAGGACAGGGCCTTCAGTTCCTCTTTGAATACTTCAGTGAGACACAGAGAAACAAAGGAAACTTCCCTGGTCGATTCTCAGGGCGCCAGTTCTCTAACTCTCGCTCTGAGATGAATGTGAGCACCTTGGAGCTGGGGGACTCGGCCCTTTATCTTTGCGCCAGCAGC---------------AACTATGGCTACACCTTCGGTTCGGGGACCAGGTTAACCGTTGTAG");
+
+		
+		TS_ASSERT_EQUALS( sequence.cdr1_nt_sequence(), "CCTGGGCATCGGAGG" );
+		TS_ASSERT_EQUALS( sequence.cdr1_aa_sequence(), "PGHRR" );
+
+		TS_ASSERT_EQUALS( sequence.cdr2_nt_sequence(), "TACTTCAGAGAGACACAG" );
+		TS_ASSERT_EQUALS( sequence.cdr2_aa_sequence(), "YFRETQ" );
+
+		TS_ASSERT_EQUALS( sequence.cdr3_nt_sequence(), "GCCAGCAGCGACGGGACCGGACAAAACTATGGCTACACC" );
+		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(), "ASSDGTGQNYGYT");
+
+		TS_ASSERT_EQUALS( sequence.translation_frame(), 1 );
+		TS_ASSERT_EQUALS( sequence.full_aa_sequence(),"KAGFTQTPRYLIKTRGQQVTLSCSPIPGHRRVSWDQQTPGQGLQFLFEYFRETQRNKGNFPGRFSGRQFSNSRSEMNVSTLELGDSALYLCASSDGTGQNYGYTFGSGTRLTVV");
+
+
+		TS_ASSERT_EQUALS( sequence.isGood(), 1 );
+		TS_ASSERT_EQUALS( sequence.chain(), "VB" );
+		TS_ASSERT_EQUALS( sequence.v_gene(), "TRBV5-1*01");
+		TS_ASSERT_EQUALS( sequence.d_gene(), "N/A");
+		TS_ASSERT_EQUALS( sequence.j_gene(), "TRBJ1-2*01");
+
+		TS_ASSERT_EQUALS( sequence.v_identity(), 97.518);
+		TS_ASSERT_EQUALS( sequence.d_identity(), 100);
+		TS_ASSERT_EQUALS( sequence.j_identity(), 100);
+
+	}
+
+	void testQualityCorrect() {
+
+		AbSequence sequence = records_->get( 14 )->sequence();
+			
+		TS_ASSERT_EQUALS( 
+			sequence.quality_string_trimmed(),
+			"########################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4"
+			);
+
+
+
 		TS_ASSERT_EQUALS(
-			current->sequence().quality_string_trimmed(),
+			sequence.full_nt_sequence(),
+			"AGGACGGAGGCACACGGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGCGCGCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCGGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCA"
+			);
+
+
+		TS_ASSERT_EQUALS(
+			sequence.full_gl_nt_sequence(),
+			"AGGGCAGAGTCACGATTACCGCGGACAAATCCACGAGCACAGCCTACATGGAGCTGAGCAGCCTGAGATCTGAGGACACGGCCGTGTATTACTGTGCGAGAGA------------------------CTGGGGCCAAGGGACCACGGTCACCGTCTCCTCA"
+			);
+	}
+
+	void testAdditionalFastq() {
+
+		SequenceRecordPtr current = records_->get( 15 );
+		TS_ASSERT( current->isGood() );
+
+		AbSequence sequence = current->sequence();
+
+		TS_ASSERT_EQUALS( 
+			sequence.full_nt_sequence(),
+			"GTGCAGCTGGTGGAGTCTGGGGGAGGCTTGGTGCAGCCTGGGGAGTCTCTGAGACTCTCCTGTGCAGCCTCTGGATTCACGTTCAGCCTGTACGACATGGCATGGGTCCGCCAGGCTCCAGGGAAGGGACTCGAGTGGGTCTCAGGTATGAGTG---GTGGTGGCCGTGAATACTATGTAGACTCCGTGAAGGGCCGATTCACCATCTCCAGAGACAACGCCAAGAACACGCTGTATCTGCAAATGAACAGCCTGAAAACTGAGGACACTGCCATTTATATCTGCGCCACAATGGTCTGGCACTATACCGACCCCGAGGTTTGGGGCCAGGGCACCCAGGTCACCGTCTCC"
+			);
+
+		TS_ASSERT_EQUALS(
+			sequence.quality_string_trimmed(),
 			"GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG-\")\"2,'''-,'\",''\"'-\"-\"))96)3\"0,\"3-'\"\"0-)\"''\"\"''\"\"\"3))-\"\"-''3''\";066,\"6>*A9236<BA>'25'693?-3*-*3*>89<*3*\"05   DAB95>BAAD9?B;*?DB9DD\"DD?B6BDDDDDDDDBBDBABDDDDDDDD?DDDDDDDDDDDDDDDB8BDBADBBBB?BDDDDDDDB69B>ABDDDBBBD9D366B?D?DDB3BD?D?DDDDDBDA36>>?>A0?>DGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGCCCCC" 
 			);
 
@@ -98,190 +636,142 @@ public:
 		vector<double> vect = f.get_feature_vector();
 		TS_ASSERT_DELTA( vect[ 3 ], 10.9304856/40, pow(10,-6) );
 
-
-		current = records->get(1);
-
+		current = records_->get( 16 );
 		TS_ASSERT( current->isGood() );
 
+		sequence = current->sequence();
+
 		TS_ASSERT_EQUALS(
-			current->sequence().full_nt_sequence(),
+			sequence.full_nt_sequence(),
 			"CATGTGCAGCTGGTGGAGTCTGGCGGAGGCTCGGTGCAGGCTTGAGGGTCTCTGCGACTCACTTTTGTAGCCTCA-----CAGC----GTGCCCATTGCATGGGCTTGGTCCGCCCGTCTCCATTTGTGGGGCTCGGGTGGTTCTCAGGTATTTCGACTGGTGCTGGTCACACATTCTAAGCATACTCCGCGACCGGCCGATTCACCATCTCCAGAGACAACGCCCACAACACACTATATCTCCAACTTACCAGCCTTAACACTCAGGCCACTGCCCTTTATTACT"
 			);
 
+
+		TS_ASSERT_EQUALS( 
+			sequence.quality_string_untrimmed(),
+			"@C-@BFGGGGGFFDFGGC8FCDDD@FEE9-86:+@@CD++B7@8,,6@,6,,,,86CEG,,++8@BFCC<,9,:,66,CC,C,,C+8,,C,,CE9C,C,,+9?,++:B?+>=+++84:A,,,,,<:+++48B++=F7+8:>B@93=>,:@D@,+@>8,@,,@,,@,7@,6@FCB@,,,>,,,7<D7*>******4=<*4<><FFFCC9B@+5>**202;585***/*1/2*;;+3++2<+3+8+9+++0+0*/9+0+*:6>**0**/**966546)2*17*19*1).7)0(0*-,(.)--"
+			);
+
 		TS_ASSERT_EQUALS(
-			current->sequence().quality_string_trimmed(),
+			sequence.quality_string_trimmed(),
 			"GGGGGFFDFGGC8FCDDD@FEE9-86:+@@CD++B7@8,,6@,6,,,,86CEG,,++8@BFCC<,9,:,66,CC,     C,,C    +8,,C,,CE9C,C,,+9?,++:B?+>=+++84:A,,,,,<:+++48B++=F7+8:>B@93=>,:@D@,+@>8,@,,@,,@,7@,6@FCB@,,,>,,,7<D7*>******4=<*4<><FFFCC9B@+5>**202;585***/*1/2*;;+3++2<+3+8+9+++0+0*/9+0+*:6>**0**/**966546)2*17*19"
 			);
 	}
 
-	void testParser(void) {
+	void testDuplicateTags() {
 
-		IGBlastParser parser;
-		SequenceRecordsPtr records;
+		TS_ASSERT_EQUALS( 
+			records_->get( 17 )->sequence().sequenceID(), 
+			"forward_sequence_1" 
+			);
 
-		ErrorXOptions options( (util::get_root_path() / "testing" / "test.fastq").string(),
-			"fastq" );
+		TS_ASSERT_EQUALS( 
+			records_->get( 18 )->sequence().sequenceID(), 
+			"forward_sequence_2" 
+			);
 
-		options.infasta( util::get_root_path().string()+"/testing/test.fasta" );
-		options.igblast_output( util::get_root_path().string()+"/testing/test.fasta.out" );
-		options.verbose( 0 );
+		TS_ASSERT_EQUALS( 
+			records_->get( 19 )->sequence().sequenceID(), 
+			"forward_sequence_3" 
+			);
+	}
+
+
+	void testFASTASequences() {
+		ErrorXOptions options( "testing/test_sequences.fasta", "fasta" );
 		options.errorx_base( ".." );
+		options.verbose( 0 );
+		options.allow_nonproductive( 1 );
 
-		records = run_protocol( options );
-		// records = parser.parse_output( options );
+		records_ = run_protocol( options );
 
-	 	string quality_string =
-	 		"########################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4";
-			
-		TS_ASSERT_EQUALS(
-			records->get(0)->quality_string(),
-			quality_string
-			);
+		AbSequence sequence = records_->get( 0 )->sequence();
 
-		string full_nt_sequence =
-			"AGGACGGAGGCACACGGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGCGCGCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCGGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCA";
+		TS_ASSERT_EQUALS( sequence.full_nt_sequence(),"TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGGCGTCATGGTGTATGCTATAAGCTGCTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG");
+		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG----ATGGTGTATGCTATA-----CTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG");
+		
+		TS_ASSERT_EQUALS( sequence.cdr1_nt_sequence(), "TCAGTGGTTACTAC" );
+		TS_ASSERT_EQUALS( sequence.cdr1_aa_sequence(), "SGYY" );
 
+		TS_ASSERT_EQUALS( sequence.cdr2_nt_sequence(), "ATCAATCATAGTGGAAGCACC" );
+		TS_ASSERT_EQUALS( sequence.cdr2_aa_sequence(), "INHSGST" );
 
-		TS_ASSERT_EQUALS(
-			records->get(0)->full_nt_sequence(),
-			full_nt_sequence
-			);
-
-		string full_gl_nt_sequence =
-			"AGGGCAGAGTCACGATTACCGCGGACAAATCCACGAGCACAGCCTACATGGAGCTGAGCAGCCTGAGATCTGAGGACACGGCCGTGTATTACTGTGCGAGAGA------------------------CTGGGGCCAAGGGACCACGGTCACCGTCTCCTCA";
-
-		TS_ASSERT_EQUALS(
-			records->get(0)->full_gl_nt_sequence(),
-			full_gl_nt_sequence
-			);
-
-		TS_ASSERT_EQUALS(
-			records->get(0)->full_aa_sequence(),
-			"DGGTRSADKSSSAACLARSSLKAGDSAVCSGAGEEALSFVYYWGQGTTLTGSS"
-			);
-	}
-
-
-	void testRecords(void) {
-
-		 vector<string> lines = {
-			"# IGBLASTN",
-			"# Query: SRR4431788.57|CCCCCGGGGGGGGFFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGCFGGGGGGGGGGGGGFCGFGGGGGGGGGGGFGGGGGGGGGGGFGCGGGGGGGGGG=CDDFFFFFFD*CDGDDCGGGFGFF6CFGF???FGFFF46@??FFFF4?FFF5)52?FFF(,<F?BFFF(459:>?F96>:?:>92-1:3?F),552A))6A<4A#####@CCCCFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGFGGGGEFGGGGGGGGGFGGGGGCEGGGGFGGGGGGGGGFGDGGFGGGGGGGGGGGGGFGGGGGCFFFFGGGGGGGDEFGGGCAFGGGGGGDGGCCCDFFGGGGGFGGGFGCDGEGCDGG7:2DFC7CGGGGGGGGGGGFDF6DFACFFFFFFFFFF1AFFDEBAC<>ADGCFGFFDB>357)7456F@==F;:FGGC44.96407@?7>75+<FG?F5*7DC####",
-			"# Database: /Users/alexsevy/database/human_gl_V /Users/alexsevy/database/human_gl_D /Users/alexsevy/database/human_gl_J",
-			"# Domain classification requested: imgt",
-			"",
-			"# Note that your query represents the minus strand of a V gene and has been converted to the plus strand. The sequence positions refer to the converted sequence. ",
-			"",
-			"# V-(D)-J rearrangement summary for query sequence (Top V gene match, Top D gene match, Top J gene match, Chain type, stop codon, V-J frame, Productive, Strand).  Multiple equivalent top matches, if present, are separated by a comma.",
-			"IGHV4-34*01	IGHD2-8*01	IGHJ4*02	VH	No	In-frame	Yes	-",
-			"",
-			"# V-(D)-J junction details based on top germline gene matches (V end, V-D junction, D region, D-J junction, J start).  Note that possible overlapping nucleotides at VDJ junction (i.e, nucleotides that could be assigned to either rearranging gene) are indicated in parentheses (i.e., (TACT)) but are not included under the V, D, or J gene itself",
-			"AGAGG	CGTC	ATGGTGTATGCTATA	AGCTG	CTTTG	",
-			"",
-			"# Sub-region sequence details (nucleotide sequence, translation, start, end)",
-			"CDR3	GCGAGAGGCGTCATGGTGTATGCTATAAGCTGCTTTGACTAC	ARGVMVYAISCFDY	501	542	",
-			"",
-			"# Alignment summary between query and top germline V gene hit (from, to, length, matches, mismatches, gaps, percent identity)",
-			"CDR1-IGBlast	301	314	14	14	0	0	100",
-			"FR2-IGBlast	315	365	51	51	0	0	100",
-			"CDR2-IGBlast	366	386	21	21	0	0	100",
-			"FR3-IGBlast	387	500	114	114	0	0	100",
-			"CDR3-IGBlast (germline)	501	508	8	8	0	0	100",
-			"Total	N/A	N/A	208	208	0	0	100",
-			"",
-			"# Hit table (the first field indicates the chain type of the hit)",
-			"# Fields: query id, subject id, % identity, alignment length, mismatches, gap opens, gaps, q. start, q. end, s. start, s. end, evalue, bit score, query frame, sbjct frame, query seq, subject seq",
-			"# 3 hits found",
-			"V	reversed|SRR4431788.57|CCCCCGGGGGGGGFFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGCFGGGGGGGGGGGGGFCGFGGGGGGGGGGGFGGGGGGGGGGGFGCGGGGGGGGGG=CDDFFFFFFD*CDGDDCGGGFGFF6CFGF???FGFFF46@??FFFF4?FFF5)52?FFF(,<F?BFFF(459:>?F96>:?:>92-1:3?F),552A))6A<4A#####@CCCCFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGFGGGGEFGGGGGGGGGFGGGGGCEGGGGFGGGGGGGGGFGDGGFGGGGGGGGGGGGGFGGGGGCFFFFGGGGGGGDEFGGGCAFGGGGGGDGGCCCDFFGGGGGFGGGFGCDGEGCDGG7:2DFC7CGGGGGGGGGGGFDF6DFACFFFFFFFFFF1AFFDEBAC<>ADGCFGFFDB>357)7456F@==F;:FGGC44.96407@?7>75+<FG?F5*7DC####	IGHV4-34*01	100.000	208	0	0	0	301	508	86	293	4.40e-91	325	1	1	TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG	TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG",
-			"D	reversed|SRR4431788.57|CCCCCGGGGGGGGFFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGCFGGGGGGGGGGGGGFCGFGGGGGGGGGGGFGGGGGGGGGGGFGCGGGGGGGGGG=CDDFFFFFFD*CDGDDCGGGFGFF6CFGF???FGFFF46@??FFFF4?FFF5)52?FFF(,<F?BFFF(459:>?F96>:?:>92-1:3?F),552A))6A<4A#####@CCCCFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGFGGGGEFGGGGGGGGGFGGGGGCEGGGGFGGGGGGGGGFGDGGFGGGGGGGGGGGGGFGGGGGCFFFFGGGGGGGDEFGGGCAFGGGGGGDGGCCCDFFGGGGGFGGGFGCDGEGCDGG7:2DFC7CGGGGGGGGGGGFDF6DFACFFFFFFFFFF1AFFDEBAC<>ADGCFGFFDB>357)7456F@==F;:FGGC44.96407@?7>75+<FG?F5*7DC####	IGHD2-8*01	100.000	15	0	0	0	513	527	15	29	5.01e-04	29.5	1	1	ATGGTGTATGCTATA	ATGGTGTATGCTATA",
-			"J	reversed|SRR4431788.57|CCCCCGGGGGGGGFFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGCFGGGGGGGGGGGGGFCGFGGGGGGGGGGGFGGGGGGGGGGGFGCGGGGGGGGGG=CDDFFFFFFD*CDGDDCGGGFGFF6CFGF???FGFFF46@??FFFF4?FFF5)52?FFF(,<F?BFFF(459:>?F96>:?:>92-1:3?F),552A))6A<4A#####@CCCCFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGFGGGGEFGGGGGGGGGFGGGGGCEGGGGFGGGGGGGGGFGDGGFGGGGGGGGGGGGGFGGGGGCFFFFGGGGGGGDEFGGGCAFGGGGGGDGGCCCDFFGGGGGFGGGFGCDGEGCDGG7:2DFC7CGGGGGGGGGGGFDF6DFACFFFFFFFFFF1AFFDEBAC<>ADGCFGFFDB>357)7456F@==F;:FGGC44.96407@?7>75+<FG?F5*7DC####	IGHJ4*02	100.000	44	0	0	0	533	576	5	48	7.45e-21	85.3	1	1	CTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG	CTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG		 			"
-	 	};
-
-	 	ErrorXOptions options( "tmp.fastq", "fastq" );
-	 	IGBlastParser parser;
-	 	AbSequence sequence = parser.parse_lines( lines, options );
-	 	TS_ASSERT_EQUALS( sequence.full_nt_sequence(),"TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGGCGTCATGGTGTATGCTATAAGCTGCTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG");
-	 	TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG----ATGGTGTATGCTATA-----CTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG");
-	 	TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(),"ARGVMVYAISCFDY");
-	 	TS_ASSERT_EQUALS( sequence.translation_frame(), 3 );
-	 	TS_ASSERT_EQUALS( sequence.full_aa_sequence(),"SGYYWSWIRQPPGKGLEWIGEINHSGSTNYNPSLKSRVTISVDTSKNQFSLKLSSVTAADTAVYYCARGVMVYAISCFDYWGQGTLVTVSS");
-
-		TS_ASSERT_EQUALS( sequence.isGood(), 1 );
-		TS_ASSERT_EQUALS( sequence.chain(), "VH" );
-		TS_ASSERT_EQUALS( sequence.v_gene(), "IGHV4-34*01");
-		TS_ASSERT_EQUALS( sequence.d_gene(), "IGHD2-8*01");
-		TS_ASSERT_EQUALS( sequence.j_gene(), "IGHJ4*02");
-
-		TS_ASSERT_DELTA( sequence.v_identity(), 100, 0.001 );
-		TS_ASSERT_DELTA( sequence.d_identity(), 100, 0.001 );
-		TS_ASSERT_DELTA( sequence.j_identity(), 100, 0.001 );
-
-
-
-	 	SequenceRecord record( sequence );
-	 	TS_ASSERT_EQUALS( record.full_nt_sequence(),"TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGGCGTCATGGTGTATGCTATAAGCTGCTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG");
-	 	TS_ASSERT_EQUALS( record.full_gl_nt_sequence(), "TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG----ATGGTGTATGCTATA-----CTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG");
-	 	TS_ASSERT_EQUALS( record.cdr3_aa_sequence(),"ARGVMVYAISCFDY");
-	 	TS_ASSERT_EQUALS( record.sequence().translation_frame(), 3 );
-	 	TS_ASSERT_EQUALS( record.full_aa_sequence(),"SGYYWSWIRQPPGKGLEWIGEINHSGSTNYNPSLKSRVTISVDTSKNQFSLKLSSVTAADTAVYYCARGVMVYAISCFDYWGQGTLVTVSS");
-
-		TS_ASSERT_EQUALS( record.isGood(), 1 );
-		TS_ASSERT_EQUALS( record.chain(), "VH" );
-		TS_ASSERT_EQUALS( record.v_gene(), "IGHV4-34*01");
-		TS_ASSERT_EQUALS( record.d_gene(), "IGHD2-8*01");
-		TS_ASSERT_EQUALS( record.j_gene(), "IGHJ4*02");
-
-		TS_ASSERT_DELTA( record.v_identity(), 100, 0.001 );
-		TS_ASSERT_DELTA( record.d_identity(), 100, 0.001 );
-		TS_ASSERT_DELTA( record.j_identity(), 100, 0.001 );
-
-	}
-
-	void testRecordsNoD(void) {
-
-		vector<string> lines = {
-			"# IGBLASTN",
-			"# Query: SRR4431788.57|CCCCCGGGGGGGGFFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGCFGGGGGGGGGGGGGFCGFGGGGGGGGGGGFGGGGGGGGGGGFGCGGGGGGGGGG=CDDFFFFFFD*CDGDDCGGGFGFF6CFGF???FGFFF46@??FFFF4?FFF5)52?FFF(,<F?BFFF(459:>?F96>:?:>92-1:3?F),552A))6A<4A#####@CCCCFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGFGGGGEFGGGGGGGGGFGGGGGCEGGGGFGGGGGGGGGFGDGGFGGGGGGGGGGGGGFGGGGGCFFFFGGGGGGGDEFGGGCAFGGGGGGDGGCCCDFFGGGGGFGGGFGCDGEGCDGG7:2DFC7CGGGGGGGGGGGFDF6DFACFFFFFFFFFF1AFFDEBAC<>ADGCFGFFDB>357)7456F@==F;:FGGC44.96407@?7>75+<FG?F5*7DC####",
-			"# Database: /Users/alexsevy/database/human_gl_V /Users/alexsevy/database/human_gl_D /Users/alexsevy/database/human_gl_J",
-			"# Domain classification requested: imgt",
-			"",
-			"# Note that your query represents the minus strand of a V gene and has been converted to the plus strand. The sequence positions refer to the converted sequence. ",
-			"",
-			"# V-(D)-J rearrangement summary for query sequence (Top V gene match, Top D gene match, Top J gene match, Chain type, stop codon, V-J frame, Productive, Strand).  Multiple equivalent top matches, if present, are separated by a comma.",
-			"IGHV4-34*01  IGHD2-8*01  IGHJ4*02  VH  No  In-frame  Yes -",
-			"",
-			"# V-(D)-J junction details based on top germline gene matches (V end, V-D junction, D region, D-J junction, J start).  Note that possible overlapping nucleotides at VDJ junction (i.e, nucleotides that could be assigned to either rearranging gene) are indicated in parentheses (i.e., (TACT)) but are not included under the V, D, or J gene itself",
-			"AGAGG  CGTC  ATGGTGTATGCTATA AGCTG CTTTG ",
-			"",
-			"# Sub-region sequence details (nucleotide sequence, translation, start, end)",
-			"CDR3 GCGAGAGGCGTCATGGTGTATGCTATAAGCTGCTTTGACTAC  ARGVMVYAISCFDY  501 542 ",
-			"",
-			"# Alignment summary between query and top germline V gene hit (from, to, length, matches, mismatches, gaps, percent identity)",
-			"CDR1-IGBlast 301 314 14  14  0 0 100",
-			"FR2-IGBlast  315 365 51  51  0 0 100",
-			"CDR2-IGBlast 366 386 21  21  0 0 100",
-			"FR3-IGBlast  387 500 114 114 0 0 100",
-			"CDR3-IGBlast (germline)  501 508 8 8 0 0 100",
-			"Total  N/A N/A 208 208 0 0 100",
-			"",
-			"# Hit table (the first field indicates the chain type of the hit)",
-			"# Fields: query id, subject id, % identity, alignment length, mismatches, gap opens, gaps, q. start, q. end, s. start, s. end, evalue, bit score, query frame, sbjct frame, query seq, subject seq",
-			"# 3 hits found",
-			"V  reversed|SRR4431788.57|CCCCCGGGGGGGGFFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGCFGGGGGGGGGGGGGFCGFGGGGGGGGGGGFGGGGGGGGGGGFGCGGGGGGGGGG=CDDFFFFFFD*CDGDDCGGGFGFF6CFGF???FGFFF46@??FFFF4?FFF5)52?FFF(,<F?BFFF(459:>?F96>:?:>92-1:3?F),552A))6A<4A#####@CCCCFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGFGGGGEFGGGGGGGGGFGGGGGCEGGGGFGGGGGGGGGFGDGGFGGGGGGGGGGGGGFGGGGGCFFFFGGGGGGGDEFGGGCAFGGGGGGDGGCCCDFFGGGGGFGGGFGCDGEGCDGG7:2DFC7CGGGGGGGGGGGFDF6DFACFFFFFFFFFF1AFFDEBAC<>ADGCFGFFDB>357)7456F@==F;:FGGC44.96407@?7>75+<FG?F5*7DC####  IGHV4-34*01 100.000 208 0 0 0 301 508 86  293 4.40e-91  325 1 1 TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG  TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG",
-			"D  reversed|SRR4431788.57|CCCCCGGGGGGGGFFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGCFGGGGGGGGGGGGGFCGFGGGGGGGGGGGFGGGGGGGGGGGFGCGGGGGGGGGG=CDDFFFFFFD*CDGDDCGGGFGFF6CFGF???FGFFF46@??FFFF4?FFF5)52?FFF(,<F?BFFF(459:>?F96>:?:>92-1:3?F),552A))6A<4A#####@CCCCFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGFGGGGEFGGGGGGGGGFGGGGGCEGGGGFGGGGGGGGGFGDGGFGGGGGGGGGGGGGFGGGGGCFFFFGGGGGGGDEFGGGCAFGGGGGGDGGCCCDFFGGGGGFGGGFGCDGEGCDGG7:2DFC7CGGGGGGGGGGGFDF6DFACFFFFFFFFFF1AFFDEBAC<>ADGCFGFFDB>357)7456F@==F;:FGGC44.96407@?7>75+<FG?F5*7DC####  IGHD2-8*01  100.000 15  0 0 0 513 527 15  29  5.0  29.5  1 1 ATGGTGTATGCTATA ATGGTGTATGCTATA",
-			"J  reversed|SRR4431788.57|CCCCCGGGGGGGGFFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGCFGGGGGGGGGGGGGFCGFGGGGGGGGGGGFGGGGGGGGGGGFGCGGGGGGGGGG=CDDFFFFFFD*CDGDDCGGGFGFF6CFGF???FGFFF46@??FFFF4?FFF5)52?FFF(,<F?BFFF(459:>?F96>:?:>92-1:3?F),552A))6A<4A#####@CCCCFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGFGGGGEFGGGGGGGGGFGGGGGCEGGGGFGGGGGGGGGFGDGGFGGGGGGGGGGGGGFGGGGGCFFFFGGGGGGGDEFGGGCAFGGGGGGDGGCCCDFFGGGGGFGGGFGCDGEGCDGG7:2DFC7CGGGGGGGGGGGFDF6DFACFFFFFFFFFF1AFFDEBAC<>ADGCFGFFDB>357)7456F@==F;:FGGC44.96407@?7>75+<FG?F5*7DC####  IGHJ4*02  100.000 44  0 0 0 533 576 5 48  7.45e-21  85.3  1 1 CTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG  CTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG			"
-		};
-		ErrorXOptions options( "tmp.fastq", "fastq" );
-	 	IGBlastParser parser;
-	 	AbSequence sequence = parser.parse_lines( lines, options );
-	 	TS_ASSERT_EQUALS( sequence.full_nt_sequence(),"TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGGCGTCATGGTGTATGCTATAAGCTGCTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG");
-		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG------------------------CTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG");
+		TS_ASSERT_EQUALS( sequence.cdr3_nt_sequence(), 
+			"GCGAGAGGCGTCATGGTGTATGCTATAAGCTGCTTTGACTAC" );
 		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(),"ARGVMVYAISCFDY");
+
+		TS_ASSERT_EQUALS( sequence.translation_frame(), 3 );
 		TS_ASSERT_EQUALS( sequence.full_aa_sequence(),"SGYYWSWIRQPPGKGLEWIGEINHSGSTNYNPSLKSRVTISVDTSKNQFSLKLSSVTAADTAVYYCARGVMVYAISCFDYWGQGTLVTVSS");
 
 		TS_ASSERT_EQUALS( sequence.isGood(), 1 );
 		TS_ASSERT_EQUALS( sequence.chain(), "VH" );
 		TS_ASSERT_EQUALS( sequence.v_gene(), "IGHV4-34*01");
+		TS_ASSERT_EQUALS( sequence.d_gene(), "IGHD2-8*01");
+		TS_ASSERT_EQUALS( sequence.j_gene(), "IGHJ4*02");
+
+		TS_ASSERT_DELTA( sequence.v_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.d_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.j_identity(), 100, 0.001 );
+
+		TS_ASSERT_EQUALS( sequence.v_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.d_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.j_identity_fmt(), "100.00" );
+
+		// test forward sequence
+		sequence = records_->get( 1 )->sequence();
+
+		TS_ASSERT_EQUALS( sequence.full_nt_sequence(),"TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGGCGTCATGGTGTATGCTATAAGCTGCTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG");
+		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG----ATGGTGTATGCTATA-----CTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG");
+		
+		TS_ASSERT_EQUALS( sequence.cdr1_nt_sequence(), "TCAGTGGTTACTAC" );
+		TS_ASSERT_EQUALS( sequence.cdr1_aa_sequence(), "SGYY" );
+
+		TS_ASSERT_EQUALS( sequence.cdr2_nt_sequence(), "ATCAATCATAGTGGAAGCACC" );
+		TS_ASSERT_EQUALS( sequence.cdr2_aa_sequence(), "INHSGST" );
+
+		TS_ASSERT_EQUALS( sequence.cdr3_nt_sequence(), 
+			"GCGAGAGGCGTCATGGTGTATGCTATAAGCTGCTTTGACTAC" );
+		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(),"ARGVMVYAISCFDY");
+
+		TS_ASSERT_EQUALS( sequence.translation_frame(), 3 );
+		TS_ASSERT_EQUALS( sequence.full_aa_sequence(),"SGYYWSWIRQPPGKGLEWIGEINHSGSTNYNPSLKSRVTISVDTSKNQFSLKLSSVTAADTAVYYCARGVMVYAISCFDYWGQGTLVTVSS");
+
+		TS_ASSERT_EQUALS( sequence.isGood(), 1 );
+		TS_ASSERT_EQUALS( sequence.chain(), "VH" );
+		TS_ASSERT_EQUALS( sequence.v_gene(), "IGHV4-34*01");
+		TS_ASSERT_EQUALS( sequence.d_gene(), "IGHD2-8*01");
+		TS_ASSERT_EQUALS( sequence.j_gene(), "IGHJ4*02");
+
+		TS_ASSERT_DELTA( sequence.v_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.d_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.j_identity(), 100, 0.001 );
+
+		TS_ASSERT_EQUALS( sequence.v_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.d_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.j_identity_fmt(), "100.00" );
+	
+		// testBadD
+		sequence = records_->get( 2 )->sequence();
+
+		TS_ASSERT_EQUALS( sequence.full_nt_sequence(),"TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGGCGTCATGGTAAAAAATATAAGCTGCTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG");
+		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG------------------------CTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG");
+
+		TS_ASSERT_EQUALS( sequence.cdr1_nt_sequence(), "TCAGTGGTTACTAC" );
+		TS_ASSERT_EQUALS( sequence.cdr1_aa_sequence(), "SGYY" );
+
+		TS_ASSERT_EQUALS( sequence.cdr2_nt_sequence(), "ATCAATCATAGTGGAAGCACC" );
+		TS_ASSERT_EQUALS( sequence.cdr2_aa_sequence(), "INHSGST" );
+
+		TS_ASSERT_EQUALS( sequence.cdr3_nt_sequence(), 
+			"GCGAGAGGCGTCATGGTAAAAAATATAAGCTGCTTTGACTAC" );
+		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(),"ARGVMVKNISCFDY");
+
+		TS_ASSERT_EQUALS( sequence.translation_frame(), 3 );
+		TS_ASSERT_EQUALS( sequence.full_aa_sequence(),"SGYYWSWIRQPPGKGLEWIGEINHSGSTNYNPSLKSRVTISVDTSKNQFSLKLSSVTAADTAVYYCARGVMVKNISCFDYWGQGTLVTVSS");
+
+		TS_ASSERT_EQUALS( sequence.isGood(), 1 );
+		TS_ASSERT_EQUALS( sequence.chain(), "VH" );
+		TS_ASSERT_EQUALS( sequence.v_gene(), "IGHV4-34*01");
 		TS_ASSERT_EQUALS( sequence.d_gene(), "N/A");
 		TS_ASSERT_EQUALS( sequence.j_gene(), "IGHJ4*02");
 
@@ -289,68 +779,29 @@ public:
 		TS_ASSERT_DELTA( sequence.d_identity(), 100, 0.001 );
 		TS_ASSERT_DELTA( sequence.j_identity(), 100, 0.001 );
 
+		TS_ASSERT_EQUALS( sequence.v_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.d_identity_fmt(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.j_identity_fmt(), "100.00" );
 
-		SequenceRecord record( sequence );
+		// testBadJ
+		sequence = records_->get( 3 )->sequence();
 
-		TS_ASSERT_EQUALS( record.full_nt_sequence(),"TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGGCGTCATGGTGTATGCTATAAGCTGCTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG");
-		TS_ASSERT_EQUALS( record.full_gl_nt_sequence(), "TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG------------------------CTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG");
-		TS_ASSERT_EQUALS( record.cdr3_aa_sequence(),"ARGVMVYAISCFDY");
-		TS_ASSERT_EQUALS( record.full_aa_sequence(),"SGYYWSWIRQPPGKGLEWIGEINHSGSTNYNPSLKSRVTISVDTSKNQFSLKLSSVTAADTAVYYCARGVMVYAISCFDYWGQGTLVTVSS");
+		TS_ASSERT_EQUALS( sequence.full_nt_sequence(), "TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGGCGTCATGGTGTATGCTATAAGCTGCTTTGACTA");
 
-		TS_ASSERT_EQUALS( record.isGood(), 1 );
-		TS_ASSERT_EQUALS( record.chain(), "VH" );
-		TS_ASSERT_EQUALS( record.v_gene(), "IGHV4-34*01");
-		TS_ASSERT_EQUALS( record.d_gene(), "N/A");
-		TS_ASSERT_EQUALS( record.j_gene(), "IGHJ4*02");
+		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG----ATGGTGTATGCTATA--------------");
 
-		TS_ASSERT_DELTA( record.v_identity(), 100, 0.001 );
-		TS_ASSERT_DELTA( record.d_identity(), 100, 0.001 );
-		TS_ASSERT_DELTA( record.j_identity(), 100, 0.001 );
+		TS_ASSERT_EQUALS( sequence.cdr1_nt_sequence(), "TCAGTGGTTACTAC" );
+		TS_ASSERT_EQUALS( sequence.cdr1_aa_sequence(), "SGYY" );
 
-	}
+		TS_ASSERT_EQUALS( sequence.cdr2_nt_sequence(), "ATCAATCATAGTGGAAGCACC" );
+		TS_ASSERT_EQUALS( sequence.cdr2_aa_sequence(), "INHSGST" );
 
-	void testRecordsNoJ(void) {
+		TS_ASSERT_EQUALS( sequence.cdr3_nt_sequence(), 
+			"GCGAGAGGCGTCATGGTGTATGCTATAAGCTGCTTTGACTA" );
+		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(),"ARGVMVYAISCFD");
 
-		vector<string> lines = {
-			"# IGBLASTN",
-			"# Query: SRR4431788.57|CCCCCGGGGGGGGFFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGCFGGGGGGGGGGGGGFCGFGGGGGGGGGGGFGGGGGGGGGGGFGCGGGGGGGGGG=CDDFFFFFFD*CDGDDCGGGFGFF6CFGF???FGFFF46@??FFFF4?FFF5)52?FFF(,<F?BFFF(459:>?F96>:?:>92-1:3?F),552A))6A<4A#####@CCCCFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGFGGGGEFGGGGGGGGGFGGGGGCEGGGGFGGGGGGGGGFGDGGFGGGGGGGGGGGGGFGGGGGCFFFFGGGGGGGDEFGGGCAFGGGGGGDGGCCCDFFGGGGGFGGGFGCDGEGCDGG7:2DFC7CGGGGGGGGGGGFDF6DFACFFFFFFFFFF1AFFDEBAC<>ADGCFGFFDB>357)7456F@==F;:FGGC44.96407@?7>75+<FG?F5*7DC####",
-			"# Database: /Users/alexsevy/database/human_gl_V /Users/alexsevy/database/human_gl_D /Users/alexsevy/database/human_gl_J",
-			"# Domain classification requested: imgt",
-			"",
-			"# Note that your query represents the minus strand of a V gene and has been converted to the plus strand. The sequence positions refer to the converted sequence. ",
-			"",
-			"# V-(D)-J rearrangement summary for query sequence (Top V gene match, Top D gene match, Top J gene match, Chain type, stop codon, V-J frame, Productive, Strand).  Multiple equivalent top matches, if present, are separated by a comma.",
-			"IGHV4-34*01  IGHD2-8*01  IGHJ4*02  VH  No  In-frame  Yes -",
-			"",
-			"# V-(D)-J junction details based on top germline gene matches (V end, V-D junction, D region, D-J junction, J start).  Note that possible overlapping nucleotides at VDJ junction (i.e, nucleotides that could be assigned to either rearranging gene) are indicated in parentheses (i.e., (TACT)) but are not included under the V, D, or J gene itself",
-			"AGAGG  CGTC  ATGGTGTATGCTATA AGCTG CTTTG ",
-			"",
-			"# Sub-region sequence details (nucleotide sequence, translation, start, end)",
-			"CDR3 GCGAGAGGCGTCATGGTGTATGCTATAAGCTGCTTTGACTAC  ARGVMVYAISCFDY  501 542 ",
-			"",
-			"# Alignment summary between query and top germline V gene hit (from, to, length, matches, mismatches, gaps, percent identity)",
-			"CDR1-IGBlast 301 314 14  14  0 0 100",
-			"FR2-IGBlast  315 365 51  51  0 0 100",
-			"CDR2-IGBlast 366 386 21  21  0 0 100",
-			"FR3-IGBlast  387 500 114 114 0 0 100",
-			"CDR3-IGBlast (germline)  501 508 8 8 0 0 100",
-			"Total  N/A N/A 208 208 0 0 100",
-			"",
-			"# Hit table (the first field indicates the chain type of the hit)",
-			"# Fields: query id, subject id, % identity, alignment length, mismatches, gap opens, gaps, q. start, q. end, s. start, s. end, evalue, bit score, query frame, sbjct frame, query seq, subject seq",
-			"# 3 hits found",
-			"V  reversed|SRR4431788.57|CCCCCGGGGGGGGFFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGCFGGGGGGGGGGGGGFCGFGGGGGGGGGGGFGGGGGGGGGGGFGCGGGGGGGGGG=CDDFFFFFFD*CDGDDCGGGFGFF6CFGF???FGFFF46@??FFFF4?FFF5)52?FFF(,<F?BFFF(459:>?F96>:?:>92-1:3?F),552A))6A<4A#####@CCCCFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGFGGGGEFGGGGGGGGGFGGGGGCEGGGGFGGGGGGGGGFGDGGFGGGGGGGGGGGGGFGGGGGCFFFFGGGGGGGDEFGGGCAFGGGGGGDGGCCCDFFGGGGGFGGGFGCDGEGCDGG7:2DFC7CGGGGGGGGGGGFDF6DFACFFFFFFFFFF1AFFDEBAC<>ADGCFGFFDB>357)7456F@==F;:FGGC44.96407@?7>75+<FG?F5*7DC####  IGHV4-34*01 100.000 208 0 0 0 301 508 86  293 4.40e-91  325 1 1 TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG  TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG",
-			"D  reversed|SRR4431788.57|CCCCCGGGGGGGGFFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGCFGGGGGGGGGGGGGFCGFGGGGGGGGGGGFGGGGGGGGGGGFGCGGGGGGGGGG=CDDFFFFFFD*CDGDDCGGGFGFF6CFGF???FGFFF46@??FFFF4?FFF5)52?FFF(,<F?BFFF(459:>?F96>:?:>92-1:3?F),552A))6A<4A#####@CCCCFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGFGGGGEFGGGGGGGGGFGGGGGCEGGGGFGGGGGGGGGFGDGGFGGGGGGGGGGGGGFGGGGGCFFFFGGGGGGGDEFGGGCAFGGGGGGDGGCCCDFFGGGGGFGGGFGCDGEGCDGG7:2DFC7CGGGGGGGGGGGFDF6DFACFFFFFFFFFF1AFFDEBAC<>ADGCFGFFDB>357)7456F@==F;:FGGC44.96407@?7>75+<FG?F5*7DC####  IGHD2-8*01  100.000 15  0 0 0 513 527 15  29  5.01e-04  29.5  1 1 ATGGTGTATGCTATA ATGGTGTATGCTATA",
-			"J  reversed|SRR4431788.57|CCCCCGGGGGGGGFFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGCFGGGGGGGGGGGGGFCGFGGGGGGGGGGGFGGGGGGGGGGGFGCGGGGGGGGGG=CDDFFFFFFD*CDGDDCGGGFGFF6CFGF???FGFFF46@??FFFF4?FFF5)52?FFF(,<F?BFFF(459:>?F96>:?:>92-1:3?F),552A))6A<4A#####@CCCCFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGFGGGGEFGGGGGGGGGFGGGGGCEGGGGFGGGGGGGGGFGDGGFGGGGGGGGGGGGGFGGGGGCFFFFGGGGGGGDEFGGGCAFGGGGGGDGGCCCDFFGGGGGFGGGFGCDGEGCDGG7:2DFC7CGGGGGGGGGGGFDF6DFACFFFFFFFFFF1AFFDEBAC<>ADGCFGFFDB>357)7456F@==F;:FGGC44.96407@?7>75+<FG?F5*7DC####  IGHJ4*02  100.000 44  0 0 0 533 576 5 48  7.4  85.3  1 1 CTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG  CTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG			"
-		};
-		ErrorXOptions options( "tmp.fastq", "fastq" );
-	 	IGBlastParser parser;
-	 	AbSequence sequence = parser.parse_lines( lines, options );
-	 	TS_ASSERT_EQUALS( sequence.full_nt_sequence(),"TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGGCGTCATGGTGTATGCTATAAGCTG");
-		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG----ATGGTGTATGCTATA-----");
-
-		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(),"ARGVMVYAISCFDY");
-		TS_ASSERT_EQUALS( sequence.full_aa_sequence(),"SGYYWSWIRQPPGKGLEWIGEINHSGSTNYNPSLKSRVTISVDTSKNQFSLKLSSVTAADTAVYYCARGVMVYAIS");
+		TS_ASSERT_EQUALS( sequence.translation_frame(), 3 );
+		TS_ASSERT_EQUALS( sequence.full_aa_sequence(),"SGYYWSWIRQPPGKGLEWIGEINHSGSTNYNPSLKSRVTISVDTSKNQFSLKLSSVTAADTAVYYCARGVMVYAISCFD");
 
 		TS_ASSERT_EQUALS( sequence.isGood(), 1 );
 		TS_ASSERT_EQUALS( sequence.chain(), "VH" );
@@ -360,71 +811,66 @@ public:
 
 		TS_ASSERT_DELTA( sequence.v_identity(), 100, 0.001 );
 		TS_ASSERT_DELTA( sequence.d_identity(), 100, 0.001 );
-		TS_ASSERT_DELTA( sequence.j_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.j_identity(), 92.308, 0.001 );
 
+		TS_ASSERT_EQUALS( sequence.v_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.d_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.j_identity_fmt(), "N/A" );
 
-		SequenceRecord record( sequence );
-		TS_ASSERT_EQUALS( record.full_nt_sequence(),"TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGGCGTCATGGTGTATGCTATAAGCTG");
-		TS_ASSERT_EQUALS( record.full_gl_nt_sequence(), "TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG----ATGGTGTATGCTATA-----");
+		// testNoJFound
+		sequence = records_->get( 4 )->sequence();
 
-		TS_ASSERT_EQUALS( record.cdr3_aa_sequence(),"ARGVMVYAISCFDY");
-		TS_ASSERT_EQUALS( record.full_aa_sequence(),"SGYYWSWIRQPPGKGLEWIGEINHSGSTNYNPSLKSRVTISVDTSKNQFSLKLSSVTAADTAVYYCARGVMVYAIS");
+		TS_ASSERT_EQUALS( sequence.full_nt_sequence(), "TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGGCGTCATGGTGTATGCTATA" );
 
-		TS_ASSERT_EQUALS( record.isGood(), 1 );
-		TS_ASSERT_EQUALS( record.chain(), "VH" );
-		TS_ASSERT_EQUALS( record.v_gene(), "IGHV4-34*01");
-		TS_ASSERT_EQUALS( record.d_gene(), "IGHD2-8*01");
-		TS_ASSERT_EQUALS( record.j_gene(), "N/A");
+		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG----ATGGTGTATGCTATA");
 
-		TS_ASSERT_DELTA( record.v_identity(), 100, 0.001 );
-		TS_ASSERT_DELTA( record.d_identity(), 100, 0.001 );
-		TS_ASSERT_DELTA( record.j_identity(), 100, 0.001 );
+		TS_ASSERT_EQUALS( sequence.cdr1_nt_sequence(), "TCAGTGGTTACTAC" );
+		TS_ASSERT_EQUALS( sequence.cdr1_aa_sequence(), "SGYY" );
 
-	}
+		TS_ASSERT_EQUALS( sequence.cdr2_nt_sequence(), "ATCAATCATAGTGGAAGCACC" );
+		TS_ASSERT_EQUALS( sequence.cdr2_aa_sequence(), "INHSGST" );
 
-	void testRecordsNoDNoJ(void) {
+		TS_ASSERT_EQUALS( sequence.cdr3_nt_sequence(), 
+			"N/A" );
+		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(),"N/A");
 
-		vector<string> lines = {
-			"# IGBLASTN",
-			"# Query: SRR4431788.57|CCCCCGGGGGGGGFFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGCFGGGGGGGGGGGGGFCGFGGGGGGGGGGGFGGGGGGGGGGGFGCGGGGGGGGGG=CDDFFFFFFD*CDGDDCGGGFGFF6CFGF???FGFFF46@??FFFF4?FFF5)52?FFF(,<F?BFFF(459:>?F96>:?:>92-1:3?F),552A))6A<4A#####@CCCCFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGFGGGGEFGGGGGGGGGFGGGGGCEGGGGFGGGGGGGGGFGDGGFGGGGGGGGGGGGGFGGGGGCFFFFGGGGGGGDEFGGGCAFGGGGGGDGGCCCDFFGGGGGFGGGFGCDGEGCDGG7:2DFC7CGGGGGGGGGGGFDF6DFACFFFFFFFFFF1AFFDEBAC<>ADGCFGFFDB>357)7456F@==F;:FGGC44.96407@?7>75+<FG?F5*7DC####",
-			"# Database: /Users/alexsevy/database/human_gl_V /Users/alexsevy/database/human_gl_D /Users/alexsevy/database/human_gl_J",
-			"# Domain classification requested: imgt",
-			"",
-			"# Note that your query represents the minus strand of a V gene and has been converted to the plus strand. The sequence positions refer to the converted sequence. ",
-			"",
-			"# V-(D)-J rearrangement summary for query sequence (Top V gene match, Top D gene match, Top J gene match, Chain type, stop codon, V-J frame, Productive, Strand).  Multiple equivalent top matches, if present, are separated by a comma.",
-			"IGHV4-34*01  IGHD2-8*01  IGHJ4*02  VH  No  In-frame  Yes -",
-			"",
-			"# V-(D)-J junction details based on top germline gene matches (V end, V-D junction, D region, D-J junction, J start).  Note that possible overlapping nucleotides at VDJ junction (i.e, nucleotides that could be assigned to either rearranging gene) are indicated in parentheses (i.e., (TACT)) but are not included under the V, D, or J gene itself",
-			"AGAGG  CGTC  ATGGTGTATGCTATA AGCTG CTTTG ",
-			"",
-			"# Sub-region sequence details (nucleotide sequence, translation, start, end)",
-			"CDR3 GCGAGAGGCGTCATGGTGTATGCTATAAGCTGCTTTGACTAC  ARGVMVYAISCFDY  501 542 ",
-			"",
-			"# Alignment summary between query and top germline V gene hit (from, to, length, matches, mismatches, gaps, percent identity)",
-			"CDR1-IGBlast 301 314 14  14  0 0 100",
-			"FR2-IGBlast  315 365 51  51  0 0 100",
-			"CDR2-IGBlast 366 386 21  21  0 0 100",
-			"FR3-IGBlast  387 500 114 114 0 0 100",
-			"CDR3-IGBlast (germline)  501 508 8 8 0 0 100",
-			"Total  N/A N/A 208 208 0 0 100",
-			"",
-			"# Hit table (the first field indicates the chain type of the hit)",
-			"# Fields: query id, subject id, % identity, alignment length, mismatches, gap opens, gaps, q. start, q. end, s. start, s. end, evalue, bit score, query frame, sbjct frame, query seq, subject seq",
-			"# 3 hits found",
-			"V  reversed|SRR4431788.57|CCCCCGGGGGGGGFFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGCFGGGGGGGGGGGGGFCGFGGGGGGGGGGGFGGGGGGGGGGGFGCGGGGGGGGGG=CDDFFFFFFD*CDGDDCGGGFGFF6CFGF???FGFFF46@??FFFF4?FFF5)52?FFF(,<F?BFFF(459:>?F96>:?:>92-1:3?F),552A))6A<4A#####@CCCCFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGFGGGGEFGGGGGGGGGFGGGGGCEGGGGFGGGGGGGGGFGDGGFGGGGGGGGGGGGGFGGGGGCFFFFGGGGGGGDEFGGGCAFGGGGGGDGGCCCDFFGGGGGFGGGFGCDGEGCDGG7:2DFC7CGGGGGGGGGGGFDF6DFACFFFFFFFFFF1AFFDEBAC<>ADGCFGFFDB>357)7456F@==F;:FGGC44.96407@?7>75+<FG?F5*7DC####  IGHV4-34*01 100.000 208 0 0 0 301 508 86  293 4.40e-91  325 1 1 TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG  TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG",
-			"D  reversed|SRR4431788.57|CCCCCGGGGGGGGFFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGCFGGGGGGGGGGGGGFCGFGGGGGGGGGGGFGGGGGGGGGGGFGCGGGGGGGGGG=CDDFFFFFFD*CDGDDCGGGFGFF6CFGF???FGFFF46@??FFFF4?FFF5)52?FFF(,<F?BFFF(459:>?F96>:?:>92-1:3?F),552A))6A<4A#####@CCCCFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGFGGGGEFGGGGGGGGGFGGGGGCEGGGGFGGGGGGGGGFGDGGFGGGGGGGGGGGGGFGGGGGCFFFFGGGGGGGDEFGGGCAFGGGGGGDGGCCCDFFGGGGGFGGGFGCDGEGCDGG7:2DFC7CGGGGGGGGGGGFDF6DFACFFFFFFFFFF1AFFDEBAC<>ADGCFGFFDB>357)7456F@==F;:FGGC44.96407@?7>75+<FG?F5*7DC####  IGHD2-8*01  100.000 15  0 0 0 513 527 15  29  5.0  29.5  1 1 ATGGTGTATGCTATA ATGGTGTATGCTATA",
-			"J  reversed|SRR4431788.57|CCCCCGGGGGGGGFFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGCFGGGGGGGGGGGGGFCGFGGGGGGGGGGGFGGGGGGGGGGGFGCGGGGGGGGGG=CDDFFFFFFD*CDGDDCGGGFGFF6CFGF???FGFFF46@??FFFF4?FFF5)52?FFF(,<F?BFFF(459:>?F96>:?:>92-1:3?F),552A))6A<4A#####@CCCCFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGFGGGGEFGGGGGGGGGFGGGGGCEGGGGFGGGGGGGGGFGDGGFGGGGGGGGGGGGGFGGGGGCFFFFGGGGGGGDEFGGGCAFGGGGGGDGGCCCDFFGGGGGFGGGFGCDGEGCDGG7:2DFC7CGGGGGGGGGGGFDF6DFACFFFFFFFFFF1AFFDEBAC<>ADGCFGFFDB>357)7456F@==F;:FGGC44.96407@?7>75+<FG?F5*7DC####  IGHJ4*02  100.000 44  0 0 0 533 576 5 48  7.4  85.3  1 1 CTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG  CTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG			"
-		};
+		TS_ASSERT_EQUALS( sequence.translation_frame(), 3 );
+		TS_ASSERT_EQUALS( sequence.full_aa_sequence(),"SGYYWSWIRQPPGKGLEWIGEINHSGSTNYNPSLKSRVTISVDTSKNQFSLKLSSVTAADTAVYYCARGVMVYAI");
 
-		ErrorXOptions options( "tmp.fastq", "fastq" );
-	 	IGBlastParser parser;
-	 	AbSequence sequence = parser.parse_lines( lines, options );
+		TS_ASSERT_EQUALS( sequence.isGood(), 1 );
+		TS_ASSERT_EQUALS( sequence.chain(), "VH" );
+		TS_ASSERT_EQUALS( sequence.v_gene(), "IGHV4-34*01");
+		TS_ASSERT_EQUALS( sequence.d_gene(), "IGHD2-8*01");
+		TS_ASSERT_EQUALS( sequence.j_gene(), "N/A");
 
-	 	TS_ASSERT_EQUALS( sequence.full_nt_sequence(),"TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG");
+		TS_ASSERT_DELTA( sequence.v_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.d_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.j_identity(), -1, 0.001 );
+
+		TS_ASSERT_EQUALS( sequence.v_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.d_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.j_identity_fmt(), "N/A" );
+
+		// testNoDNoJ
+		sequence = records_->get( 5 )->sequence();
+
+		TS_ASSERT_EQUALS( sequence.full_nt_sequence(), "TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG" );
+
 		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG");
-		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(),"ARGVMVYAISCFDY");
+
+		TS_ASSERT_EQUALS( sequence.cdr1_nt_sequence(), "TCAGTGGTTACTAC" );
+		TS_ASSERT_EQUALS( sequence.cdr1_aa_sequence(), "SGYY" );
+
+		TS_ASSERT_EQUALS( sequence.cdr2_nt_sequence(), "ATCAATCATAGTGGAAGCACC" );
+		TS_ASSERT_EQUALS( sequence.cdr2_aa_sequence(), "INHSGST" );
+
+		TS_ASSERT_EQUALS( sequence.cdr3_nt_sequence(), 
+			"N/A" );
+		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(),"N/A");
+
+		TS_ASSERT_EQUALS( sequence.translation_frame(), 3 );
 		TS_ASSERT_EQUALS( sequence.full_aa_sequence(),"SGYYWSWIRQPPGKGLEWIGEINHSGSTNYNPSLKSRVTISVDTSKNQFSLKLSSVTAADTAVYYCAR");
+
 		TS_ASSERT_EQUALS( sequence.isGood(), 1 );
 		TS_ASSERT_EQUALS( sequence.chain(), "VH" );
 		TS_ASSERT_EQUALS( sequence.v_gene(), "IGHV4-34*01");
@@ -433,306 +879,304 @@ public:
 
 		TS_ASSERT_DELTA( sequence.v_identity(), 100, 0.001 );
 		TS_ASSERT_DELTA( sequence.d_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.j_identity(), -1, 0.001 );
+
+		TS_ASSERT_EQUALS( sequence.v_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.d_identity_fmt(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.j_identity_fmt(), "N/A" );
+
+		// testLateStart
+		sequence = records_->get( 6 )->sequence();
+
+		TS_ASSERT_EQUALS( sequence.full_nt_sequence(),"TCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGGCGTCATGGTGTATGCTATAAGCTGCTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG");
+		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "TCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG----ATGGTGTATGCTATA-----CTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG");
+		
+		TS_ASSERT_EQUALS( sequence.cdr1_nt_sequence(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.cdr1_aa_sequence(), "N/A" );
+
+		TS_ASSERT_EQUALS( sequence.cdr2_nt_sequence(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.cdr2_aa_sequence(), "N/A" );
+
+		TS_ASSERT_EQUALS( sequence.cdr3_nt_sequence(), 
+			"GCGAGAGGCGTCATGGTGTATGCTATAAGCTGCTTTGACTAC" );
+		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(),"ARGVMVYAISCFDY");
+
+		TS_ASSERT_EQUALS( sequence.translation_frame(), 3 );
+		TS_ASSERT_EQUALS( sequence.full_aa_sequence(),"SLKLSSVTAADTAVYYCARGVMVYAISCFDYWGQGTLVTVSS");
+
+		TS_ASSERT_EQUALS( sequence.isGood(), 1 );
+		TS_ASSERT_EQUALS( sequence.chain(), "VH" );
+		TS_ASSERT_EQUALS( sequence.v_gene(), "IGHV4-34*01");
+		TS_ASSERT_EQUALS( sequence.d_gene(), "IGHD2-8*01");
+		TS_ASSERT_EQUALS( sequence.j_gene(), "IGHJ4*02");
+
+		TS_ASSERT_DELTA( sequence.v_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.d_identity(), 100, 0.001 );
 		TS_ASSERT_DELTA( sequence.j_identity(), 100, 0.001 );
 
+		TS_ASSERT_EQUALS( sequence.v_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.d_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.j_identity_fmt(), "100.00" );
 
-		SequenceRecord record( sequence ); 
+		// testVOnly
+		sequence = records_->get( 7 )->sequence();
 
-		TS_ASSERT_EQUALS( record.full_nt_sequence(),"TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG");
-		TS_ASSERT_EQUALS( record.full_gl_nt_sequence(), "TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG");
-		// TS_ASSERT_EQUALS( record.cdr3_aa_sequence(),"ARGVMVYAISCFDY");
-		// TS_ASSERT_EQUALS( record.full_aa_sequence(),"SGYYWSWIRQPPGKGLEWIGEINHSGSTNYNPSLKSRVTISVDTSKNQFSLKLSSVTAADTAVYYCARGVMVYAISCFDYWGQGTLVTVSS");
+		TS_ASSERT_EQUALS( sequence.full_nt_sequence(),"TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTA");
+		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTA");
+		
+		TS_ASSERT_EQUALS( sequence.cdr1_nt_sequence(), "TCAGTGGTTACTAC" );
+		TS_ASSERT_EQUALS( sequence.cdr1_aa_sequence(), "SGYY" );
 
-		TS_ASSERT_EQUALS( record.isGood(), 1 );
-		TS_ASSERT_EQUALS( record.chain(), "VH" );
-		TS_ASSERT_EQUALS( record.v_gene(), "IGHV4-34*01");
-		TS_ASSERT_EQUALS( record.d_gene(), "N/A");
-		TS_ASSERT_EQUALS( record.j_gene(), "N/A");
+		TS_ASSERT_EQUALS( sequence.cdr2_nt_sequence(), "ATCAATCATAGTGGAAGCACC" );
+		TS_ASSERT_EQUALS( sequence.cdr2_aa_sequence(), "INHSGST" );
 
-		TS_ASSERT_DELTA( record.v_identity(), 100, 0.001 );
-		TS_ASSERT_DELTA( record.d_identity(), 100, 0.001 );
-		TS_ASSERT_DELTA( record.j_identity(), 100, 0.001 );
+		TS_ASSERT_EQUALS( sequence.cdr3_nt_sequence(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(),"N/A");
 
-	}
+		TS_ASSERT_EQUALS( sequence.translation_frame(), 3 );
+		TS_ASSERT_EQUALS( sequence.full_aa_sequence(),"SGYYWSWIRQPPGKGLEWIGEINHSGSTNYNPSLKSRVTISVDTSKNQFSLKLSSVTAADTAVY");
 
+		TS_ASSERT_EQUALS( sequence.isGood(), 1 );
+		TS_ASSERT_EQUALS( sequence.chain(), "VH" );
+		TS_ASSERT_EQUALS( sequence.v_gene(), "IGHV4-34*01");
+		TS_ASSERT_EQUALS( sequence.d_gene(), "N/A");
+		TS_ASSERT_EQUALS( sequence.j_gene(), "N/A");
 
-	void testRecordsBadV(void) {
+		TS_ASSERT_DELTA( sequence.v_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.d_identity(), -1, 0.001 );
+		TS_ASSERT_DELTA( sequence.j_identity(), -1, 0.001 );
 
-		vector<string> lines = {
-			"# IGBLASTN",
-			"# Query: SRR4431788.57|CCCCCGGGGGGGGFFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGCFGGGGGGGGGGGGGFCGFGGGGGGGGGGGFGGGGGGGGGGGFGCGGGGGGGGGG=CDDFFFFFFD*CDGDDCGGGFGFF6CFGF???FGFFF46@??FFFF4?FFF5)52?FFF(,<F?BFFF(459:>?F96>:?:>92-1:3?F),552A))6A<4A#####@CCCCFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGFGGGGEFGGGGGGGGGFGGGGGCEGGGGFGGGGGGGGGFGDGGFGGGGGGGGGGGGGFGGGGGCFFFFGGGGGGGDEFGGGCAFGGGGGGDGGCCCDFFGGGGGFGGGFGCDGEGCDGG7:2DFC7CGGGGGGGGGGGFDF6DFACFFFFFFFFFF1AFFDEBAC<>ADGCFGFFDB>357)7456F@==F;:FGGC44.96407@?7>75+<FG?F5*7DC####",
-			"# Database: /Users/alexsevy/database/human_gl_V /Users/alexsevy/database/human_gl_D /Users/alexsevy/database/human_gl_J",
-			"# Domain classification requested: imgt",
-			"",
-			"# Note that your query represents the minus strand of a V gene and has been converted to the plus strand. The sequence positions refer to the converted sequence. ",
-			"",
-			"# V-(D)-J rearrangement summary for query sequence (Top V gene match, Top D gene match, Top J gene match, Chain type, stop codon, V-J frame, Productive, Strand).  Multiple equivalent top matches, if present, are separated by a comma.",
-			"IGHV4-34*01  IGHD2-8*01  IGHJ4*02  VH  No  In-frame  Yes -",
-			"",
-			"# V-(D)-J junction details based on top germline gene matches (V end, V-D junction, D region, D-J junction, J start).  Note that possible overlapping nucleotides at VDJ junction (i.e, nucleotides that could be assigned to either rearranging gene) are indicated in parentheses (i.e., (TACT)) but are not included under the V, D, or J gene itself",
-			"AGAGG  CGTC  ATGGTGTATGCTATA AGCTG CTTTG ",
-			"",
-			"# Sub-region sequence details (nucleotide sequence, translation, start, end)",
-			"CDR3 GCGAGAGGCGTCATGGTGTATGCTATAAGCTGCTTTGACTAC  ARGVMVYAISCFDY  501 542 ",
-			"",
-			"# Alignment summary between query and top germline V gene hit (from, to, length, matches, mismatches, gaps, percent identity)",
-			"CDR1-IGBlast 301 314 14  14  0 0 100",
-			"FR2-IGBlast  315 365 51  51  0 0 100",
-			"CDR2-IGBlast 366 386 21  21  0 0 100",
-			"FR3-IGBlast  387 500 114 114 0 0 100",
-			"CDR3-IGBlast (germline)  501 508 8 8 0 0 100",
-			"Total  N/A N/A 208 208 0 0 100",
-			"",
-			"# Hit table (the first field indicates the chain type of the hit)",
-			"# Fields: query id, subject id, % identity, alignment length, mismatches, gap opens, gaps, q. start, q. end, s. start, s. end, evalue, bit score, query frame, sbjct frame, query seq, subject seq",
-			"# 3 hits found",
-			"V  reversed|SRR4431788.57|CCCCCGGGGGGGGFFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGCFGGGGGGGGGGGGGFCGFGGGGGGGGGGGFGGGGGGGGGGGFGCGGGGGGGGGG=CDDFFFFFFD*CDGDDCGGGFGFF6CFGF???FGFFF46@??FFFF4?FFF5)52?FFF(,<F?BFFF(459:>?F96>:?:>92-1:3?F),552A))6A<4A#####@CCCCFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGFGGGGEFGGGGGGGGGFGGGGGCEGGGGFGGGGGGGGGFGDGGFGGGGGGGGGGGGGFGGGGGCFFFFGGGGGGGDEFGGGCAFGGGGGGDGGCCCDFFGGGGGFGGGFGCDGEGCDGG7:2DFC7CGGGGGGGGGGGFDF6DFACFFFFFFFFFF1AFFDEBAC<>ADGCFGFFDB>357)7456F@==F;:FGGC44.96407@?7>75+<FG?F5*7DC####  IGHV4-34*01 100.000 208 0 0 0 301 508 86  293 4.40  325 1 1 TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG  TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG",
-			"D  reversed|SRR4431788.57|CCCCCGGGGGGGGFFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGCFGGGGGGGGGGGGGFCGFGGGGGGGGGGGFGGGGGGGGGGGFGCGGGGGGGGGG=CDDFFFFFFD*CDGDDCGGGFGFF6CFGF???FGFFF46@??FFFF4?FFF5)52?FFF(,<F?BFFF(459:>?F96>:?:>92-1:3?F),552A))6A<4A#####@CCCCFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGFGGGGEFGGGGGGGGGFGGGGGCEGGGGFGGGGGGGGGFGDGGFGGGGGGGGGGGGGFGGGGGCFFFFGGGGGGGDEFGGGCAFGGGGGGDGGCCCDFFGGGGGFGGGFGCDGEGCDGG7:2DFC7CGGGGGGGGGGGFDF6DFACFFFFFFFFFF1AFFDEBAC<>ADGCFGFFDB>357)7456F@==F;:FGGC44.96407@?7>75+<FG?F5*7DC####  IGHD2-8*01  100.000 15  0 0 0 513 527 15  29  5.0e-5  29.5  1 1 ATGGTGTATGCTATA ATGGTGTATGCTATA",
-			"J  reversed|SRR4431788.57|CCCCCGGGGGGGGFFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGCFGGGGGGGGGGGGGFCGFGGGGGGGGGGGFGGGGGGGGGGGFGCGGGGGGGGGG=CDDFFFFFFD*CDGDDCGGGFGFF6CFGF???FGFFF46@??FFFF4?FFF5)52?FFF(,<F?BFFF(459:>?F96>:?:>92-1:3?F),552A))6A<4A#####@CCCCFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGFGGGGEFGGGGGGGGGFGGGGGCEGGGGFGGGGGGGGGFGDGGFGGGGGGGGGGGGGFGGGGGCFFFFGGGGGGGDEFGGGCAFGGGGGGDGGCCCDFFGGGGGFGGGFGCDGEGCDGG7:2DFC7CGGGGGGGGGGGFDF6DFACFFFFFFFFFF1AFFDEBAC<>ADGCFGFFDB>357)7456F@==F;:FGGC44.96407@?7>75+<FG?F5*7DC####  IGHJ4*02  100.000 44  0 0 0 533 576 5 48  7.45e-21  85.3  1 1 CTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG  CTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG			"
-		};
-		ErrorXOptions options( "tmp.fastq", "fastq" );
-	 	IGBlastParser parser;
-	 	AbSequence sequence = parser.parse_lines( lines, options );
-	 	TS_ASSERT_EQUALS( sequence.isGood(), 0 );
-		TS_ASSERT_EQUALS( sequence.full_nt_sequence(), "N/A");
+		TS_ASSERT_EQUALS( sequence.v_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.d_identity_fmt(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.j_identity_fmt(), "N/A" );
+
+		// testBadV
+		sequence = records_->get( 8 )->sequence();
+
+		TS_ASSERT_EQUALS( sequence.full_nt_sequence(),"N/A");
 		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "N/A");
+		
+		TS_ASSERT_EQUALS( sequence.cdr1_nt_sequence(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.cdr1_aa_sequence(), "N/A" );
+
+		TS_ASSERT_EQUALS( sequence.cdr2_nt_sequence(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.cdr2_aa_sequence(), "N/A" );
+
+		TS_ASSERT_EQUALS( sequence.cdr3_nt_sequence(), "GCGAGAGGCGTCATGGTGTATGCTATAAGCTGCTTTGACTAC" );
+		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(),"ARGVMVYAISCFDY");
+
+		TS_ASSERT_EQUALS( sequence.translation_frame(), -1 );
 		TS_ASSERT_EQUALS( sequence.full_aa_sequence(), "N/A");
 
+		TS_ASSERT_EQUALS( sequence.isGood(), 0 );
 		TS_ASSERT_EQUALS( sequence.chain(), "VH" );
 		TS_ASSERT_EQUALS( sequence.v_gene(), "N/A");
 		TS_ASSERT_EQUALS( sequence.d_gene(), "IGHD2-8*01");
 		TS_ASSERT_EQUALS( sequence.j_gene(), "IGHJ4*02");
 
-	}
+		TS_ASSERT_DELTA( sequence.v_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.d_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.j_identity(), 100, 0.001 );
 
+		TS_ASSERT_EQUALS( sequence.v_identity_fmt(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.d_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.j_identity_fmt(), "100.00" );
 
-	void testEmptyOutput(void) {
+		// testIrrelevantSequence
+		sequence = records_->get( 9 )->sequence();
 
-		vector<string> lines = {
-			"# IGBLASTN",
-			"# Query: SRR3174992.206.1|ABCCCFGGGGGGGFEE)0=+==,,;C;,,;E,BCCFF,<CFEC+8;CFGEEFEGGFGGFEFGGGGGGGGGGFGGGF@EFCG@CFG7C:KKKKKKKKKKKKKKJKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK5KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK;KKKKKKKKKKKKKKKKKKKKKKAKKKKKKKKKKKKKKKKKKKKKKKKHIKKKFCCA8-CA",
-			"# Database: /Volumes/MyPassport/ErrorX_devel/database/Ig/human/human_gl_V /Volumes/MyPassport/ErrorX_devel/database/Ig/human/human_gl_D /Volumes/MyPassport/ErrorX_devel/database/Ig/human/human_gl_J",
-			"# Domain classification requested: imgt",
-			"# 0 hits found"
-		};
-		ErrorXOptions options( "tmp.fastq", "fastq" );
-	 	IGBlastParser parser;
-	 	AbSequence sequence = parser.parse_lines( lines, options );
-	 	TS_ASSERT_EQUALS( sequence.isGood(), 0 );
-		TS_ASSERT_EQUALS( sequence.full_nt_sequence(), "N/A");
+		TS_ASSERT_EQUALS( sequence.full_nt_sequence(),"N/A");
 		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "N/A");
-		TS_ASSERT_EQUALS( sequence.full_aa_sequence(), "N/A");
-	}
-
-
-	void testLC(void) {
-		vector<string> lines = {
-			"# IGBLASTN",
-			"# Query: LC|#######################################################################################################################################################################################################################################################################################################################################",
-			"# Database: /Users/alexsevy/database/human_gl_V /Users/alexsevy/database/human_gl_D /Users/alexsevy/database/human_gl_J",
-			"# Domain classification requested: imgt",
-			"",
-			"# V-(D)-J rearrangement summary for query sequence (Top V gene match, Top J gene match, Chain type, stop codon, V-J frame, Productive, Strand).  Multiple equivalent top matches, if present, are separated by a comma.",
-			"IGKV1-33*01	IGKJ4*01	VK	No	In-frame	Yes	+",
-			"",
-			"# V-(D)-J junction details based on top germline gene matches (V end, V-J junction, J start).  Note that possible overlapping nucleotides at VDJ junction (i.e, nucleotides that could be assigned to either rearranging gene) are indicated in parentheses (i.e., (TACT)) but are not included under the V, D, or J gene itself",
-			"CCTCC	GGGGGC	CACTT	",
-			"",
-			"# Sub-region sequence details (nucleotide sequence, translation, start, end)",
-			"CDR3	CAACAGTATGATAATCTTCCTCCGGGGGCCACT	QQYDNLPPGAT	265	297	",
-			"",
-			"# Alignment summary between query and top germline V gene hit (from, to, length, matches, mismatches, gaps, percent identity)",
-			"FR1-IGBlast	1	78	78	78	0	0	100",
-			"CDR1-IGBlast	79	96	18	17	1	0	94.4",
-			"FR2-IGBlast	97	147	51	51	0	0	100",
-			"CDR2-IGBlast	148	156	9	8	1	0	88.9",
-			"FR3-IGBlast	157	264	108	106	2	0	98.1",
-			"CDR3-IGBlast (germline)	265	287	23	22	1	0	95.7",
-			"Total	N/A	N/A	287	282	5	0	98.3",
-			"",
-			"# Hit table (the first field indicates the chain type of the hit)",
-			"# Fields: query id, subject id, % identity, alignment length, mismatches, gap opens, gaps, q. start, q. end, s. start, s. end, evalue, bit score, query frame, sbjct frame, query seq, subject seq",
-			"# 2 hits found",
-			"V	Query_1	IGKV1-33*01	98.258	287	5	0	0	1	287	1	287	1.48e-123	433	1	1	GACATCCAGATGACCCAGTCTCCATCCTCCCTGTCTGCATCTGTAGGAGACAGAGTCACCATCACTTGCCAGGCGAGTCAGGACATTAGTAACTATTTAAATTGGTATCAGCAGAAACCAGGGAAAGCCCCTAAGCTCCTGATCTACGATGTATCCAATTTGGAAATAGGGGTCCCATCAAGGTTCAGTGGAAGTGGATCTGGGACAGATTTTACTTTCACCATCAGCAGCCTGCAGCCTGAAGATTTTGCAACATATTACTGTCAACAGTATGATAATCTTCCTCC	GACATCCAGATGACCCAGTCTCCATCCTCCCTGTCTGCATCTGTAGGAGACAGAGTCACCATCACTTGCCAGGCGAGTCAGGACATTAGCAACTATTTAAATTGGTATCAGCAGAAACCAGGGAAAGCCCCTAAGCTCCTGATCTACGATGCATCCAATTTGGAAACAGGGGTCCCATCAAGGTTCAGTGGAAGTGGATCTGGGACAGATTTTACTTTCACCATCAGCAGCCTGCAGCCTGAAGATATTGCAACATATTACTGTCAACAGTATGATAATCTCCCTCC",
-			"J	Query_1	IGKJ4*01	100.000	34	0	0	0	294	327	4	37	1.07e-13	66.1	1	1	CACTTTCGGCGGAGGGACCAAGGTGGAGATCAAA	CACTTTCGGCGGAGGGACCAAGGTGGAGATCAAA"
-		};
-
-		ErrorXOptions options( "tmp.fastq", "fastq" );
-	 	IGBlastParser parser;
-	 	AbSequence sequence = parser.parse_lines( lines, options );
-
-		SequenceRecord record( sequence );
-
-		TS_ASSERT_EQUALS( record.full_nt_sequence(),"GACATCCAGATGACCCAGTCTCCATCCTCCCTGTCTGCATCTGTAGGAGACAGAGTCACCATCACTTGCCAGGCGAGTCAGGACATTAGTAACTATTTAAATTGGTATCAGCAGAAACCAGGGAAAGCCCCTAAGCTCCTGATCTACGATGTATCCAATTTGGAAATAGGGGTCCCATCAAGGTTCAGTGGAAGTGGATCTGGGACAGATTTTACTTTCACCATCAGCAGCCTGCAGCCTGAAGATTTTGCAACATATTACTGTCAACAGTATGATAATCTTCCTCCGGGGGCCACTTTCGGCGGAGGGACCAAGGTGGAGATCAAA");
-		TS_ASSERT_EQUALS( record.full_gl_nt_sequence(), "GACATCCAGATGACCCAGTCTCCATCCTCCCTGTCTGCATCTGTAGGAGACAGAGTCACCATCACTTGCCAGGCGAGTCAGGACATTAGCAACTATTTAAATTGGTATCAGCAGAAACCAGGGAAAGCCCCTAAGCTCCTGATCTACGATGCATCCAATTTGGAAACAGGGGTCCCATCAAGGTTCAGTGGAAGTGGATCTGGGACAGATTTTACTTTCACCATCAGCAGCCTGCAGCCTGAAGATATTGCAACATATTACTGTCAACAGTATGATAATCTCCCTCC------CACTTTCGGCGGAGGGACCAAGGTGGAGATCAAA");
-		TS_ASSERT_EQUALS( record.cdr3_aa_sequence(),"QQYDNLPPGAT");
-		TS_ASSERT_EQUALS( record.full_aa_sequence(),"DIQMTQSPSSLSASVGDRVTITCQASQDISNYLNWYQQKPGKAPKLLIYDVSNLEIGVPSRFSGSGSGTDFTFTISSLQPEDFATYYCQQYDNLPPGATFGGGTKVEIK");
-
-		TS_ASSERT_EQUALS( record.isGood(), 1 );
-		TS_ASSERT_EQUALS( record.chain(), "VK" );
-		TS_ASSERT_EQUALS( record.v_gene(), "IGKV1-33*01");
-		TS_ASSERT_EQUALS( record.d_gene(), "N/A");
-		TS_ASSERT_EQUALS( record.j_gene(), "IGKJ4*01");
-
-		TS_ASSERT_EQUALS( record.v_identity(), 98.258);
-		TS_ASSERT_EQUALS( record.d_identity(), -1);
-		TS_ASSERT_EQUALS( record.j_identity(), 100);
-
-	}
-
-	void testMouse() {
-		vector<string> lines = {
-			"# IGBLASTN",
-			"# Query: test_mouse|?#55<???DDDBB?BBFFF@CCBFHH@EEFFEEHFDFFHHFFEFH7A=F@F,,>5+5C#######55+AC>CECGFGDFDE7)??CD=?BC?CBF77--7,,?:@8>8=B=,4=,=,,43=?BB?,*2)*3,?4=:*0**0*00*\\'\\'00))*0*8*#00###..))000***#)###0)000\\'0\\'0*00*.#)).08A*0***0*0****0*00*\\'\\'00))*0*8*#00###..))000***#)###0)000\\'0\\'0*00*.#)).08A*0***0*0****0*00*\\'\\'00))*0*8*#00###..))000***#)###0)000\\'0\\'0*00*.#)).08A*0***0*0*****0*0*0******)0*******0*\\'\\'\\'\\'\\')***)\\'\\'\\'\\'\\'\\'\\'\\'0*00*\\'\\'00))*0*8*#00###.",
-			"# Database: /Volumes/MyPassport/ErrorX/database/mouse/mouse_gl_V /Volumes/MyPassport/ErrorX/database/mouse/mouse_gl_D /Volumes/MyPassport/ErrorX/database/mouse/mouse_gl_J",
-			"# Domain classification requested: imgt",
-			"",
-			"# V-(D)-J rearrangement summary for query sequence (Top V gene match, Top D gene match, Top J gene match, Chain type, stop codon, V-J frame, Productive, Strand).  Multiple equivalent top matches, if present, are separated by a comma.",
-			"IGHV14-3*02  IGHD2-4*01  IGHJ4*01  VH  No  In-frame  Yes +",
-			"",
-			"# V-(D)-J junction details based on top germline gene matches (V end, V-D junction, D region, D-J junction, J start).  Note that possible overlapping nucleotides at VDJ junction (i.e, nucleotides that could be assigned to either rearranging gene) are indicated in parentheses (i.e., (TACT)) but are not included under the V, D, or J gene itself",
-			"TCTAG  GGG GATTAC  CCCC  TACTA ",
-			"",
-			"# Sub-region sequence details (nucleotide sequence, translation, start, end)",
-			"CDR3 TCTAGGGGGATTACCCCCTACTATGCTATA  SRGITPYYAI  346 375 ",
-			"",
-			"# Alignment summary between query and top germline V gene hit (from, to, length, matches, mismatches, gaps, percent identity)",
-			"FR1-IMGT 58  132 74  72  2 0 97.3",
-			"CDR1-IMGT  133 156 24  24  0 0 100",
-			"FR2-IMGT 157 207 51  50  1 0 98",
-			"CDR2-IMGT  208 231 24  23  1 0 95.8",
-			"FR3-IMGT 232 345 114 114 0 0 100",
-			"CDR3-IMGT (germline) 346 350 5 4 1 0 80",
-			"Total  N/A N/A 292 287 5 0 98.3",
-			"",
-			"# Hit table (the first field indicates the chain type of the hit)",
-			"# Fields: query id, subject id, % identity, alignment length, mismatches, gap opens, gaps, q. start, q. end, s. start, s. end, evalue, bit score, query frame, sbjct frame, query seq, subject seq",
-			"# 3 hits found",
-			"V  test_mouse  IGHV14-3*02 98.294  293 5 0 0 58  350 1 293 2.95e-126 442 1 1 GAGGTTCAGCTGCAGCAATCTGGGGCAGAGCTTGTGAAGCCAGGGGCCTCAGTCAAGTTGTCCTGTACAGCTTCTGGCTTCAACATTAAAGACACCTATATACACTGGGTGAAGCAGAGGCCTGAACAGGGCCTGGAGTGGATTGGAAGGATTGATCCTGCGATTGGTAATACTAAATATGACCCGAAGTTCCAGGGCAAGGCCACTATAACAGCAGACACATCCTCCAACACAGCCTACCTGCAGCTCAGCAGCCTGACATCTGAGGACACTGCCGTCTATTACTGTTCTAG GAGGTTCAGCTGCAGCAGTCTGGGGCAGAGCTTGTGAAGCCAGGGGCCTCAGTCAAGTTGTCCTGCACAGCTTCTGGCTTCAACATTAAAGACACCTATATGCACTGGGTGAAGCAGAGGCCTGAACAGGGCCTGGAGTGGATTGGAAGGATTGATCCTGCGAATGGTAATACTAAATATGACCCGAAGTTCCAGGGCAAGGCCACTATAACAGCAGACACATCCTCCAACACAGCCTACCTGCAGCTCAGCAGCCTGACATCTGAGGACACTGCCGTCTATTACTGTGCTAG",
-			"D  test_mouse  IGHD2-4*01  100.000 6 0 0 0 354 359 9 14  26  12.2  1 1 GATTAC  GATTAC",
-			"J  test_mouse  IGHJ4*01  98.039  51  1 0 0 364 414 3 53  3.50e-23  93.0  1 1 TACTATGCTATAGACTACTGGGGTCAAGGAACCTCAGTCACCGTCTCCTCA TACTATGCTATGGACTACTGGGGTCAAGGAACCTCAGTCACCGTCTCCTCA"
-		};
-		ErrorXOptions options( "tmp.fastq", "fastq" );
-	 	IGBlastParser parser;
-	 	AbSequence sequence = parser.parse_lines( lines, options );
-		SequenceRecord record( sequence );
 		
-		TS_ASSERT_EQUALS( record.full_nt_sequence(),"GAGGTTCAGCTGCAGCAATCTGGGGCAGAGCTTGTGAAGCCAGGGGCCTCAGTCAAGTTGTCCTGTACAGCTTCTGGCTTCAACATTAAAGACACCTATATACACTGGGTGAAGCAGAGGCCTGAACAGGGCCTGGAGTGGATTGGAAGGATTGATCCTGCGATTGGTAATACTAAATATGACCCGAAGTTCCAGGGCAAGGCCACTATAACAGCAGACACATCCTCCAACACAGCCTACCTGCAGCTCAGCAGCCTGACATCTGAGGACACTGCCGTCTATTACTGTTCTAGGGGGATTACCCCCTACTATGCTATAGACTACTGGGGTCAAGGAACCTCAGTCACCGTCTCCTCA");
+		TS_ASSERT_EQUALS( sequence.cdr1_nt_sequence(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.cdr1_aa_sequence(), "N/A" );
 
-		TS_ASSERT_EQUALS( record.full_gl_nt_sequence(), "GAGGTTCAGCTGCAGCAGTCTGGGGCAGAGCTTGTGAAGCCAGGGGCCTCAGTCAAGTTGTCCTGCACAGCTTCTGGCTTCAACATTAAAGACACCTATATGCACTGGGTGAAGCAGAGGCCTGAACAGGGCCTGGAGTGGATTGGAAGGATTGATCCTGCGAATGGTAATACTAAATATGACCCGAAGTTCCAGGGCAAGGCCACTATAACAGCAGACACATCCTCCAACACAGCCTACCTGCAGCTCAGCAGCCTGACATCTGAGGACACTGCCGTCTATTACTGTGCTAG-------------TACTATGCTATGGACTACTGGGGTCAAGGAACCTCAGTCACCGTCTCCTCA");
+		TS_ASSERT_EQUALS( sequence.cdr2_nt_sequence(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.cdr2_aa_sequence(), "N/A" );
+
+		TS_ASSERT_EQUALS( sequence.cdr3_nt_sequence(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(),"N/A");
+
+		TS_ASSERT_EQUALS( sequence.translation_frame(), -1 );
+		TS_ASSERT_EQUALS( sequence.full_aa_sequence(), "N/A");
+
+		TS_ASSERT_EQUALS( sequence.isGood(), 0 );
+		TS_ASSERT_EQUALS( sequence.chain(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.v_gene(), "N/A");
+		TS_ASSERT_EQUALS( sequence.d_gene(), "N/A");
+		TS_ASSERT_EQUALS( sequence.j_gene(), "N/A");
+
+		TS_ASSERT_DELTA( sequence.v_identity(), -1, 0.001 );
+		TS_ASSERT_DELTA( sequence.d_identity(), -1, 0.001 );
+		TS_ASSERT_DELTA( sequence.j_identity(), -1, 0.001 );
+
+		TS_ASSERT_EQUALS( sequence.v_identity_fmt(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.d_identity_fmt(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.j_identity_fmt(), "N/A" );
+
+		// testLightChain
+		sequence = records_->get( 10 )->sequence();
+
+		
+		TS_ASSERT_EQUALS( sequence.full_nt_sequence(),"GATATTGTGATGACCCAGACTCCACTCTCTCTGTCCGTCACCCCTGGACAGCCGGCCTCCATCTCCTGCAAGTCTAGTCAGAGCCTCCTGCATGATGATGGAAAGACCTATTTGTATTGGTATTTGCAGAAGCCAGGCCAGTCTCCACAGCTCCTGATCTATGAGGTTTCCAACCGGTTCTCTGGAGTGCCAGATAGGTTCAGTGGCAGCGGGTCAGGGACAGATTTCACACTGAAAATCAGCCGGGTGGAGGCTGAGGATGTTGGGGTTTATTACTGCATGCGAAGTATACAGTTCGCGACTTTTGGCCAGGGGACCAAGCTGGAGATCAAAC");
+		
+		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "GATATTGTGATGACCCAGACTCCACTCTCTCTGTCCGTCACCCCTGGACAGCCGGCCTCCATCTCCTGCAAGTCTAGTCAGAGCCTCCTGCATAGTGATGGAAAGACCTATTTGTATTGGTACCTGCAGAAGCCAGGCCAGTCTCCACAGCTCCTGATCTATGAAGTTTCCAACCGGTTCTCTGGAGTGCCAGATAGGTTCAGTGGCAGCGGGTCAGGGACAGATTTCACACTGAAAATCAGCCGGGTGGAGGCTGAGGATGTTGGGGTTTATTACTGCATGCAAAGTATACAG------ACTTTTGGCCAGGGGACCAAGCTGGAGATCAAAC");
+		
+		TS_ASSERT_EQUALS( sequence.cdr1_nt_sequence(), "CAGAGCCTCCTGCATGATGATGGAAAGACCTAT" );
+		TS_ASSERT_EQUALS( sequence.cdr1_aa_sequence(), "QSLLHDDGKTY" );
+
+		TS_ASSERT_EQUALS( sequence.cdr2_nt_sequence(), "GAGGTTTCC" );
+		TS_ASSERT_EQUALS( sequence.cdr2_aa_sequence(), "EVS" );
+
+		TS_ASSERT_EQUALS( sequence.cdr3_nt_sequence(), "ATGCGAAGTATACAGTTCGCGACT" );
+		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(), "MRSIQFAT");
+
+		TS_ASSERT_EQUALS( sequence.translation_frame(), 1 );
+		TS_ASSERT_EQUALS( sequence.full_aa_sequence(),"DIVMTQTPLSLSVTPGQPASISCKSSQSLLHDDGKTYLYWYLQKPGQSPQLLIYEVSNRFSGVPDRFSGSGSGTDFTLKISRVEAEDVGVYYCMRSIQFATFGQGTKLEIK");
+
+		TS_ASSERT_EQUALS( sequence.isGood(), 1 );
+		TS_ASSERT_EQUALS( sequence.chain(), "VK" );
+		TS_ASSERT_EQUALS( sequence.v_gene(), "IGKV2D-29*02");
+		TS_ASSERT_EQUALS( sequence.d_gene(), "N/A");
+		TS_ASSERT_EQUALS( sequence.j_gene(), "IGKJ2*01");
+
+		TS_ASSERT_DELTA( sequence.v_identity(), 97.959, 0.001 );
+		TS_ASSERT_DELTA( sequence.d_identity(), -1, 0.001 );
+		TS_ASSERT_DELTA( sequence.j_identity(), 100, 0.001 );
+
+		TS_ASSERT_EQUALS( sequence.v_identity_fmt(), "97.96" );
+		TS_ASSERT_EQUALS( sequence.d_identity_fmt(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.j_identity_fmt(), "100.00" );
+
+		// testMouse
+		options.species( "mouse" );
+		records_ = run_protocol( options );
+		sequence = records_->get( 11 )->sequence();
+		
+		TS_ASSERT_EQUALS( sequence.full_nt_sequence(),"GAGGTTCAGCTGCAGCAATCTGGGGCAGAGCTTGTGAAGCCAGGGGCCTCAGTCAAGTTGTCCTGTACAGCTTCTGGCTTCAACATTAAAGACACCTATATACACTGGGTGAAGCAGAGGCCTGAACAGGGCCTGGAGTGGATTGGAAGGATTGATCCTGCGATTGGTAATACTAAATATGACCCGAAGTTCCAGGGCAAGGCCACTATAACAGCAGACACATCCTCCAACACAGCCTACCTGCAGCTCAGCAGCCTGACATCTGAGGACACTGCCGTCTATTACTGTTCTAGGGGGATTACCCCCTACTATGCTATAGACTACTGGGGTCAAGGAACCTCAGTCACCGTCTCCTCA");
+
+		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "GAGGTTCAGCTGCAGCAGTCTGGGGCAGAGCTTGTGAAGCCAGGGGCCTCAGTCAAGTTGTCCTGCACAGCTTCTGGCTTCAACATTAAAGACACCTATATGCACTGGGTGAAGCAGAGGCCTGAACAGGGCCTGGAGTGGATTGGAAGGATTGATCCTGCGAATGGTAATACTAAATATGACCCGAAGTTCCAGGGCAAGGCCACTATAACAGCAGACACATCCTCCAACACAGCCTACCTGCAGCTCAGCAGCCTGACATCTGAGGACACTGCCGTCTATTACTGTGCTAG-------------TACTATGCTATGGACTACTGGGGTCAAGGAACCTCAGTCACCGTCTCCTCA");
+
+		TS_ASSERT_EQUALS( sequence.cdr1_nt_sequence(), "GGCTTCAACATTAAAGACACCTAT" );
+		TS_ASSERT_EQUALS( sequence.cdr1_aa_sequence(), "GFNIKDTY" );
+
+		TS_ASSERT_EQUALS( sequence.cdr2_nt_sequence(), "ATTGATCCTGCGATTGGTAATACT" );
+		TS_ASSERT_EQUALS( sequence.cdr2_aa_sequence(), "IDPAIGNT" );
+
+		TS_ASSERT_EQUALS( sequence.cdr3_nt_sequence(), "TCTAGGGGGATTACCCCCTACTATGCTATAGACTAC" );
+		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(), "SRGITPYYAIDY");
+
+		TS_ASSERT_EQUALS( sequence.translation_frame(), 1 );
+		TS_ASSERT_EQUALS( sequence.full_aa_sequence(),"EVQLQQSGAELVKPGASVKLSCTASGFNIKDTYIHWVKQRPEQGLEWIGRIDPAIGNTKYDPKFQGKATITADTSSNTAYLQLSSLTSEDTAVYYCSRGITPYYAIDYWGQGTSVTVSS");
+
+		TS_ASSERT_EQUALS( sequence.isGood(), 1 );
+		TS_ASSERT_EQUALS( sequence.chain(), "VH" );
+		TS_ASSERT_EQUALS( sequence.v_gene(), "IGHV14-3*02");
+		TS_ASSERT_EQUALS( sequence.d_gene(), "N/A");
+		TS_ASSERT_EQUALS( sequence.j_gene(), "IGHJ4*01");
+
+		TS_ASSERT_DELTA( sequence.v_identity(), 98.294, 0.001 );
+		TS_ASSERT_DELTA( sequence.d_identity(), 100, 0.001 );
+		TS_ASSERT_DELTA( sequence.j_identity(), 98.039, 0.001 );
+
+		TS_ASSERT_EQUALS( sequence.v_identity_fmt(), "98.29" );
+		TS_ASSERT_EQUALS( sequence.d_identity_fmt(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.j_identity_fmt(), "98.04" );
 
 
-		TS_ASSERT_EQUALS( record.cdr3_aa_sequence(), "SRGITPYYAI" );
-		TS_ASSERT_EQUALS( record.full_aa_sequence(),
-		"EVQLQQSGAELVKPGASVKLSCTASGFNIKDTYIHWVKQRPEQGLEWIGRIDPAIGNTKYDPKFQGKATITADTSSNTAYLQLSSLTSEDTAVYYCSRGITPYYAIDYWGQGTSVTVSS" );
-
-		TS_ASSERT_EQUALS( record.isGood(), 1 );
-		TS_ASSERT_EQUALS( record.chain(), "VH" );
-		TS_ASSERT_EQUALS( record.v_gene(), "IGHV14-3*02");
-		TS_ASSERT_EQUALS( record.d_gene(), "N/A");
-		TS_ASSERT_EQUALS( record.j_gene(), "IGHJ4*01");
-
-		TS_ASSERT_EQUALS( record.v_identity(), 98.294);
-		TS_ASSERT_EQUALS( record.d_identity(), 100.000);
-		TS_ASSERT_EQUALS( record.j_identity(), 98.039);
-	}
-
-
-	void testTCRA(void) {
-		ErrorXOptions options( "testing/TRA_test.fastq", "fastq" );
+		// testTCRA
+		options.species( "human" );
 		options.igtype( "TCR" );
-		options.errorx_base( ".." );
-		SequenceRecordsPtr records = run_protocol( options );
-		SequenceRecord record = *(records->get( 0 ));
+		records_ = run_protocol( options );
 
-		TS_ASSERT_EQUALS( record.full_nt_sequence(),"AAAAATGAAGTGGAGCAGAGTCCTCAGAACCTGACTGCCCAGGAAGGAGAATTTATCACAATCAACTGCAGTTACTCGGTAGGAATAAGTGCCTTACACTGGCTGCAACAGCATCCAGGAGGAGGCATTGTTTCCTTGTTTATGCTGAGCTCAGGGAAGAAGAAGCATGGAAGATTAATTGCCACAATAAACATACAGGAAAAGCACAGCTCCCTGCACATCACAGCCTCCCATCCCAGAGACTCTGCCGTCTACATCTGTGCTGTCCCTTACACCGACAAGCTCATCTTTGGGACTGGGACCAGATTACAAGTCTTTCCAA");
+		sequence = records_->get( 12 )->sequence();
 
-		TS_ASSERT_EQUALS( record.full_gl_nt_sequence(), "AAAAATGAAGTGGAGCAGAGTCCTCAGAACCTGACTGCCCAGGAAGGAGAATTTATCACAATCAACTGCAGTTACTCGGTAGGAATAAGTGCCTTACACTGGCTGCAACAGCATCCAGGAGGAGGCATTGTTTCCTTGTTTATGCTGAGCTCAGGGAAGAAGAAGCATGGAAGATTAATTGCCACAATAAACATACAGGAAAAGCACAGCTCCCTGCACATCACAGCCTCCCATCCCAGAGACTCTGCCGTCTACATCTGTGCTGTC----ACACCGACAAGCTCATCTTTGGGACTGGGACCAGATTACAAGTCTTTCCAA");
+		TS_ASSERT_EQUALS( sequence.full_nt_sequence(),"AAAAATGAAGTGGAGCAGAGTCCTCAGAACCTGACTGCCCAGGAAGGAGAATTTATCACAATCAACTGCAGTTACTCGGTAGGAATAAGTGCCTTACACTGGCTGCAACAGCATCCAGGAGGAGGCATTGTTTCCTTGTTTATGCTGAGCTCAGGGAAGAAGAAGCATGGAAGATTAATTGCCACAATAAACATACAGGAAAAGCACAGCTCCCTGCACATCACAGCCTCCCATCCCAGAGACTCTGCCGTCTACATCTGTGCTGTCCCTTACACCGACAAGCTCATCTTTGGGACTGGGACCAGATTACAAGTCTTTCCAA");
+
+		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "AAAAATGAAGTGGAGCAGAGTCCTCAGAACCTGACTGCCCAGGAAGGAGAATTTATCACAATCAACTGCAGTTACTCGGTAGGAATAAGTGCCTTACACTGGCTGCAACAGCATCCAGGAGGAGGCATTGTTTCCTTGTTTATGCTGAGCTCAGGGAAGAAGAAGCATGGAAGATTAATTGCCACAATAAACATACAGGAAAAGCACAGCTCCCTGCACATCACAGCCTCCCATCCCAGAGACTCTGCCGTCTACATCTGTGCTGTC----ACACCGACAAGCTCATCTTTGGGACTGGGACCAGATTACAAGTCTTTCCAA");
+
+		TS_ASSERT_EQUALS( sequence.cdr1_nt_sequence(), "GTAGGAATAAGTGCC" );
+		TS_ASSERT_EQUALS( sequence.cdr1_aa_sequence(), "VGISA" );
+
+		TS_ASSERT_EQUALS( sequence.cdr2_nt_sequence(), "CTGAGCTCAGGGAAG" );
+		TS_ASSERT_EQUALS( sequence.cdr2_aa_sequence(), "LSSGK" );
+
+		TS_ASSERT_EQUALS( sequence.cdr3_nt_sequence(), "GCTGTCCCTTACACCGACAAGCTCATC" );
+		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(), "AVPYTDKLI");
+
+		TS_ASSERT_EQUALS( sequence.translation_frame(), 1 );
+		TS_ASSERT_EQUALS( sequence.full_aa_sequence(),"KNEVEQSPQNLTAQEGEFITINCSYSVGISALHWLQQHPGGGIVSLFMLSSGKKKHGRLIATINIQEKHSSLHITASHPRDSAVYICAVPYTDKLIFGTGTRLQVFP");
+
+		TS_ASSERT_EQUALS( sequence.isGood(), 1 );
+		TS_ASSERT_EQUALS( sequence.chain(), "VA" );
+		TS_ASSERT_EQUALS( sequence.v_gene(), "TRAV41*01");
+		TS_ASSERT_EQUALS( sequence.d_gene(), "N/A");
+		TS_ASSERT_EQUALS( sequence.j_gene(), "TRAJ34*01");
+
+		TS_ASSERT_EQUALS( sequence.v_identity(), 100);
+		TS_ASSERT_EQUALS( sequence.d_identity(), -1);
+		TS_ASSERT_EQUALS( sequence.j_identity(), 100);
+
+		TS_ASSERT_EQUALS( sequence.v_identity_fmt(), "100.00" );
+		TS_ASSERT_EQUALS( sequence.d_identity_fmt(), "N/A" );
+		TS_ASSERT_EQUALS( sequence.j_identity_fmt(), "100.00" );
+
+		// testTCRB
+		sequence = records_->get( 13 )->sequence();
+
+		TS_ASSERT_EQUALS( sequence.full_nt_sequence(),"AAGGCTGGATTCACTCAAACTCCAAGATATCTGATCAAAACGAGAGGACAGCAAGTGACCCTGAGCTGCTCCCCTATCCCTGGGCATCGGAGGGTATCCTGGGACCAACAGACCCCAGGACAGGGCCTTCAGTTCCTCTTTGAATACTTCAGAGAGACACAGAGAAACAAAGGAAACTTCCCTGGTCGATTCTCAGGGCGCCAGTTCTCTAACTCTCGCTCTGAGATGAATGTGAGCACCTTGGAGCTGGGGGACTCGGCCCTTTATCTTTGCGCCAGCAGCGACGGGACCGGACAAAACTATGGCTACACCTTCGGTTCGGGGACCAGGTTAACCGTTGTAG");
+
+		TS_ASSERT_EQUALS( sequence.full_gl_nt_sequence(), "AAGGCTGGAGTCACTCAAACTCCAAGATATCTGATCAAAACGAGAGGACAGCAAGTGACACTGAGCTGCTCCCCTATCTCTGGGCATAGGAGTGTATCCTGGTACCAACAGACCCCAGGACAGGGCCTTCAGTTCCTCTTTGAATACTTCAGTGAGACACAGAGAAACAAAGGAAACTTCCCTGGTCGATTCTCAGGGCGCCAGTTCTCTAACTCTCGCTCTGAGATGAATGTGAGCACCTTGGAGCTGGGGGACTCGGCCCTTTATCTTTGCGCCAGCAGC---------------AACTATGGCTACACCTTCGGTTCGGGGACCAGGTTAACCGTTGTAG");
+
+		
+		TS_ASSERT_EQUALS( sequence.cdr1_nt_sequence(), "CCTGGGCATCGGAGG" );
+		TS_ASSERT_EQUALS( sequence.cdr1_aa_sequence(), "PGHRR" );
+
+		TS_ASSERT_EQUALS( sequence.cdr2_nt_sequence(), "TACTTCAGAGAGACACAG" );
+		TS_ASSERT_EQUALS( sequence.cdr2_aa_sequence(), "YFRETQ" );
+
+		TS_ASSERT_EQUALS( sequence.cdr3_nt_sequence(), "GCCAGCAGCGACGGGACCGGACAAAACTATGGCTACACC" );
+		TS_ASSERT_EQUALS( sequence.cdr3_aa_sequence(), "ASSDGTGQNYGYT");
+
+		TS_ASSERT_EQUALS( sequence.translation_frame(), 1 );
+		TS_ASSERT_EQUALS( sequence.full_aa_sequence(),"KAGFTQTPRYLIKTRGQQVTLSCSPIPGHRRVSWDQQTPGQGLQFLFEYFRETQRNKGNFPGRFSGRQFSNSRSEMNVSTLELGDSALYLCASSDGTGQNYGYTFGSGTRLTVV");
 
 
-		TS_ASSERT_EQUALS( record.cdr3_aa_sequence(), "AVPYTDKLI" );
-		TS_ASSERT_EQUALS( record.full_aa_sequence(),
-			"KNEVEQSPQNLTAQEGEFITINCSYSVGISALHWLQQHPGGGIVSLFMLSSGKKKHGRLIATINIQEKHSSLHITASHPRDSAVYICAVPYTDKLIFGTGTRLQVFP" );
+		TS_ASSERT_EQUALS( sequence.isGood(), 1 );
+		TS_ASSERT_EQUALS( sequence.chain(), "VB" );
+		TS_ASSERT_EQUALS( sequence.v_gene(), "TRBV5-1*01");
+		TS_ASSERT_EQUALS( sequence.d_gene(), "N/A");
+		TS_ASSERT_EQUALS( sequence.j_gene(), "TRBJ1-2*01");
 
-		TS_ASSERT_EQUALS( record.isGood(), 1 );
-		TS_ASSERT_EQUALS( record.chain(), "VA" );
-		TS_ASSERT_EQUALS( record.v_gene(), "TRAV41*01");
-		TS_ASSERT_EQUALS( record.d_gene(), "N/A");
-		TS_ASSERT_EQUALS( record.j_gene(), "TRAJ34*01");
+		TS_ASSERT_EQUALS( sequence.v_identity(), 97.518);
+		TS_ASSERT_EQUALS( sequence.d_identity(), 100);
+		TS_ASSERT_EQUALS( sequence.j_identity(), 100);
 
-		TS_ASSERT_EQUALS( record.v_identity(), 100);
-		TS_ASSERT_EQUALS( record.d_identity(), -1);
-		TS_ASSERT_EQUALS( record.j_identity(), 100);
+		// testQualityCorrect
+		options.species( "human" );
+		options.igtype( "Ig" );
+		records_ = run_protocol( options );
 
+		sequence = records_->get( 14 )->sequence();
+			
+		TS_ASSERT_EQUALS( 
+			sequence.quality_string_trimmed(),
+			"N/A"
+			);
+
+		TS_ASSERT_EQUALS(
+			sequence.full_nt_sequence(),
+			"AGGACGGAGGCACACGGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGCGCGCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCGGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCA"
+			);
+
+
+		TS_ASSERT_EQUALS(
+			sequence.full_gl_nt_sequence(),
+			"AGGGCAGAGTCACGATTACCGCGGACAAATCCACGAGCACAGCCTACATGGAGCTGAGCAGCCTGAGATCTGAGGACACGGCCGTGTATTACTGTGCGAGAGA------------------------CTGGGGCCAAGGGACCACGGTCACCGTCTCCTCA"
+			);
 	}
 
-	void testTCRB(void) {
-		ErrorXOptions options( "testing/TRB_test.fastq", "fastq" );
-		options.errorx_base( ".." );
-		options.igtype( "TCR" );
-
-		SequenceRecordsPtr records = run_protocol( options );
-		SequenceRecord record = *(records->get( 0 ));
-		TS_ASSERT_EQUALS( record.full_nt_sequence(),"AAGGCTGGATTCACTCAAACTCCAAGATATCTGATCAAAACGAGAGGACAGCAAGTGACCCTGAGCTGCTCCCCTATCCCTGGGCATCGGAGGGTATCCTGGGACCAACAGACCCCAGGACAGGGCCTTCAGTTCCTCTTTGAATACTTCAGAGAGACACAGAGAAACAAAGGAAACTTCCCTGGTCGATTCTCAGGGCGCCAGTTCTCTAACTCTCGCTCTGAGATGAATGTGAGCACCTTGGAGCTGGGGGACTCGGCCCTTTATCTTTGCGCCAGCAGCGACGGGACCGGACAAAACTATGGCTACACCTTCGGTTCGGGGACCAGGTTAACCGTTGTAG");
-
-		TS_ASSERT_EQUALS( record.full_gl_nt_sequence(), "AAGGCTGGAGTCACTCAAACTCCAAGATATCTGATCAAAACGAGAGGACAGCAAGTGACACTGAGCTGCTCCCCTATCTCTGGGCATAGGAGTGTATCCTGGTACCAACAGACCCCAGGACAGGGCCTTCAGTTCCTCTTTGAATACTTCAGTGAGACACAGAGAAACAAAGGAAACTTCCCTGGTCGATTCTCAGGGCGCCAGTTCTCTAACTCTCGCTCTGAGATGAATGTGAGCACCTTGGAGCTGGGGGACTCGGCCCTTTATCTTTGCGCCAGCAGC---------------AACTATGGCTACACCTTCGGTTCGGGGACCAGGTTAACCGTTGTAG");
-
-
-		TS_ASSERT_EQUALS( record.cdr3_aa_sequence(), "ASSDGTGQNYGYT" );
-		TS_ASSERT_EQUALS( record.full_aa_sequence(),
-		"KAGFTQTPRYLIKTRGQQVTLSCSPIPGHRRVSWDQQTPGQGLQFLFEYFRETQRNKGNFPGRFSGRQFSNSRSEMNVSTLELGDSALYLCASSDGTGQNYGYTFGSGTRLTVV" );
-
-		TS_ASSERT_EQUALS( record.isGood(), 1 );
-		TS_ASSERT_EQUALS( record.chain(), "VB" );
-		TS_ASSERT_EQUALS( record.v_gene(), "TRBV5-1*01");
-		TS_ASSERT_EQUALS( record.d_gene(), "N/A");
-		TS_ASSERT_EQUALS( record.j_gene(), "TRBJ1-2*01");
-
-		TS_ASSERT_EQUALS( record.v_identity(), 97.518);
-		TS_ASSERT_EQUALS( record.d_identity(), 100);
-		TS_ASSERT_EQUALS( record.j_identity(), 100);
-
-	}
-
-	void testBadSequenceID(void) {
-		vector<string> lines = {
-			"# IGBLASTN",
-			"# Query: SRR4431788|57|CCCCCGGGGGGGGFFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGCFGGGGGGGGGGGGGFCGFGGGGGGGGGGGFGGGGGGGGGGGFGCGGGGGGGGGG=CDDFFFFFFD*CDGDDCGGGFGFF6CFGF???FGFFF46@??FFFF4?FFF5)52?FFF(,<F?BFFF(459:>?F96>:?:>92-1:3?F),552A))6A<4A#####@CCCCFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGFGGGGEFGGGGGGGGGFGGGGGCEGGGGFGGGGGGGGGFGDGGFGGGGGGGGGGGGGFGGGGGCFFFFGGGGGGGDEFGGGCAFGGGGGGDGGCCCDFFGGGGGFGGGFGCDGEGCDGG7:2DFC7CGGGGGGGGGGGFDF6DFACFFFFFFFFFF1AFFDEBAC<>ADGCFGFFDB>357)7456F@==F;:FGGC44.96407@?7>75+<FG?F5*7DC####",
-			"# Database: /Users/alexsevy/database/human_gl_V /Users/alexsevy/database/human_gl_D /Users/alexsevy/database/human_gl_J",
-			"# Domain classification requested: imgt",
-			"",
-			"# Note that your query represents the minus strand of a V gene and has been converted to the plus strand. The sequence positions refer to the converted sequence. ",
-			"",
-			"# V-(D)-J rearrangement summary for query sequence (Top V gene match, Top D gene match, Top J gene match, Chain type, stop codon, V-J frame, Productive, Strand).  Multiple equivalent top matches, if present, are separated by a comma.",
-			"IGHV4-34*01	IGHD2-8*01	IGHJ4*02	VH	No	In-frame	Yes	-",
-			"",
-			"# V-(D)-J junction details based on top germline gene matches (V end, V-D junction, D region, D-J junction, J start).  Note that possible overlapping nucleotides at VDJ junction (i.e, nucleotides that could be assigned to either rearranging gene) are indicated in parentheses (i.e., (TACT)) but are not included under the V, D, or J gene itself",
-			"AGAGG	CGTC	ATGGTGTATGCTATA	AGCTG	CTTTG	",
-			"",
-			"# Sub-region sequence details (nucleotide sequence, translation, start, end)",
-			"CDR3	GCGAGAGGCGTCATGGTGTATGCTATAAGCTGCTTTGACTAC	ARGVMVYAISCFDY	501	542	",
-			"",
-			"# Alignment summary between query and top germline V gene hit (from, to, length, matches, mismatches, gaps, percent identity)",
-			"CDR1-IGBlast	301	314	14	14	0	0	100",
-			"FR2-IGBlast	315	365	51	51	0	0	100",
-			"CDR2-IGBlast	366	386	21	21	0	0	100",
-			"FR3-IGBlast	387	500	114	114	0	0	100",
-			"CDR3-IGBlast (germline)	501	508	8	8	0	0	100",
-			"Total	N/A	N/A	208	208	0	0	100",
-			"",
-			"# Hit table (the first field indicates the chain type of the hit)",
-			"# Fields: query id, subject id, % identity, alignment length, mismatches, gap opens, gaps, q. start, q. end, s. start, s. end, evalue, bit score, query frame, sbjct frame, query seq, subject seq",
-			"# 3 hits found",
-			"V	reversed|SRR4431788|57|CCCCCGGGGGGGGFFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGCFGGGGGGGGGGGGGFCGFGGGGGGGGGGGFGGGGGGGGGGGFGCGGGGGGGGGG=CDDFFFFFFD*CDGDDCGGGFGFF6CFGF???FGFFF46@??FFFF4?FFF5)52?FFF(,<F?BFFF(459:>?F96>:?:>92-1:3?F),552A))6A<4A#####@CCCCFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGFGGGGEFGGGGGGGGGFGGGGGCEGGGGFGGGGGGGGGFGDGGFGGGGGGGGGGGGGFGGGGGCFFFFGGGGGGGDEFGGGCAFGGGGGGDGGCCCDFFGGGGGFGGGFGCDGEGCDGG7:2DFC7CGGGGGGGGGGGFDF6DFACFFFFFFFFFF1AFFDEBAC<>ADGCFGFFDB>357)7456F@==F;:FGGC44.96407@?7>75+<FG?F5*7DC####	IGHV4-34*01	100.000	208	0	0	0	301	508	86	293	4.40e-91	325	1	1	TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG	TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG",
-			"D	reversed|SRR4431788|57|CCCCCGGGGGGGGFFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGCFGGGGGGGGGGGGGFCGFGGGGGGGGGGGFGGGGGGGGGGGFGCGGGGGGGGGG=CDDFFFFFFD*CDGDDCGGGFGFF6CFGF???FGFFF46@??FFFF4?FFF5)52?FFF(,<F?BFFF(459:>?F96>:?:>92-1:3?F),552A))6A<4A#####@CCCCFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGFGGGGEFGGGGGGGGGFGGGGGCEGGGGFGGGGGGGGGFGDGGFGGGGGGGGGGGGGFGGGGGCFFFFGGGGGGGDEFGGGCAFGGGGGGDGGCCCDFFGGGGGFGGGFGCDGEGCDGG7:2DFC7CGGGGGGGGGGGFDF6DFACFFFFFFFFFF1AFFDEBAC<>ADGCFGFFDB>357)7456F@==F;:FGGC44.96407@?7>75+<FG?F5*7DC####	IGHD2-8*01	100.000	15	0	0	0	513	527	15	29	5.01e-04	29.5	1	1	ATGGTGTATGCTATA	ATGGTGTATGCTATA",
-			"J	reversed|SRR4431788|57|CCCCCGGGGGGGGFFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGCFGGGGGGGGGGGGGFCGFGGGGGGGGGGGFGGGGGGGGGGGFGCGGGGGGGGGG=CDDFFFFFFD*CDGDDCGGGFGFF6CFGF???FGFFF46@??FFFF4?FFF5)52?FFF(,<F?BFFF(459:>?F96>:?:>92-1:3?F),552A))6A<4A#####@CCCCFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGFGGGGEFGGGGGGGGGFGGGGGCEGGGGFGGGGGGGGGFGDGGFGGGGGGGGGGGGGFGGGGGCFFFFGGGGGGGDEFGGGCAFGGGGGGDGGCCCDFFGGGGGFGGGFGCDGEGCDGG7:2DFC7CGGGGGGGGGGGFDF6DFACFFFFFFFFFF1AFFDEBAC<>ADGCFGFFDB>357)7456F@==F;:FGGC44.96407@?7>75+<FG?F5*7DC####	IGHJ4*02	100.000	44	0	0	0	533	576	5	48	7.45e-21	85.3	1	1	CTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG	CTTTGACTACTGGGGCCAGGGAACCCTGGTCACCGTCTCCTCAG		 			"
-	 	};
-
-	 	ErrorXOptions options( "tmp.fastq", "fastq" );
-	 	IGBlastParser parser;
-
-	 	TS_ASSERT_THROWS( parser.parse_lines( lines, options ), invalid_argument );
-	}
+	SequenceRecordsPtr records_;
 };
 
 

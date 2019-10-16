@@ -58,7 +58,7 @@ SequenceRecord::SequenceRecord( AbSequence const & sequence ) :
 {}
 
 SequenceRecord::SequenceRecord( vector<string> const & items ) {
-	if ( items.size() != 21 ) {
+	if ( items.size() != util::get_labels().size() ) {
 		throw invalid_argument( "AbSequence built from an incorrect items vector" );
 	}
 
@@ -79,29 +79,52 @@ SequenceRecord::SequenceRecord( vector<string> const & items ) {
 	sequence_.chain_      = items[11];
 	sequence_.productive_ = (items[12]=="True");
 	
-	sequence_.cdr3_nt_sequence_ = items[13];
-	sequence_.cdr3_aa_sequence_ = items[14];
-	sequence_.full_nt_sequence_ = items[15];
-	sequence_.full_gl_nt_sequence_ = items[16];
-	sequence_.full_aa_sequence_ = items[17];
+	sequence_.cdr1_nt_sequence_ = items[13];
+	sequence_.cdr1_aa_sequence_ = items[14];
 
-	sequence_.full_nt_sequence_corrected_ = items[18];
-	sequence_.full_aa_sequence_corrected_ = items[19];
+	sequence_.cdr2_nt_sequence_ = items[15];
+	sequence_.cdr2_aa_sequence_ = items[16];
 
-	n_errors_ = ( items[20]=="N/A" ) ? -1 : stoi( items[20] );
+
+	sequence_.cdr3_nt_sequence_ = items[17];
+	sequence_.cdr3_aa_sequence_ = items[18];
+
+	sequence_.full_nt_sequence_ = items[19];
+	sequence_.full_gl_nt_sequence_ = items[20];
+	sequence_.phred_trimmed_ = items[21];
+	sequence_.full_aa_sequence_ = items[22];
+
+	sequence_.full_nt_sequence_corrected_ = items[23];
+	sequence_.full_aa_sequence_corrected_ = items[24];
+
+	n_errors_ = ( items[25]=="N/A" ) ? -1 : stoi( items[25] );
 
 	sequence_.hasV_ = ( sequence_.v_gene_!="N/A" );
 	sequence_.hasD_ = ( sequence_.d_gene_!="N/A" );
 	sequence_.hasJ_ = ( sequence_.j_gene_!="N/A" );
 }
 
+bool SequenceRecord::operator==( SequenceRecord const & other ) const {
+	return sequence_==other.sequence_ && 
+			n_errors_==other.n_errors_ &&
+			predicted_errors_all_==other.predicted_errors_all_;
+}
+
+bool SequenceRecord::operator!=( SequenceRecord const & other ) const {
+	return !((*this)==other);
+}
+
+bool SequenceRecord::equals( shared_ptr<SequenceRecord> const & other ) const {
+	return (*this)==(*other);
+}
 
 void SequenceRecord::print() const {
 	sequence_.print();
 }
 
-vector<string> SequenceRecord::get_summary() const {
-	return vector<string> {
+vector<string> SequenceRecord::get_summary( bool fulldata/*=1*/ ) const {
+	if ( fulldata ) {
+		return vector<string> {
 			sequence_.sequenceID(),
 			sequence_.v_gene(),
 			sequence_.v_identity_fmt(),
@@ -115,6 +138,10 @@ vector<string> SequenceRecord::get_summary() const {
 			sequence_.strand(),
 			sequence_.chain(),
 			sequence_.productive_fmt(),
+			sequence_.cdr1_nt_sequence(),
+			sequence_.cdr1_aa_sequence(),
+			sequence_.cdr2_nt_sequence(),
+			sequence_.cdr2_aa_sequence(),
 			sequence_.cdr3_nt_sequence(),
 			sequence_.cdr3_aa_sequence(),
 			sequence_.full_nt_sequence(),
@@ -124,7 +151,18 @@ vector<string> SequenceRecord::get_summary() const {
 			sequence_.full_nt_sequence_corrected(),
 			sequence_.full_aa_sequence_corrected(),
 			to_string( n_errors_ )
-	};
+		};
+	} else {
+		return vector<string> {
+			sequence_.sequenceID(),
+			sequence_.v_gene(),
+			sequence_.d_gene(),
+			sequence_.j_gene(),
+			sequence_.full_nt_sequence(),
+			sequence_.full_nt_sequence_corrected(),
+			to_string( n_errors_ )
+		};
+	}
 }
 
 

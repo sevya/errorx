@@ -50,6 +50,12 @@ public:
 	*/
 	~AbSequence();
 	
+	/**
+		Comparison operator
+	*/
+	bool operator==( AbSequence const & other ) const;
+	bool operator!=( AbSequence const & other ) const;
+
 	void build( ErrorXOptions const & options );
 
 	void print() const;
@@ -79,9 +85,14 @@ public:
 	string strand() const;
 
 	string quality_string_trimmed() const;
+	string quality_string_untrimmed() const;
 	string full_nt_sequence() const;
 	string full_gl_nt_sequence() const;
 	string full_aa_sequence() const;
+	string cdr1_nt_sequence() const;
+	string cdr1_aa_sequence() const;
+	string cdr2_nt_sequence() const;
+	string cdr2_aa_sequence() const;
 	string cdr3_nt_sequence() const;
 	string cdr3_aa_sequence() const;
 	string full_nt_sequence_corrected() const;
@@ -161,7 +172,11 @@ private:
 	string full_nt_sequence_;
 	string full_gl_nt_sequence_;
 	string full_aa_sequence_;
-	
+
+	string cdr1_nt_sequence_;
+	string cdr1_aa_sequence_;
+	string cdr2_nt_sequence_;
+	string cdr2_aa_sequence_;
 	string cdr3_nt_sequence_;
 	string cdr3_aa_sequence_;
 

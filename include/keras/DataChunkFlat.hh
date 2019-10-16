@@ -11,13 +11,25 @@ Code contained herein is proprietary and confidential.
 #ifndef DATACHUNKFLAT_HH_
 #define DATACHUNKFLAT_HH_
 
+/// manages dllexport and import for windows
+/// does nothing on Mac/Linux
+#if defined(_WIN32) || defined(_WIN64)
+#ifdef ERRORX_EXPORTS
+#define ERRORX_API __declspec(dllexport)
+#else
+#define ERRORX_API __declspec(dllimport)
+#endif
+#else
+#define ERRORX_API 
+#endif
+
 #include "keras/DataChunk.hh"
 
 using namespace std;
 
 namespace keras {
 
-class DataChunkFlat : public DataChunk {
+class ERRORX_API DataChunkFlat : public DataChunk {
 
 public:
 	/**

@@ -10,6 +10,18 @@ Code contained herein is proprietary and confidential.
 #ifndef KERASMODEL_HH_
 #define KERASMODEL_HH_
 
+/// manages dllexport and import for windows
+/// does nothing on Mac/Linux
+#if defined(_WIN32) || defined(_WIN64)
+	#ifdef ERRORX_EXPORTS
+		#define ERRORX_API __declspec(dllexport)
+	#else
+		#define ERRORX_API __declspec(dllimport)
+	#endif
+#else
+	#define ERRORX_API 
+#endif
+
 #include "ErrorXOptions.hh"
 #include "keras/DataChunk.hh"
 #include "keras/Layer.hh"
@@ -19,7 +31,7 @@ typedef unsigned int uint;
 
 namespace keras {
 
-class KerasModel {
+class ERRORX_API KerasModel {
 
 public:
 	/**

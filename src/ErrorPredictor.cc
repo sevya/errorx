@@ -35,7 +35,6 @@ ErrorPredictor::ErrorPredictor( ErrorPredictor const & other ) :
 
 double ErrorPredictor::apply_model( SequenceFeatures const & features ) const {
 	using namespace keras;
-
 	if ( features.is_germline() ) return 0.0;
 
 	const vector<double> feature_vector = features.get_feature_vector();
