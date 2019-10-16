@@ -26,7 +26,8 @@ class TestKerasModel : public CxxTest::TestSuite
 public:
 
 	void setUp() {
-		vector<double> data = { 0.63535911602209949, 0.35294117647058826, 0.077207137977055973, 0.097010460385836522, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0.050000000000000003, 0.050000000000000003, 0.050000000000000003, 0.050000000000000003, 0.050000000000000003, 0.050000000000000003, 0.050000000000000003, 0.050000000000000003, 0.050000000000000003, 0.050000000000000003, 0.050000000000000003, 0.85000000000000009, 0.625, 0.70000000000000007, 0.60000000000000009, 0.77500000000000002, 0.55000000000000004, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0.18232044198895028 };
+		vector<double> data = { 0.509383,0.411765,0.44577,0.743568,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0.5,0.875,0.95,0.925,0.95,0.925,0.875,0.85,0.875,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0.0588235,0.0187668 };
+
 		dc_ = new DataChunkFlat();
 		dc_->set_data( data );
 	}
@@ -42,12 +43,12 @@ public:
 		KerasModel model( "../model.nnet" );
 
 		TS_ASSERT_EQUALS( model.get_input_rows(), 1 );
-		TS_ASSERT_EQUALS( model.get_input_cols(), 228 );
+		TS_ASSERT_EQUALS( model.get_input_cols(), 124 );
 		TS_ASSERT_EQUALS( model.get_output_length(), 1);
-		TS_ASSERT_EQUALS( model.no_layers(), 12 );
+		TS_ASSERT_EQUALS( model.no_layers(), 8 );
 		
 
-		for ( int ii = 0; ii < 12; ++ii ) {
+		for ( int ii = 0; ii < model.no_layers(); ++ii ) {
 			if ( ii%2 == 0 ) {
 				TS_ASSERT_EQUALS( model.layer( ii )->get_name(), "Dense" );
 			} else {
@@ -58,27 +59,27 @@ public:
 		vector<double> output = model.compute_output( dc_ );
 		TS_ASSERT_EQUALS( output.size(), 1 );
 
-		TS_ASSERT_EQUALS( output[ 0 ], 0.027573684313656657 );
+		TS_ASSERT_DELTA( output[ 0 ], 0.16386315, pow( 10, -5) );
 
 
 		ErrorXOptions options( "tmp.fastq", "fastq" );
-		options.errorx_base( "../" );
+		options.errorx_base( ".." );
 		
 		KerasModel model2( options );
 		TS_ASSERT_EQUALS( model2.get_input_rows(), 1 );
-		TS_ASSERT_EQUALS( model2.get_input_cols(), 228 );
+		TS_ASSERT_EQUALS( model2.get_input_cols(), 124 );
 		TS_ASSERT_EQUALS( model2.get_output_length(), 1);
-		TS_ASSERT_EQUALS( model2.no_layers(), 12 );
+		TS_ASSERT_EQUALS( model2.no_layers(), 8 );
 		
-		for ( int ii = 0; ii < 12; ++ii ) {
+		for ( int ii = 0; ii < model2.no_layers(); ++ii ) {
 			if ( ii%2 == 0 ) {
-				TS_ASSERT_EQUALS( model.layer( ii )->get_name(), "Dense" );
+				TS_ASSERT_EQUALS( model2.layer( ii )->get_name(), "Dense" );
 			} else {
-				TS_ASSERT_EQUALS( model.layer( ii )->get_name(), "Activation" );
+				TS_ASSERT_EQUALS( model2.layer( ii )->get_name(), "Activation" );
 			}
 		}
 
-		TS_ASSERT_EQUALS( model2.compute_output( dc_ )[ 0 ], 0.027573684313656657 );
+		TS_ASSERT_DELTA( model2.compute_output( dc_ )[ 0 ], 0.16386315, pow( 10, -5) );
 	}
 
 	void testStringModels(void) {
