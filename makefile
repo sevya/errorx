@@ -116,7 +116,7 @@ binary: $(OBJ) obj/main.o
 	$(CXX) $(CPPFLAGS) obj/main.o $(OBJ) $(BOOST) -o bin/errorx $(FINAL)
 
 
-binary_testing: $(OBJ) obj/main.o
+binary_testing: $(OBJ) obj/testing.o
 	$(CXX) $(CPPFLAGS) -o bin/errorx_testing $(OBJ) obj/testing.o $(BOOST) $(FINAL)
 
 
