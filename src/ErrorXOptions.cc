@@ -44,7 +44,7 @@ ErrorXOptions::ErrorXOptions() :
 	num_queries_(0)
 {
 	nthreads(-1);
-	errorx_base( util::get_root_path().string() );
+	errorx_base( util::get_root_path().string().c_str() );
 	
 	initialize_callback();
 }
@@ -76,7 +76,7 @@ ErrorXOptions & ErrorXOptions::operator=( ErrorXOptions const & other ) {
 	return *this;
 }
 
-ErrorXOptions::ErrorXOptions( string input_file, string file_format ) :
+ErrorXOptions::ErrorXOptions( const char* input_file, const char* file_format ) :
 	outfile_("out.tsv"),
 	species_("human"),
 	igtype_("Ig"),
@@ -92,7 +92,7 @@ ErrorXOptions::ErrorXOptions( string input_file, string file_format ) :
 	nthreads(-1);
 	format( file_format );
 	infile( input_file );
-	errorx_base( util::get_root_path().string() );
+	errorx_base( util::get_root_path().string().c_str() );
 
 	initialize_callback();
 }
@@ -302,7 +302,7 @@ string ErrorXOptions::get_quality( string const & sequenceID ) const {
 	return quality_map_.at( sequenceID );
 }
 
-void ErrorXOptions::format( string const & format ) { 
+void ErrorXOptions::format( const char* format ) { 
 	vector<string> valid_formats = {"tsv", "fastq", "fasta"};
 
 	if ( find( valid_formats.begin(), valid_formats.end(), format )
@@ -319,7 +319,7 @@ void ErrorXOptions::format( string const & format ) {
 
 }
 
-void ErrorXOptions::species( string const & species ) { 
+void ErrorXOptions::species( const char* species ) { 
 	vector<string> valid_species = {"human", "mouse"};
 
 	if ( find( valid_species.begin(), valid_species.end(), species )
@@ -334,7 +334,7 @@ void ErrorXOptions::species( string const & species ) {
 	species_ = species; 
 }
 
-void ErrorXOptions::igtype( string const & igtype ) { 
+void ErrorXOptions::igtype( const char* igtype ) { 
 	vector<string> valid_types = {"Ig", "TCR"};
 
 	if ( find( valid_types.begin(), valid_types.end(), igtype )
@@ -394,11 +394,11 @@ function<void(void)> ErrorXOptions::reset() const { return reset_; }
 function<void(void)> ErrorXOptions::finish() const { return finish_; }
 function<void(string)> ErrorXOptions::message() const { return message_; }
 
-void ErrorXOptions::outfile( string const & outfile ) { outfile_ = outfile; }
-void ErrorXOptions::infile( string const & infile ) { infile_ = infile; }
-void ErrorXOptions::infasta( string const & infasta ) { infasta_ = infasta; }
-void ErrorXOptions::igblast_output( string const & igblast_output ) { igblast_output_ = igblast_output; }
-void ErrorXOptions::errorx_base( string const & errorx_base ) { errorx_base_ = errorx_base; }
+void ErrorXOptions::outfile( const char* outfile ) { outfile_ = outfile; }
+void ErrorXOptions::infile( const char* infile ) { infile_ = infile; }
+void ErrorXOptions::infasta( const char* infasta ) { infasta_ = infasta; }
+void ErrorXOptions::igblast_output( const char* igblast_output ) { igblast_output_ = igblast_output; }
+void ErrorXOptions::errorx_base( const char* errorx_base ) { errorx_base_ = errorx_base; }
 void ErrorXOptions::verbose( int const verbose ) { 
 	verbose_ = verbose; 
 	initialize_callback();

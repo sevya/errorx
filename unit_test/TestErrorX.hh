@@ -244,7 +244,7 @@ public:
 		out << "one" << "," << "TACTCCNGTGGTACGCCCAAG" << "," << "TACTCCNGT---ACGCCCAAG" << "," << "###################";
 		out.close();
 
-		ErrorXOptions options( file, "tsv" );
+		ErrorXOptions options( file.c_str(), "tsv" );
 		options.outfile( "bad.out");
 		options.verbose( 0 );
 		options.errorx_base( ".." );
@@ -269,7 +269,7 @@ public:
 		out << "one" << "\t" << "TACTCCNGTGGTACGCCCAAG" << "\t" << "TACTCCNGT---ACGCCCAAG" << "\t" << "#####################" << "\t" << "\n";
 		out.close();
 
-		options.infile( file );
+		options.infile( file.c_str() );
 		TS_ASSERT_THROWS_NOTHING( run_protocol( options ) );
 
 		remove( file.c_str() );

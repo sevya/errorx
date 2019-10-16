@@ -53,7 +53,7 @@ void IGBlastParser::blast( ErrorXOptions & options ) {
 	fs::path germline_db_J = root / "database" / igtype / species / (species+"_gl_J");
 
 	fs::path aux_data = root / "optional_file" / (species+"_gl.aux");
-	options.igblast_output( options.infasta()+".out" );
+	options.igblast_output( (options.infasta()+".out").c_str() );
 
 	string command = executable.string() +
 		" -germline_db_V "+germline_db_V.string()+

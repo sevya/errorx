@@ -90,30 +90,30 @@ int main( int argc, char* argv[] ) {
 			if ( infiles.size() > 1 ) {
 				cout << "Warning: " << infiles.size() << " files were passed, but only the first will be used" << endl;
 			}
-			options.infile( infiles[0] );
+			options.infile( infiles[0].c_str() );
 		} else {
 			cout << "Error - please enter an input file to analyze." << endl;
 			return 1;
 		}
 
 		if ( vm.count("format") ) {
-			options.format( vm["format"].as<string>());
+			options.format( vm["format"].as<string>().c_str() );
 		} else {
 			cout << "Error - you must enter the input file format." << endl;
 			return 1;
 		}
 
-		options.outfile( vm["out"].as<string>());
+		options.outfile( vm["out"].as<string>().c_str() );
 
-		options.species( vm["species"].as<string>());
+		options.species( vm["species"].as<string>().c_str() );
 
-		options.igtype( vm["igtype"].as<string>());
+		options.igtype( vm["igtype"].as<string>().c_str() );
 
 		options.nthreads( vm["nthreads"].as<int>());
 
 		options.error_threshold( vm["error-threshold"].as<double>());
 
-		options.verbose( vm["verbose"].as<int>());
+		options.verbose( vm["verbose"].as<int>() );
 
 		options.allow_nonproductive( vm["allow-nonproductive"].as<bool>());
 

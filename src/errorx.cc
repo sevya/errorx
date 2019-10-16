@@ -52,7 +52,7 @@ SequenceRecordsPtr run_protocol( ErrorXOptions & options ) {
 	} else if ( options.format() == "fasta" ) {
 		// Run with FASTA file
 		// Set infasta here - normally it would be set by fastq_to_fasta
-		options.infasta( options.infile() );
+		options.infasta( options.infile().c_str() );
 		IGBlastParser parser;
 		parser.blast( options );
 

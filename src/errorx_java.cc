@@ -264,12 +264,12 @@ errorx::ErrorXOptions joptions_to_options( JNIEnv* env, jobject & options ) {
 	jchar correction = env->GetCharField( options, fid );
 
 	errorx::ErrorXOptions options_cpp( 
-				jstring_to_string( env, infile ), 
-				jstring_to_string( env, format )
+				jstring_to_string( env, infile ).c_str(), 
+				jstring_to_string( env, format ).c_str()
 				);
-	options_cpp.outfile( jstring_to_string( env, outfile ));
-	options_cpp.species( jstring_to_string( env, species ));
-	options_cpp.errorx_base( jstring_to_string( env, base_path ));
+	options_cpp.outfile( jstring_to_string( env, outfile ).c_str() );
+	options_cpp.species( jstring_to_string( env, species ).c_str());
+	options_cpp.errorx_base( jstring_to_string( env, base_path ).c_str());
 	
 	options_cpp.verbose( (int)verbose );
 	options_cpp.allow_nonproductive( (bool)allow_nonproductive );

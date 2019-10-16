@@ -247,14 +247,14 @@ errorx::ErrorXOptions options_from_pyoptions( PyObject* const options ) {
 	char correction = correction_str[0];
 	int nthreads = extract_int_attr( options, "nthreads_" );
 
-	errorx::ErrorXOptions options_cpp( infile, format );
-	options_cpp.outfile( outfile );
-	options_cpp.species( species );
+	errorx::ErrorXOptions options_cpp( infile.c_str(), format.c_str() );
+	options_cpp.outfile( outfile.c_str() );
+	options_cpp.species( species.c_str() );
 	options_cpp.verbose( verbose );
 	options_cpp.error_threshold( error_threshold );
 	options_cpp.allow_nonproductive( allow_nonproductive );
 	options_cpp.correction( correction );
-	options_cpp.errorx_base( base_path );
+	options_cpp.errorx_base( base_path.c_str() );
 	options_cpp.nthreads( nthreads );
 	return options_cpp;
 }

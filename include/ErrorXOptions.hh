@@ -47,7 +47,7 @@ public:
 		Constructor which initializes all to default values, except 
 		for required arguments infile and format 
 	*/	
-	ErrorXOptions( string infile, string format );
+	ErrorXOptions( const char* infile, const char* format );
 
 	/**
 		Destructor - does nothing though
@@ -112,15 +112,14 @@ public:
 	/*
 		Setters
 	*/
-	void outfile( string const & outfile );
-	void format( string const & format );
-	void species( string const & species );
-	void igtype( string const & igtype );
-	void infile( string const & infile );
-	void infasta( string const & infasta );
-	void igblast_output( string const & igblast_output );
-	void errorx_base( string const & errorx_base );
-	// void errorx_base( boost::filesystem::path const & errorx_base );
+	void outfile( const char* outfile );
+	void format( const char* format );
+	void species( const char* species );
+	void igtype( const char* igtype );
+	void infile( const char* infile );
+	void infasta( const char* infasta );
+	void igblast_output( const char* igblast_output );
+	void errorx_base( const char* errorx_base );
 	void verbose( int const verbose );
 	void nthreads( int const nthreads );
 	void error_threshold( double const & error_threshold );
