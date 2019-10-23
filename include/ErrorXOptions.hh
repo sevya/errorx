@@ -25,6 +25,11 @@ Code contained herein is proprietary and confidential.
 #endif
 
 #include <string>
+#include <functional>
+#include <memory>
+#include <unordered_map>
+
+#include "ProgressBar.hh"
 
 using namespace std;
 
@@ -45,6 +50,16 @@ public:
 	ErrorXOptions( string infile, string format );
 
 	/**
+		Destructor - does nothing though
+	*/
+	~ErrorXOptions();
+
+	/**
+		Assignment operator
+	*/
+	ErrorXOptions & operator=( ErrorXOptions const & other);
+
+	/**
 		Copy constructor
 	*/	
 	ErrorXOptions( ErrorXOptions const & other );
@@ -62,6 +77,12 @@ public:
 		@throws invalid_argument if either infile or format are not specified
 	*/	
 	void validate();
+
+	/**
+		Counts the number of queries based on infile and saves
+		to a member variable
+	*/
+	void count_queries();
 	
 	/*
 		Getters
@@ -79,7 +100,14 @@ public:
 	double error_threshold() const;
 	char correction() const;
 	bool trial() const;
+	int num_queries() const;
 	bool allow_nonproductive() const;
+	function<void(int,int)> increment() const;
+	function<void(void)> reset() const;
+	function<void(void)> finish() const;
+	function<void(string)> message() const;
+	unordered_map<string,string> quality_map() const;
+	string get_quality( string const & sequenceID ) const;
 
 	/*
 		Setters
@@ -93,14 +121,23 @@ public:
 	void igblast_output( string const & igblast_output );
 	void errorx_base( string const & errorx_base );
 	// void errorx_base( boost::filesystem::path const & errorx_base );
-	void verbose( int const & verbose );
-	void nthreads( int const & nthreads );
+	void verbose( int const verbose );
+	void nthreads( int const nthreads );
 	void error_threshold( double const & error_threshold );
 	void correction( char const & correction );
-	void trial( bool const & trial );
-	void allow_nonproductive( bool const & allow_nonproductive );
+	void trial( bool const trial );
+	void num_queries( int const num_queries );
+	void allow_nonproductive( bool const allow_nonproductive );
+	void increment( function<void(int,int)> const & increment ) ;
+	void reset( function<void(void)> const & reset ) ;
+	void finish( function<void(void)> const & finish ) ;
+	void message( function<void(string)> const & message ) ;
+	void quality_map( unordered_map<string,string> const & quality_map );
 
 private:
+
+	void initialize_callback();
+
 	/**
 		User specified options:
 		
@@ -143,8 +180,43 @@ private:
 	string igblast_output_;
 	string errorx_base_;
 	bool trial_;
+	int num_queries_;
+
+	/**
+		Callback functions to update progress during error correction
+		By default, these will update a progress bar on the command 
+		line. Can also be used in a GUI to show a progress window.
+
+		Four callback functions are implemented:
+		
+		increment_: this increments the number of processed records. 
+			Takes in as arguments: (increment value, total records)
+
+		reset_: resets the progress bar to 0. Used in the transition
+			from tracking progress on IGBlast to error correction
+
+		finish_: finishes the progress bar. Frequently the thread finishes and
+			progress updating is killed before it hits 100%. To make it look
+			pretty this function manually updates the bar to 100%.
+
+		message_: sets the message for the currently running step
+	*/
+	function<void(int,int)> increment_;
+	function<void(void)> reset_;
+	function<void(void)> finish_;
+	function<void(string)> message_;
+	ProgressBar _bar;
+
+	/**
+		This maps a sequence ID to the corresponding quality string
+		this enables us to find the quality based on the IGBlast output later
+	*/
+	unordered_map<string,string> quality_map_;
 	
 };
+
+typedef unique_ptr<ErrorXOptions> ErrorXOptionsPtr;
+typedef shared_ptr<ErrorXOptions> ErrorXOptionsSP;
 
 } // namespace errorx
 

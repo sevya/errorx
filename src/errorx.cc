@@ -23,75 +23,82 @@ using namespace std;
 
 namespace errorx {
 
-SequenceRecords* run_protocol( ErrorXOptions & options ) {
-	SequenceRecords* records;
+SequenceRecordsPtr run_protocol( ErrorXOptions & options ) {
+	SequenceRecordsPtr records;
+
+	// Register control-C signal
+	util::register_signal();
 
 	options.validate();
 	options.trial( !util::valid_license() );	
+	options.count_queries();
+
+	// Trial version only allows querying a limited number of sequences
+	if ( options.trial() && 
+		 options.num_queries() > constants::FREE_QUERIES ) {
+		throw InvalidLicenseException();
+	}
+
 	if ( options.format() == "fastq" ) {
-		if ( options.trial() ) {
-			// Trial version only allows querying 100 sequences
-			// since each FASTQ query is 4 lines check and make
-			// sure there are < 400 lines
-			string infile = options.infile();
-			int num_lines = util::count_lines( infile );
-			if ( num_lines > 400 ) {
-				throw InvalidLicenseException();
-			} 
-		}
 
 		// Convert FASTQ to FASTA
-		if ( options.verbose() > 0 ) {
-			cout << "Converting fastq to fasta..." << endl;
-		}
 		options.fastq_to_fasta();
 
 		// Run IGBlast query on FASTA file
+		IGBlastParser parser;
+		parser.blast( options );
+		// Parse the IGBlast output
+		records = parser.parse_output( options );
+	} else if ( options.format() == "fasta" ) {
+		// Run with FASTA file
+		// Set infasta here - normally it would be set by fastq_to_fasta
+		options.infasta( options.infile() );
 		IGBlastParser parser;
 		parser.blast( options );
 
 		// Parse the IGBlast output
 		records = parser.parse_output( options );
 
+		// Do a "mock" error correction
+		// just put the regular sequence in place of the corrected sequence
+		records->mock_correct_sequences();
+
+		// Return here so that the records won't be error corrected
+		return records;
 	} else {
-		if ( options.trial() ) {
-			// Trial version only allows querying 100 sequences
-			string infile = options.infile();
-			int num_lines = util::count_lines( infile );
-			if ( num_lines > 100 ) {
-				throw InvalidLicenseException();
-			} 
-		}
 
 		// Parse the TSV file
 		// TSV files are in the following format: sequenceID,nt_sequence,gl_sequence,quality_string
-		records = new SequenceRecords( options );
+		records = SequenceRecordsPtr( new SequenceRecords( options ));
 		records->import_from_tsv();
 	}
 
-	// Predict errors from SequenceRecords
+	// Predict errors from SequenceRecords as long as it's not a FASTA file
 	SequenceRecords::correct_sequences( records );
 	return records;
 }
 
 
-SequenceRecords* run_protocol( vector<SequenceQuery> & queries, 
+SequenceRecordsPtr run_protocol( vector<SequenceQuery> & queries, 
 							   ErrorXOptions & options ) {
 
-	options.trial( !util::valid_license() );
-
-	if ( options.trial() ) {
-		// Trial version only allows querying 100 sequences
-		if ( queries.size() > 100 ) {
-			throw InvalidLicenseException();
-		} 
-	}
-
-	SequenceRecords* records;
+	// Register control-C signal
+	util::register_signal();
 
 	options.validate();
+	options.trial( !util::valid_license() );
+	options.count_queries();
+
+	// Trial version only allows querying a limited number of sequences
+	if ( options.trial() && 
+		 options.num_queries() > constants::FREE_QUERIES ) {
+		throw InvalidLicenseException();
+	}
+
+	SequenceRecordsPtr records;
+
 	
-	records = new SequenceRecords( options );
+	records = SequenceRecordsPtr( new SequenceRecords( options ));
 
 	records->import_from_list( queries );
 
@@ -102,20 +109,20 @@ SequenceRecords* run_protocol( vector<SequenceQuery> & queries,
 
 
 void run_protocol_write( ErrorXOptions & options ) {
-	SequenceRecords* records = run_protocol( options );
+	SequenceRecordsPtr records = run_protocol( options );
 	records->write_summary();
-	delete records;
+	records.release();
 }
 
 void run_protocol_write_features( ErrorXOptions & options ) {
-	SequenceRecords* records = run_protocol( options );
+	SequenceRecordsPtr records = run_protocol( options );
 
 	// Write summary
 	records->write_summary();
 	// Write features
 	records->write_features();
 
-	delete records;
+	records.release();
 }
 
 } // namespace errorx

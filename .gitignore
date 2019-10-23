@@ -12,6 +12,15 @@ errorx.sublime-workspace
 .*.swp
 unit_test/hs_err*.log
 
+*.gcno
+*.gcda
+out/
+*.info
+
+obj/*
+!obj/.gitkeep
+!obj/keras/.gitkeep
+
 *tar.gz 
 
 bin/errorx*
@@ -19,13 +28,14 @@ bin/errorx*
 lib/*
 !lib/.gitkeep
 
-unit_test/testing/test.fasta.out
+unit_test/testing/*.fasta*
+!unit_test/testing/variant_test.fasta
 unit_test/bin/*
 !unit_test/bin/.gitkeep
 unit_test/*.cc
 unit_test/*.class
 unit_test/testing/out.tsv
-unit_test/lib/liberrorx.dylib
+unit_test/lib/liberrorx.*
 unit_test/cxxtest/COPYING
 unit_test/cxxtest/Versions
 unit_test/cxxtest/test/
@@ -35,6 +45,7 @@ unit_test/cxxtest/build_tools/
 unit_test/cxxtest/doc/
 unit_test/cxxtest/sample/
 unit_test/cxxtest/python/cxxtest/*.pyc
+unit_test/v1/
 
 java_bindings/errorx/*.class
 java_bindings/ErrorX.jar
@@ -51,6 +62,7 @@ build_test/a.out
 
 documentation/latex/
 documentation/html/
+documentation/ExampleSequences.fasta*
 
 model.nnet.norel
 model.nnet.stable

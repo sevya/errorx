@@ -14,12 +14,16 @@ heavy lifting in terms of turning that output into a SequenceRecord object
 #include <fstream>
 #include <vector>
 #include <thread>
+#include <chrono>
 
 #include "IGBlastParser.hh"
 #include "SequenceRecords.hh"
 #include "SequenceRecord.hh"
 #include "ErrorXOptions.hh"
 #include "util.hh"
+#include "constants.hh"
+
+#include "AbSequence.hh"
 
 #include <boost/filesystem.hpp>
 
@@ -60,15 +64,16 @@ void IGBlastParser::blast( ErrorXOptions & options ) {
 		" -num_alignments_V 1 -num_alignments_D 1"+
 		" -num_clonotype 0"+
 		" -ig_seqtype "+options.igtype()+
-		" -num_alignments_J 1 -outfmt \"7 std qframe sframe qseq sseq\""+
-		" -out "+options.igblast_output()+" -num_threads "+to_string(options.nthreads());
+		" -num_alignments_J 1 -outfmt 19"+
+		" -out "+options.igblast_output()+
+		" -num_threads "+to_string(options.nthreads());
 
 	if ( options.verbose() > 1 ) {
 		cout << command << endl;
 	}
 
 	// If the IGBlast output file already exists, delete it
-	ifstream infile(options.igblast_output());
+	ifstream infile( options.igblast_output() );
 	bool exists = infile.good();
 	infile.close();
     if ( exists ) remove( options.igblast_output().c_str() );
@@ -82,100 +87,282 @@ void IGBlastParser::blast( ErrorXOptions & options ) {
 
 	thread worker_thread = thread( &IGBlastParser::exec_in_thread, this, command );
 	
-
-	if ( options.verbose() > 0 ) {
-		cout << "Running IGBlast..." << endl;
-		track_progress( options );
-	}
+	track_progress( options );
+	
 	worker_thread.join();
 }
 
-SequenceRecords* IGBlastParser::parse_output( ErrorXOptions & options  )
-{
-	ios_base::sync_with_stdio (false);
+SequenceRecordsPtr IGBlastParser::parse_output( ErrorXOptions const & options  ) {
+	ios_base::sync_with_stdio( false );
 	string line;
 	ifstream file( options.igblast_output() );
 
 
 	vector<string> lines;
 
-	SequenceRecords* records = new SequenceRecords( options );
-
+	SequenceRecordsPtr records = SequenceRecordsPtr( new SequenceRecords( options ));
 	if ( !file.good() ) {
-		throw invalid_argument( options.igblast_output()+" is not a valid file." );
+		throw BadFileException( options.igblast_output()+" is not a valid file." );
 		return records;
 	}
+	
+	// Throw out the first header line
+	getline( file, line );
 
-	while (getline (file, line)) {
-		vector<string> tokens = util::tokenize_string<string>( line );
+	while ( getline (file, line) ) {
+		vector<string> tokens = util::tokenize_string<string>( line, 
+			"\t" /* delim */, 0 /* token_compress */, 0 /* trim */
+			);
 
-		// If this is the first line of a query, and it's not the first line 
-		// in the file, make a SequenceRecord from the previous query
-		if ( tokens.size()==2 && 
-			 tokens[1] == "IGBLASTN" && 
-			 !lines.empty() ) {
-			
-			SequenceRecord* record = new SequenceRecord( 
-					lines, 
-					options.verbose(), 
-					options.allow_nonproductive()
-					);
-			records->add_record( record );
 
-			lines.clear();
-		} 
-		// If all the queries are done, and I'm at the end of the file, 
-		// make a SequenceRecord and finish up
-		else if ( tokens.size()==4 && 
-				  tokens[0] == "Total" && 
-				  tokens[1] == "queries" ) {
+		AbSequence sequence = parse_line( tokens, options );
+		SequenceRecordPtr record( new SequenceRecord( sequence ));
 
-			SequenceRecord* record = new SequenceRecord( 
-					lines, 
-					options.verbose(), 
-					options.allow_nonproductive()
-					);
-			records->add_record( record );
-			lines.clear();
-			break;
-		} 
-		// Otherwise, just add the line to the lines vector and keep going
-		else {
-			lines.push_back( line );
-		}
+		records->add_record( record );	
 	}
 
 	return records;
 }
 
-void IGBlastParser::track_progress( ErrorXOptions & options ) {
-		int done = 0;
-		float progress = 0.0;
-		float last_progress = -1;
+void IGBlastParser::track_progress( ErrorXOptions const & options ) {
+	int done = 0;
+	int last_done = 0;
 
-		string infile = options.infile();
-		string igblast_output = options.igblast_output();
-		int total_records = util::count_lines( infile )/4;
+	string infile = options.infile();
+	string igblast_output = options.igblast_output();
+	int total_records = options.num_queries();
 
-		while (!thread_finished_) {
-			done = util::count_queries( igblast_output );
-			progress = (float)done/(float)total_records;
+	function<void(int,int)> increment = options.increment();
+	function<void(void)> reset = options.reset();
+	function<void(void)> finish = options.finish();
+	function<void(string)> message = options.message();
 
-			// only write to screen if the value has changed
-			if ( progress != last_progress ) { 
-				util::write_progress_bar( progress, done, total_records );
-			}
-			last_progress = progress;
+	reset();
+	message( "Running IGBlast..." );
+
+	increment( 0, total_records );
+
+	while ( !thread_finished_ ) {
+
+		done = util::count_lines( igblast_output );
+
+		// only write to screen if the value has changed
+		if ( last_done != done ) {
+			// increment with the amount that it's changed
+			increment( done-last_done, total_records );
+
+			last_done = done;
 		}
-		cout << endl;
+		this_thread::sleep_for( chrono::milliseconds(500) );
+	}
+	// Finish the progress bar, since it's done now
+	finish();
+
+	// TODO find more robust way to capture this
+	cout << endl;
 }
 
 void IGBlastParser::exec_in_thread( string command ) {
 	// TODO: come up with a more robust way to capture the output of this command
 	system( command.c_str() );
-//	thread_output_ = util::exec( command.c_str() );
 	thread_finished_ = true;
 }
+
+AbSequence IGBlastParser::parse_line( vector<string> const & tokens, ErrorXOptions const & options ) {
+
+	AbSequence sequence;
+
+	if ( tokens.size() != 88 ) { // there should be 88 lines in IGBlast output
+		sequence.good_ = false;
+		sequence.failure_reason_ = "Output line does not parse correctly";
+		return sequence;
+	}
+
+	// if a query is reversed, the sequence ID gets turned from SRR838 to 
+	// reversed|SRR838. Here I just take out that reversed portion to get
+	// the real ID
+	vector<string> id_tokens = util::tokenize_string<string>( tokens[0], "|" );
+	sequence.sequenceID_ = id_tokens[id_tokens.size()-1];
+
+	// if the sequence is so bad that it looks nothing like an Ig domain,
+	// igblast goes crazy and dosn't even put in a sequence ID
+	if ( sequence.sequenceID_ == "" ) {
+		sequence.good_ = 0;
+		sequence.failure_reason_ = "No sequence ID found in the output - very malformed sequence";
+
+		return sequence;
+	}
+
+
+	// Get the PHRED string that we previously stored in an unordered_map
+	// if it's not present mark the sequence as bad and move on
+	if ( options.format() == "fastq" ) {
+		try {
+			unordered_map<string,string> qmap = options.quality_map();
+			sequence.phred_ = options.get_quality( sequence.sequenceID_ );
+		} catch ( out_of_range & ) {
+			sequence.good_ = 0;
+			if ( options.verbose() > 0 ) {
+				cout << "Warning: quality not found for sequence " << sequence.sequenceID_ << endl;
+			}
+			sequence.failure_reason_ = "Quality information was not found";
+
+			return sequence;
+		}
+	} else {
+		sequence.phred_ = "N/A";
+		sequence.phred_trimmed_ = "N/A";
+	}
+
+	sequence.chain_      = tokens[2];
+	// I make the decision to only count a sequence as non-productive if Productive==False in the IGBlast output
+	// IGBlast only marks Productive as True if the full V(D)J can be assigned well
+	// in cases where there's bad assignment or not the full recombined segment, it just leaves productive blank
+	// Productive will be false if there's actually a stop codon present, which is what I usually think of as productive
+	// so sometimes it will be marked as productive even though it's a crappy sequence
+	sequence.productive_ = tokens[5]!="F";
+	sequence.strand_     = ( tokens[6]=="F" ) ? "+" : "-";
+
+	// bad chain ID - warn and keep going
+	vector<string> valid_chains = { "VH","VL","VA","VB","VK" };
+	if ( find( valid_chains.begin(), valid_chains.end(), sequence.chain() )
+			== valid_chains.end() ) {
+		// TODO: implement TCRG and D
+		if ( options.verbose() > 0 ) {
+			cout << "Warning: invalid chain type "+sequence.chain_+" detected" << endl;
+		}
+	}
+
+	sequence.cdr1_nt_sequence_ = tokens[34];
+	if ( sequence.cdr1_nt_sequence_ == "" ) {
+		sequence.cdr1_nt_sequence_ = "N/A";
+		sequence.cdr1_aa_sequence_ = "N/A";
+	} else {
+		sequence.cdr1_aa_sequence_ = tokens[35];
+	}
+	
+	sequence.cdr2_nt_sequence_ = tokens[38];
+	if ( sequence.cdr2_nt_sequence_ == "" ) {
+		sequence.cdr2_nt_sequence_ = "N/A";
+		sequence.cdr2_aa_sequence_ = "N/A";
+	} else {
+		sequence.cdr2_aa_sequence_ = tokens[39];
+	}
+
+	sequence.cdr3_nt_sequence_ = tokens[42];
+	if ( sequence.cdr3_nt_sequence_ == "" ) {
+		sequence.cdr3_nt_sequence_ = "N/A";
+		sequence.cdr3_aa_sequence_ = "N/A";
+	} else {
+		sequence.cdr3_aa_sequence_ = tokens[43];
+	}
+
+
+
+	// Get the V,D,J gene information
+	sequence.hasV_ = 0;
+	sequence.hasD_ = 0;
+	sequence.hasJ_ = 0;
+
+	try {
+		sequence.v_gene_ = tokens[7];
+		if ( sequence.v_gene_!="" ) {
+			sequence.v_identity_  = boost::lexical_cast<double>( tokens[57] );
+			sequence.v_evalue_    = boost::lexical_cast<double>( tokens[54] );
+			sequence.v_nts_       = tokens[20];
+			sequence.v_gl_nts_    = tokens[22];
+
+			sequence.query_start_ = boost::lexical_cast<int>( tokens[60] );
+			sequence.gl_start_    = boost::lexical_cast<int>( tokens[62] );
+
+			// My logic for GL start is 1-indexed, not 0-indexed
+			// the data given is 0-indexed so I'll increment by 1
+			sequence.gl_start_++;
+
+			sequence.hasV_ = ( sequence.v_evalue_ < constants::V_EVALUE_CUTOFF );
+		} else {
+			sequence.v_gene_ = "N/A";
+		}
+
+
+		sequence.d_gene_ = tokens[8];
+		if ( sequence.d_gene_!="" ) {
+			sequence.d_identity_ = boost::lexical_cast<double>( tokens[58] );
+			sequence.d_evalue_   = boost::lexical_cast<double>( tokens[55] );
+			sequence.d_nts_      = tokens[24];
+			sequence.d_gl_nts_   = tokens[26];
+			
+			sequence.hasD_ = ( sequence.d_evalue_ < constants::D_EVALUE_CUTOFF );
+		} else {
+			sequence.d_gene_ = "N/A";
+		}
+
+		sequence.j_gene_ = tokens[9];
+		if ( sequence.j_gene_!="" ) {
+			sequence.j_identity_ = boost::lexical_cast<double>( tokens[59] );
+			sequence.j_evalue_   = boost::lexical_cast<double>( tokens[56] );
+			sequence.j_nts_      = tokens[28];
+			sequence.j_gl_nts_   = tokens[30];
+
+			sequence.hasJ_ = ( sequence.j_evalue_ < constants::J_EVALUE_CUTOFF );
+		} else {
+			sequence.j_gene_ = "N/A";
+		}
+
+
+		// Get junction information if there is a junction visible (hasD or hasJ)
+		// This is the desired scheme:
+		// no D and no J -> no junction
+		// no D and J -> { V_end to J_start }
+		// D and no J -> { V_end to D_start, D_start to D_end, D_end to sequence end }
+		// D and J -> { V_end to D_start, D_start to D_end, D_end to J_start, }
+
+		string aligned_seq = tokens[10];
+		if ( !sequence.hasD_ && !sequence.hasJ_ ) {
+			sequence.jxn_nts_ = vector<string>{ "" };
+		} else if ( !sequence.hasD_ && sequence.hasJ_ ) {
+			int v_end = boost::lexical_cast<int>( tokens[15] );
+			int j_start = boost::lexical_cast<int>( tokens[18] );
+			sequence.jxn_nts_ = vector<string>{ 
+				aligned_seq.substr( v_end, j_start-v_end ), // from V to J
+			};
+		} else if ( sequence.hasD_ && !sequence.hasJ_ ) {
+			int v_end = boost::lexical_cast<int>( tokens[15] );
+			int d_start = boost::lexical_cast<int>( tokens[16] );
+			int d_end = boost::lexical_cast<int>( tokens[17] );
+			int seq_end = aligned_seq.size();
+			sequence.jxn_nts_ = vector<string> {
+				aligned_seq.substr( v_end, d_start-v_end ), // from V to D
+				aligned_seq.substr( d_start, d_end-d_start ), // D region
+				aligned_seq.substr( d_end, seq_end-d_end )  // from D to end
+			}; 
+		} else { // hasD_ && hasJ_
+			int v_end = boost::lexical_cast<int>( tokens[15] );
+			int d_start = boost::lexical_cast<int>( tokens[16] );
+			int d_end = boost::lexical_cast<int>( tokens[17] );
+			int j_start = boost::lexical_cast<int>( tokens[18] );
+			sequence.jxn_nts_ = vector<string>{ 
+				aligned_seq.substr( v_end, d_start-v_end ), // from V to D
+				aligned_seq.substr( d_start, d_end-d_start ), // D region
+				aligned_seq.substr( d_end, j_start-d_end )  // from D to J
+			};
+		}
+
+	} catch ( out_of_range & ) {
+		return sequence;
+	} catch ( boost::bad_lexical_cast & ) {
+		return sequence;
+	}
+
+
+
+	// Now I have all the information I need to build a sequence
+	sequence.build( options );
+
+	return sequence;
+
+}
+
 
 } // namespace errorx
 

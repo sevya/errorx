@@ -29,12 +29,12 @@ public:
 		options_.outfile( "testing/test_out.tsv");
 
 		options_.species( "mouse" );
-		options_.verbose( 1 );
+		options_.verbose( 0 );
 		options_.nthreads( 1 );
-		string base = "../";
+		string base = "..";
 		options_.errorx_base( base );
 
-		SequenceRecords* records = run_protocol( options_ );
+		SequenceRecordsPtr records = run_protocol( options_ );
 
 		TS_ASSERT_EQUALS(
 			records->get(0)->quality_string(),
@@ -89,15 +89,15 @@ public:
 		options_.outfile( "testing/test_out.tsv");
 
 		options_.species( "mouse" );
-		options_.verbose( 1 );
+		options_.verbose( 0 );
 		options_.nthreads( 1 );
-		string base = "../";
+		string base = "..";
 		options_.errorx_base( base );
 
 		ErrorXOptions options( options_ );
 		options.correction( 'X' );
 
-		SequenceRecords* records = run_protocol( options );
+		SequenceRecordsPtr records = run_protocol( options );
 
 		TS_ASSERT_EQUALS(
 			records->get(0)->quality_string(),
@@ -152,10 +152,10 @@ public:
 		options_.outfile( "testing/test_out.tsv");
 		options_.species( "mouse" );
 		options_.nthreads( 1 );
-		string base = "../";
+		string base = "..";
 		options_.errorx_base( base );
 
-		SequenceRecords* records = run_protocol( options_ );
+		SequenceRecordsPtr records = run_protocol( options_ );
 
 		TS_ASSERT_EQUALS(
 			records->get(0)->quality_string(),
@@ -210,10 +210,10 @@ public:
 		queries.push_back( query );
 
 		ErrorXOptions options( "tmp", "tsv" );
-		options.errorx_base( "../" );
-		SequenceRecords* records = run_protocol( queries, options );
+		options.errorx_base( ".." );
+		SequenceRecordsPtr records = run_protocol( queries, options );
 
-		SequenceRecord* record = records->get(0);
+		SequenceRecordPtr record = records->get(0);
 		TS_ASSERT_EQUALS(
 			record->quality_string(),
 			phred_scores[0]
@@ -256,7 +256,7 @@ public:
 		options_.outfile( "");
 		options_.species( "mouse" );
 		options_.nthreads( 1 );
-		string base = "../";
+		string base = "..";
 		options_.errorx_base( base );
 
 		vector<string> sequenceIDs = { "SRR3175015.933" };
@@ -273,9 +273,9 @@ public:
 		vector<SequenceQuery> queries;
 		SequenceQuery query( sequenceIDs[0], sequences[0], germline_sequences[0], phred_scores[0] );
 		queries.push_back( query );
-		SequenceRecords* records = run_protocol( queries, options_ );
+		SequenceRecordsPtr records = run_protocol( queries, options_ );
 
-		SequenceRecord* record = records->get(0);
+		SequenceRecordPtr record = records->get(0);
 		TS_ASSERT_EQUALS(
 			record->quality_string(),
 			phred_scores[0]
@@ -309,6 +309,46 @@ public:
 
 			TS_ASSERT_DELTA( predicted_errors[position].second, value, delta)
 		}
+	}
+
+	void testMalformedTSV() {
+		string file = "bad.tsv";
+		ofstream out( file );
+
+		out << "one" << "," << "TACTCCNGTGGTACGCCCAAG" << "," << "TACTCCNGT---ACGCCCAAG" << "," << "###################";
+		out.close();
+
+		ErrorXOptions options( file, "tsv" );
+		options.outfile( "bad.out");
+		options.verbose( 0 );
+		options.errorx_base( ".." );
+
+		TS_ASSERT_THROWS( run_protocol( options ), BadFileException );
+
+		remove( file.c_str() );
+
+		out = ofstream( file );
+		out << "ID" << "\t" << "Sequence" << "\t" << "Germline" << "\t" << "Phred" << "\n";
+		out << "one" << "\t" << "TACTCCNGTGGTACGCCCAAG" << "\t" << "TACTCCNGT---ACGCCCAAG" << "\t" << "###################";
+		out.close();
+
+
+		TS_ASSERT_THROWS( run_protocol( options ), invalid_argument );
+
+		remove( file.c_str() );
+
+
+		file = "valid.tsv";
+		out = ofstream( file );
+		out << "one" << "\t" << "TACTCCNGTGGTACGCCCAAG" << "\t" << "TACTCCNGT---ACGCCCAAG" << "\t" << "#####################" << "\t" << "\n";
+		out.close();
+
+		options.infile( file );
+		TS_ASSERT_THROWS_NOTHING( run_protocol( options ) );
+
+		remove( file.c_str() );
+		remove( "bad.out" );
+		
 	}
 
 private:

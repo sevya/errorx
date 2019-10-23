@@ -47,10 +47,10 @@ namespace errorx {
 	@throws invalid_argument if either infile or format are not provided
 	in options	
 
-	@return SequenceRecords* containing query sequences and their
+	@return SequenceRecordsPtr containing query sequences and their
 	corrected versions
 */
-ERRORX_API SequenceRecords* run_protocol( ErrorXOptions & options );
+ERRORX_API SequenceRecordsPtr run_protocol( ErrorXOptions & options );
 
 /**
 	Runs the ErrorX prediction method on a std::vector of 
@@ -60,10 +60,10 @@ ERRORX_API SequenceRecords* run_protocol( ErrorXOptions & options );
 	@param queries Vector of SequenceQueries to be processed
 	@param options Options to use in processing
 
-	@return SequenceRecords* containing query sequences and their
+	@return SequenceRecordsPtr containing query sequences and their
 	corrected versions
 */
-ERRORX_API SequenceRecords* run_protocol( vector<SequenceQuery> & queries, ErrorXOptions & options );
+ERRORX_API SequenceRecordsPtr run_protocol( vector<SequenceQuery> & queries, ErrorXOptions & options );
 
 /**
 	Wrapper for the run_protocol( ErrorXOptions & options ) function.

@@ -17,6 +17,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <functional>
 
 using namespace std;
 using namespace errorx;
@@ -25,7 +26,7 @@ class TestUtil : public CxxTest::TestSuite
 {
 public:
 
-	void testTranslation(void) {
+	void testTranslation() {
 
 		string one = "GGGTGGGACAGGGCCCGGGAAAAGGGGTTGAGGGGAGGGGAGGGATCAACGGGAACAGTGGGGGCACAAACGAGGCAG";
 		TS_ASSERT_EQUALS(
@@ -64,7 +65,7 @@ public:
 	}
 
 
-	void testFrameInference(void) {
+	void testFrameInference() {
 
 
 		string two = "TCAGTGGTTACTACTGGAGCTGGATCCGCCAGCCCCCAGGGAAGGGGCTGGAGTGGATTGGGGAAATCAATCATAGTGGAAGCACCAACTACAACCCGTCCCTCAAGAGTCGAGTCACCATATCAGTAGACACGTCCAAGAACCAGTTCTCCCTGAAGCTGAGCTCTGTGACCGCCGCGGACACGGCTGTGTATTACTGTGCGAGAGG";
@@ -100,7 +101,7 @@ public:
 		
 	}
 
-	void testEncrypt(void) {
+	void testEncrypt() {
 		string year_cipher = "ZJC-";
 		string inf_cipher = "JSH$UU/L";
 
@@ -118,17 +119,34 @@ public:
 		TS_ASSERT( util::valid_license() );
 
 		// put bad license key
-		TS_ASSERT_THROWS( util::write_license( "ZJC- " ), BadLicenseException );
+		try {
+			util::write_license("ZJC- ");
+		}
+		catch ( BadLicenseException ) {
+			TS_ASSERT(1);
+		}
+		catch (...) {
+			TS_ASSERT(0);
+		}
 
 		// put bad license key
-		TS_ASSERT_THROWS( util::write_license( "ZXC-" ), BadLicenseException );
-
-		TS_ASSERT_THROWS( util::write_license( "ZXC-" ), BadLicenseException );
-
+		// check on the message from bad license
+		try {
+			util::write_license( "ZXC-" );
+			TS_ASSERT(0);
+		} catch ( BadLicenseException & exc ) {
+			TS_ASSERT_EQUALS( 
+				exc.what(), 
+				"License is not valid. Please contact alex@endeavorbio.com for assistance"
+				);
+		}
+		catch (...) {
+			TS_ASSERT(0);
+		}
 		util::write_license( inf_cipher );
 	}
 
-	void testTokenize(void) {
+	void testTokenize() {
 
 		vector<int> output2 = { 1,2,3,4,5 };
 
@@ -143,25 +161,98 @@ public:
 				util::tokenize_string<int>( one, ", " ),
 				output2
 		);
+
+		one = "1 2 3 4 \t5\t ";
+		TS_ASSERT_EQUALS(
+				util::tokenize_string<int>( one ),
+				output2
+		);
 	}
 
-	void testReverse(void) {
+	void testTokenizeConsecutive() {
+
+		string one = "a\tb\tc";
+		vector<string> output = { "a","b","c" };
+
+		TS_ASSERT_EQUALS(
+				util::tokenize_string<string>( one, "\t", 0 ),
+				output
+		);
+
+		one = "a\tb\t\tc";
+		output = { "a","b","","c" };
+
+		TS_ASSERT_EQUALS(
+				util::tokenize_string<string>( one, "\t", 0 ),
+				output
+		);
+
+
+		one = "a\tb\t\tc\t";
+		output = { "a","b","","c","" };
+
+		TS_ASSERT_EQUALS(
+				util::tokenize_string<string>( one, "\t", 0 /*token_compress*/, 0 /*trim*/ ),
+				output
+		);
+
+		one = "a\tb\t \tc\t";
+		output = { "a","b"," ","c","" };
+
+		TS_ASSERT_EQUALS(
+				util::tokenize_string<string>( one, "\t", 0 /*token_compress*/, 0 /*trim*/ ),
+				output
+		);
+
+
+		one = "a\tb\t\tc\t";
+		output = { "a","b","c" };
+
+		TS_ASSERT_EQUALS(
+				util::tokenize_string<string>( one, "\t", 1 /*token_compress*/, 1 /*trim*/ ),
+				output
+		);
+
+		one = "a\tb\t\tc\t";
+		output = { "a","b","c","" };
+
+		TS_ASSERT_EQUALS(
+				util::tokenize_string<string>( one, "\t", 1 /*token_compress*/, 0 /*trim*/ ),
+				output
+		);
+
+		one = "a\tb\t\tc\t";
+		output = { "a","b","","c" };
+
+		TS_ASSERT_EQUALS(
+				util::tokenize_string<string>( one, "\t", 0 /*token_compress*/, 1 /*trim*/ ),
+				output
+		);
+
+
+		one = "a\tb\t \tc\t";
+		output = { "a","b"," ","c" };
+
+		TS_ASSERT_EQUALS(
+				util::tokenize_string<string>( one, "\t", 1, 1 ),
+				output
+		);
+
+		one = "a\tb\t \tc\t";
+		output = { "a","b"," ","c","" };
+
+		TS_ASSERT_EQUALS(
+				util::tokenize_string<string>( one, "\t", 1, 0 ),
+				output
+		);
+	}
+
+	void testReverse() {
 		string seq = "ABCDEFG";
 		TS_ASSERT_EQUALS( util::reverse(seq), "GFEDCBA" );
 	}
 
-	void testCalculateMetrics(void) {
-		string one = "ACGTACGT";
-		string two = "ACGTCGGT";
-		pair<int,double> pair = util::calculate_metrics( one, two );
-		int gc_count = pair.first;
-		double shm = pair.second;
-
-		TS_ASSERT_EQUALS( gc_count, 4 );
-		TS_ASSERT_EQUALS( shm, 0.25 );
-	}
-
-	void testAvg(void) {
+	void testAvg() {
 		vector<int> phred = {31,32,40};
 		TS_ASSERT_DELTA( util::phred_avg_realspace( phred ), 32.9377009047, 0.0001 );
 		phred = {-1,31,32,40};
@@ -169,7 +260,7 @@ public:
 
 	}
 
-	void testSplitVector(void) {
+	void testSplitVector() {
 		vector<string> test = {"1","2","3","4","5","6","7","8","9","10","11"};
 
 		vector<vector<string>> test_split = util::split_vector<string>( test, 3 );
@@ -178,6 +269,21 @@ public:
 		TS_ASSERT_EQUALS( test_split[1], vector<string>( {"5","6","7","8"} ));
 		TS_ASSERT_EQUALS( test_split[2], vector<string>( {"9","10","11"} ));
 
+		test.push_back( "12" );
+		test_split = util::split_vector<string>( test, 3 );
+
+		TS_ASSERT_EQUALS( test_split[0], vector<string>( {"1","2","3","4"} ));
+		TS_ASSERT_EQUALS( test_split[1], vector<string>( {"5","6","7","8"} ));
+		TS_ASSERT_EQUALS( test_split[2], vector<string>( {"9","10","11","12"} ));
+
+		vector<int> test_int = {1,2,3,4,5,6,7,8,9,10,11,12};
+		vector<vector<int>> split_int = util::split_vector<int>( test_int, 3 );
+
+		TS_ASSERT_EQUALS( split_int[0], vector<int>( {1,2,3,4} ));
+		TS_ASSERT_EQUALS( split_int[1], vector<int>( {5,6,7,8} ));
+		TS_ASSERT_EQUALS( split_int[2], vector<int>( {9,10,11,12} ));
+
+
 		test = {"1"};
 		test_split = util::split_vector<string>( test, 3 );
 		TS_ASSERT_EQUALS( test_split[0], vector<string>( {"1"} ));
@@ -185,13 +291,168 @@ public:
 		TS_ASSERT_EQUALS( test_split[2], vector<string>( {} ));
 	}
 
+	void testScientific() {
+		double value = 1056.5;
+		TS_ASSERT_EQUALS(
+			util::to_scientific( value ),
+			"1.06E+03" 
+			);
 
-	// void testCountLines(void) {
+		value = 0.1035;
+		TS_ASSERT_EQUALS(
+			util::to_scientific( value ),
+			"1.03E-01" 
+			);
 
-	// 	string file = "testing/test.fastq";
-	// 	TS_ASSERT_EQUALS( util::count_lines(file), 4 );
-	// }
-		
+		int intValue = 1056;
+		TS_ASSERT_EQUALS(
+			util::to_scientific( intValue ),
+			"1.06E+03" 
+			);
+
+		long longValue = 1056;
+		TS_ASSERT_EQUALS(
+			util::to_scientific( longValue ),
+			"1.06E+03" 
+			);
+	}
+
+
+	void testRounded() {
+		double value = 1056.5;
+		TS_ASSERT_EQUALS(
+			util::rounded_string( value ),
+			"1056.50" 
+			);
+
+		value = 0.1035;
+		TS_ASSERT_EQUALS(
+			util::rounded_string( value ),
+			"0.10" 
+			);
+
+		value = 0.1055;
+		TS_ASSERT_EQUALS(
+			util::rounded_string( value ),
+			"0.11" 
+			);
+
+		int intValue = 1056;
+		TS_ASSERT_EQUALS(
+			util::rounded_string( (double)intValue ),
+			"1056.00" 
+			);
+
+		long longValue = 1056;
+		TS_ASSERT_EQUALS(
+			util::rounded_string( (double)longValue ),
+			"1056.00" 
+			);
+	}
+
+
+	void testValueCounts() {
+		vector<string> input = {
+			"one",
+			"two",
+			"three",
+			"four",
+			"one",
+			"two",
+			"one"
+		};
+
+		map<string,int> cmap = util::value_counts( input );
+		TS_ASSERT_EQUALS( cmap.size(), 4 );
+		TS_ASSERT_EQUALS( cmap[ "one" ], 3 );
+		TS_ASSERT_EQUALS( cmap[ "two" ], 2 );
+		TS_ASSERT_EQUALS( cmap[ "three" ], 1 );
+		TS_ASSERT_EQUALS( cmap[ "four" ], 1 );
+
+	}
+
+	void testHistogram() {
+		vector<int> input = { 1, 2, 5, 5, 7, 7, 1, 7 };
+
+		map<int,float> bins = util::bin_values( input, /*normalized=*/0 );
+
+		TS_ASSERT_EQUALS( bins.size(), 7 );
+		TS_ASSERT_EQUALS( bins[1], 2 );
+		TS_ASSERT_EQUALS( bins[2], 1 );
+		TS_ASSERT_EQUALS( bins[5], 2 );
+		TS_ASSERT_EQUALS( bins[7], 3 );
+
+		TS_ASSERT_EQUALS( bins[3], 0 );
+		TS_ASSERT_EQUALS( bins[4], 0 );
+		TS_ASSERT_EQUALS( bins[6], 0 );
+
+
+		bins = util::bin_values( input, /*normalized=*/1 );
+
+		TS_ASSERT_EQUALS( bins.size(), 7 );
+		TS_ASSERT_DELTA( bins[1], 0.25, 0.0001 );
+		TS_ASSERT_DELTA( bins[2], 0.125, 0.0001 );
+		TS_ASSERT_DELTA( bins[5], 0.25, 0.0001 );
+		TS_ASSERT_DELTA( bins[7], 0.375, 0.0001 );
+
+		TS_ASSERT_EQUALS( bins[3], 0 );
+		TS_ASSERT_EQUALS( bins[4], 0 );
+		TS_ASSERT_EQUALS( bins[6], 0 );
+
+		input = { -1, 2, 5, 5, 7, 7, -1, -1 };
+
+		bins = util::bin_values( input, /*normalized=*/0 );
+
+		TS_ASSERT_EQUALS( bins.size(), 9 );
+		TS_ASSERT_EQUALS( bins[-1], 3 );
+		TS_ASSERT_EQUALS( bins[2], 1 );
+		TS_ASSERT_EQUALS( bins[5], 2 );
+		TS_ASSERT_EQUALS( bins[7], 2 );
+
+		TS_ASSERT_EQUALS( bins[0], 0 );
+		TS_ASSERT_EQUALS( bins[1], 0 );		
+		TS_ASSERT_EQUALS( bins[3], 0 );
+		TS_ASSERT_EQUALS( bins[4], 0 );
+		TS_ASSERT_EQUALS( bins[6], 0 );
+
+		input = {};
+		bins = util::bin_values( input, /*normalized=*/0 );
+		TS_ASSERT( bins.empty() );
+	}
+
+
+	void testCompare() {
+		string a = "TCGTAAT";
+		string b = "TCGTNAT";
+		string c = "TCGTAAT";
+		string d = "TCGTCAT";
+
+		function< bool(string,string) > compareCorrectedSequences;
+
+		compareCorrectedSequences = 
+			std::bind( &util::compare, 
+					   placeholders::_1, 
+					   placeholders::_2, 
+					   'N'
+			);
+
+		map<string,int,function<bool(string,string)>> cmap;
+		cmap = map<string,int,function<bool(string,string)>>( compareCorrectedSequences );
+
+		cmap.insert( pair<string,int>( a, 1 ));
+		auto it = cmap.find( b );
+		// check that B maps to A
+		TS_ASSERT_DIFFERS( it, cmap.end() );
+
+		it = cmap.find( c );
+		// check that C maps to A
+		TS_ASSERT_DIFFERS( it, cmap.end() );
+
+
+		it = cmap.find( d );
+		// check that D does not map to A
+		TS_ASSERT_EQUALS( it, cmap.end() );
+	}
 };
 
 

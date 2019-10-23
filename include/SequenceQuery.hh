@@ -14,13 +14,25 @@ a string of characters
 #ifndef SEQUENCEQUERY_HH_
 #define SEQUENCEQUERY_HH_
 
+/// manages dllexport and import for windows
+/// does nothing on Mac/Linux
+#if defined(_WIN32) || defined(_WIN64)
+#ifdef ERRORX_EXPORTS
+#define ERRORX_API __declspec(dllexport)
+#else
+#define ERRORX_API __declspec(dllimport)
+#endif
+#else
+#define ERRORX_API 
+#endif
+
 #include <string>
 
 using namespace std;
 
 namespace errorx {
 
-class SequenceQuery {
+class ERRORX_API SequenceQuery {
 
 public:
 
@@ -42,12 +54,17 @@ public:
 	SequenceQuery( SequenceQuery const & other );
 	
 	/**
+		Destructor - does nothing
+	*/
+	~SequenceQuery();
+
+	/**
 		Setters
 	*/
-	void sequenceID( string const sequenceID );
-	void sequence( string const sequence );
-	void germline_sequence( string const germline_sequence );
-	void phred_string( string const phred_string );
+	void sequenceID( string const & sequenceID );
+	void sequence( string const & sequence );
+	void germline_sequence( string const & germline_sequence );
+	void phred_string( string const & phred_string );
 
 	/**
 		Getters

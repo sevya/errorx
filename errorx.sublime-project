@@ -29,7 +29,9 @@
 			"folder_include_patterns":
 			[
 				"src",
+				"src/keras",
 				"include",
+				"include/keras",
 				"python2_bindings",
 				"python3_bindings",
 				"mac",

@@ -13,6 +13,18 @@ heavy lifting in terms of turning that output into a SequenceRecord object
 #ifndef IGBLASTPARSER_HH_
 #define IGBLASTPARSER_HH_
 
+/// manages dllexport and import for windows
+/// does nothing on Mac/Linux
+#if defined(_WIN32) || defined(_WIN64)
+#ifdef ERRORX_EXPORTS
+#define ERRORX_API __declspec(dllexport)
+#else
+#define ERRORX_API __declspec(dllimport)
+#endif
+#else
+#define ERRORX_API 
+#endif
+
 #include <iostream>
 
 #include "ErrorXOptions.hh"
@@ -23,7 +35,7 @@ using namespace std;
 
 namespace errorx {
 	
-class IGBlastParser {
+class ERRORX_API IGBlastParser {
 
 public:
 	/**
@@ -48,7 +60,30 @@ public:
 
 		@return A SequenceRecords object constructed from the IGBlast output
 	*/
-	SequenceRecords* parse_output( ErrorXOptions & options );
+	SequenceRecordsPtr parse_output( ErrorXOptions const & options );
+
+	/**
+		Parses a section of the IGBlast output file representing
+		one sequence. Turns it into an AbSequence that can then be
+		used to make a SequenceRecord
+
+		@param options ErrorXOptions to control processing
+
+		@return AbSequence object constructed from the IGBlast output
+	*/
+	AbSequence parse_lines( vector<string> const & lines, ErrorXOptions const & options );
+
+	/**
+		Parses a IGBlast output line representing
+		one sequence. Turns it into an AbSequence that can then be
+		used to make a SequenceRecord
+
+		@param options ErrorXOptions to control processing
+
+		@return AbSequence object constructed from the IGBlast output
+	*/
+	AbSequence parse_line( vector<string> const & tokens, ErrorXOptions const & options );
+
 
 private:
 	/**
@@ -56,7 +91,7 @@ private:
 
 		@param options ErrorXOptions to control processing
 	*/
-	void track_progress( ErrorXOptions & options );
+	void track_progress( ErrorXOptions const & options );
 
 	/**
 		Execute the query in another thread to allow progress bar
@@ -65,10 +100,11 @@ private:
 	*/
 	void exec_in_thread( string command ) ;
 
+
 	atomic<bool> thread_finished_;
 //	string thread_output_;
 };
 
 } // namespace errorx
 
-#endif /* IGBLASTPARSER_HH_ */
+#endif // IGBLASTPARSER_HH_

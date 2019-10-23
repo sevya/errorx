@@ -91,10 +91,10 @@ JNIEXPORT void JNICALL Java_errorx_ErrorX_runProtocol( JNIEnv *env, jobject this
 
 	@throws invalid_argument if lists are not the same length
 	
-	@return SequenceRecords* with error correction consisting of all input
+	@return SequenceRecordsPtr with error correction consisting of all input
 	sequences
 */
-errorx::SequenceRecords* get_corrected_records( JNIEnv* env,
+errorx::SequenceRecordsPtr get_corrected_records( JNIEnv* env,
 				 jobjectArray & sequence_list, // String[]
 				 jobjectArray & germline_sequence_list, // String[]
 				 jobjectArray & phred_score_list, // String[]
@@ -115,10 +115,10 @@ errorx::SequenceRecords* get_corrected_records( JNIEnv* env,
 
 	@throws invalid_argument if lists are not the same length
 	
-	@return SequenceRecords* with error correction consisting of all input
+	@return SequenceRecordsPtr with error correction consisting of all input
 	sequences
 */
-errorx::SequenceRecords* get_corrected_records( JNIEnv* env,
+errorx::SequenceRecordsPtr get_corrected_records( JNIEnv* env,
 				 vector<string> & sequence_list, 
 				 vector<string> & germline_sequence_list,
 				 vector<string> & phred_score_list,

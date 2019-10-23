@@ -9,6 +9,7 @@ endif
 ifeq ($(uname_S), Windows)
 	JAVAC="C:/Program Files/Java/jdk1.8.0_45/bin/javac.exe"
 	JAVA="C:/Program Files/Java/jdk1.8.0_45/bin/java.exe"
+	# set Windows compiler, flags, and paths
 	CP='.;../java_bindings/ErrorX.jar;hamcrest-core-1.3.jar;junit-4.12.jar'
 endif
 ifeq ($(uname_S), Linux)
@@ -17,9 +18,10 @@ ifeq ($(uname_S), Linux)
 	CPPFLAGS=-pthread -std=c++11 -Wall -Wno-sign-compare
 	FINAL=-ldl
 	DLLEXT=so
+
 	JAVAC=javac
 	JAVA=java
-	CP='.;../java_bindings/ErrorX.jar;hamcrest-core-1.3.jar;junit-4.12.jar'
+	CP='.:../java_bindings/ErrorX.jar:hamcrest-core-1.3.jar:junit-4.12.jar'
 endif
 ifeq ($(uname_S), Darwin)
 	# set Mac compiler, flags, and paths
@@ -29,13 +31,14 @@ ifeq ($(uname_S), Darwin)
 	DLLEXT=dylib
 	JAVAC=javac
 	JAVA=java
+	CP='.:../java_bindings/ErrorX.jar:hamcrest-core-1.3.jar:junit-4.12.jar'
 endif
 
 INC=-I../include/ -Icxxtest/
 
 CXXGEN=cxxtest/bin/cxxtestgen
 
-all: TestSequenceFeatures TestIGBlastParser TestUtil TestErrorX TestLinking
+all: TestSequenceFeatures TestSequenceRecords TestIGBlastParser TestUtil TestErrorX TestErrorXOptions TestKerasModel TestLinking
 
 CopyLibrary: 
 	cp ../lib/liberrorx.$(DLLEXT) lib/
@@ -52,9 +55,21 @@ TestErrorX: CopyLibrary
 	$(CXXGEN) --error-printer -o TestErrorX.cc TestErrorX.hh
 	$(CXX) $(CPPFLAGS) $(INC) -Llib/ -lerrorx -o bin/TestErrorX TestErrorX.cc $(FINAL)
 
+TestErrorXOptions: CopyLibrary
+	$(CXXGEN) --error-printer -o TestErrorXOptions.cc TestErrorXOptions.hh
+	$(CXX) $(CPPFLAGS) $(INC) -Llib/ -lerrorx -o bin/TestErrorXOptions TestErrorXOptions.cc $(FINAL)
+
 TestUtil: CopyLibrary
 	$(CXXGEN) --error-printer -o TestUtil.cc TestUtil.hh
 	$(CXX) $(CPPFLAGS) $(INC) -Llib/ -lerrorx -o bin/TestUtil TestUtil.cc $(FINAL)
+
+TestSequenceRecords: CopyLibrary
+	$(CXXGEN) --error-printer -o TestSequenceRecords.cc TestSequenceRecords.hh
+	$(CXX) $(CPPFLAGS) $(INC) -Llib/ -lerrorx -o bin/TestSequenceRecords TestSequenceRecords.cc $(FINAL)
+
+TestKerasModel: CopyLibrary
+	$(CXXGEN) --error-printer -o TestKerasModel.cc TestKerasModel.hh
+	$(CXX) $(CPPFLAGS) $(INC) -Llib/ -lerrorx -o bin/TestKerasModel TestKerasModel.cc $(FINAL)
 
 TestLinking: CopyLibrary
 	$(CXXGEN) --error-printer -o TestLinking.cc TestLinking.hh

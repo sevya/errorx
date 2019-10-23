@@ -25,42 +25,67 @@ using namespace std;
 
 namespace errorx {
 
-SequenceFeatures::SequenceFeatures( SequenceRecord* const record, int position ) {
+SequenceFeatures::SequenceFeatures( SequenceRecord const & record, int position ) {
 
 	int window = constants::WINDOW;
-
-	string full_nt_sequence = record->full_nt_sequence();
-	string full_gl_nt_sequence = record->full_gl_nt_sequence();
-	vector<int> quality_array = record->quality_array();
-
+	
+	string full_nt_sequence = record.full_nt_sequence();
+	string full_gl_nt_sequence = record.full_gl_nt_sequence();
 	if ( position >= full_nt_sequence.size() ) {
 		throw invalid_argument(
 			"Error: position "+to_string(position)+" is out of bounds."
 			);
 	}
 
-	sequence_window_ = get_window( full_nt_sequence, position, window );
+
+	// Get an array of PHRED scores as int, not char
+	string phred_string = record.sequence().quality_string_trimmed();
+	vector<int> phred_array = vector<int>( phred_string.size() );
+
+	if ( full_nt_sequence.size() != phred_array.size() ) {
+		throw invalid_argument(
+			"Internal error: NT sequence is not the same length as phred array "
+			"for sequence ID " + record.sequenceID()
+			);
+	}
+
+	// decode quality string into an array of integer values
+	for ( int ii = 0; ii < phred_string.size(); ++ii ) {
+		phred_array[ii] = decode( phred_string[ ii ], 33 );
+	}
+	// get a window of quality scores around the position of interest
+	quality_window_     = get_window( phred_array, position, window );
+	// calculate average phred scores in global and local scope
+	global_quality_avg_ = util::phred_avg_realspace( phred_array );
+	local_quality_avg_  = util::phred_avg_realspace( quality_window_ );
+
+
+	// get sequence window around position of interest and convert to binary
+	sequence_window_    = get_window( full_nt_sequence, position, window );
 	gl_sequence_window_ = get_window( full_gl_nt_sequence, position, window );
 
-	quality_window_ = get_window( quality_array, position, window );
+	sequence_window_binary_    = encode_sequence( sequence_window_ );
+	gl_sequence_window_binary_ = encode_sequence( gl_sequence_window_ );
 
-	global_GC_pct_ = record->gc_pct();
 
-	pair<int,double> local_metrics =
-			util::calculate_metrics( sequence_window_, gl_sequence_window_ );
+	// Calculate SHM and GC pct over the full sequence
+	pair<double,double> global_metrics =
+			calculate_metrics( full_nt_sequence, full_gl_nt_sequence );
+	global_GC_pct_ = global_metrics.first;
+	global_SHM_    = global_metrics.second;	
 
-	local_GC_pct_ = (double)local_metrics.first/(double)sequence_window_.length();
-	
-	local_SHM_ = local_metrics.second;
-	global_SHM_ = record->shm();
+	// Calculate SHM and GC pct over the local sequence window
+	pair<double,double> local_metrics =
+			calculate_metrics( sequence_window_, gl_sequence_window_ );
 
-	global_quality_avg_ = util::phred_avg_realspace( quality_array );
-	local_quality_avg_ = util::phred_avg_realspace( quality_window_ );
+	local_GC_pct_ = local_metrics.first;
+	local_SHM_    = local_metrics.second;	
 
-	is_germline_ = full_nt_sequence[position] == full_gl_nt_sequence[position];
+	is_germline_ = ( full_nt_sequence[position] == full_gl_nt_sequence[position] );
 
-	initialize();
 }
+
+SequenceFeatures::~SequenceFeatures() {}
 
 SequenceFeatures::SequenceFeatures( SequenceFeatures const & other ) :
 		sequence_window_(other.sequence_window_),
@@ -72,23 +97,23 @@ SequenceFeatures::SequenceFeatures( SequenceFeatures const & other ) :
 		local_SHM_(other.local_SHM_),
 		global_quality_avg_(other.global_quality_avg_),
 		local_quality_avg_(other.local_quality_avg_),
-		is_germline_(other.is_germline_)
-{
-	initialize();
-}
+		is_germline_(other.is_germline_),
+		sequence_window_binary_( other.sequence_window_binary_ ),
+		gl_sequence_window_binary_( other.gl_sequence_window_binary_ )
+{}
 
-string SequenceFeatures::get_window( string sequence, int position, int window ) const {
+string SequenceFeatures::get_window( string const & sequence, int position, int window ) const {
 	string sequence_from_window;
 
 	if ( sequence.length() < window ) {
 		throw invalid_argument("Error: sequence is too short for the window you requested");
 	}
 
-	sequence = string(window, 'X') + sequence + string(window, 'X');
+	sequence_from_window = string(window, 'X') + sequence + string(window, 'X');
 	
 	position += window;
 
-	return sequence.substr( position-window, (window*2)+1 );
+	return sequence_from_window.substr( position-window, (window*2)+1 );
 }
 
 vector<int> SequenceFeatures::get_window( vector<int> const & array, int position, int window ) const {
@@ -98,9 +123,9 @@ vector<int> SequenceFeatures::get_window( vector<int> const & array, int positio
 	}
 
 	vector<int> new_array;
-	for ( int ii = 0; ii < window; ++ii ) new_array.push_back( -1 );
+	for ( int ii = 0; ii < window; ++ii )       new_array.push_back( -1 );
 	for ( int ii = 0; ii < array.size(); ++ii ) new_array.push_back( array[ii] );
-	for ( int ii = 0; ii < window; ++ii ) new_array.push_back( -1 );
+	for ( int ii = 0; ii < window; ++ii )       new_array.push_back( -1 );
 
 	position += window;
 
@@ -138,12 +163,6 @@ vector<int> SequenceFeatures::encode_sequence( string const & sequence ) const {
 		bin_array.insert( bin_array.end(), local_bin_array.begin(), local_bin_array.end() );
 	}
 	return bin_array;
-}
-
-void SequenceFeatures::initialize() {
-	// Calculate binary encoding of nt sequences
-	sequence_window_binary_ = encode_sequence( sequence_window_ );
-	gl_sequence_window_binary_ = encode_sequence( gl_sequence_window_ );
 }
 
 vector<double> SequenceFeatures::get_feature_vector() const {
@@ -189,6 +208,25 @@ vector<double> SequenceFeatures::get_feature_vector() const {
 	return feature_vector;
 }
 
+// Returns pair consisting of (GC_pct, SHM)
+pair<double,double> SequenceFeatures::calculate_metrics( string const & sequence, string const & gl_sequence ) {
+	int mutations = 0;
+	int gc_count = 0;
+	for ( int ii = 0; ii < sequence.length(); ++ii ) {
+		if ( sequence[ii] != gl_sequence[ii] && gl_sequence[ii] != '-' ) mutations++;
+		if ( sequence[ii] == 'G' || sequence[ii] == 'C' ) gc_count++;
+	}
+	double gc_pct  = (double)gc_count/(double)sequence.length();
+	double shm_pct = (double)mutations/(double)sequence.length();
+	return pair<double,double> ( gc_pct, shm_pct );
+}
+
+int SequenceFeatures::decode( char qual, int base ) {
+	return (int)qual - base;
+}
+
 bool SequenceFeatures::is_germline() const { return is_germline_; }
+vector<int> SequenceFeatures::quality_window() const { return quality_window_; }
+
 
 } // namespace errorx

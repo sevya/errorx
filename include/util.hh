@@ -10,6 +10,18 @@ Code contained herein is proprietary and confidential.
 #ifndef UTIL_HH_
 #define UTIL_HH_
 
+/// manages dllexport and import for windows
+/// does nothing on Mac/Linux
+#if defined(_WIN32) || defined(_WIN64)
+#ifdef ERRORX_EXPORTS
+#define ERRORX_API __declspec(dllexport)
+#else
+#define ERRORX_API __declspec(dllimport)
+#endif
+#else
+#define ERRORX_API 
+#endif
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -24,8 +36,37 @@ Code contained herein is proprietary and confidential.
 
 using namespace std;
 
+
 namespace errorx{
 namespace util {
+
+/**
+	Returns the labels for output TSV values
+
+	@param fulldata output all fields? Or a shortened list
+	used in the gui
+
+	@return vector of string labels
+*/
+ERRORX_API vector<string> get_labels( bool fulldata=1 );
+
+/**
+	Use boost::lexical_cast to test if a string is an integer or double
+	
+	@param str input string
+
+	@return bool if it is an int/double
+*/
+ERRORX_API bool isint( string const & str );
+ERRORX_API bool isdouble( string const & str );
+
+/** 
+	Functions for trimming whitespace out of a string
+*/
+string ltrim( string const & s );
+string rtrim( string const & s );
+ERRORX_API string trim( string const & s );
+
 
 /**
 	Break a string into tokens based on the provided delimiter. 
@@ -35,17 +76,26 @@ namespace util {
 
 	@param str string to split
 	@param delim characters to use as a delimiter
+	@param token_compress treat consecutive delimiters as one?
+	@param trim_first trim the leading/trailing whitespace?
 
 	@return vector of elements of type T
 */	
+
 template<typename T>
-vector<T> tokenize_string( string str, string delim="\t " ) {
+vector<T> tokenize_string( string str, string delim="\t ", bool token_compress=1, bool trim_first=1 ) {
 
 	vector<string> array;
 	vector<T> float_array;
 
-	boost::split( array, str, boost::algorithm::is_any_of(delim), boost::token_compress_on );
-	for ( int ii = 0; ii < array.size(); ++ii ) {
+	if ( trim_first ) str = trim(str);
+
+	if ( token_compress ) {
+		boost::split( array, str, boost::algorithm::is_any_of(delim), boost::token_compress_on );
+	} else {
+		boost::split( array, str, boost::algorithm::is_any_of(delim) );
+	}
+	for ( size_t ii = 0; ii < array.size(); ++ii ) {
 		float_array.push_back( boost::lexical_cast<T>( array[ii] ));
 	}
 	return float_array;
@@ -56,7 +106,7 @@ vector<T> tokenize_string( string str, string delim="\t " ) {
 
 	@return OS as a string, either windows, mac, or linux
 */	
-inline string get_os() {
+ERRORX_API inline string get_os() {
 	#if defined(_WIN32) || defined(_WIN64)
 		return "win";
 	#elif defined(__APPLE__) || defined(__MACH__)
@@ -76,14 +126,14 @@ inline string get_os() {
 
 	@return 1 if operation was successful, 0 if not
 */
-bool set_env(string key, string value);
+ERRORX_API bool set_env(string key, string value);
 
 /**
 	Get home directory based on the OS 
 
 	@return path of the home directory
 */	
-boost::filesystem::path get_home();
+ERRORX_API boost::filesystem::path get_home();
 
 /**
 	Split a vector into N equally divided chunks 
@@ -123,14 +173,16 @@ vector<vector<T>> split_vector( vector<T> const & vect, int nchunks ) {
 
 	@return string of number in scientific notation
 */	
-template <typename T>
-string to_scientific( T a ) {
-	// TODO potential overflow - fix this!
-	char buffer [256];
-	sprintf( buffer, "%.2E", a);
-	string a_str = buffer;
-	return a_str;
-}
+ERRORX_API string to_scientific( double a );
+
+/**
+	Round a numeric type to a certain number of digits
+
+	@param a number to convert
+
+	@return string of rounded number
+*/
+ERRORX_API string rounded_string( double a );
 
 /**
 	Writes a 2d vector to a file
@@ -139,7 +191,7 @@ string to_scientific( T a ) {
 	@param vector2d vector to write out
 	@param delimiter string to separate vector elements
 */	
-void write_vector( string & filename, vector<vector<string>> & vector2d, string & delimiter);
+ERRORX_API void write_vector( string & filename, vector<vector<string>> & vector2d, string & delimiter);
 
 /**
 	Translate a DNA sequence to protein
@@ -149,7 +201,7 @@ void write_vector( string & filename, vector<vector<string>> & vector2d, string 
 	
 	@return protein sequence
 */	
-string translate( string & nt_sequence, int frame );
+ERRORX_API string translate( string & nt_sequence, int frame );
 
 /**
 	Reverse a string. Returns new copy, not in-place
@@ -158,19 +210,8 @@ string translate( string & nt_sequence, int frame );
 
 	@return Reversed string
 */	
-string reverse( string & sequence );
+ERRORX_API string reverse( string & sequence );
 
-/**
-	Calculates metrics related to a DNA sequence. Will compute the 
-	GC content and the level of SHM and return a std::pair of those 
-	values in that order.
-
-	@param sequence DNA sequence
-	@param gl_sequence Germline DNA sequence
-
-	@return pair of <GC_content,SHM>
-*/	
-pair<int,double> calculate_metrics( string & sequence, string & gl_sequence );
 
 /**
 	Execute a command in the shell and return its output
@@ -189,7 +230,7 @@ string exec(const char* cmd);
 
 	@return path to the base of the ErrorX directory
 */
-boost::filesystem::path get_root_path();
+ERRORX_API boost::filesystem::path get_root_path();
 
 /**
 	Average PHRED quality scores in realspace. Since they are 
@@ -200,7 +241,7 @@ boost::filesystem::path get_root_path();
 
 	@return average PHRED score in log space
 */
-double phred_avg_realspace( vector<int> const & phred_arr );
+ERRORX_API double phred_avg_realspace( vector<int> const & phred_arr );
 
 /**
 	Counts the number of lines in a file
@@ -209,28 +250,17 @@ double phred_avg_realspace( vector<int> const & phred_arr );
 
 	@return # lines in that file
 */
-int count_lines( string & file );
+ERRORX_API int count_lines( string const & file );
 
 /**
-	Counts the number of queries in an IGBlast output file
+        Counts the number of lines in a fasta file
+	determined by # of lines beginning with '>' character
 
-	@param file file to count 
+        @param file file to count
 
-	@return # queries in that file
+        @return # lines in that file
 */
-int count_queries( string & file );
-
-/**
-	Writes a progress bar to the screen while a process is 
-	happening in anothet thread
-
-	@param progress fraction finished the process is
-	@param done int # of items finished so far
-	@param total total # of items to process
-*/
-void write_progress_bar( float progress, int done, int total );
-
-
+ERRORX_API int count_lines_fasta( string const & file );
 
 ///////////// Encryption and license checking modules /////////////
 
@@ -238,16 +268,16 @@ void write_progress_bar( float progress, int done, int total );
 	Encrypt or decrypt a character
 	@return encrypted/decrypted character
 */
-char encrypt( char const c, int const shift );
-char decrypt( char const c, int const shift );
+ERRORX_API char encrypt( char const c, int const shift );
+ERRORX_API char decrypt( char const c, int const shift );
 
 /**
 	Encrypt or decrypt a string. Strings are encrypted
 	to vectors of chars, vectors of chars are decrypted
 	to strings
 */
-string encrypt_string( string const & str );
-string decrypt_string( string const & chars );
+ERRORX_API string encrypt_string( string const & str );
+ERRORX_API string decrypt_string( string const & chars );
 
 /**
 	Encrypt a string and write to a file
@@ -255,7 +285,7 @@ string decrypt_string( string const & chars );
 	@param fname file to write to
 	@param message key to encrypt and write
 */
-void encrypt_to_file( string const & fname, string const & message );
+ERRORX_API void encrypt_to_file( string const & fname, string const & message );
 
 /**
 	Write unencrypted string to a file
@@ -263,21 +293,21 @@ void encrypt_to_file( string const & fname, string const & message );
 	@param fname file to write to
 	@param message string to write
 */
-void write_to_file( string const & fname, string const & message );
+ERRORX_API void write_to_file( string const & fname, string const & message );
 
 /**
 	Decrypt the string contained in a file
 
 	@param fname file to read from
 */
-string decrypt_from_file( string const & fname );
+ERRORX_API string decrypt_from_file( string const & fname );
 
 /**
 	Read the string contained in a file
 
 	@param fname file to read from
 */
-string read_from_file( string const & fname );
+ERRORX_API string read_from_file( string const & fname );
 
 ///////////// END Encryption and license checking modules /////////////
 
@@ -289,7 +319,7 @@ string read_from_file( string const & fname );
 
 	@return vector of ints representing date
 */
-vector<int> get_current_date();
+ERRORX_API vector<int> get_current_date();
 
 /**
 	Gets date as a formatted string in the format 
@@ -302,7 +332,7 @@ vector<int> get_current_date();
 
 	@return formatted string representing date
 */
-string get_formatted_date( vector<int> offset );
+ERRORX_API string get_formatted_date( vector<int> offset );
 
 /**
 	Parses a formatted date to get the int values. 
@@ -312,7 +342,7 @@ string get_formatted_date( vector<int> offset );
 
 	@return vector of ints representing date
 */
-vector<int> parse_formatted_date( string date );
+ERRORX_API vector<int> parse_formatted_date( string date );
 
 /**
 	Write a license appending the current date to the key
@@ -323,7 +353,7 @@ vector<int> parse_formatted_date( string date );
 	@param key key to write
 	@param vector of ints representing date
 */
-void write_license( string key );
+ERRORX_API void write_license( string key );
 
 /**
 	Calculates Julian date for a given date vector
@@ -332,15 +362,68 @@ void write_license( string key );
 	@param date date to calculate
 	@return int julian date
 */
-int julian( vector<int> & date );
+ERRORX_API int julian( vector<int> & date );
 
 /**
 	Checks if a license is valid based on date and cipher
 
 	@return boolean value true if license is valid
 */
-bool valid_license();
+ERRORX_API bool valid_license();
 //////////// END licensing based on date modules ////////////////////
+
+
+
+//////////// aggregation functions ////////////////////
+
+/**
+	Compares sequences ignoring the correction character
+
+	@param N correction character
+	@return boolean if strings are equal
+*/
+ERRORX_API bool compare( const string & a, const string & b, const char N );
+
+
+/**
+	Compares clonotypes in the following order: V gene, J gene, CDR3
+	Ignores the correction character (X for amino acids)
+
+	@param N correction character
+	@return boolean if strings are equal
+*/
+ERRORX_API bool compare_clonotypes( const string & a, const string & b );
+
+/**
+	Takes a list of strings and returns a map, where each key is
+	matched with the # of occurrences in the input list
+*/
+ERRORX_API map<string,int> value_counts( vector<string> const & input );
+
+/**
+	Bins integer values to make a histogram. Currently only supports
+	bins of size 1. This works as a map bc maps are intrinsically
+	sorted by the key, which keeps this in the correct order
+
+	@param values vector of integer values
+	@param normalized normalize values
+	@return map of <int,float> where keys map to bin start and values map to counts
+*/
+ERRORX_API map<int,float> bin_values( vector<int> const & input, bool normalized=0 );
+
+ERRORX_API vector<pair<string,int>> sort_map( map<string,int> const & cmap, bool ascending=1 );
+ERRORX_API vector<pair<string,int>> sort_map( map<string,int,function<bool(string,string)>> const & cmap, bool ascending );
+
+//////////// END aggregation functions ////////////////////
+
+/**
+	Handles an interruption signal, for example control-C 
+*/
+void handle_signal( int s );
+/**
+	Registers the interruption signal to handle_signal
+*/
+ERRORX_API void register_signal();
 
 } // namespace util
 } // namespace errorx

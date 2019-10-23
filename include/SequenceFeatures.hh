@@ -15,6 +15,18 @@ ErrorPredictor to do the actual transformation and prediction.
 #ifndef SEQUENCEFEATURES_HH_
 #define SEQUENCEFEATURES_HH_
 
+/// manages dllexport and import for windows
+/// does nothing on Mac/Linux
+#if defined(_WIN32) || defined(_WIN64)
+#ifdef ERRORX_EXPORTS
+#define ERRORX_API __declspec(dllexport)
+#else
+#define ERRORX_API __declspec(dllimport)
+#endif
+#else
+#define ERRORX_API 
+#endif
+
 #include <iostream>
 #include <fstream>
 #include <assert.h>
@@ -22,16 +34,19 @@ ErrorPredictor to do the actual transformation and prediction.
 #include <vector>
 #include <stdio.h>
 #include <stdlib.h>
-#include "keras_model.hh"
+#include <memory>
+
+// #include "SequenceRecord.hh"
+// #include "keras_model.hh"
 
 namespace errorx {
+
+using namespace std;
 
 // forward declare to avoid circular dependencies
 class SequenceRecord;
 
-using namespace std;
-
-class SequenceFeatures {
+class ERRORX_API SequenceFeatures {
 
 public:	
 
@@ -45,14 +60,18 @@ public:
 
 		@throws invalid_argument if position is out of bounds
 	*/
-	SequenceFeatures( SequenceRecord* const record, int position );
+	SequenceFeatures( SequenceRecord const & record, int position );
 
 	/**
 		Copy constructor
 	*/
 	SequenceFeatures( SequenceFeatures const & other );
 
-	
+	/**
+		Destructor - does nothing
+	*/
+	~SequenceFeatures();
+
 	/**
 		Get the features from this sequence as a vector of length 229
 	
@@ -73,8 +92,21 @@ public:
 	
 		@return string of vector of ints with the surrounding window
 	*/
-	string get_window( string sequence, int start, int end ) const;
+	string get_window( string const & sequence, int start, int end ) const;
 	vector<int> get_window( vector<int> const & array, int start, int end ) const;
+
+	/**
+		Calculates metrics related to a DNA sequence. Will compute the 
+		GC content and the level of SHM and return a std::pair of those 
+		values in that order.
+
+		@param sequence DNA sequence
+		@param gl_sequence Germline DNA sequence
+
+		@return pair of <GC_pct,SHM>
+	*/	
+	pair<double,double> calculate_metrics( string const & sequence, string const & gl_sequence );
+
 
 	/**
 		Encode a full NT sequence as a binary vector
@@ -87,15 +119,22 @@ public:
 		Getter
 	*/
 	bool is_germline() const;
+	vector<int> quality_window() const;
 
 private:
-	void initialize();
+	/**
+		Translates a character from a PHRED string 
+		to its integer counterpart. Assumes an offset
+		of 33, as used by Illumina.
+
+		@return int value corresponding to PHRED char
+	*/
+	int decode( char qual, int base );
 
 	string sequence_window_;
 	string gl_sequence_window_;
-public:
 	vector<int> quality_window_;
-private:
+
 	double global_GC_pct_;
 	double local_GC_pct_;
 	double global_SHM_;

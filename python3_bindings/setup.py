@@ -1,10 +1,10 @@
 from setuptools import setup, find_packages
 
 setup(name='ErrorX',
-	version='1.0',
+	version='1.1.0',
 	description='ErrorX DNA sequence correction software',
 	author='Alex Sevy',
-	author_email='alex.sevy@gmail.com',
+	author_email='alex@endeavorbio.com',
 	packages=['errorx'],
 	package_data=
 		{'errorx': 

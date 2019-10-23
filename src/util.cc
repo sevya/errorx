@@ -17,6 +17,8 @@ Code contained herein is proprietary and confidential.
 #include <fstream>
 #include <map>
 #include <vector>
+#include <regex>
+#include <algorithm>
 
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
@@ -30,10 +32,82 @@ Code contained herein is proprietary and confidential.
 
 #include "exceptions.hh"
 
+#include <signal.h> // sigaction
+
 using namespace std;
 
 namespace errorx {
 namespace util {
+
+vector<string> get_labels( bool fulldata/*=1*/ ) {
+	if ( fulldata ) {
+		return vector<string> {
+			"SequenceID",
+			"V_gene",
+			"V_identity",
+			"V_Evalue",
+			"D_gene",
+			"D_identity",
+			"D_Evalue",
+			"J_gene",
+			"J_identity",
+			"J_Evalue",
+			"Strand",
+			"Chain",
+			"Productive",
+			"CDR1_NT_sequence",
+			"CDR1_AA_sequence",
+			"CDR2_NT_sequence",
+			"CDR2_AA_sequence",
+			"CDR3_NT_sequence",
+			"CDR3_AA_sequence",
+			"Full_NT_sequence",
+			"Full_GL_NT_sequence",
+			"PHRED_scores",
+			"Full_AA_sequence",
+			"Full_NT_sequence_corrected",
+			"Full_AA_sequence_corrected",
+			"N_errors"
+		};
+	} else {
+			return vector<string> { "SequenceID", "V_gene", "D_gene", 
+			"J_gene", "Full_NT_sequence", "Full_NT_sequence_corrected", 
+			"N_errors" };
+
+	}
+}
+bool isint( string const & str ) {
+	try {
+		boost::lexical_cast<int>( str );
+		return 1;
+	} catch ( boost::bad_lexical_cast & ) {
+		return 0;
+	}
+}
+
+bool isdouble( string const & str ) {
+	try {
+		boost::lexical_cast<double>( str );
+		return 1;
+	} catch ( boost::bad_lexical_cast & ) {
+		return 0;
+	}
+}
+
+/////////// BEGIN Functions for trimming whitespace out of a string ////////////
+
+string ltrim( string const & s ) {
+	return std::regex_replace( s, regex("^\\s+"), string("") );
+}
+
+string rtrim( string const & s ) {
+	return std::regex_replace( s, regex("\\s+$"), string("") );
+}
+
+string trim( string const & s ) {
+	return ltrim(rtrim(s));
+}
+/////////// END Functions for trimming whitespace out of a string //////////////
 
 void write_vector( string & filename,
 		vector<vector<string>> & vector2d,
@@ -100,17 +174,6 @@ string reverse( string & sequence ) {
 	return string (sequence.rbegin(), sequence.rend());
 }
 
-// Returns pair consisting of (GC_count, SHM)
-pair<int,double> calculate_metrics( string & sequence, string & gl_sequence ) {
-	int mutations = 0;
-	int gc_count = 0;
-	for ( int ii = 0; ii < sequence.length(); ++ii ) {
-		if ( sequence[ii] != gl_sequence[ii] && gl_sequence[ii] != '-' ) mutations++;
-		if ( sequence[ii] == 'G' || sequence[ii] == 'C' ) gc_count++;
-	}
-	return pair<int,double> (gc_count, (double)mutations/(double)sequence.length());
-}
-
 /** Removed for windows compatibility
 string exec(const char* cmd) {
 	array<char, 128> buffer;
@@ -127,7 +190,12 @@ string exec(const char* cmd) {
 
 bool set_env(string key, string value) {
 	#if defined(_WIN32) || defined(_WIN64)
-		return SetEnvironmentVariable(key.c_str(), value.c_str());
+		wstring key_str(key.begin(), key.end());
+		wstring value_str(value.begin(), value.end());
+		LPCWSTR key_lp   = key_str.c_str();
+		LPCWSTR value_lp = value_str.c_str();
+		return SetEnvironmentVariableW( key_lp, value_lp );
+		// return SetEnvironmentVariable(key_lp, value_lp);
 	#elif defined(__APPLE__) || defined(__MACH__) || defined(__linux__)
 		int result = setenv(key.c_str(), value.c_str(), 1);
 		return result == 0;
@@ -168,47 +236,50 @@ double phred_avg_realspace( vector<int> const & phred_arr ) {
 	return 10*-log10(avg);
 }
 
-int count_queries( string & file ) {
+string rounded_string( double a ) {
+	// TODO potential overflow - fix this!
+	char buffer [256];
+	sprintf( buffer, "%.2f", a);
+	string a_str = buffer;
+	return a_str;
+}
+
+string to_scientific( double a ) {
+	// TODO potential overflow - fix this!
+	char buffer [256];
+	sprintf( buffer, "%.2E", a);
+	string a_str = buffer;
+	return a_str;
+}
+
+
+int count_lines( string const & file ) {
+	ios_base::sync_with_stdio( false );
+
 	std::ifstream in(file);
 	if ( !in.good() ) return 0;
 	string line;
 	int ii = 0;
-	while( getline(in,line) ) {
-		vector<string> tokens = util::tokenize_string<string>(line);
-		if ( tokens.size() < 2 ) continue;
-		if ( tokens[1] == "Query:" ) ++ii;
-	}
+	while ( getline(in,line) ) { ++ii; }
+
 	return ii;
 }
 
-int count_lines( string & file ) {
-	std::ifstream in(file);
-	if ( !in.good() ) return 0;
-	string line;
-	int ii = 0;
-	char c;
-	
-	while (in.get(c)) {
-		if (c == '\n') ++ii;
-	}
-	return ii+1;
-}
+int count_lines_fasta( string const & file ) {
+        ios_base::sync_with_stdio( false );
 
-void write_progress_bar( float progress, int done, int total ) {
-	cout << "[";
-	int barWidth = 70;
-	int pos = barWidth * progress;
-
-	for (int ii = 0; ii < barWidth; ++ii) {
-		if (ii < pos) cout << "=";
-		else if (ii == pos) cout << ">";
-		else cout << " ";
+        std::ifstream in(file);
+        if ( !in.good() ) return 0;
+        string line;
+        int ii = 0;
+        while ( getline(in,line) ) {
+		// don't want to get tripped up by empty lines
+		if ( line.size() == 0 ) continue;
+		if ( line[0]=='>' ) ++ii; 
 	}
 
-	cout << "] " << int(progress * 100.0) << "%: " << done << "/" << total << " records processed \r";
-	cout.flush();
+        return ii;
 }
-
 
 ///////////// Encryption modules /////////////
 
@@ -402,6 +473,186 @@ bool valid_license() {
 
 ///////////// END date/time modules /////////////
 
+
+//////////// aggregation functions ////////////////////
+
+bool compare( const string & a, const string & b, const char N ) {
+		
+	if ( a.length() != b.length() ) return a<b;
+
+	string a_noN = "";
+	string b_noN = "";
+
+	for ( int ii = 0; ii < a.size(); ++ii ) {
+		if ( a[ii] != N && b[ii] != N ) {
+			a_noN += a[ii];
+			b_noN += b[ii];
+		}
+	}
+
+	// for ( int ii = a.size()-1; ii >= 0; --ii ) {
+	// 	if ( a[ii] != N && b[ii] != N ) {
+	// 		a_noN += a[ii];
+	// 		b_noN += b[ii];
+	// 	}
+	// }
+
+	return a_noN < b_noN;
+}
+
+bool compare_clonotypes( const string & a, const string & b ) {
+	vector<string> tokens_a = tokenize_string<string>( a, "_" );
+	vector<string> tokens_b = tokenize_string<string>( b, "_" );
+
+	if ( tokens_a.size() != 3 ) {
+		throw invalid_argument( "invalid tokens: "+a );
+	}
+
+	if ( tokens_b.size() != 3 ) {
+		throw invalid_argument( "invalid tokens: "+b );
+	}
+
+	// compare v genes
+	if ( tokens_a[ 0 ] != tokens_b[ 0 ] ) return tokens_a[ 0 ] < tokens_b[ 0 ];
+
+	// compare j genes
+	if ( tokens_a[ 2 ] != tokens_b[ 2 ] ) return tokens_a[ 2 ] < tokens_b[ 2 ];
+
+	// compare CDR3s
+	string cdrA = tokens_a[ 1 ];
+	string cdrB = tokens_b[ 1 ];
+	if ( cdrA.size() != cdrB.size() ) return cdrA < cdrB;
+
+	string a_noN = "";
+	string b_noN = "";
+
+	for ( int ii = cdrA.length()-1; ii >= 0; --ii ) {
+		if ( cdrA[ii] != 'X' && cdrB[ii] != 'X' ) {
+			a_noN += cdrA[ii];
+			b_noN += cdrB[ii];
+		}
+	}
+
+	reverse( a_noN.begin(), a_noN.end() );
+	reverse( b_noN.begin(), b_noN.end() );
+
+	return a_noN < b_noN;
+}
+
+map<string,int> value_counts( vector<string> const & input ) {
+	map<string,int> cmap;
+	map<string,int>::iterator search_it;
+	vector<string>::const_iterator input_it;
+
+	for ( input_it  = input.begin();
+		  input_it != input.end(); 
+		  ++input_it ) 
+	{
+		search_it = cmap.find( *input_it );
+		if ( search_it == cmap.end() ) {
+			cmap.insert( pair<string,int>( *input_it, 1 ));
+		} else {
+			search_it->second += 1;
+		}
+	}
+
+	return cmap;
+}
+
+vector<pair<string,int>> sort_map( map<string,int> const & cmap, bool ascending ) {
+	// create a empty vector of pairs
+	vector<pair<string,int>> vec;
+
+	// copy key-value pairs from the map to the vector
+	std::copy( cmap.begin(), cmap.end(), std::back_inserter<vector<pair<string,int>>>(vec));
+
+	// sort the vector by increasing order of its pair's second value
+	// if second value are equal, order by the pair's first value
+	sort(vec.begin(), vec.end(),
+			[ascending]( const pair<string,int>& a, const pair<string,int>& b ) {
+				if ( ascending ) {
+					if ( a.second != b.second ) return a.second < b.second;
+					return a.first < b.first;
+				} else {
+					if ( a.second != b.second ) return a.second > b.second;
+					return a.first > b.first;
+				}
+			});
+	return vec;
+}
+
+vector<pair<string,int>> sort_map( map<string,int,function<bool(string,string)>> const & cmap, bool ascending ) {
+	// create a empty vector of pairs
+	vector<pair<string,int>> vec;
+
+	// copy key-value pairs from the map to the vector
+	std::copy( cmap.begin(), cmap.end(), std::back_inserter<vector<pair<string,int>>>(vec));
+
+	// sort the vector by increasing order of its pair's second value
+	// if second value are equal, order by the pair's first value
+	sort(vec.begin(), vec.end(),
+			[ascending]( const pair<string,int>& a, const pair<string,int>& b ) {
+				if ( ascending ) {
+					if ( a.second != b.second ) return a.second < b.second;
+					return a.first < b.first;
+				} else {
+					if ( a.second != b.second ) return a.second > b.second;
+					return a.first > b.first;
+				}
+			});
+	return vec;
+}
+
+map<int,float> bin_values( vector<int> const & input, bool normalized ) {
+	map<int,float> cmap;
+	if ( input.empty() ) return cmap;
+
+	auto bounds = minmax_element( begin(input), end(input) );
+
+	// initialize map with empty values
+	for ( int ii = (*bounds.first); ii < (*bounds.second); ++ii ) {
+		cmap[ ii ] = 0;
+	}
+
+	vector<int>::const_iterator vector_it;
+	for ( vector_it = input.begin(); vector_it != input.end(); ++vector_it ) {
+		cmap[ *vector_it ]++;
+	}
+
+	if ( normalized ) {
+		map<int,float>::iterator map_it;
+		int total = input.size();
+		for ( map_it = cmap.begin(); map_it != cmap.end(); ++map_it ) {
+			map_it->second /= total;
+		}
+	}
+
+	return cmap;
+
+}
+
+
+//////////// END aggregation functions ////////////////////
+
+void handle_signal( int s ) {
+	cout << "Signal received - it is " << s << endl;
+	exit( 1 ); 
+}
+
+void register_signal() {
+#if defined(_WIN32) || defined(_WIN64)
+	// Windows automatically registers control-C signal
+	// I don't need to do anything here
+#else
+	struct sigaction sigIntHandler;
+
+	sigIntHandler.sa_handler = handle_signal;
+	sigemptyset( &sigIntHandler.sa_mask );
+	sigIntHandler.sa_flags = 0;
+
+	sigaction( SIGINT, &sigIntHandler, NULL );
+#endif
+}
 
 } // namespace util
 } // namespace errorx

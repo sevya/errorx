@@ -12,7 +12,9 @@ then this class is used to make a NN prediction
 #include "ErrorPredictor.hh"
 #include "ErrorXOptions.hh"
 #include "SequenceFeatures.hh"
-#include "keras_model.hh"
+#include "keras/KerasModel.hh"
+#include "keras/DataChunkFlat.hh"
+
 #include "util.hh"
 
 using namespace std;
@@ -33,7 +35,6 @@ ErrorPredictor::ErrorPredictor( ErrorPredictor const & other ) :
 
 double ErrorPredictor::apply_model( SequenceFeatures const & features ) const {
 	using namespace keras;
-
 	if ( features.is_germline() ) return 0.0;
 
 	const vector<double> feature_vector = features.get_feature_vector();
@@ -43,8 +44,6 @@ double ErrorPredictor::apply_model( SequenceFeatures const & features ) const {
 	data->set_data( feature_vector );
 
 	vector<double> output = keras_model_.compute_output( data );
-
-	delete data;
 
 	return output[0];
 	
@@ -58,7 +57,7 @@ vector<double> ErrorPredictor::apply_model( vector<vector<double>> const feature
 	vector<double> output;
 
 	for ( int ii = 0; ii < feature_vector.size(); ++ii ) {
-		const vector<double> scaled_data = feature_vector[ii];
+		vector<double> const scaled_data = feature_vector[ii];
 		data->set_data( scaled_data );
 		vector<double> out = keras_model_.compute_output( data );
 		output.push_back( out[0] );
