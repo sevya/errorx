@@ -45,9 +45,9 @@ public:
 		predicted_value_ = 0.16386315;
 		// Should be 2 predicted errors in the whole sequence in 373 total bases
 		// (errors/length) * (precision / recall)
-		// precision = 0.660
-		// recall = 0.404
-		predicted_error_rate_ = 0.008759589095639;
+		// precision = 0.75
+		// recall = 0.3267
+		predicted_error_rate_ = 0.012309298197673;
 
 		// precision to use in TS_ASSERT_DELTA
 		precision_ = pow( 10, -4 );
