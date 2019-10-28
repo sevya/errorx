@@ -654,5 +654,17 @@ void register_signal() {
 #endif
 }
 
+void run_command( string const & command ) {
+#if defined(_WIN32) || defined(_WIN64)
+	ofstream out( "cmd.bat" );
+	out << command;
+	out.close();
+	system( "cmd.bat" );
+	remove( "cmd.bat" );
+#else
+	system( command.c_str() );
+#endif
+}
+
 } // namespace util
 } // namespace errorx
