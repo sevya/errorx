@@ -18,7 +18,7 @@ class ErrorXOptions:
 				  species='human',
 				  nthreads=-1, 
 				  verbose=1, 
-				  error_threshold=0.757264,
+				  error_threshold=0.556956,
 				  allow_nonproductive=0, 
 				  correction='N' ):
 
@@ -45,7 +45,7 @@ class ErrorXOptions:
 				  species='human',
 				  nthreads=-1, 
 				  verbose=1, 
-				  error_threshold=0.757264,
+				  error_threshold=0.556956,
 				  allow_nonproductive=0, 
 				  correction='N' ):
 
@@ -71,7 +71,7 @@ class ErrorXOptions:
 		are human or mouse. Default human
 		verbose: should ErrorX output extra warnings and messages? Default no
 		error_threshold: what probability is enough to call a base an error?
-		Default 0.884311
+		Default 0.556956
 		allow_nonproductive_: allow sequences through the protocol even if they
 		are nonproductive. Default no
 		correction: when ErrorX corrects a sequence it replaces the original base

@@ -18,17 +18,17 @@ namespace constants {
 	this value may change in future releases but I want it to be 
 	defined here
 */
-const double OPTIMIZED_THRESHOLD = 0.757264;
-const double OPTIMIZED_PRECISION =  0.660;
-const double OPTIMIZED_RECALL = 0.404;
+const double OPTIMIZED_THRESHOLD = 0.556956;
+const double OPTIMIZED_PRECISION =  0.75;
+const double OPTIMIZED_RECALL = 0.4393;
 
-// TODO optimize these cutoff values
 const std::vector<double> OPTIMIZED_THRESHOLD_VECTOR = {
-		0.4, 
-		0.6, 
+		0.291825, // precision 0.50, recall 0.59
+		0.449443, // precision 0.66, recall 0.49
 		OPTIMIZED_THRESHOLD, 
-		0.9, 
-		0.95 };
+		0.726101, // precision 0.85, recall 0.34
+		0.910069  // precision 0.95, recall 0.20
+		};
 
 /**
 	Sequence window used for feature calculation
