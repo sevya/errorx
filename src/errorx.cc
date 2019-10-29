@@ -30,7 +30,8 @@ SequenceRecordsPtr run_protocol( ErrorXOptions & options ) {
 	util::register_signal();
 
 	options.validate();
-	options.trial( !util::valid_license() );	
+	options.trial( 0 ); // For now, take out license checking. Free for everyone!
+	// options.trial( !util::valid_license() );	
 	options.count_queries();
 
 	// Trial version only allows querying a limited number of sequences
@@ -86,7 +87,8 @@ SequenceRecordsPtr run_protocol( vector<SequenceQuery> & queries,
 	util::register_signal();
 
 	options.validate();
-	options.trial( !util::valid_license() );
+	options.trial( 0 ); // For now, take out license checking. Free for everyone!
+	// options.trial( !util::valid_license() );
 	options.count_queries();
 
 	// Trial version only allows querying a limited number of sequences
