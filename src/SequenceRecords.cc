@@ -140,7 +140,7 @@ void SequenceRecords::import_from_tsv() {
 			continue;
 		}
 
-		vector<string> tokens = util::tokenize_string<string>( line, "\t " );
+		vector<string> tokens = util::tokenize_string<string>( line, "\t" );
 
 		if ( tokens.size() != 4 ) {
 			throw BadFileException( 
