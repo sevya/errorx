@@ -17,55 +17,46 @@
 using namespace std;
 using namespace errorx;
 
-class TestErrorX : public CxxTest::TestSuite
-{
+class TestErrorX : public CxxTest::TestSuite {
 
 public:
+	void setUp() {
+		correct_nt_sequence = "CAGATCCAGTTGGTGCAGTCTGGACCTGAGCTGAAGAAGCCTGGAGAGACAGTCAGGATCTCCTGCAAGGCTTCTGGGTATACCTTCACAACTGCTGGAATGCAGTGGGTGCAAAAGATGCCAGGAAAGGGTTTGAAGTGGATTGGCTGGATAAACACCCACTCTGGAGTGCCAAAATATGCAGAAGACTTCAAGGGACGGTTTGTCTTCTCTTTGGAAACCTCTGCCAGCACTGCATATTTACAGATAACGAACCTCAAAAATGAGGACACGGCTACATATTTCGTTGCGAGAGGAGGGGCCGCCTTCTATAGAAACGACGGGGGTGCTATGGACTCCTGGGGTCAAGGAACCTCAGTCACCGTCTCCTCAG";
 
-	void testFromOptions(void) {
-		options_.infile( "testing/test.fastq" );
+		correct_gl_sequence = "CAGATCCAGTTGGTGCAGTCTGGACCTGAGCTGAAGAAGCCTGGAGAGACAGTCAGGATCTCCTGCAAGGCTTCTGGGTATACCTTCACAACTGCTGGAATGCAGTGGGTGCAAAAGATGCCAGGAAAGGGTTTGAAGTGGATTGGCTGGATAAACACCCACTCTGGAGTGCCAAAATATGCAGAAGACTTCAAGGGACGGTTTGCCTTCTCTTTGGAAACCTCTGCCAGCACTGCATATTTACAGATAAGCAACCTCAAAAATGAGGACACGGCTACGTATTTCTGTGCGAGA--------------------------------TGCTATGGACTACTGGGGTCAAGGAACCTCAGTCACCGTCTCCTCAG";
 
-		options_.format( "fastq" );
-		options_.outfile( "testing/test_out.tsv");
+		correct_phred = ";=,,=;EE,<C,,8,CC,;;C-CEFGGGGGGGDFGGGGGGGGGGEGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG@FGGGGGGGGFFFFGDFFGGFCEGGGGGGGGGGGGGEEGGGGDFGGGEEFCFCFGGCFFFGGGGGGGGGGGGGGF66DGGGGGCFGGGDG5DGFGFDCDBF9BA8@FFFFFFDAFGFF@?B@33>8;@B4C?CCFFEECE27;;@;@@E333:@CFFF6;DF>(4:1<A#######@@@6C:A;4)7/)CEEFGFFCFGGC7?:9ECDEDGD6GGCFA,DDFF=8EGECC8FF=9,GGGFDGE@E;GGGGGGGGGGGFGGGG";
 
-		options_.species( "mouse" );
-		options_.verbose( 0 );
-		options_.nthreads( 1 );
-		string base = "..";
-		options_.errorx_base( base );
+		correct_aa_sequence = "QIQLVQSGPELKKPGETVRISCKASGYTFTTAGMQWVQKMPGKGLKWIGWINTHSGVPKYAEDFKGRFVFSLETSASTAYLQITNLKNEDTATYFVARGGAAFYRNDGGAMDSWGQGTSVTVSS";
 
-		SequenceRecordsPtr records = run_protocol( options_ );
+		correct_nt_sequence_corrected = "CAGATCCAGTTGGTGCAGTCTGGACCTGAGCTGAAGAAGCCTGGAGAGACAGTCAGGATCTCCTGCAAGGCTTCTGGGTATACCTTCACAACTGCTGGAATGCAGTGGGTGCAAAAGATGCCAGGAAAGGGTTTGAAGTGGATTGGCTGGATAAACACCCACTCTGGAGTGCCAAAATATGCAGAAGACTTCAAGGGACGGTTTGTCTTCTCTTTGGAAACCTCTGCCAGCACTGCATATTTACAGATAACGAACCTCAAAAATGAGGACACGGCTACATATTTCNNTGCGAGAGGAGGGGCCGCCTTCTATAGAAACGACGGGGGTGCTATGGACTCCTGGGGTCAAGGAACCTCAGTCACCGTCTCCTCAG";
 
-		TS_ASSERT_EQUALS(
-			records->get(0)->quality_string(),
-			"###########################################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4,"
-			);
+		correct_aa_sequence_corrected = "QIQLVQSGPELKKPGETVRISCKASGYTFTTAGMQWVQKMPGKGLKWIGWINTHSGVPKYAEDFKGRFVFSLETSASTAYLQITNLKNEDTATYFXARGGAAFYRNDGGAMDSWGQGTSVTVSS";
 
-		TS_ASSERT_EQUALS(
-			records->get(0)->full_nt_sequence(),
-			"TACTCCCGTGGTACGCCCAAGGACGGAGGCACACGGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGCGCGCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCGGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG"
-			);
+		correct_cdr3_sequence = "ARGGAAFYRNDGGAMDS";
+	}
 
-		TS_ASSERT_EQUALS(
-			records->get(0)->full_gl_nt_sequence(),
-			"TACTACAATGAGAAGTTCAAGGGCAAGGCCACACTGACTGCAGAAAAATCCTCCAGCACTGCCTACATGCAGCTCAGCAGCCTGACATCTGAGGACTCTGCTGTCTATTTCTGTGC--------------------------ACTACTGGGGCCAAGGCACCACTCTCACAGTCTCCTCAG"
-			);
+	void testFromOptions() {
+		ErrorXOptions options( "testing/test.fastq", "fastq" );
+		options.outfile( "testing/test_out.tsv");
+		options.species( "mouse" );
+		options.verbose( 0 );
+		options.nthreads( 1 );
+		options.errorx_base( ".." );
 
-		TS_ASSERT_EQUALS(
-			records->get(0)->full_aa_sequence(),
-			"YSRGTPKDGGTRSADKSSSAACLARSSLKAGDSAVCSGAGEEALSFVYYWGQGTTLTGSS"
-			);
+		SequenceRecordsPtr records = run_protocol( options );
 
-		TS_ASSERT_EQUALS(
-			records->get(0)->cdr3_aa_sequence(),
-			"AGEEALSFVYY"
-			);
+		TS_ASSERT_EQUALS( records->get(0)->quality_string(), correct_phred );
 
+		TS_ASSERT_EQUALS( records->get(0)->full_nt_sequence(), correct_nt_sequence );
 
-		TS_ASSERT_EQUALS(
-			records->get(0)->full_nt_sequence_corrected(),
-			"TACTCCNGTGGTACGCCCAAGGACGGAGGCACACNGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGNGCNCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTNCNGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG"
-			);
+		TS_ASSERT_EQUALS( records->get(0)->full_gl_nt_sequence(), correct_gl_sequence );
+
+		TS_ASSERT_EQUALS( records->get(0)->full_aa_sequence(), correct_aa_sequence );
+
+		TS_ASSERT_EQUALS( records->get(0)->cdr3_aa_sequence(), correct_cdr3_sequence );
+
+		TS_ASSERT_EQUALS( records->get(0)->full_nt_sequence_corrected(), correct_nt_sequence_corrected );
 
 		vector<pair<int,double>> predicted_errors = records->get(0)->get_predicted_errors();
 
@@ -82,59 +73,36 @@ public:
 		}
 	}
 
-	void testFromOptionsChar(void) {
-		options_.infile( "testing/test.fastq" );
-
-		options_.format( "fastq" );
-		options_.outfile( "testing/test_out.tsv");
-
-		options_.species( "mouse" );
-		options_.verbose( 0 );
-		options_.nthreads( 1 );
-		string base = "..";
-		options_.errorx_base( base );
-
-		ErrorXOptions options( options_ );
+	void testFromOptionsChar() {
+		ErrorXOptions options( "testing/test.fastq", "fastq" );
+		options.outfile( "testing/test_out.tsv");
+		options.species( "mouse" );
+		options.verbose( 0 );
+		options.nthreads( 1 );
+		options.errorx_base( ".." );
 		options.correction( 'X' );
 
 		SequenceRecordsPtr records = run_protocol( options );
 
-		TS_ASSERT_EQUALS(
-			records->get(0)->quality_string(),
-			"###########################################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4,"
-			);
+		TS_ASSERT_EQUALS( records->get(0)->quality_string(), correct_phred );
 
-		TS_ASSERT_EQUALS(
-			records->get(0)->full_nt_sequence(),
-			"TACTCCCGTGGTACGCCCAAGGACGGAGGCACACGGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGCGCGCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCGGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG"
-			);
+		TS_ASSERT_EQUALS( records->get(0)->full_nt_sequence(), correct_nt_sequence );
 
-		TS_ASSERT_EQUALS(
-			records->get(0)->full_gl_nt_sequence(),
-			"TACTACAATGAGAAGTTCAAGGGCAAGGCCACACTGACTGCAGAAAAATCCTCCAGCACTGCCTACATGCAGCTCAGCAGCCTGACATCTGAGGACTCTGCTGTCTATTTCTGTGC--------------------------ACTACTGGGGCCAAGGCACCACTCTCACAGTCTCCTCAG"
-			);
+		TS_ASSERT_EQUALS( records->get(0)->full_gl_nt_sequence(), correct_gl_sequence );
 
-		TS_ASSERT_EQUALS(
-			records->get(0)->full_aa_sequence(),
-			"YSRGTPKDGGTRSADKSSSAACLARSSLKAGDSAVCSGAGEEALSFVYYWGQGTTLTGSS"
-			);
+		TS_ASSERT_EQUALS( records->get(0)->full_aa_sequence(), correct_aa_sequence );
 
-		TS_ASSERT_EQUALS(
-			records->get(0)->cdr3_aa_sequence(),
-			"AGEEALSFVYY"
-			);
+		TS_ASSERT_EQUALS( records->get(0)->cdr3_aa_sequence(), correct_cdr3_sequence );
 
-
-		TS_ASSERT_EQUALS(
-			records->get(0)->full_nt_sequence_corrected(),
-			"TACTCCXGTGGTACGCCCAAGGACGGAGGCACACXGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGXGCXCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTXCXGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG"
-			);
+		TS_ASSERT_EQUALS( records->get(0)->full_nt_sequence_corrected(), 
+			"CAGATCCAGTTGGTGCAGTCTGGACCTGAGCTGAAGAAGCCTGGAGAGACAGTCAGGATCTCCTGCAAGGCTTCTGGGTATACCTTCACAACTGCTGGAATGCAGTGGGTGCAAAAGATGCCAGGAAAGGGTTTGAAGTGGATTGGCTGGATAAACACCCACTCTGGAGTGCCAAAATATGCAGAAGACTTCAAGGGACGGTTTGTCTTCTCTTTGGAAACCTCTGCCAGCACTGCATATTTACAGATAACGAACCTCAAAAATGAGGACACGGCTACATATTTCXXTGCGAGAGGAGGGGCCGCCTTCTATAGAAACGACGGGGGTGCTATGGACTCCTGGGGTCAAGGAACCTCAGTCACCGTCTCCTCAG"
+		       	);
 
 		vector<pair<int,double>> predicted_errors = records->get(0)->get_predicted_errors();
 
 		string line;
 		ifstream file( "validation.txt" );
-		double delta = 0.001;
+		double delta = pow( 10, -4 );
 
 		while (getline (file, line)) {
 			vector<string> tokens = errorx::util::tokenize_string<string>( line );
@@ -146,43 +114,28 @@ public:
 	}
 
 
-	void testFromOptionsTSV(void) {
-		options_.infile( "testing/test.tsv" );
-		options_.format( "tsv" );
-		options_.outfile( "testing/test_out.tsv");
-		options_.species( "mouse" );
-		options_.nthreads( 1 );
-		string base = "..";
-		options_.errorx_base( base );
+	void testFromOptionsTSV() {
+		ErrorXOptions options( "testing/test.tsv", "tsv" );
+		options.outfile( "testing/test_out.tsv");
+		options.nthreads( 1 );
+		options.verbose( 0 );
+		options.errorx_base( ".." );
 
-		SequenceRecordsPtr records = run_protocol( options_ );
+		SequenceRecordsPtr records = run_protocol( options );
 
-		TS_ASSERT_EQUALS(
-			records->get(0)->quality_string(),
-			"###########################################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4,"
-			);
+		TS_ASSERT_EQUALS( records->get(0)->quality_string(), correct_phred );
 
-		TS_ASSERT_EQUALS(
-			records->get(0)->full_nt_sequence(),
-			"TACTCCCGTGGTACGCCCAAGGACGGAGGCACACGGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGCGCGCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCGGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG"
-			);
+		TS_ASSERT_EQUALS( records->get(0)->full_nt_sequence(), correct_nt_sequence );
 
-		TS_ASSERT_EQUALS(
-			records->get(0)->full_gl_nt_sequence(),
-			"TACTACAATGAGAAGTTCAAGGGCAAGGCCACACTGACTGCAGAAAAATCCTCCAGCACTGCCTACATGCAGCTCAGCAGCCTGACATCTGAGGACTCTGCTGTCTATTTCTGTGC--------------------------ACTACTGGGGCCAAGGCACCACTCTCACAGTCTCCTCAG"
-			);
+		TS_ASSERT_EQUALS( records->get(0)->full_gl_nt_sequence(), correct_gl_sequence );
 
-
-		TS_ASSERT_EQUALS(
-			records->get(0)->full_nt_sequence_corrected(),
-			"TACTCCNGTGGTACGCCCAAGGACGGAGGCACACNGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGNGCNCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTNCNGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG"
-			);
+		TS_ASSERT_EQUALS( records->get(0)->full_nt_sequence_corrected(), correct_nt_sequence_corrected );
 
 		vector<pair<int,double>> predicted_errors = records->get(0)->get_predicted_errors();
 
 		string line;
 		ifstream file( "validation.txt" );
-		double delta = 0.001;
+		double delta = pow( 10, -4 );
 
 		while (getline (file, line)) {
 			vector<string> tokens = errorx::util::tokenize_string<string>( line );
@@ -193,17 +146,18 @@ public:
 		}
 	}
 	
-	void testFromVectors(void) {
+	void testFromVectors() {
 		
 		vector<string> sequenceIDs = { "SRR3175015.933" };
-		vector<string> sequences = { 
-			"TACTCCCGTGGTACGCCCAAGGACGGAGGCACACGGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGCGCGCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCGGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG" };
+		vector<string> sequences = { "CAGATCCAGTTGGTGCAGTCTGGACCTGAGCTGAAGAAGCCTGGAGAGACAGTCAGGATCTCCTGCAAGGCTTCTGGGTATACCTTCACAACTGCTGGAATGCAGTGGGTGCAAAAGATGCCAGGAAAGGGTTTGAAGTGGATTGGCTGGATAAACACCCACTCTGGAGTGCCAAAATATGCAGAAGACTTCAAGGGACGGTTTGTCTTCTCTTTGGAAACCTCTGCCAGCACTGCATATTTACAGATAACGAACCTCAAAAATGAGGACACGGCTACATATTTCGTTGCGAGAGGAGGGGCCGCCTTCTATAGAAACGACGGGGGTGCTATGGACTCCTGGGGTCAAGGAACCTCAGTCACCGTCTCCTCAG" };
+		
 		vector<string> germline_sequences = { 
-			"TACTACAATGAGAAGTTCAAGGGCAAGGCCACACTGACTGCAGAAAAATCCTCCAGCACTGCCTACATGCAGCTCAGCAGCCTGACATCTGAGGACTCTGCTGTCTATTTCTGTGC--------------------------ACTACTGGGGCCAAGGCACCACTCTCACAGTCTCCTCAG"
+			"CAGATCCAGTTGGTGCAGTCTGGACCTGAGCTGAAGAAGCCTGGAGAGACAGTCAGGATCTCCTGCAAGGCTTCTGGGTATACCTTCACAACTGCTGGAATGCAGTGGGTGCAAAAGATGCCAGGAAAGGGTTTGAAGTGGATTGGCTGGATAAACACCCACTCTGGAGTGCCAAAATATGCAGAAGACTTCAAGGGACGGTTTGCCTTCTCTTTGGAAACCTCTGCCAGCACTGCATATTTACAGATAAGCAACCTCAAAAATGAGGACACGGCTACGTATTTCTGTGCGAGA--------------------------------TGCTATGGACTACTGGGGTCAAGGAACCTCAGTCACCGTCTCCTCAG"
 			};
+
 		vector<string> phred_scores = { 
-			"###########################################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4,"
-			 	};
+			";=,,=;EE,<C,,8,CC,;;C-CEFGGGGGGGDFGGGGGGGGGGEGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG@FGGGGGGGGFFFFGDFFGGFCEGGGGGGGGGGGGGEEGGGGDFGGGEEFCFCFGGCFFFGGGGGGGGGGGGGGF66DGGGGGCFGGGDG5DGFGFDCDBF9BA8@FFFFFFDAFGFF@?B@33>8;@B4C?CCFFEECE27;;@;@@E333:@CFFF6;DF>(4:1<A#######@@@6C:A;4)7/)CEEFGFFCFGGC7?:9ECDEDGD6GGCFA,DDFF=8EGECC8FF=9,GGGFDGE@E;GGGGGGGGGGGFGGGG" 	
+			};
 
 		vector<SequenceQuery> queries;
 		SequenceQuery query( sequenceIDs[0], sequences[0], germline_sequences[0], phred_scores[0] );
@@ -211,34 +165,22 @@ public:
 
 		ErrorXOptions options( "tmp", "tsv" );
 		options.errorx_base( ".." );
+		options.verbose( 0 );
 		SequenceRecordsPtr records = run_protocol( queries, options );
 
-		SequenceRecordPtr record = records->get(0);
-		TS_ASSERT_EQUALS(
-			record->quality_string(),
-			phred_scores[0]
-			);
+		TS_ASSERT_EQUALS( records->get(0)->quality_string(), correct_phred );
 
-		TS_ASSERT_EQUALS(
-			record->full_nt_sequence(),
-			sequences[0]
-			);
+		TS_ASSERT_EQUALS( records->get(0)->full_nt_sequence(), correct_nt_sequence );
 
-		TS_ASSERT_EQUALS(
-			record->full_gl_nt_sequence(),
-			germline_sequences[0]
-			);
+		TS_ASSERT_EQUALS( records->get(0)->full_gl_nt_sequence(), correct_gl_sequence );
 
-		TS_ASSERT_EQUALS(
-			record->full_nt_sequence_corrected(),
-			"TACTCCNGTGGTACGCCCAAGGACGGAGGCACACNGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGNGCNCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTNCNGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG"
-			);
+		TS_ASSERT_EQUALS( records->get(0)->full_nt_sequence_corrected(), correct_nt_sequence_corrected );
 
-		vector<pair<int,double>> predicted_errors = record->get_predicted_errors();
+		vector<pair<int,double>> predicted_errors = records->get(0)->get_predicted_errors();
 
 		string line;
 		ifstream file( "validation.txt" );
-		double delta = 0.001;
+		double delta = pow( 10, -4 );
 
 		while (getline (file, line)) {
 			vector<string> tokens = errorx::util::tokenize_string<string>( line );
@@ -249,58 +191,42 @@ public:
 		}
 	}
 
-	void testFromVectorsOptions(void) {
+	void testFromVectorsOptions() {
+		ErrorXOptions options( "tmp", "tsv" );
+		options.outfile( "" );
+		options.nthreads( 1 );
+		options.errorx_base( ".." );
+		options.verbose( 0 );
 		
-		options_.infile( "tmp" );
-		options_.format( "tsv" );
-		options_.outfile( "");
-		options_.species( "mouse" );
-		options_.nthreads( 1 );
-		string base = "..";
-		options_.errorx_base( base );
-
 		vector<string> sequenceIDs = { "SRR3175015.933" };
-		vector<string> sequences = { 
-			"TACTCCCGTGGTACGCCCAAGGACGGAGGCACACGGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGCGCGCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTCCGGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG" };
-		vector<string> germline_sequences = { 
-			"TACTACAATGAGAAGTTCAAGGGCAAGGCCACACTGACTGCAGAAAAATCCTCCAGCACTGCCTACATGCAGCTCAGCAGCCTGACATCTGAGGACTCTGCTGTCTATTTCTGTGC--------------------------ACTACTGGGGCCAAGGCACCACTCTCACAGTCTCCTCAG"
-			};
-		vector<string> phred_scores = { 
-			"###########################################################################################################################################C:=9@7+C6++8,E>7,8>@,7B>8,++C@64+8>88@,@4,"
-			 	};
+		vector<string> sequences = { "CAGATCCAGTTGGTGCAGTCTGGACCTGAGCTGAAGAAGCCTGGAGAGACAGTCAGGATCTCCTGCAAGGCTTCTGGGTATACCTTCACAACTGCTGGAATGCAGTGGGTGCAAAAGATGCCAGGAAAGGGTTTGAAGTGGATTGGCTGGATAAACACCCACTCTGGAGTGCCAAAATATGCAGAAGACTTCAAGGGACGGTTTGTCTTCTCTTTGGAAACCTCTGCCAGCACTGCATATTTACAGATAACGAACCTCAAAAATGAGGACACGGCTACATATTTCGTTGCGAGAGGAGGGGCCGCCTTCTATAGAAACGACGGGGGTGCTATGGACTCCTGGGGTCAAGGAACCTCAGTCACCGTCTCCTCAG" };
 
+		vector<string> germline_sequences = {
+			"CAGATCCAGTTGGTGCAGTCTGGACCTGAGCTGAAGAAGCCTGGAGAGACAGTCAGGATCTCCTGCAAGGCTTCTGGGTATACCTTCACAACTGCTGGAATGCAGTGGGTGCAAAAGATGCCAGGAAAGGGTTTGAAGTGGATTGGCTGGATAAACACCCACTCTGGAGTGCCAAAATATGCAGAAGACTTCAAGGGACGGTTTGCCTTCTCTTTGGAAACCTCTGCCAGCACTGCATATTTACAGATAAGCAACCTCAAAAATGAGGACACGGCTACGTATTTCTGTGCGAGA--------------------------------TGCTATGGACTACTGGGGTCAAGGAACCTCAGTCACCGTCTCCTCAG"
+			};
+
+		vector<string> phred_scores = {
+			";=,,=;EE,<C,,8,CC,;;C-CEFGGGGGGGDFGGGGGGGGGGEGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG@FGGGGGGGGFFFFGDFFGGFCEGGGGGGGGGGGGGEEGGGGDFGGGEEFCFCFGGCFFFGGGGGGGGGGGGGGF66DGGGGGCFGGGDG5DGFGFDCDBF9BA8@FFFFFFDAFGFF@?B@33>8;@B4C?CCFFEECE27;;@;@@E333:@CFFF6;DF>(4:1<A#######@@@6C:A;4)7/)CEEFGFFCFGGC7?:9ECDEDGD6GGCFA,DDFF=8EGECC8FF=9,GGGFDGE@E;GGGGGGGGGGGFGGGG"
+			};
 
 		vector<SequenceQuery> queries;
 		SequenceQuery query( sequenceIDs[0], sequences[0], germline_sequences[0], phred_scores[0] );
 		queries.push_back( query );
-		SequenceRecordsPtr records = run_protocol( queries, options_ );
+		SequenceRecordsPtr records = run_protocol( queries, options );
 
-		SequenceRecordPtr record = records->get(0);
-		TS_ASSERT_EQUALS(
-			record->quality_string(),
-			phred_scores[0]
-			);
+		TS_ASSERT_EQUALS( records->get(0)->quality_string(), correct_phred );
 
-		TS_ASSERT_EQUALS(
-			record->full_nt_sequence(),
-			sequences[0]
-			);
+		TS_ASSERT_EQUALS( records->get(0)->full_nt_sequence(), correct_nt_sequence );
 
-		TS_ASSERT_EQUALS(
-			record->full_gl_nt_sequence(),
-			germline_sequences[0]
-			);
+		TS_ASSERT_EQUALS( records->get(0)->full_gl_nt_sequence(), correct_gl_sequence );
 
-		TS_ASSERT_EQUALS(
-			record->full_nt_sequence_corrected(),
-			"TACTCCNGTGGTACGCCCAAGGACGGAGGCACACNGAGTGCAGACAAGTCCTCCAGCGCGGCCTGCCTGGNGCNCAGCAGCCTGAAAGCTGGAGACTCTGCTGTCTGTTNCNGTGCGGGAGAGGAGGCTTTGTCCTTCGTTTACTACTGGGGCCAAGGCACCACTCTCACGGGCTCCTCAG"
-			);
+		TS_ASSERT_EQUALS( records->get(0)->full_nt_sequence_corrected(), correct_nt_sequence_corrected );
 
-		vector<pair<int,double>> predicted_errors = record->get_predicted_errors();
+		vector<pair<int,double>> predicted_errors = records->get(0)->get_predicted_errors();
 
 		string line;
 		ifstream file( "validation.txt" );
-		double delta = 0.001;
+		double delta = pow( 10, -4 );
 
 		while (getline (file, line)) {
 			vector<string> tokens = errorx::util::tokenize_string<string>( line );
@@ -352,8 +278,13 @@ public:
 	}
 
 private:
-	ErrorXOptions options_;
-
+	string correct_nt_sequence;
+	string correct_gl_sequence;
+	string correct_phred;
+	string correct_aa_sequence;
+	string correct_nt_sequence_corrected;
+	string correct_aa_sequence_corrected;
+	string correct_cdr3_sequence;
 };
 
 #endif /* UNITTESTS_HH_ */

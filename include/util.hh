@@ -425,6 +425,12 @@ void handle_signal( int s );
 */
 ERRORX_API void register_signal();
 
+/**
+	Run a system command through the shell
+	Depends on OS to run correct command
+*/
+void run_command( string const & command );
+
 } // namespace util
 } // namespace errorx
 

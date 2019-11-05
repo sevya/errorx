@@ -15,6 +15,7 @@ heavy lifting in terms of turning that output into a SequenceRecord object
 #include <vector>
 #include <thread>
 #include <chrono>
+#include <regex> // regex_replace
 
 #include "IGBlastParser.hh"
 #include "SequenceRecords.hh"
@@ -42,7 +43,8 @@ void IGBlastParser::blast( ErrorXOptions & options ) {
 	fs::path root = options.errorx_base();
 	string os = util::get_os();
 	if ( os == "win" ) os += ".exe";
-	string exename = "igblastn_"+util::get_os();
+
+	string exename = "igblastn_"+os;
 	fs::path executable = root / "bin" / exename;
 
 	string species = options.species();
@@ -55,17 +57,17 @@ void IGBlastParser::blast( ErrorXOptions & options ) {
 	fs::path aux_data = root / "optional_file" / (species+"_gl.aux");
 	options.igblast_output( options.infasta()+".out" );
 
-	string command = executable.string() +
-		" -germline_db_V "+germline_db_V.string()+
-		" -germline_db_D "+germline_db_D.string()+
-		" -germline_db_J "+germline_db_J.string()+
-		" -query "+options.infasta()+
-		" -auxiliary_data "+aux_data.string() +
+	string command = "\"" + executable.string() + "\"" +
+		" -germline_db_V "+"\""+germline_db_V.string()+"\""+
+		" -germline_db_D "+"\""+germline_db_D.string()+"\""+
+		" -germline_db_J "+"\""+germline_db_J.string()+"\""+
+		" -query "+"\""+options.infasta()+"\""+
+		" -auxiliary_data "+"\""+aux_data.string()+"\""+
 		" -num_alignments_V 1 -num_alignments_D 1"+
 		" -num_clonotype 0"+
-		" -ig_seqtype "+options.igtype()+
+		" -ig_seqtype "+"\""+options.igtype()+"\""+
 		" -num_alignments_J 1 -outfmt 19"+
-		" -out "+options.igblast_output()+
+		" -out "+"\""+options.igblast_output()+"\""+
 		" -num_threads "+to_string(options.nthreads());
 
 	if ( options.verbose() > 1 ) {
@@ -164,7 +166,8 @@ void IGBlastParser::track_progress( ErrorXOptions const & options ) {
 
 void IGBlastParser::exec_in_thread( string command ) {
 	// TODO: come up with a more robust way to capture the output of this command
-	system( command.c_str() );
+	// system( command.c_str() );
+	util::run_command( command );
 	thread_finished_ = true;
 }
 
