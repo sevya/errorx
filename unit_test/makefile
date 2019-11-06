@@ -7,9 +7,9 @@ else
 endif
 
 ifeq ($(uname_S), Windows)
+	JAVAC="C:/Program Files/Java/jdk1.8.0_45/bin/javac.exe"
+	JAVA="C:/Program Files/Java/jdk1.8.0_45/bin/java.exe"
 	# set Windows compiler, flags, and paths
-	JAVAC="/cygdrive/c/Program Files/Java/jdk1.8.0_45/bin/javac.exe"
-	JAVA="/cygdrive/c/Program Files/Java/jdk1.8.0_45/bin/java.exe"
 	CP='.;../java_bindings/ErrorX.jar;hamcrest-core-1.3.jar;junit-4.12.jar'
 endif
 ifeq ($(uname_S), Linux)
@@ -29,7 +29,6 @@ ifeq ($(uname_S), Darwin)
 	CPPFLAGS=-pthread -std=c++11 -Wall -Wno-deprecated-register
 	FINAL=
 	DLLEXT=dylib
-
 	JAVAC=javac
 	JAVA=java
 	CP='.:../java_bindings/ErrorX.jar:hamcrest-core-1.3.jar:junit-4.12.jar'

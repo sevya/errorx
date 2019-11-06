@@ -12,6 +12,8 @@ CPPFLAGS=-pthread -std=c++11 -Wall
 
 ifeq ($(uname_S), Windows)
 	# set Windows compiler, flags, and paths
+	tar="/cygdrive/c/cygwin64/bin/tar.exe"
+	OS=win64
 endif
 ifeq ($(uname_S), Linux)
 	# set Linux compiler, flags, and paths
@@ -104,7 +106,6 @@ obj/%.o: src/%.cc
 
 obj/errorx_python2.o: src/errorx_python.cc
 	$(CXX) $(CPPFLAGS) $(WNO) $(INC) $(PY_INC) -o obj/errorx_python2.o -c src/errorx_python.cc -Ofast
-
 
 obj/errorx_python3.o: src/errorx_python.cc
 	$(CXX) $(CPPFLAGS) $(WNO) $(INC) $(PY3_INC) -o obj/errorx_python3.o -c src/errorx_python.cc -Ofast
