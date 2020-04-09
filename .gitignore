@@ -12,6 +12,13 @@ errorx.sublime-workspace
 .*.swp
 unit_test/hs_err*.log
 
+model.nnet.old
+100.tsv
+.errorx
+TestClonotypes.cc
+cluster*fasta*
+cluster.fastq
+cluster.tsv
 *.gcno
 *.gcda
 out/
