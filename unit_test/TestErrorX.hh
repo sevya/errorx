@@ -38,9 +38,6 @@ public:
 
 	void testFromOptions() {
 
-		// FAIL PURPOSELY
-		TS_ASSERT_EQUALS( 1, 0 );
-
 		ErrorXOptions options( "testing/test.fastq", "fastq" );
 		options.outfile( "testing/test_out.tsv");
 		options.species( "mouse" );
