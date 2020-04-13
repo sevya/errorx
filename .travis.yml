@@ -4,6 +4,12 @@ compiler:
   - gcc
 branches:
   only:
+  - master
   - travis_ci
 script:
+  - make all libraries
+  - pip install -u python2_bindings
+  - unit_test
   - make all
+  - bash run_all_tests.sh
+

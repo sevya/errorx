@@ -46,7 +46,8 @@
 				"*.java",
 				"*.cc",
 				"*.hh",
-				"*.nnet"
+				"*.nnet",
+				".travis.yml"
 			]
 		},
 		{
