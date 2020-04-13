@@ -1,7 +1,7 @@
 language: cpp
-compiler:
-  - clang
-  - gcc
+# compiler:
+#   - clang
+#   - gcc
 branches:
   only:
   - master
@@ -11,5 +11,5 @@ script:
   - pip install --user python2_bindings/
   - cd unit_test
   - make all
-  - bash run_all_tests.sh
+  - csh run_all_tests.sh
 
