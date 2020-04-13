@@ -1,6 +1,6 @@
 # ErrorX
 
-[![Build Status](https://travis-ci.com/sevya/errorx.svg?branch=travis_ci)](https://travis-ci.com/sevya/errorx)
+[![Build Status](https://travis-ci.com/sevya/errorx.svg?branch=master)](https://travis-ci.com/sevya/errorx)
 [![Documentation Status](https://readthedocs.org/projects/errorx/badge/?version=latest)](https://errorx.readthedocs.io/en/latest/?badge=latest)
 
 
