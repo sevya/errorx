@@ -8,8 +8,8 @@ branches:
   - travis_ci
 script:
   - make all libraries
-  - pip install --user python2_bindings
-  - unit_test
+  - pip install --user python2_bindings/
+  - cd unit_test
   - make all
   - bash run_all_tests.sh
 
