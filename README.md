@@ -1,7 +1,6 @@
 # ErrorX
 
-[![GitHub Release](https://img.shields.io/github/v/release/sevya/errorx.svg?include_prereleases)](https://github.com/sevya/errorx/releases/latest)  
-
+[![GitHub Release](https://img.shields.io/github/release/sevya/errorx.svg)](https://github.com/sevya/errorx/releases/latest)  
 [![Build Status](https://travis-ci.com/sevya/errorx.svg?branch=master)](https://travis-ci.com/sevya/errorx)
 [![Documentation Status](https://readthedocs.org/projects/errorx/badge/?version=latest)](https://errorx.readthedocs.io/en/latest/?badge=latest)
 [![Twitter Follow](https://img.shields.io/twitter/follow/EndeavorBio.svg?style=social)](https://twitter.com/EndeavorBio)  
