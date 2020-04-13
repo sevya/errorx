@@ -2,10 +2,15 @@ language: cpp
 # compiler:
 #   - clang
 #   - gcc
-branches:
-  only:
-  - master
-  - travis_ci
+# branches:
+#   only:
+#   - master
+#   - travis_ci
+addons:
+  apt:
+    packages: csh
+  # homebrew:
+  #   packages: csh
 script:
   - make all libraries
   - pip install --user python2_bindings/
