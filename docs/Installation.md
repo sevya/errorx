@@ -10,3 +10,5 @@ You can also use a third-party software such as [7-zip](https://www.7-zip.org/) 
 The ErrorX binary is ready to go from there - it is located at `ErrorX/bin/errorx`
 
 **Note:** the binary relies on data contained in the ErrorX folder. For best results, leave the directory structure of ErrorX intact.
+
+[Back to Home](index.md)

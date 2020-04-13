@@ -4,20 +4,20 @@
 ## [Installation](Installation.md)
 ## [Quickstart](Quickstart.md)
 ## [Input](Input.md)
-### [FASTQ](Input.mdFASTQ.md)
-### [TSV](TSV.md)
-### [FASTA](FASTA.md)
-### [Output](Output.md)
-### [Full options list](Full-options-list.md)
+### FASTQ
+### TSV
+### FASTA
+### Output
+### Full options list
 ## [C++ API](C++-API.md)
-### [Using the API](Using-the-API.md)
-### [Walkthrough](Walkthrough.md)
-### [Viewing and Analyzing SequenceRecords](Viewing-and-Analyzing-SequenceRecords.md)
-### [Compilation](Compilation.md)
+### Using the API
+### Walkthrough
+### Viewing and Analyzing SequenceRecords
+### Compilation
 ## [Python API](Python-API.md)
-### [Installation](Installation.md)
-### [Walkthrough](Walkthrough.md)
+### Installation
+### Walkthrough
 ## [Java API](Java-API.md)
-### [Installation](Installation.md)
-### [Walkthrough](Walkthrough.md)
+### Installation
+### Walkthrough
 ## [ErrorXOptions](ErrorXOptions.md)

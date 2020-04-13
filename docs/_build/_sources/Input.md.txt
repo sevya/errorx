@@ -44,3 +44,5 @@ Below is a list of all options that can be given to the application:
 	--allow-nonproductive			Allow nonproductive and out-of-frame sequences to be included? (default=No)
 		
 	 --license arg					License key to activate full version of ErrorX
+
+[Back to Home](index.md)

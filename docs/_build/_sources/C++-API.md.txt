@@ -78,3 +78,5 @@ The `-I` flag will include all of the ErrorX headers during compilation, and the
 **Note:** when you run the application linking to ErrorX, the ErrorX library **must** be in the path where your OS is going to look for dynamically linked libraries. In Linux this path is set by an environmental variable called `LD_LIBRARY_PATH`, or `DYLD_LIBRARY_PATH` on Mac. Make sure to run the following command to set the path correctly (or, even better, add this line to your `~/.bashrc` and never worry about it again!):
 	
 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:ErrorX/lib/
+
+[Back to Home](index.md)

@@ -6,4 +6,5 @@ After installing ErrorX you are ready to run your first sequences. You can find 
 
 You will find a tab-separated file called `ErrorX_out.tsv` with all the annotated sequences and their predicted errors.
 
-Find the [full documentation here](https://errorx.readthedocs.io/)
+
+[Back to Home](index.md)
