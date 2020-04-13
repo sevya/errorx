@@ -7,8 +7,9 @@ language: cpp
 #   - master
 #   - travis_ci
 os:
-  # - linux
+  - linux
   - osx
+  # - windows
 jdk:
   - oraclejdk8
 addons:
