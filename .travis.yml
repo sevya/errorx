@@ -16,7 +16,7 @@ addons:
   # homebrew:
   #   packages: csh
 script:
-  - make -j2 all libraries
+  - mingw32-make -j2 all libraries
   - pip install --user python2_bindings/
   - cd unit_test
   - make -j2 all
