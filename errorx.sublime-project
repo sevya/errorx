@@ -72,10 +72,12 @@
 				"*.rst",
 				"*.html",
 				"*.py",
+				"*"
 			],
 			"folder_include_patterns":
 			[
-				"blank"
+				"blank",
+				"*"
 			],
 		}
 	],
