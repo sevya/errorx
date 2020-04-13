@@ -15,7 +15,7 @@ endif
 ifeq ($(uname_S), Linux)
 	# set Linux compiler, flags, and paths
 	CXX=clang++
-	CPPFLAGS=-pthread -std=c++11 -Wall -Wno-sign-compare
+	CPPFLAGS=-pthread -std=c++11 -Wall -Wno-sign-compare -fprofile-arcs -ftest-coverage
 	FINAL=-ldl
 	DLLEXT=so
 
@@ -26,7 +26,7 @@ endif
 ifeq ($(uname_S), Darwin)
 	# set Mac compiler, flags, and paths
 	CXX=clang++
-	CPPFLAGS=-pthread -std=c++11 -Wall -Wno-deprecated-register
+	CPPFLAGS=-pthread -std=c++11 -Wall -Wno-deprecated-register -fprofile-arcs -ftest-coverage
 	FINAL=
 	DLLEXT=dylib
 	JAVAC=javac

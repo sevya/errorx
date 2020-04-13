@@ -8,7 +8,7 @@ else
 endif
 
 
-CPPFLAGS=-pthread -std=c++11 -Wall
+CPPFLAGS=-pthread -std=c++11 -Wall --coverage
 
 ifeq ($(uname_S), Windows)
 	# set Windows compiler, flags, and paths
