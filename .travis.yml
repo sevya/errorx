@@ -7,16 +7,15 @@ language: cpp
 #   - master
 #   - travis_ci
 os:
-  # - linux
-  # - osx
-  - windows
+  - linux
+  - osx
 addons:
   apt:
     packages: csh
   # homebrew:
   #   packages: csh
 script:
-  - mingw32-make -j2 all libraries
+  - make -j2 all libraries
   - pip install --user python2_bindings/
   - cd unit_test
   - make -j2 all
