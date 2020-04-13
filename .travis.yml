@@ -8,18 +8,18 @@ language: cpp
 #   - travis_ci
 os:
   # - linux
-  - osx
-  # - windows
+  # - osx
+  - windows
 addons:
   apt:
     packages: csh
   # homebrew:
   #   packages: csh
 script:
-  - make all libraries
+  - make -j2 all libraries
   - pip install --user python2_bindings/
   - cd unit_test
-  - make all
+  - make -j2 all
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then ./run_all_tests.bat; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ] || [ "$TRAVIS_OS_NAME" = "osx" ]; then csh run_all_tests.sh; fi
 
