@@ -34,10 +34,7 @@
 				"include/keras",
 				"python2_bindings",
 				"python3_bindings",
-				"mac",
 				"java_bindings",
-				"production",
-				"ErrorX"
 			],
 			"file_include_patterns":
 			[
@@ -60,6 +57,21 @@
 				"*.java",
 				// "*.cc",
 				"*.hh"
+			],
+			"folder_include_patterns":
+			[
+				"blank"
+			],
+		},
+		{
+			"path": "docs",
+
+			"file_include_patterns":
+			[
+				"makefile",
+				"*.rst",
+				"*.html",
+				"*.py",
 			],
 			"folder_include_patterns":
 			[
