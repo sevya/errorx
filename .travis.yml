@@ -7,7 +7,7 @@ language: cpp
 #   - master
 #   - travis_ci
 os:
-  - linux
+  # - linux
   - osx
 addons:
   apt:
