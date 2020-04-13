@@ -17,6 +17,8 @@ addons:
     packages: csh
   # homebrew:
   #   packages: csh
+before_install:
+  - pip install --user codecov
 script:
   - make all libraries
   - pip install --user python2_bindings/
@@ -24,4 +26,5 @@ script:
   - make all
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then ./run_all_tests.bat; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ] || [ "$TRAVIS_OS_NAME" = "osx" ]; then csh run_all_tests.sh; fi
-
+after_success:
+  - codecov --file coverage/lcov.info --disable search

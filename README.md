@@ -1,8 +1,9 @@
 # ErrorX
 
+[![GitHub Release](https://img.shields.io/github/release/sevya/errorx.svg?style=flat)]()  
 [![Build Status](https://travis-ci.com/sevya/errorx.svg?branch=master)](https://travis-ci.com/sevya/errorx)
 [![Documentation Status](https://readthedocs.org/projects/errorx/badge/?version=latest)](https://errorx.readthedocs.io/en/latest/?badge=latest)
-
+[![Twitter Follow](https://img.shields.io/twitter/follow/EndeavorBio.svg?style=social)](https://twitter.com/EndeavorBio)  
 
 ErrorX is a revolutionary software for correction of DNA sequencing errors. In next-generation sequencing, it's common that many of the output sequences are actually errors, different from the input DNA sequence. This can be caused by the way the DNA was prepared, amplification before sequencing, and errors introduced by the sequencing machine itself. Unfortunately, these errors can be very costly to a next-generation sequencing pipeline, as you can never be sure which sequences are true and which are mistakes.
 
