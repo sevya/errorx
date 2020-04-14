@@ -76,18 +76,20 @@ pygments_style = None
 # a list of builtin themes.
 #
 # html_theme = 'classic'
-html_theme = 'bizstyle'
-# html_theme = "sphinx_rtd_theme"
+# html_theme = 'bizstyle'
+html_theme = "sphinx_rtd_theme"
 # html_theme = 'alabaster'
 
+html_logo = 'logo_horizontal_whitebackground.png'
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
 html_theme_options = { 
 	'collapse_navigation': False,
-	'navigation_depth': -1,
+    'sticky_navigation': False,
 }
+
 # html_theme_options = {}
 
 # Add any paths that contain custom static files (such as style sheets) here,

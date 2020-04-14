@@ -31,4 +31,4 @@ script:
   - csh run_all_tests.sh
 after_success:
   - gcovr -r obj/ -e '.*?hpp' -e '.*?hh' --xml -o coverage.xml
-  - bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash -f coverage.xml)

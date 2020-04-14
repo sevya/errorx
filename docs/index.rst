@@ -8,7 +8,12 @@ Welcome to ErrorX's documentation!
 
 .. toctree::
    :maxdepth: 2
+   :numbered:
+   :titlesonly:
+
    :caption: Contents:
+   overview.rst
+   installation.rst
 
 
 
