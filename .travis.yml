@@ -8,15 +8,15 @@ language: cpp
 #   - travis_ci
 os:
   - linux
-  - osx
+  # - osx
   # - windows
 jdk:
   - oraclejdk8
 addons:
   apt:
-    packages: csh
-  # homebrew:
-  #   packages: csh
+    packages: 
+	- csh
+    - gcovr
 before_install:
   - pip install --user codecov
 script:
@@ -24,9 +24,9 @@ script:
   - pip install --user python2_bindings/
   - cd unit_test
   - make all
-  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then ./run_all_tests.bat; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ] || [ "$TRAVIS_OS_NAME" = "osx" ]; then csh run_all_tests.sh; fi
+#  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then ./run_all_tests.bat; fi
+#  - if [ "$TRAVIS_OS_NAME" = "linux" ] || [ "$TRAVIS_OS_NAME" = "osx" ]; then csh run_all_tests.sh; fi
+  - csh run_all_tests.sh
 after_success:
   - gcovr -r obj/ -e '.*?hpp' -e '.*?hh' --xml -o coverage.xml && codecov --file coverage.xml --disable search -X gcov
 #  - bash <(curl -s https://codecov.io/bash)
-#  - codecov --file coverage.xml --disable search -X gcov
