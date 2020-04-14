@@ -27,6 +27,6 @@ script:
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then ./run_all_tests.bat; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ] || [ "$TRAVIS_OS_NAME" = "osx" ]; then csh run_all_tests.sh; fi
 after_success:
-  - gcovr -r obj/ -e '.*?hpp' -e '.*?hh' --xml -o coverage.xml
+  - gcovr -r obj/ -e '.*?hpp' -e '.*?hh' --xml -o coverage.xml && codecov --file coverage.xml --disable search -X gcov
 #  - bash <(curl -s https://codecov.io/bash)
-  - codecov --file coverage.xml --disable search
+#  - codecov --file coverage.xml --disable search -X gcov
