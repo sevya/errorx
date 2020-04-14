@@ -10,6 +10,8 @@ os:
   - linux
   # - osx
   # - windows
+env:
+  - CODECOV_TOKEN="d02d94b5-2584-4ed9-8eb5-8a3bcda19af8"
 jdk:
   - oraclejdk8
 addons:
@@ -28,5 +30,5 @@ script:
 #  - if [ "$TRAVIS_OS_NAME" = "linux" ] || [ "$TRAVIS_OS_NAME" = "osx" ]; then csh run_all_tests.sh; fi
   - csh run_all_tests.sh
 after_success:
-  - gcovr -r obj/ -e '.*?hpp' -e '.*?hh' --xml -o coverage.xml && codecov --file coverage.xml --disable search -X gcov
-#  - bash <(curl -s https://codecov.io/bash)
+  - gcovr -r obj/ -e '.*?hpp' -e '.*?hh' --xml -o coverage.xml
+  - bash <(curl -s https://codecov.io/bash)

@@ -21,6 +21,8 @@ cluster.fastq
 cluster.tsv
 *.gcno
 *.gcda
+*.gcov
+coverage.xml
 out/
 *.info
 
