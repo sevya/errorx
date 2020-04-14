@@ -34,4 +34,4 @@ after_success:
   - cd ../
   - ls
   - gcovr -r obj/ -e '.*?hpp' -e '.*?hh' --xml -o coverage.xml
-  - bash <(curl -s https://codecov.io/bash -f coverage.xml -X gcov)
+  - bash <(curl -s https://codecov.io/bash) -f coverage.xml -X gcov
