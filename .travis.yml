@@ -17,7 +17,7 @@ jdk:
 addons:
   apt:
     packages: 
-	- csh
+    - csh
     - gcovr
 before_install:
   - pip install --user codecov
