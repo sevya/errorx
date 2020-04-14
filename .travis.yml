@@ -30,5 +30,6 @@ script:
 #  - if [ "$TRAVIS_OS_NAME" = "linux" ] || [ "$TRAVIS_OS_NAME" = "osx" ]; then csh run_all_tests.sh; fi
   - csh run_all_tests.sh
 after_success:
+  - cd ../
   - gcovr -r obj/ -e '.*?hpp' -e '.*?hh' --xml -o coverage.xml
-  - bash <(curl -s https://codecov.io/bash -f coverage.xml)
+  - bash <(curl -s https://codecov.io/bash -f coverage.xml -X gcov)
