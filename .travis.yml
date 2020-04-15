@@ -33,4 +33,4 @@ script:
 after_success:
 #   - gcovr -r ../obj/ -e '.*?hpp' -e '.*?hh' -r ../ --xml -o coverage.xml
    - cd unit_test
-   - bash <(curl -s https://codecov.io/bash) -f coverage.xml -X gcov
+   - bash <(curl -s https://codecov.io/bash) -f coverage.xml -X gcov -X fix
