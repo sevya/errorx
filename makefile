@@ -7,8 +7,10 @@ else
 	uname_S := $(shell uname -s)
 endif
 
-
-CPPFLAGS=-pthread -std=c++11 -Wall --coverage
+# set up blank CPPFLAGS
+CPPFLAGS=
+# enables us to add cppflags on command line
+override CPPFLAGS+=-pthread -std=c++11 -Wall 
 
 ifeq ($(uname_S), Windows)
 	# set Windows compiler, flags, and paths

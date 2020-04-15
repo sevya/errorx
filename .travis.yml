@@ -22,10 +22,10 @@ addons:
 before_install:
   - pip install --user codecov
 script:
-  - make all libraries
+  - make all libraries CPPFLAGS=--coverage
   - pip install --user python2_bindings/
   - cd unit_test
-  - make all
+  - make all CPPFLAGS=-fprofile-arcs -ftest-coverage
 #  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then ./run_all_tests.bat; fi
 #  - if [ "$TRAVIS_OS_NAME" = "linux" ] || [ "$TRAVIS_OS_NAME" = "osx" ]; then csh run_all_tests.sh; fi
   - csh run_all_tests.sh
