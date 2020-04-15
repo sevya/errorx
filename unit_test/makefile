@@ -12,32 +12,26 @@ ifeq ($(uname_S), Windows)
 	# set Windows compiler, flags, and paths
 	CP='.;../java_bindings/ErrorX.jar;hamcrest-core-1.3.jar;junit-4.12.jar'
 endif
+
+CXX=clang++
+# set up blank CPPFLAGS
+CPPFLAGS=
+#enables us to add cppflags on command line
+override CPPFLAGS+=-pthread -std=c++11 -Wall
+
+JAVAC=javac
+JAVA=java
+CP='.:../java_bindings/ErrorX.jar:hamcrest-core-1.3.jar:junit-4.12.jar'
+
 ifeq ($(uname_S), Linux)
-	# set Linux compiler, flags, and paths
-	CXX=clang++
-	# set up blank CPPFLAGS
-    CPPFLAGS=
-    # enables us to add cppflags on command line
-	CPPFLAGS+=-pthread -std=c++11 -Wall -Wno-sign-compare
+	override CPPFLAGS+=-Wno-sign-compare
 	FINAL=-ldl
 	DLLEXT=so
-
-	JAVAC=javac
-	JAVA=java
-	CP='.:../java_bindings/ErrorX.jar:hamcrest-core-1.3.jar:junit-4.12.jar'
 endif
 ifeq ($(uname_S), Darwin)
-	# set Mac compiler, flags, and paths
-	CXX=clang++
-	# set up blank CPPFLAGS
-	CPPFLAGS=
-	# enables us to add cppflags on command line
-	override CPPFLAGS+=-pthread -std=c++11 -Wall -Wno-deprecated-register
+	override CPPFLAGS+=-Wno-deprecated-register
 	FINAL=
 	DLLEXT=dylib
-	JAVAC=javac
-	JAVA=java
-	CP='.:../java_bindings/ErrorX.jar:hamcrest-core-1.3.jar:junit-4.12.jar'
 endif
 
 INC=-I../include/ -Icxxtest/

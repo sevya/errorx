@@ -11,6 +11,7 @@ endif
 CPPFLAGS=
 # enables us to add cppflags on command line
 override CPPFLAGS+=-pthread -std=c++11 -Wall 
+# CPPFLAGS=-pthread -std=c++11 -Wall
 
 ifeq ($(uname_S), Windows)
 	# set Windows compiler, flags, and paths
@@ -22,7 +23,7 @@ ifeq ($(uname_S), Linux)
 	CXX=clang++
 	WNO=-Wno-sign-compare -Wno-deprecated-register
 	LIBFLAGS=-shared -fPIC
-	CPPFLAGS+=-fPIC
+	override CPPFLAGS+=-fPIC
 	FINAL=-ldl
 
 	OS=linux
