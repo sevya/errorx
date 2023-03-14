@@ -189,7 +189,7 @@ You can also get corrected sequences from within the Python script that you can 
 	germline_sequences = ['TACTCCCA']
 	phred_scores = ['HEIHHIII']
 	
-	results = correct_sequences(sequences, germline_sequences, phred_scores, options )
+	results = ex.correct_sequences(sequences, germline_sequences, phred_scores, options )
 
 You can also input a single sequence, and get the predicted probability of error for each position along that sequence (positions are zero-indexed):
 	
@@ -197,7 +197,7 @@ You can also input a single sequence, and get the predicted probability of error
 	germline_sequence = 'TACTCCCA'
 	phred_scores = 'HEIHHIII'
 	
-	probabilities = get_predicted_errors(sequences, germline_sequences, phred_scores, options )
+	probabilities = ex.get_predicted_errors(sequences, germline_sequences, phred_scores, options )
 	
 	# returns probability of error at position 0
 	print probabilities[0] 
